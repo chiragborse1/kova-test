@@ -127,3 +127,62 @@ WINDOWS TEST FLOOR (unchanged, expected)
   47 collection errors are Unix-only modules: pwd(38) termios(5) fcntl(4).
   These cannot pass on Windows by design; the suite targets Linux.
   Do not chase them locally. Verify on CI.
+
+=====================================================================
+UI WORK (three surfaces)
+=====================================================================
+
+THE PROBLEM WITH THE DEFAULT
+  The shipped default was `nous` - a fork of the GitHub VS Code theme
+  whose only change from upstream is a blue accent. The default desktop
+  experience was therefore visually indistinguishable from the original
+  project's identity. The CLI default was a separate gold/kawaii skin and
+  the web dashboard a third look (dark teal). Three surfaces, no shared
+  identity.
+
+WHAT WAS DONE
+  A first-party violet identity, now the default on desktop, web and CLI.
+
+  apps/shared/src/theme-presets.ts   new `kova` palette (light + dark)
+  apps/desktop/src/themes/presets.ts kovaTheme + registered + is default
+  web/src/themes/presets.ts          kovaTheme for the dashboard
+  kova_cli/web_server_dashboard.py   'kova' added to the backend list
+  kova_cli/skin_engine.py            'kova' skin + _DEFAULT_SKIN_NAME
+
+  Light  #6d3bf5 on #fbfafc  = 5.61:1
+  Dark   #9d7bff on #0b0910  = 6.33:1
+  All 10 fg/bg pairs clear WCAG AA; scripts/kova/check_contrast.py asserts
+  them so a future tweak cannot silently regress legibility.
+
+  nous / default / Kova Teal all stay registered. This changes the
+  DEFAULT, not the user's choice - verified:
+    fresh profile            -> kova
+    existing 'nous' user    -> nous (unchanged)
+    retired 'gold'/'default' -> kova
+
+WHAT WAS DELIBERATELY NOT RENAMED
+  1281 files mention `nous`. Only ~400 are the theme key. The rest are
+  the Nous provider id, the portal API (portal.nousresearch.com),
+  NOUS_* env vars and kova_cli.auth_nous - upstream SERVICE CONTRACTS.
+  Renaming those would break authentication and billing, so they were
+  left alone. Scoping the theme key to 6 non-test frontend files avoided
+  touching the other ~390.
+
+VERIFICATION NOTES
+  - scripts/kova/ts_check.py parses all 3953 tracked .ts/.tsx with a real
+    TypeScript grammar. 4 report errors; all 4 are byte-identical at the
+    same line numbers in pristine 2a977be9, i.e. pre-existing upstream
+    (a mojibake char in ModelsPage.tsx, an unescaped & in create-dialog).
+  - Desktop JS tests need node_modules, which is not installed and would
+    be heavy, so they run on CI. Invariants that the theme tests assert
+    (palette exists, system font stacks carry JetBrains Mono + emoji
+    fallback, no leftover hacks) are checked statically instead.
+  - 2 skin tests fail on this machine for a Windows reason only: the
+    locale is cp1252, which cannot encode the spinner glyphs (U+2714)
+    those tests round-trip through YAML. Confirmed pre-existing by
+    stashing the change and re-running.
+
+  The palette audit test (tests/kova_cli/test_skin_palettes.py) caught
+  two low-contrast slots on the first attempt - banner_dim 2.34:1 and
+  session_border 1.60:1, both under the 2.8 soft floor. Lifted the hexes
+  rather than relaxing the test. 22 passed.
