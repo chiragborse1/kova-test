@@ -1,0 +1,5 @@
+﻿# Local recovery artifacts - not part of the Kova codebase.
+# salvage/ holds the previous attempt's rebrand engine + regression harness.
+# regression/ holds local tooling + reports.
+_salvage/
+_regression/
