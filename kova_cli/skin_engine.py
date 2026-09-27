@@ -60,7 +60,46 @@ def _wings(*glyphs) -> List[List[str]]:
 _KOVA_BRANDING: Dict[str, str] = _branding(
     "Kova", "☤", "Goodbye! ☤", prompt="❯", help_header="(^_^)? Available Commands")
 
+#: Skin used when nothing is configured, when a configured name no longer
+#: exists, and as the base layer a partial user skin merges onto. `default`
+#: (gold) stays registered and reachable; `kova` is the shipped default.
+_DEFAULT_SKIN_NAME = "kova"
+
 _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
+    "kova": {
+        "name": "kova", "description": "Kova violet — the brand identity",
+        # Dark-authored to match the desktop `kova` theme's darkColors ramp
+        # (#0b0910 canvas, #9d7bff accent) so the CLI and the app agree.
+        # Contrast measured with scripts/kova/check_contrast.py: accent on
+        # canvas 6.33:1, body text 16.5:1, muted 6.7:1 - all clear WCAG AA.
+        "colors": {
+            "banner_border": "#6d3bf5", "banner_title": "#9d7bff", "banner_accent": "#b79bff",
+            "banner_dim": "#7b5ad6", "banner_text": "#ece9f5", "ui_accent": "#9d7bff",
+            "ui_label": "#8f7bd6", "ui_ok": "#3fca7d", "ui_error": "#ff6b83", "ui_warn": "#ffc861",
+            "prompt": "#ece9f5", "input_rule": "#6d3bf5", "response_border": "#9d7bff",
+            "status_bar_bg": "#0b0910", "status_bar_text": "#9a93ad",
+            "status_bar_strong": "#9d7bff", "status_bar_dim": "#635d75",
+            "status_bar_good": "#3fca7d", "status_bar_warn": "#ffc861", "status_bar_bad": "#ff8c6b",
+            "status_bar_critical": "#ff6b83", "session_label": "#8f7bd6",
+            "session_border": "#635a83", "completion_menu_bg": "#0b0910",
+            "completion_menu_current_bg": "#2a2145", "selection_bg": "#241d3a",
+            "shell_dollar": "#7a97ff", "voice_status_bg": "#0b0910"},
+        # Light overlay, mirroring the desktop theme's light ramp. The vivid
+        # #9d7bff reads as glare on white, so the light side drops to
+        # #6d3bf5 (5.61:1) and the softer slots are darkened to match.
+        "light_colors": {
+            "banner_title": "#5a32b8", "banner_accent": "#6d3bf5", "banner_dim": "#7c5cd0",
+            "banner_text": "#241a45", "ui_accent": "#6d3bf5", "ui_label": "#5b46a8",
+            "ui_ok": "#1c7d4f", "ui_error": "#c62f4b", "ui_warn": "#8a5a00", "prompt": "#241a45",
+            "response_border": "#6d3bf5", "session_label": "#5b46a8", "status_bar_text": "#635d75",
+            "status_bar_strong": "#5a32b8", "status_bar_dim": "#7c7391",
+            "status_bar_good": "#1c7d4f", "status_bar_warn": "#8a5a00", "status_bar_bad": "#b4441f",
+            "status_bar_critical": "#b02039", "shell_dollar": "#3b5bdb",
+            "completion_menu_bg": "#f5f3fa", "completion_menu_current_bg": "#e5dcfb",
+            "selection_bg": "#e8e2fb", "status_bar_bg": "#f5f3fa", "voice_status_bg": "#f5f3fa"},
+        "spinner": {},
+        "branding": _KOVA_BRANDING,
+    },
     "default": {
         "name": "default", "description": "Classic Kova — gold and kawaii",
         # Dark-authored; values match the TUI's DARK_THEME so both render the same gold.
@@ -342,7 +381,7 @@ _BUILTIN_SKINS: Dict[str, Dict[str, Any]] = {
     }}
 
 _active_skin: Optional[SkinConfig] = None
-_active_skin_name: str = "default"
+_active_skin_name: str = _DEFAULT_SKIN_NAME
 # Routed multiplex profiles: (name, skin) per home key. ``display.skin`` and ``<home>/skins/*.yaml``
 # are per profile, and the relay display name / TUI skin payload are read under each profile's
 # override — one module slot would be last-writer-wins across profiles. Unscoped keeps the module slot.
@@ -381,7 +420,7 @@ def _load_skin_from_yaml(path: Path) -> Optional[Dict[str, Any]]:
 
 def _build_skin_config(data: Dict[str, Any]) -> SkinConfig:
     """Build a SkinConfig from a raw dict (built-in or loaded from YAML)."""
-    default = _BUILTIN_SKINS["default"]
+    default = _BUILTIN_SKINS[_DEFAULT_SKIN_NAME]
     skin_name = str(data.get("name", "unknown"))
 
     def section(key: str) -> Dict[str, Any]:
@@ -427,7 +466,7 @@ def load_skin(name: str) -> SkinConfig:
     data = _load_skin_from_yaml(user_file) if user_file.is_file() else None
     if not data and name not in _BUILTIN_SKINS:
         logger.warning("Skin '%s' not found, using default", name)
-    return _build_skin_config(data or _BUILTIN_SKINS.get(name) or _BUILTIN_SKINS["default"])
+    return _build_skin_config(data or _BUILTIN_SKINS.get(name) or _BUILTIN_SKINS[_DEFAULT_SKIN_NAME])
 
 
 def get_active_skin() -> SkinConfig:
