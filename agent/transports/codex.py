@@ -67,11 +67,11 @@ _XAI_CLIENT_WEB_SEARCH_ALIAS = "kova_web_search"
 
 # Responses providers reject client functions whose names collide with native
 # tools (HTTP 400 "custom function name 'X' is reserved"). Alias them as
-# hermes_<name> and map them back before local dispatch.
+# kova_<name> and map them back before local dispatch.
 # OpenCode's /v1/responses endpoints (Zen and Go, including custom providers pointing at opencode.ai)
 # reserve certain function names server-side and reject client tools that use them with HTTP 400 ("custom
 # function name 'X' is reserved"). Same treatment as the xAI web_search collision: rename on the wire
-# (hermes_<name>), map back in normalize_response so Kova dispatch is unaffected. See #85589.
+# (kova_<name>), map back in normalize_response so Kova dispatch is unaffected. See #85589.
 _OPENCODE_RESERVED_TOOL_NAMES = ("web_search", "search_files")
 _PERPLEXITY_RESERVED_TOOL_NAMES = (
     "web_search",
@@ -85,7 +85,7 @@ _PERPLEXITY_RESERVED_TOOL_NAMES = (
 # namespace 'tool_search'", #83122 / #95003).
 _XAI_RESERVED_TOOL_NAMES = ("tool_search",)
 _OPENAI_RESPONSES_HOSTS = frozenset({"api.openai.com", "chatgpt.com"})
-_RESERVED_TOOL_ALIAS_PREFIX = "hermes_"
+_RESERVED_TOOL_ALIAS_PREFIX = "kova_"
 
 # Reverse map used ONLY when normalize_response runs on a transport that never
 # built a request; real requests carry request-local ``_last_wire_aliases``.

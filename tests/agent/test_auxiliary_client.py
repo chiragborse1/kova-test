@@ -3993,13 +3993,13 @@ class TestCodexAuxiliaryAdapterReservedToolAliases:
         assert resp_kwargs["tools"] == main_kwargs["tools"]
         assert all(t["strict"] is False for t in resp_kwargs["tools"])
         assert {t["name"] for t in resp_kwargs["tools"]} == {
-            f"hermes_{n}" if n in aliased else n
+            f"kova_{n}" if n in aliased else n
             for n in ("web_search", "search_files", "people_search", "read_file", "tool_search")
         }
         # Replayed history names the tool the way this request declares it; the alias map rides on the payload.
         history_names = [i["name"] for i in resp_kwargs["input"] if i.get("type") == "function_call"]
         assert history_names == ["kova_search_files" if "search_files" in aliased else "search_files"]
-        assert resp_kwargs.get("_wire_aliases", {}) == {f"hermes_{n}": n for n in aliased}
+        assert resp_kwargs.get("_wire_aliases", {}) == {f"kova_{n}": n for n in aliased}
 
     def test_create_maps_aliases_back_and_never_sends_alias_map(self):
         sent = {}
