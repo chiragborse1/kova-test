@@ -1,15 +1,15 @@
-#!/usr/bin/env -S bash -c 'exec "$BASH" "$(dirname "$0")/_hermes-python" "$0" "$@"'
+#!/usr/bin/env -S bash -c 'exec "$BASH" "$(dirname "$0")/_kova-python" "$0" "$@"'
 """Standalone structural validator for plugin-catalog entry files.
 
 Validates ``plugin-catalog/*.yaml`` catalog entries and
 ``plugin-catalog/removed.yaml`` against the catalog contract schema, using
 only stdlib + ruamel.yaml so the admission CI (and third-party repos) can run it
-WITHOUT installing hermes-agent.
+WITHOUT installing kova-agent.
 
 NOTE: this script intentionally duplicates the schema rules instead of
-importing ``hermes_cli`` — the whole point is the no-install requirement for
+importing ``kova_cli`` — the whole point is the no-install requirement for
 cheap cross-repo CI use. The runtime twin of this schema lives in
-``hermes_cli/plugin_catalog.py``; if the contract changes there, update the
+``kova_cli/plugin_catalog.py``; if the contract changes there, update the
 rules here in lockstep.
 
 Usage:

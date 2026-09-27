@@ -10,13 +10,13 @@
  * the private helper behind it.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
+import type * as KovaSdk from '@kova/plugin-sdk'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const request = vi.fn()
 
-vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const sdk = await importOriginal<typeof HermesSdk>()
+vi.mock('@kova/plugin-sdk', async importOriginal => {
+  const sdk = await importOriginal<typeof KovaSdk>()
 
   return { ...sdk, host: { ...sdk.host, request } }
 })

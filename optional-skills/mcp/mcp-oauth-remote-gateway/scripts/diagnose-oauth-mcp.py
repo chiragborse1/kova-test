@@ -19,7 +19,7 @@ Branches printed at the end:
 Usage:
   python3 diagnose-oauth-mcp.py <server_name> [--mcp-url URL] [--token-endpoint URL] [--write]
 
-  <server_name> matches the files in $HERMES_HOME/mcp-tokens/<server>.json etc.
+  <server_name> matches the files in $KOVA_HOME/mcp-tokens/<server>.json etc.
   If --mcp-url / --token-endpoint are omitted, they're read from the token's
   `resource` field and the AS .well-known metadata respectively.
 
@@ -30,17 +30,17 @@ import json, os, sys, time, argparse, urllib.request, urllib.error, urllib.parse
 UA = "python-httpx/0.27"  # CF blocks default urllib UA on many providers
 
 
-def _hermes_home():
-    # Prefer Hermes' own resolver (profile-safe); fall back to env then ~/.hermes.
+def _kova_home():
+    # Prefer Kova' own resolver (profile-safe); fall back to env then ~/.kova.
     try:
-        from hermes_constants import get_hermes_home
-        return str(get_hermes_home())
+        from kova_constants import get_kova_home
+        return str(get_kova_home())
     except Exception:
-        return os.environ.get("HERMES_HOME") or os.path.expanduser("~/.hermes")
+        return os.environ.get("KOVA_HOME") or os.path.expanduser("~/.kova")
 
 
 def _tokens_dir():
-    return os.path.join(_hermes_home(), "mcp-tokens")
+    return os.path.join(_kova_home(), "mcp-tokens")
 
 
 def _post(url, data=None, headers=None, form=False, timeout=30):
@@ -70,7 +70,7 @@ def _mcp_initialize(mcp_url, access_token):
         data={
             "jsonrpc": "2.0", "id": 1, "method": "initialize",
             "params": {"protocolVersion": "2025-06-18", "capabilities": {},
-                       "clientInfo": {"name": "hermes-diag", "version": "1.0"}},
+                       "clientInfo": {"name": "kova-diag", "version": "1.0"}},
         },
         headers={
             "Authorization": "Bearer " + access_token,

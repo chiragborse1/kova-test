@@ -15,7 +15,7 @@
  * drift on the next page.
  */
 
-import { getOlderSessionMessages, type ProfileScope } from '@/hermes'
+import { getOlderSessionMessages, type ProfileScope } from '@/kova'
 import { type ChatMessage, toChatMessages } from '@/lib/chat-messages'
 import {
   recordTranscriptBackfillPage,
@@ -23,7 +23,7 @@ import {
   type TranscriptProfileScope,
   transcriptTailState
 } from '@/store/transcript-tail'
-import type { SessionMessagesResponse } from '@/types/hermes'
+import type { SessionMessagesResponse } from '@/types/kova'
 
 /** Older rows likely exist beyond what the in-memory store holds. */
 export function transcriptBackfillAvailable(

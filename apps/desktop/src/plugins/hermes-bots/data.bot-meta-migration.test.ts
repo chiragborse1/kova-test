@@ -26,13 +26,13 @@ const { hostMock } = vi.hoisted(() => ({
   hostMock: { agents: vi.fn(), profileRoutes: vi.fn() }
 }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return { atom, host: hostMock, queryClient: undefined, useQuery: vi.fn(), useValue: vi.fn() }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 type Operation = ['remove', string] | ['set', string, unknown]
 

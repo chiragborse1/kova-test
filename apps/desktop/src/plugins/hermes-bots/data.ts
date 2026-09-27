@@ -6,7 +6,7 @@
  * on routing.ts, for the owner descriptors it dispatches through.
  */
 
-import { atom, host, queryClient, useQuery, useValue } from '@hermes/plugin-sdk'
+import { atom, host, queryClient, useQuery, useValue } from '@kova/plugin-sdk'
 
 import { botsText } from './i18n'
 import { displayName } from './labels'
@@ -357,13 +357,13 @@ export async function saveBotMeta(owner: RosterRow | string, patch: StoredBotMet
       ? requestForBot(bot, 'profiles.configure', {
           name,
           ui_meta: {
-            'hermes-bots': rest
+            'kova-bots': rest
           }
         })
       : host.request('profiles.configure', {
           name,
           ui_meta: {
-            'hermes-bots': rest
+            'kova-bots': rest
           }
         })
 
@@ -604,7 +604,7 @@ export async function migrateBotMeta(storage: BotMetaStorage | undefined = getPl
 // ── data ─────────────────────────────────────────────────────────────────────
 
 /** True once profiles.list reports the backend injects the bot-to-bot
- *  protocol into the system prompt itself (hermes-agent bot_mode_probe).
+ *  protocol into the system prompt itself (kova-agent bot_mode_probe).
  *  Gates every SOUL.md protocol append below. */
 export let serverInjectsProtocol = false
 
@@ -685,7 +685,7 @@ async function fetchRosterSnapshot(activeConnectionId: null | string | undefined
   // carry a second copy. Older gateways lack the flag: keep appending.
   serverInjectsProtocol = Boolean(local?.bot_mode_protocol)
 
-  // Multi-source desktops (hermes-agent #86875) also expose the union
+  // Multi-source desktops (kova-agent #86875) also expose the union
   // agent roster across every registered connection. Merge agents from
   // OTHER sources in as additional rows. Feature-detected + best-effort:
   // an older Desktop build (no host.agents) or a roster hiccup leaves
@@ -934,7 +934,7 @@ function mergeMultiSourceRoster(
     profiles.push({
       name: profile,
       // A remote row's title/display_name ride the union enumeration; without
-      // them a remote default titled "CoS Bot" only ever tags as @hermes(-device)
+      // them a remote default titled "CoS Bot" only ever tags as @kova(-device)
       // and its title slug is unknown to the composer (#103731).
       ...(agent.profileMetadata || {}),
       handle: agent.handle,
@@ -1006,22 +1006,22 @@ function mergeMultiSourceRoster(
 /** The @handle users tag a bot with. Multi-source rosters precompute the
  *  handle (bare name, or name-device when the profile exists on several
  *  registered sources) — prefer it when present. The primary profile's
- *  callable alias is 'hermes' — the mention middleware resolves it back to
+ *  callable alias is 'kova' — the mention middleware resolves it back to
  *  'default' — so the word 'default' never surfaces in the UI. */
 export function botHandle(name: string, bot?: Partial<RosterRow> | null): string {
   if (bot?.handle && bot.handle !== name) {
     return bot.handle
   }
 
-  return (name || '').trim().toLowerCase() === 'default' ? 'hermes' : name
+  return (name || '').trim().toLowerCase() === 'default' ? 'kova' : name
 }
 
 /** Taggable @-forms derived from a bot's friendly names — the core profile
- *  display name (`hermes profile rename`) and the Bot Mode title. Free text
+ *  display name (`kova profile rename`) and the Bot Mode title. Free text
  *  reduces to the mention charset two ways: slugified ("Research Buddy" →
  *  research-buddy, the form autocomplete inserts) and collapsed
- *  (researchbuddy). Reserved tokens are dropped so a bot renamed "Hermes"
- *  can never hijack the primary profile's @hermes alias. */
+ *  (researchbuddy). Reserved tokens are dropped so a bot renamed "Kova"
+ *  can never hijack the primary profile's @kova alias. */
 export function mentionNameForms(value: null | string | undefined): string[] {
   const name = String(value || '')
     .trim()
@@ -1035,7 +1035,7 @@ export function mentionNameForms(value: null | string | undefined): string[] {
   const collapsed = name.replace(/[^a-z0-9_-]+/g, '')
 
   return [...new Set([slug, collapsed])].filter(
-    form => /^[a-z0-9][a-z0-9_-]*$/.test(form) && !['all', 'everyone', 'user', 'default', 'hermes'].includes(form)
+    form => /^[a-z0-9][a-z0-9_-]*$/.test(form) && !['all', 'everyone', 'user', 'default', 'kova'].includes(form)
   )
 }
 
@@ -1056,7 +1056,7 @@ export function botFriendlyNames(bot: Partial<RosterRow> | null | undefined): Ar
       alias.name
     : null
 
-  return [bot?.ui_meta?.['hermes-bots']?.title, localTitle, aliasTitle, bot?.title, bot?.display_name]
+  return [bot?.ui_meta?.['kova-bots']?.title, localTitle, aliasTitle, bot?.title, bot?.display_name]
 }
 
 /** The tag autocomplete inserts for a bot: the renamed (friendly) slug when
@@ -1136,7 +1136,7 @@ export function newBotChat(bot: RosterRow) {
     host.notify?.({
       kind: 'error',
       message:
-        getPluginCtx()?.i18n?.t('bot.openAnotherChatUnsupported') ?? 'Update Hermes Desktop to open another Bot chat.'
+        getPluginCtx()?.i18n?.t('bot.openAnotherChatUnsupported') ?? 'Update Kova Desktop to open another Bot chat.'
     })
 
     return
@@ -1148,7 +1148,7 @@ export function newBotChat(bot: RosterRow) {
     host.notify?.({
       kind: 'error',
       message:
-        getPluginCtx()?.i18n?.t('bot.openAnotherChatUnsupported') ?? 'Update Hermes Desktop to open another Bot chat.'
+        getPluginCtx()?.i18n?.t('bot.openAnotherChatUnsupported') ?? 'Update Kova Desktop to open another Bot chat.'
     })
 
     return
@@ -1251,8 +1251,8 @@ export function resolveRosterMentions(
     let token = match[2].toLowerCase()
     const connection = (match[3] || '').toLowerCase()
 
-    if (token === 'hermes') {
-      token = byForm.has('hermes') ? 'hermes' : token
+    if (token === 'kova') {
+      token = byForm.has('kova') ? 'kova' : token
     }
 
     const bot = connection

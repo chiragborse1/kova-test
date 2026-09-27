@@ -1,9 +1,9 @@
-import { skillInvocationText } from '@hermes/shared'
+import { skillInvocationText } from '@kova/shared'
 
 import { extractImageRefs } from '@/lib/embedded-images'
 import { dedupeGeneratedImageEchoesInParts } from '@/lib/generated-images'
 import { isTodoToolName } from '@/lib/todos'
-import type { MessageReaction, SessionMessage } from '@/types/hermes'
+import type { MessageReaction, SessionMessage } from '@/types/kova'
 
 import {
   assistantTextPart,
@@ -164,7 +164,7 @@ const NOTICE_DISPLAY_KINDS = [
   'process_complete',
   'auto_continue',
   'personality_switch',
-  // Hermes closing a failed turn, not the model speaking.
+  // Kova closing a failed turn, not the model speaking.
   'failed_turn'
 ] as const
 

@@ -107,7 +107,7 @@ def _prepend_path(env: dict, directory: str) -> dict:
     """Make *directory* the FIRST PATH entry, collapsing existing variants of it.
 
     Prepending only when *directory* was absent left a directory that is already
-    on PATH — the Hermes installer appends its managed Node dir — behind an older
+    on PATH — the Kova installer appends its managed Node dir — behind an older
     system Node. npm lifecycle children (`node install.js`) then resolve the
     system Node through PATH and die with ERR_REQUIRE_ESM (#82309). Every
     existing case/trailing-separator variant is stripped first, so this entry is

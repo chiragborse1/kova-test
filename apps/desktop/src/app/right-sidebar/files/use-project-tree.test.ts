@@ -1,7 +1,7 @@
 import { act, cleanup, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { HermesReadDirResult } from '@/global'
+import type { KovaReadDirResult } from '@/global'
 import { $connection } from '@/store/session'
 import { notifyWorkspaceChanged } from '@/store/workspace-events'
 
@@ -9,7 +9,7 @@ import { clearProjectDirCache, readProjectDir } from './ipc'
 import { $showIgnoredRoots } from './prefs'
 import { resetProjectTreeState, useProjectTree } from './use-project-tree'
 
-const readDir = vi.fn<(path: string) => Promise<HermesReadDirResult>>()
+const readDir = vi.fn<(path: string) => Promise<KovaReadDirResult>>()
 
 beforeEach(() => {
   $connection.set(null)
@@ -27,7 +27,7 @@ afterEach(() => {
   delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
 })
 
-function ok(entries: { name: string; path: string; isDirectory: boolean }[]): HermesReadDirResult {
+function ok(entries: { name: string; path: string; isDirectory: boolean }[]): KovaReadDirResult {
   return { entries }
 }
 
@@ -73,11 +73,11 @@ describe('useProjectTree', () => {
   })
 
   it('does not fall back after a failed root read from a superseded connection', async () => {
-    let resolveRootFromA: ((result: HermesReadDirResult) => void) | undefined
+    let resolveRootFromA: ((result: KovaReadDirResult) => void) | undefined
     const sanitizeWorkspaceCwd = vi.fn(async () => ({ cwd: '/fallback', sanitized: true }))
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           resolveRootFromA = resolve
         })
     )
@@ -247,10 +247,10 @@ describe('useProjectTree', () => {
   it('dedupes concurrent loadChildren calls for the same id', async () => {
     readDir.mockResolvedValueOnce(ok([{ name: 'src', path: '/p/src', isDirectory: true }]))
 
-    let resolveChildren: ((value: HermesReadDirResult) => void) | undefined
+    let resolveChildren: ((value: KovaReadDirResult) => void) | undefined
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           resolveChildren = resolve
         })
     )
@@ -288,11 +288,11 @@ describe('useProjectTree', () => {
   })
 
   it('discards a stale live refresh after the active registered connection changes', async () => {
-    let resolveRefreshFromA: ((result: HermesReadDirResult) => void) | undefined
+    let resolveRefreshFromA: ((result: KovaReadDirResult) => void) | undefined
     readDir.mockResolvedValueOnce(ok([{ name: 'from-a', path: '/shared/from-a', isDirectory: false }]))
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           resolveRefreshFromA = resolve
         })
     )
@@ -331,11 +331,11 @@ describe('useProjectTree', () => {
   })
 
   it('discards a stale child read after the active registered connection changes', async () => {
-    let resolveChildFromA: ((result: HermesReadDirResult) => void) | undefined
+    let resolveChildFromA: ((result: KovaReadDirResult) => void) | undefined
     readDir.mockResolvedValueOnce(ok([{ name: 'src', path: '/shared/src', isDirectory: true }]))
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           resolveChildFromA = resolve
         })
     )
@@ -374,10 +374,10 @@ describe('useProjectTree', () => {
   })
 
   it('discards a stale root read after the active registered connection changes', async () => {
-    let resolveFirst: ((result: HermesReadDirResult) => void) | undefined
+    let resolveFirst: ((result: KovaReadDirResult) => void) | undefined
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           resolveFirst = resolve
         })
     )
@@ -476,11 +476,11 @@ describe('useProjectTree', () => {
 
     await waitFor(() => expect(result.current.rootError).toBe('ENOENT'))
 
-    let releaseProbe: ((value: HermesReadDirResult) => void) | undefined
+    let releaseProbe: ((value: KovaReadDirResult) => void) | undefined
 
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           releaseProbe = resolve
         })
     )
@@ -506,11 +506,11 @@ describe('useProjectTree', () => {
 
     await waitFor(() => expect(result.current.data.length).toBe(1))
 
-    let releaseRefresh: ((value: HermesReadDirResult) => void) | undefined
+    let releaseRefresh: ((value: KovaReadDirResult) => void) | undefined
 
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           releaseRefresh = resolve
         })
     )
@@ -535,11 +535,11 @@ describe('useProjectTree', () => {
 
     await waitFor(() => expect(result.current.data.map(node => node.name)).toEqual(['from-a']))
 
-    let releaseFromB: ((value: HermesReadDirResult) => void) | undefined
+    let releaseFromB: ((value: KovaReadDirResult) => void) | undefined
 
     readDir.mockImplementationOnce(
       () =>
-        new Promise<HermesReadDirResult>(resolve => {
+        new Promise<KovaReadDirResult>(resolve => {
           releaseFromB = resolve
         })
     )
@@ -632,7 +632,7 @@ describe('useProjectTree', () => {
   it('drops a child listing that was read before the preference flipped', async () => {
     const gitRoot = vi.fn(async () => '/p')
     const readFileDataUrl = vi.fn(async () => `data:text/plain;base64,${btoa('*.log\n')}`)
-    let releaseChild: ((value: HermesReadDirResult) => void) | undefined
+    let releaseChild: ((value: KovaReadDirResult) => void) | undefined
 
     readDir.mockImplementation(async path => {
       if (path === '/p') {
@@ -643,7 +643,7 @@ describe('useProjectTree', () => {
       }
 
       if (path === '/p/src') {
-        return new Promise<HermesReadDirResult>(resolve => {
+        return new Promise<KovaReadDirResult>(resolve => {
           releaseChild = resolve
         })
       }

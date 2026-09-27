@@ -23,7 +23,7 @@ from typing import Callable, Dict, Any, List, Optional
 
 import copy
 
-from hermes_constants import display_hermes_home
+from kova_constants import display_kova_home
 
 logger = logging.getLogger(__name__)
 
@@ -105,8 +105,8 @@ DEFAULT_PROVIDER = "edge"
 
 
 def _get_default_output_dir() -> str:
-    from hermes_constants import get_hermes_dir
-    return str(get_hermes_dir("cache/audio", "audio_cache"))
+    from kova_constants import get_kova_dir
+    return str(get_kova_dir("cache/audio", "audio_cache"))
 
 
 DEFAULT_OUTPUT_DIR = _DEFAULT_OUTPUT_DIR_AT_IMPORT = _get_default_output_dir()
@@ -118,11 +118,11 @@ def _default_output_dir() -> str:
 
     Same bug class as skills_tool (f8723c478) and skills_sync (#65828): long-lived multi-profile runtimes
     (dashboard console, TUI/Desktop backend, cron, kanban workers) import this module once under the launch
-    HERMES_HOME and later scope requests to a different profile via
-    ``hermes_constants.set_hermes_home_override()`` — a frozen module constant keeps writing synthesized
+    KOVA_HOME and later scope requests to a different profile via
+    ``kova_constants.set_kova_home_override()`` — a frozen module constant keeps writing synthesized
     audio into the launch profile's cache instead of the active profile's (#98749). Keep the legacy
     ``DEFAULT_OUTPUT_DIR`` module attribute for tests and external patchers; when it has not been patched,
-    re-resolve from the live profile-scoped HERMES_HOME on every call.
+    re-resolve from the live profile-scoped KOVA_HOME on every call.
     """
     if DEFAULT_OUTPUT_DIR != _DEFAULT_OUTPUT_DIR_AT_IMPORT:
         return DEFAULT_OUTPUT_DIR
@@ -132,10 +132,10 @@ def _default_output_dir() -> str:
 def _load_tts_config() -> Dict[str, Any]:
     """Return the ``tts`` config section ({} when unavailable)."""
     try:
-        from hermes_cli.config import load_config
+        from kova_cli.config import load_config
         return load_config().get("tts") or {}
     except ImportError:
-        logger.debug("hermes_cli.config not available, using default TTS config")
+        logger.debug("kova_cli.config not available, using default TTS config")
     except Exception as e:
         logger.warning("Failed to load TTS config: %s", e, exc_info=True)
     return {}
@@ -179,17 +179,17 @@ _BUILTIN_DISPATCH: Dict[str, tuple] = {
     "xai": (None, "xAI TTS", "_generate_xai_tts", None),
     "mistral": (lambda: _importable(_import_mistral_client), "Mistral Voxtral TTS", "_generate_mistral_tts",
                 "Mistral provider selected but 'mistralai' package not installed. "
-                "Run `hermes setup` to install Mistral support."),
+                "Run `kova setup` to install Mistral support."),
     "gemini": (None, "Google Gemini TTS", "_generate_gemini_tts", None),
     "neutts": (lambda: _check_neutts_available(), "NeuTTS (local)", "_generate_neutts",
                "NeuTTS provider selected but neutts is not installed. "
-               "Run hermes setup tts and choose NeuTTS; espeak-ng is also required."),
+               "Run kova setup tts and choose NeuTTS; espeak-ng is also required."),
     "kittentts": (lambda: _importable(_import_kittentts), "KittenTTS (local, ~25MB)", "_generate_kittentts",
                   "KittenTTS provider selected but 'kittentts' package not installed. "
-                  "Run 'hermes setup tts' and choose KittenTTS."),
+                  "Run 'kova setup tts' and choose KittenTTS."),
     "piper": (lambda: _importable(_import_piper), "Piper (local)", "_generate_piper_tts",
               "Piper provider selected but 'piper-tts' package not installed. "
-              "Run 'hermes tools' and select Piper under TTS.")}
+              "Run 'kova tools' and select Piper under TTS.")}
 
 
 def _error_json(message: str) -> str:
@@ -222,7 +222,7 @@ def _select_builtin_engine(provider: str) -> tuple:
     return provider, _error_json(
         "No TTS provider available. Enable Edge TTS with: "
         f"{install_hint('edge-tts')} "
-        "or run 'hermes setup tts' and choose NeuTTS for local synthesis.")
+        "or run 'kova setup tts' and choose NeuTTS for local synthesis.")
 
 
 def _synthesize_builtin(engine: str, text: str, file_str: str, tts_config: Dict[str, Any], instructions: Optional[str]) -> None:
@@ -277,7 +277,7 @@ def _apply_call_overrides(tts_config: Dict[str, Any], speed: Optional[float], pr
 def _session_platform() -> tuple:
     """``(platform, wants_opus)`` — platforms delivering voice bubbles only as Ogg/Opus want Opus."""
     from gateway.session_context import get_session_env
-    platform = get_session_env("HERMES_SESSION_PLATFORM", "").lower()
+    platform = get_session_env("KOVA_SESSION_PLATFORM", "").lower()
     return platform, platform in OPUS_VOICE_PLATFORMS
 
 
@@ -599,7 +599,7 @@ def _tts_schema_overrides() -> dict:
     the multiplexed gateway serves every profile from one process, so a path baked in at import
     would name the launch profile's home for everyone else (#95685)."""
     params = copy.deepcopy(TTS_SCHEMA["parameters"])
-    params["properties"]["output_path"]["description"] = _output_path_description(display_hermes_home())
+    params["properties"]["output_path"]["description"] = _output_path_description(display_kova_home())
     return {"parameters": params}
 
 
@@ -615,7 +615,7 @@ TTS_SCHEMA = {
             },
             "output_path": {
                 "type": "string",
-                "description": _output_path_description("the profile HERMES_HOME")
+                "description": _output_path_description("the profile KOVA_HOME")
             },
             "speed": {
                 "type": "number",
@@ -737,7 +737,7 @@ _PLUGIN_COMPAT_LAZY = {
     'TTS_RESPONSE_BODY_CHUNK_BYTES': ('tools.tts_tool_providers', 'TTS_RESPONSE_BODY_CHUNK_BYTES'),
     'TTS_RESPONSE_BODY_LIMIT_BYTES': ('tools.tts_tool_providers', 'TTS_RESPONSE_BODY_LIMIT_BYTES'),
     'acquire_tts_lease': ('tools.tts_tool_lifecycle', 'acquire_tts_lease'),
-    'hermes_xai_user_agent': ('tools.xai_http', 'hermes_xai_user_agent'),
+    'kova_xai_user_agent': ('tools.xai_http', 'kova_xai_user_agent'),
     'managed_nous_tools_enabled': ('tools.tool_backend_helpers', 'managed_nous_tools_enabled'),
     'nous_tool_gateway_unavailable_message': ('tools.tool_backend_helpers', 'nous_tool_gateway_unavailable_message'),
     'read_selection': ('tools.tool_backend_helpers', 'read_selection'),
@@ -749,7 +749,7 @@ _PLUGIN_COMPAT_LAZY = {
     'stream_tts_to_speaker': ('tools.tts_tool_speaker', 'stream_tts_to_speaker'),
     'tts_lease_holders': ('tools.tts_tool_lifecycle', 'tts_lease_holders'),
     'warm_tts_provider': ('tools.tts_tool_lifecycle', 'warm_tts_provider'),
-    'windows_hide_flags': ('hermes_cli._subprocess_compat', 'windows_hide_flags'),
+    'windows_hide_flags': ('kova_cli._subprocess_compat', 'windows_hide_flags'),
 }
 
 
@@ -758,7 +758,7 @@ def __getattr__(name):  # PEP 562 — lazy so no import cycles
     if target is None:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
     import importlib
-    from hermes_cli.plugin_compat import warn_once
+    from kova_cli.plugin_compat import warn_once
     warn_once(__name__, name, *target)
     return getattr(importlib.import_module(target[0]), target[1])
 # ---- END PLUGIN-COMPAT ----

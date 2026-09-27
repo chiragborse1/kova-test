@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import type { ContextBreakdown } from '@/types/hermes'
+import type { ContextBreakdown } from '@/types/kova'
 
 interface ContextBreakdownOptions {
   busy: boolean

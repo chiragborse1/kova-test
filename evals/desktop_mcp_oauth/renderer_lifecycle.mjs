@@ -70,7 +70,7 @@ const bundle = await build({
   format: 'esm',
   platform: 'browser',
   jsx: 'automatic',
-  alias: { '@': repo + '/apps/desktop/src', '@hermes/shared': repo + '/apps/shared/src' },
+  alias: { '@': repo + '/apps/desktop/src', '@kova/shared': repo + '/apps/shared/src' },
   define: {
     'process.env.NODE_ENV': '"production"',
     'import.meta.env': '{}',
@@ -118,7 +118,7 @@ try {
   })
   await page.exposeFunction('nativeOAuth', async (action, id) => {
     nativeCalls.push({ action, id })
-    return handlers.get('hermes:mcp-oauth:' + action)({}, id)
+    return handlers.get('kova:mcp-oauth:' + action)({}, id)
   })
   await page.exposeFunction('fixtureConnection', async scope => {
     nativeCalls.push({ action: 'connection', scope })

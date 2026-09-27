@@ -21,7 +21,7 @@ vi.hoisted(() => {
   })
 })
 
-import { defaultTranslucencyValues } from '@hermes/shared/translucency'
+import { defaultTranslucencyValues } from '@kova/shared/translucency'
 
 import { $translucency, $translucencyBook, GLASS_SUPPORTED, setAppearance } from './translucency'
 

@@ -177,7 +177,7 @@ ${preamble()}
 function buildFocusProbeScript(): string {
   return `(function () {
 ${preamble()}
-  // hermes-focus-probe
+  // kova-focus-probe
   var aimed = holder.aimed;
   var active = document.activeElement;
   var tag = aimed && aimed.tagName ? aimed.tagName : '';
@@ -510,7 +510,7 @@ async function driveAction(
 /** Flag a click the overlay intercepted, which would otherwise look like a page
  *  that simply ignored it. */
 function hitNote(hit?: { tag: string; trusted: boolean } | null): string | undefined {
-  return hit && hit.tag === 'HERMES-WATCH' ? 'The action overlay intercepted the click instead of the page.' : undefined
+  return hit && hit.tag === 'KOVA-WATCH' ? 'The action overlay intercepted the click instead of the page.' : undefined
 }
 
 /** How far a screenful is, whether there is anywhere to go, and a spot to wheel

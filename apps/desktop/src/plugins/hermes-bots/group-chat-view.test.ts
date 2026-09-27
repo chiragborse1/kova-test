@@ -15,7 +15,7 @@ import type { GroupChat, RosterRow } from './types'
 
 const { host } = vi.hoisted(() => ({ host: {} as Record<string, unknown> }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { pluginSdkMock } = await import('./group-test-utils')
 
   return pluginSdkMock(host)
@@ -283,7 +283,7 @@ describe('disband', () => {
     const configure = room.gateway.rpcFor('profiles.configure').at(-1)
 
     const envelope = (configure?.params.ui_meta as Record<string, { deleted?: Record<string, number> }>)[
-      'hermes-bots-groups'
+      'kova-bots-groups'
     ]
 
     expect(envelope.deleted?.['name:Gone']).toBeGreaterThan(0)
@@ -308,7 +308,7 @@ describe('disband', () => {
     // A lagging mirror (its tombstone push failed) still projects the room
     // with a higher CAS revision and no tombstone. Pulling it must not
     // resurrect the room — and the durable room map must stay clean.
-    room.gateway.uiMeta['hermes-bots-groups'] = {
+    room.gateway.uiMeta['kova-bots-groups'] = {
       rooms: {
         'id:room-1': {
           log: [{ at: 1, from: { kind: 'user', name: 'You' }, id: 'b1', text: 'go' }],

@@ -1,7 +1,7 @@
 /**
- * Remote-backend topology for the core suite: a real `hermes serve` the TEST
- * spawns (not the app) under its OWN sandbox HOME / HERMES_HOME / cwd, reached
- * by the Desktop only by URL + token (HERMES_DESKTOP_REMOTE_URL/_TOKEN). Paths
+ * Remote-backend topology for the core suite: a real `kova serve` the TEST
+ * spawns (not the app) under its OWN sandbox HOME / KOVA_HOME / cwd, reached
+ * by the Desktop only by URL + token (KOVA_DESKTOP_REMOTE_URL/_TOKEN). Paths
  * that exist on the client sandbox do not exist on the backend's filesystem
  * view of the world (different root), which is the shape of a Desktop talking
  * to a backend on another machine.
@@ -32,7 +32,7 @@ export interface RemoteBackend {
 }
 
 function python(): string {
-  const selected = process.env.HERMES_E2E_PYTHON
+  const selected = process.env.KOVA_E2E_PYTHON
 
   if (selected) {
     if (!fs.existsSync(selected)) {
@@ -50,7 +50,7 @@ function python(): string {
     }
   }
 
-  throw new Error(`no selected E2E Python or checkout venv under ${REPO_ROOT} (source ./activate in an isolated HERMES_HOME)`)
+  throw new Error(`no selected E2E Python or checkout venv under ${REPO_ROOT} (source ./activate in an isolated KOVA_HOME)`)
 }
 
 function freePort(): Promise<number> {
@@ -135,7 +135,7 @@ function hidingCommand(hide: string[], argv: string[]): null | string[] {
   ]
 }
 
-/** Spawn `hermes serve` for `sandbox` (its HOME/HERMES_HOME, cwd = its root). */
+/** Spawn `kova serve` for `sandbox` (its HOME/KOVA_HOME, cwd = its root). */
 export async function startRemoteBackend(
   sandbox: CoreSandbox,
   { hide = [] }: { hide?: string[] } = {}
@@ -151,7 +151,7 @@ export async function startRemoteBackend(
   for (const [key, value] of Object.entries(process.env)) {
     if (
       value &&
-      !/^_?HERMES_/.test(key) &&
+      !/^_?KOVA_/.test(key) &&
       !/(_API_KEY|_TOKEN|_SECRET|_BASE_URL)$/.test(key) &&
       key !== 'VIRTUAL_ENV'
     ) {
@@ -159,7 +159,7 @@ export async function startRemoteBackend(
     }
   }
 
-  const argv = [python(), '-m', 'hermes_cli.main', 'serve', '--host', '127.0.0.1', '--port', String(port)]
+  const argv = [python(), '-m', 'kova_cli.main', 'serve', '--host', '127.0.0.1', '--port', String(port)]
   const hiding = hidingCommand(hide, argv)
   const [command, ...args] = hiding ?? argv
 
@@ -171,8 +171,8 @@ export async function startRemoteBackend(
         PATH: `${sandbox.bin}${path.delimiter}${env.PATH ?? ''}`,
         PYTHONPATH: REPO_ROOT,
         HOME: sandbox.home,
-        HERMES_HOME: sandbox.hermesHome,
-        HERMES_DASHBOARD_SESSION_TOKEN: token,
+        KOVA_HOME: sandbox.hermesHome,
+        KOVA_DASHBOARD_SESSION_TOKEN: token,
         GIT_NO_LAZY_FETCH: '1'
       },
       stdio: ['ignore', 'pipe', 'pipe']
@@ -217,7 +217,7 @@ export async function startRemoteBackend(
 
 /** Remote-mode env for the app: no local backend, attach by URL + token. */
 export function remoteEnv(backend: RemoteBackend): Record<string, string> {
-  return { HERMES_DESKTOP_REMOTE_URL: backend.url, HERMES_DESKTOP_REMOTE_TOKEN: backend.token }
+  return { KOVA_DESKTOP_REMOTE_URL: backend.url, KOVA_DESKTOP_REMOTE_TOKEN: backend.token }
 }
 
 function withDb<T>(dbPath: string, read: (db: DatabaseSync) => T): null | T {

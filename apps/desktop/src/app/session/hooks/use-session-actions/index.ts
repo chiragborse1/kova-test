@@ -17,7 +17,7 @@ import {
   getAllSessionMessages,
   getLatestSessionMessages,
   setSessionArchived
-} from '@/hermes'
+} from '@/kova'
 import { useI18n } from '@/i18n'
 import {
   type ChatMessage,
@@ -147,7 +147,7 @@ import type {
   SessionMessagesResponse,
   SessionResumeResult,
   UsageStats
-} from '@/types/hermes'
+} from '@/types/kova'
 
 import { navigateToWorkspacePage, NEW_CHAT_ROUTE, sessionRoute, SETTINGS_ROUTE } from '../../../routes'
 import type { ClientSessionState, SidebarNavItem } from '../../../types'

@@ -3,7 +3,7 @@
  *
  * 1. Profile scope (#37). cron.manage is scoped to the bot's OWN cron store
  *    through the core RPC's optional `profile` param: a bot's profile can run
- *    a separate gateway, or keep cron in ~/.hermes/profiles/<name>/cron/.
+ *    a separate gateway, or keep cron in ~/.kova/profiles/<name>/cron/.
  *    Older gateways ignore the unknown param, so the `[bot:]` tag filter in
  *    selectRoutineJobs stays the fallback.
  * 2. Legacy delegated routines are paused inline before the list returns —
@@ -18,15 +18,15 @@
  * routing layer (route resolution, error coercion) runs.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
+import type * as KovaSdk from '@kova/plugin-sdk'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { RoutineJob } from './types'
 
 const request = vi.fn()
 
-vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const sdk = await importOriginal<typeof HermesSdk>()
+vi.mock('@kova/plugin-sdk', async importOriginal => {
+  const sdk = await importOriginal<typeof KovaSdk>()
 
   return { ...sdk, host: { ...sdk.host, request } }
 })

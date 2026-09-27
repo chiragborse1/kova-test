@@ -95,7 +95,7 @@ export function registerWindowControlIpc(
   ipcMain: WindowControlIpc,
   resolveWindow: (sender: Electron.WebContents) => ControllableWindow | null | undefined
 ): void {
-  ipcMain.on('hermes:window-control', (event, action) => {
+  ipcMain.on('kova:window-control', (event, action) => {
     performWindowControl(resolveWindow(event.sender), typeof action === 'string' ? action : '')
   })
 }

@@ -22,7 +22,7 @@ import { setActiveSessionId } from './session'
 import { dropSessionState, publishSessionState } from './session-states'
 
 const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const initialKovaDesktop = desktopWindow.hermesDesktop
 
 const notify = vi.fn().mockResolvedValue(true)
 
@@ -59,8 +59,8 @@ beforeEach(() => {
 afterEach(() => {
   clearPluginNotifyHandlers()
 
-  if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+  if (initialKovaDesktop) {
+    desktopWindow.hermesDesktop = initialKovaDesktop
   } else {
     delete desktopWindow.hermesDesktop
   }
@@ -236,10 +236,10 @@ describe('dispatchPluginNativeNotification', () => {
     // Unique tag (throttle is per plugin id); activate still uses the plugin deep link.
     dispatchPluginNativeNotification('index-network-alerts', {
       actions: [
-        { id: 'open', label: 'Open', activate: 'hermes://index-network/intent/1' },
+        { id: 'open', label: 'Open', activate: 'kova://index-network/intent/1' },
         { id: 'dismiss', label: 'Dismiss', onAction: () => undefined }
       ],
-      activate: 'hermes://index-network/intent/1',
+      activate: 'kova://index-network/intent/1',
       body: 'New match',
       icon: '/tmp/index-network.png',
       title: 'Opportunity'
@@ -266,7 +266,7 @@ describe('dispatchPluginNativeNotification', () => {
     const onAction = vi.fn()
 
     dispatchPluginNativeNotification('handlers-plugin', {
-      activate: 'hermes://index-network/intent/1',
+      activate: 'kova://index-network/intent/1',
       onActivate,
       actions: [{ id: 'dismiss', label: 'Dismiss', onAction }],
       title: 'Opportunity'
@@ -295,7 +295,7 @@ describe('sendTestNativeNotification', () => {
   it('fires regardless of focus or active session', () => {
     setWindowState({ focused: true, hidden: false })
     setActiveSessionId('on-screen')
-    sendTestNativeNotification('Hermes', 'works')
+    sendTestNativeNotification('Kova', 'works')
     expect(notify).toHaveBeenCalledTimes(1)
   })
 })

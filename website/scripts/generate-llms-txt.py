@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate llms.txt and llms-full.txt for the Hermes docs site.
+"""Generate llms.txt and llms-full.txt for the Kova docs site.
 
 Outputs:
   website/static/llms.txt        — index of the docs, one link per page, grouped by
@@ -14,11 +14,11 @@ gets indexed, under the section its path belongs to. That distinction is the
 reason this file was rewritten — when the section list also decided membership,
 it silently drifted to 53% coverage, and Bot Mode, the desktop app, computer
 use, web search, and 22 messaging platforms were absent from the index every
-LLM reads to learn what Hermes does.
+LLM reads to learn what Kova does.
 
 Both publish at:
-  https://hermes-agent.nousresearch.com/docs/llms.txt
-  https://hermes-agent.nousresearch.com/docs/llms-full.txt
+  https://kova-agent.openkova.com/docs/llms.txt
+  https://kova-agent.openkova.com/docs/llms-full.txt
 
 The `/docs/` prefix is not a mistake — Docusaurus serves `website/static/`
 at the `docs/` base path. Clients and IDE plugins that probe the classic
@@ -39,7 +39,7 @@ WEBSITE = SCRIPT_DIR.parent
 DOCS = WEBSITE / "docs"
 STATIC = WEBSITE / "static"
 
-SITE_BASE = "https://hermes-agent.nousresearch.com/docs"
+SITE_BASE = "https://kova-agent.openkova.com/docs"
 
 # The product story: which pages lead, and in what order. Everything not named
 # here is still indexed — ABSORB decides where it lands — so this list is safe
@@ -54,7 +54,7 @@ SECTIONS: list[tuple[str, list[tuple[str, str, str | None]]]] = [
         ("getting-started/updating", "Updating", None),
         ("getting-started/nix-setup", "Nix Setup", None),
     ]),
-    ("Using Hermes", [
+    ("Using Kova", [
         ("user-guide/cli", "CLI", None),
         ("user-guide/tui", "TUI (Ink terminal UI)", None),
         ("user-guide/configuration", "Configuration", None),
@@ -126,10 +126,10 @@ SECTIONS: list[tuple[str, list[tuple[str, str, str | None]]]] = [
         ("guides/local-llm-on-mac", "Local LLMs on Mac", None),
         ("guides/daily-briefing-bot", "Daily Briefing Bot", None),
         ("guides/team-telegram-assistant", "Team Telegram Assistant", None),
-        ("guides/python-library", "Use Hermes as a Python Library", None),
-        ("guides/use-mcp-with-hermes", "Use MCP with Hermes", None),
-        ("guides/use-voice-mode-with-hermes", "Use Voice Mode with Hermes", None),
-        ("guides/use-soul-with-hermes", "Use SOUL.md with Hermes", None),
+        ("guides/python-library", "Use Kova as a Python Library", None),
+        ("guides/use-mcp-with-kova", "Use MCP with Kova", None),
+        ("guides/use-voice-mode-with-kova", "Use Voice Mode with Kova", None),
+        ("guides/use-soul-with-kova", "Use SOUL.md with Kova", None),
         ("guides/automate-with-cron", "Automate with Cron", None),
         ("guides/work-with-skills", "Work with Skills", None),
         ("guides/delegation-patterns", "Delegation Patterns", None),
@@ -159,7 +159,7 @@ SECTIONS: list[tuple[str, list[tuple[str, str, str | None]]]] = [
         ("reference/toolsets-reference", "Toolsets Reference", None),
         ("reference/mcp-config-reference", "MCP Config Reference", None),
         ("reference/model-catalog", "Model Catalog", None),
-        ("reference/skills-catalog", "Bundled Skills Catalog", "Table of all ~90 skills bundled with Hermes"),
+        ("reference/skills-catalog", "Bundled Skills Catalog", "Table of all ~90 skills bundled with Kova"),
         ("reference/optional-skills-catalog", "Optional Skills Catalog", "Table of ~60 additional installable skills"),
         ("reference/faq", "FAQ & Troubleshooting", None),
     ]),
@@ -180,7 +180,7 @@ ABSORB: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("Getting Started", ("getting-started",)),
     ("Messaging Platforms", ("user-guide/messaging",)),
     ("Core Features", ("user-guide/features",)),
-    ("Using Hermes", ("user-guide",)),
+    ("Using Kova", ("user-guide",)),
     ("Integrations", ("integrations",)),
     ("Guides & Tutorials", ("guides",)),
     ("Developer Guide", ("developer-guide",)),
@@ -292,7 +292,7 @@ def emit_llms_index() -> str:
             absorbed.setdefault(section_for(slug), []).append(slug)
 
     lines: list[str] = []
-    lines.append("# Hermes Agent")
+    lines.append("# Kova Agent")
     lines.append("")
     lines.append(
         "> The self-improving AI agent built by Nous Research. A terminal-native "
@@ -305,12 +305,12 @@ def emit_llms_index() -> str:
     )
     lines.append("")
     lines.append(
-        "Install: `curl -fsSL https://raw.githubusercontent.com/NousResearch/"
-        "hermes-agent/main/scripts/install.sh | bash`  "
+        "Install: `curl -fsSL https://raw.githubusercontent.com/OpenKova/"
+        "kova-agent/main/scripts/install.sh | bash`  "
         "(Linux, macOS, WSL2)"
     )
     lines.append("")
-    lines.append("Repo: https://github.com/NousResearch/hermes-agent")
+    lines.append("Repo: https://github.com/kova-agent")
     lines.append("")
 
     for section, items in SECTIONS:
@@ -337,15 +337,15 @@ def emit_llms_full() -> str:
     """Concatenate every doc under website/docs/ into a single markdown file."""
     seen: set[Path] = set()
     chunks: list[str] = [
-        "# Hermes Agent — Full Documentation\n",
+        "# Kova Agent — Full Documentation\n",
         (
-            "This file is the entire Hermes Agent documentation concatenated for LLM "
+            "This file is the entire Kova Agent documentation concatenated for LLM "
             "context ingestion. Section order reflects docs-site navigation: Getting "
-            "Started, Using Hermes, Features, Messaging, Integrations, Guides, "
+            "Started, Using Kova, Features, Messaging, Integrations, Guides, "
             "Developer Guide, Reference, then everything else.\n"
         ),
-        "Canonical site: https://hermes-agent.nousresearch.com/docs\n",
-        "Short index: https://hermes-agent.nousresearch.com/docs/llms.txt\n",
+        "Canonical site: https://kova-agent.openkova.com/docs\n",
+        "Short index: https://kova-agent.openkova.com/docs/llms.txt\n",
         "\n---\n\n",
     ]
 

@@ -38,7 +38,7 @@ const { hostMock } = vi.hoisted(() => ({
   }
 }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
   const { useQuery } = await import('@tanstack/react-query')
 
@@ -51,7 +51,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 interface UnionAgent {
   connectionId: string

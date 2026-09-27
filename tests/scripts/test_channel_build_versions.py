@@ -20,13 +20,13 @@ def channel_request(commit: str, sequence: int = 65536) -> dict:
         "sourceVersion": "1.2.3", "version": f"0.0.{sequence}",
         "windowsVersion": f"0.{sequence // 65536}.{sequence % 65536}.0",
         "identity": {
-            "token": token, "displayName": "Hermes unregistered-preview",
-            "appId": f"com.nousresearch.hermes-channel-{token}",
-            "appNamePascal": f"HermesChannel{token}", "artifactNamePascal": "HermesBundled",
-            "cliName": "hermes-unregistered-preview", "windowsExecutableName": "hermes-unregistered-preview",
-            "msixAppIdWithOrg": f"NousResearch.HermesChannel{token}",
+            "token": token, "displayName": "Kova unregistered-preview",
+            "appId": f"com.openkova.kova-channel-{token}",
+            "appNamePascal": f"KovaChannel{token}", "artifactNamePascal": "KovaBundled",
+            "cliName": "kova-unregistered-preview", "windowsExecutableName": "kova-unregistered-preview",
+            "msixAppIdWithOrg": f"OpenKova.KovaChannel{token}",
         },
-        "bundleEnv": {"HERMES_GUEST_ONBOARDING": "1", "HERMES_HOME": None},
+        "bundleEnv": {"KOVA_GUEST_ONBOARDING": "1", "KOVA_HOME": None},
         "publicBase": "https://builds.example.test",
     }
 
@@ -90,14 +90,14 @@ def test_channel_environment_and_stamp_bind_the_request_not_ambient_oneoff_ident
     request = BuildRequest.create(source, tag=None, commit=None, variant="bundled",
                                   work=tmp_path / "work", cache=tmp_path / "cache",
                                   bundle_env={}, channel_request=admitted)
-    inherited = {"HERMES_BUILD_COMMIT": "b" * 40, "HERMES_PAYLOAD_TAG": "v9.9.9",
+    inherited = {"KOVA_BUILD_COMMIT": "b" * 40, "KOVA_PAYLOAD_TAG": "v9.9.9",
                  "GITHUB_SHA": "b" * 40, "GITHUB_REF_NAME": "workflow-branch", "BUILD_NUMBER": "999"}
     env = identity_environment(request, "bundled", inherited)
-    assert json.loads(env["_HERMES_CHANNEL_REQUEST_JSON"]) == admitted
-    assert env["HERMES_PAYLOAD_VERSION"] == admitted["version"]
+    assert json.loads(env["_KOVA_CHANNEL_REQUEST_JSON"]) == admitted
+    assert env["KOVA_PAYLOAD_VERSION"] == admitted["version"]
     assert env["GITHUB_SHA"] == commit
-    assert not {"HERMES_BUILD_COMMIT", "HERMES_PAYLOAD_TAG", "GITHUB_REF_NAME", "BUILD_NUMBER"} & env.keys()
-    assert inherited["HERMES_BUILD_COMMIT"] == "b" * 40
+    assert not {"KOVA_BUILD_COMMIT", "KOVA_PAYLOAD_TAG", "GITHUB_REF_NAME", "BUILD_NUMBER"} & env.keys()
+    assert inherited["KOVA_BUILD_COMMIT"] == "b" * 40
     changed = request.data()
     changed["channel_request"]["bundleEnv"] = changed["bundle_env"] = {}
     assert BuildRequest.from_data(changed).identity_digest() != request.identity_digest()
@@ -110,7 +110,7 @@ def test_channel_environment_and_stamp_bind_the_request_not_ambient_oneoff_ident
     with pytest.raises(ValueError, match="identity changed"):
         prepared.validate()
     monkeypatch.setattr(write_install_stamp, "_REPO_ROOT", source)
-    monkeypatch.setenv("HERMES_DESKTOP_VARIANT", "bundled")
+    monkeypatch.setenv("KOVA_DESKTOP_VARIANT", "bundled")
     # Python receives the request explicitly, not a new runtime setting.
     stamp = write_install_stamp.build_stamp(update_mechanism="electron-updater", channel_request=admitted)
     assert stamp["source"] == "channel-build"

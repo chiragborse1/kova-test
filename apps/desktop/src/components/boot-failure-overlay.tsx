@@ -294,7 +294,7 @@ export function BootFailureOverlay() {
   }
 
   // Clear this gateway's stale auth first, then re-establish it through the
-  // connection's owning login flow. Hermes Cloud must reuse its portal session
+  // connection's owning login flow. Kova Cloud must reuse its portal session
   // and per-agent cascade; generic remote gateways use native/embedded OAuth.
   // Reload after success so boot mints a fresh ticket against the new session.
   // The cloud ladder is shared with Settings (reestablishCloudAgentSession) so
@@ -451,7 +451,7 @@ export function BootFailureOverlay() {
       {
         key: 'portal',
         label: copy.cloudDownCheckPortal,
-        onClick: () => openExternalLink('https://portal.nousresearch.com'),
+        onClick: () => openExternalLink('https://portal.openkova.com'),
         icon: <ExternalLink />
       },
       localAction,
@@ -459,7 +459,7 @@ export function BootFailureOverlay() {
       {
         key: 'discord',
         label: copy.cloudDownDiscord,
-        onClick: () => openExternalLink('https://discord.gg/NousResearch'),
+        onClick: () => openExternalLink('https://discord.gg/OpenKova'),
         variant: 'ghost'
       },
       { ...settingsAction, variant: 'ghost' }

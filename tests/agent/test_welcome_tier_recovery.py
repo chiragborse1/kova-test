@@ -15,10 +15,10 @@ import pytest
 from agent.agent_runtime_helpers import extract_api_error_context
 from agent.error_classifier import FailoverReason, classify_api_error
 from agent.turn_retry_state import TurnRetryState
-from tests.hermes_cli.anon_portal import make_jwt
+from tests.kova_cli.anon_portal import make_jwt
 
-WELCOME = "https://welcome-api.nousresearch.com/v1"
-PAID = "https://inference-api.nousresearch.com/v1"
+WELCOME = "https://welcome-api.openkova.com/v1"
+PAID = "https://inference-api.openkova.com/v1"
 
 
 class MockAPIError(Exception):
@@ -110,7 +110,7 @@ class TestOneShotRecoveries:
         from agent.turn_recovery import _recover_welcome_tier
         calls = []
         agent = _agent(_try_refresh_nous_client_credentials=lambda **kw: calls.append(kw) or True)
-        body = {"status": 400, "message": "Anonymous accounts must use https://welcome-api.nousresearch.com for inference."}
+        body = {"status": 400, "message": "Anonymous accounts must use https://welcome-api.openkova.com for inference."}
         classified = _classify(_gateway_error(400, body), base_url=PAID)
         assert classified.error_context["welcome_route"] == "anon_on_paid_host"
         retry = TurnRetryState()
@@ -121,9 +121,9 @@ class TestOneShotRecoveries:
     def test_a_named_account_on_the_welcome_host_re_reads_the_route_once(self):
         from agent.turn_recovery import _recover_welcome_tier
         calls = []
-        agent = _agent(api_key=make_jwt(account_tier="free", client_id="hermes-cli"),
+        agent = _agent(api_key=make_jwt(account_tier="free", client_id="kova-cli"),
                        _try_refresh_nous_client_credentials=lambda **kw: calls.append(kw) or True)
-        body = {"status": 400, "message": "This endpoint serves anonymous Hermes Agent accounts only. Use https://inference-api.nousresearch.com with your API key or signed-in account."}
+        body = {"status": 400, "message": "This endpoint serves anonymous Kova Agent accounts only. Use https://inference-api.openkova.com with your API key or signed-in account."}
         classified = classify_api_error(_gateway_error(400, body), provider="nous", base_url=WELCOME, api_key=agent.api_key)
         assert classified.error_context["welcome_route"] == "named_on_welcome_host"
         retry = TurnRetryState()
@@ -134,7 +134,7 @@ class TestOneShotRecoveries:
     def test_a_wrong_host_refusal_whose_heal_fails_falls_through(self):
         from agent.turn_recovery import _recover_welcome_tier
         agent = _agent(_try_refresh_nous_client_credentials=lambda **kw: False)
-        body = {"status": 400, "message": "Anonymous accounts must use https://welcome-api.nousresearch.com for inference."}
+        body = {"status": 400, "message": "Anonymous accounts must use https://welcome-api.openkova.com for inference."}
         assert _recover_welcome_tier(agent, _classify(_gateway_error(400, body), base_url=PAID), TurnRetryState()) is False
 
 
@@ -182,7 +182,7 @@ class TestOutageCopy:
                                         FailoverReason.server_error])
     def test_a_spent_transport_failure_on_the_welcome_host_reads_as_one_sentence(self, reason):
         from agent.turn_recovery import _welcome_outage_copy
-        from hermes_cli.anon_auth import FREE_TIER_OUTAGE_COPY
+        from kova_cli.anon_auth import FREE_TIER_OUTAGE_COPY
         assert _welcome_outage_copy(WELCOME, SimpleNamespace(reason=reason), anonymous=True) == FREE_TIER_OUTAGE_COPY
 
     def test_other_routes_and_other_reasons_keep_the_technical_summary(self):
@@ -252,5 +252,5 @@ class TestTerminalResultsCarryTheFreeTierBlock:
         result = max_retries_exhausted_result(
             self._terminal_agent(), err, _classify(err, base_url=PAID), max_retries=3, is_rate_limited=False,
             error_msg="503", api_kwargs=None, api_messages=[], messages=[], conversation_history=[],
-            api_call_count=3, approx_tokens=10, provider="nous", base_url=PAID, model="hermes-4")
+            api_call_count=3, approx_tokens=10, provider="nous", base_url=PAID, model="kova-4")
         assert "free_tier" not in result

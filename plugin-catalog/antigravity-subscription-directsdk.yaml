@@ -1,8 +1,8 @@
 name: antigravity-subscription-directsdk
-repo: https://github.com/soyelmismo/hermes-antigravity-subscription
+repo: https://github.com/soyelmismo/kova-antigravity-subscription
 sha: 17734a4049d24f5f705b4451c57ae40cc3fb4d57
 description: >-
-  Run Hermes on an Antigravity / Gemini subscription via the official agy CLI (DirectSDK path).
+  Run Kova on an Antigravity / Gemini subscription via the official agy CLI (DirectSDK path).
   Streams tokens progressively, maps thinking effort, runs from a private temp directory, and aborts
   reported native tool steps. Disclosure — routes inference through Google's official agy CLI using
   your Antigravity/Gemini subscription; a symlink to your antigravity-oauth-token is placed in a
@@ -15,7 +15,7 @@ maintainer: soyelmismo
 tier: community
 category: models
 requires_hermes: ">=0.21.0"
-docs_url: https://github.com/soyelmismo/hermes-antigravity-subscription#readme
+docs_url: https://github.com/soyelmismo/kova-antigravity-subscription#readme
 version: "1.0.4"
 readme: true
 platforms:

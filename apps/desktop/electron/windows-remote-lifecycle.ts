@@ -4,7 +4,7 @@ import { assertBootstrapNotSuperseded, redactSecrets, SSH_ERROR } from './ssh-co
 
 const LOCKFILE_SCHEMA_VERSION = 2
 const PROTOCOL_VERSION = 1
-const READY_RE = /^HERMES_(?:BACKEND|DASHBOARD)_READY port=(\d+)/gm
+const READY_RE = /^KOVA_(?:BACKEND|DASHBOARD)_READY port=(\d+)/gm
 const READY_POLL_INTERVAL_MS = 750
 
 function psLiteral(value) {
@@ -19,8 +19,8 @@ function powerShellCommand(script) {
   return `powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand ${encodedPowerShell(script)}`
 }
 
-async function probeWindowsRemote(ssh, explicitHermesPath = '') {
-  const explicit = psLiteral(explicitHermesPath)
+async function probeWindowsRemote(ssh, explicitKovaPath = '') {
+  const explicit = psLiteral(explicitKovaPath)
 
   const script = [
     '$ErrorActionPreference="Stop"',
@@ -35,33 +35,33 @@ async function probeWindowsRemote(ssh, explicitHermesPath = '') {
     '}',
     `$explicit=${explicit}`,
     'if($explicit){Assert-NoReparse $explicit $false;$explicitPython=[IO.Path]::Combine([IO.Path]::GetDirectoryName($explicit), "python.exe");Assert-NoReparse $explicitPython $false}',
-    '$hermesHome=$env:HERMES_HOME',
-    'if(-not $hermesHome){$hermesHome=Join-Path $env:LOCALAPPDATA "hermes"}',
+    '$hermesHome=$env:KOVA_HOME',
+    'if(-not $hermesHome){$hermesHome=Join-Path $env:LOCALAPPDATA "kova"}',
     'Assert-NoReparse $hermesHome $true',
-    '$candidate=[IO.Path]::Combine($hermesHome, "hermes-agent\\venv\\Scripts\\hermes.exe")',
+    '$candidate=[IO.Path]::Combine($hermesHome, "kova-agent\\venv\\Scripts\\kova.exe")',
     '$candidatePython=[IO.Path]::Combine([IO.Path]::GetDirectoryName($candidate), "python.exe")',
     'Assert-NoReparse $candidate $true',
     'Assert-NoReparse $candidatePython $true',
-    '$profileCandidate=[IO.Path]::Combine($HOME, "hermes-agent\\.venv\\Scripts\\hermes.exe")',
+    '$profileCandidate=[IO.Path]::Combine($HOME, "kova-agent\\.venv\\Scripts\\kova.exe")',
     '$profileCandidatePython=[IO.Path]::Combine([IO.Path]::GetDirectoryName($profileCandidate), "python.exe")',
     'Assert-NoReparse $profileCandidate $true',
     'Assert-NoReparse $profileCandidatePython $true',
-    '$fallbackHomeCandidate=Join-Path $hermesHome "hermes-agent\\venv\\Scripts\\hermes.exe"',
-    '$fallbackProfileCandidate=Join-Path $HOME "hermes-agent\\.venv\\Scripts\\hermes.exe"',
+    '$fallbackHomeCandidate=Join-Path $hermesHome "kova-agent\\venv\\Scripts\\kova.exe"',
+    '$fallbackProfileCandidate=Join-Path $HOME "kova-agent\\.venv\\Scripts\\kova.exe"',
     '$candidates=@()',
     'if($explicit){$candidates+=$explicit}',
-    '$cmd=Get-Command hermes.exe -ErrorAction SilentlyContinue',
+    '$cmd=Get-Command kova.exe -ErrorAction SilentlyContinue',
     'if($cmd){Assert-NoReparse $cmd.Source $true;$cmdPython=[IO.Path]::Combine([IO.Path]::GetDirectoryName($cmd.Source), "python.exe");Assert-NoReparse $cmdPython $true;$candidates+=$cmd.Source}',
     '$candidates+=$fallbackHomeCandidate',
     '$candidates+=$fallbackProfileCandidate',
-    '$hermes=$null',
-    'foreach($candidate in $candidates){Assert-NoReparse $candidate $true;$candidatePython=[IO.Path]::Combine([IO.Path]::GetDirectoryName($candidate), "python.exe");Assert-NoReparse $candidatePython $true;try{$item=Get-Item -LiteralPath $candidate -Force -ErrorAction Stop;if(($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0 -and -not $item.PSIsContainer){$hermes=$item.FullName;break}}catch [Management.Automation.ItemNotFoundException]{continue}}',
-    'if(-not $hermes){throw "Hermes is not installed on the remote Windows host."}',
-    'Assert-NoReparse $hermes $false',
-    'if($explicit -and $hermes -ne $explicit){throw "The configured Hermes path is not an executable file."}',
-    '$python=[IO.Path]::Combine([IO.Path]::GetDirectoryName($hermes), "python.exe")',
+    '$kova=$null',
+    'foreach($candidate in $candidates){Assert-NoReparse $candidate $true;$candidatePython=[IO.Path]::Combine([IO.Path]::GetDirectoryName($candidate), "python.exe");Assert-NoReparse $candidatePython $true;try{$item=Get-Item -LiteralPath $candidate -Force -ErrorAction Stop;if(($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -eq 0 -and -not $item.PSIsContainer){$kova=$item.FullName;break}}catch [Management.Automation.ItemNotFoundException]{continue}}',
+    'if(-not $kova){throw "Kova is not installed on the remote Windows host."}',
+    'Assert-NoReparse $kova $false',
+    'if($explicit -and $kova -ne $explicit){throw "The configured Kova path is not an executable file."}',
+    '$python=[IO.Path]::Combine([IO.Path]::GetDirectoryName($kova), "python.exe")',
     'Assert-NoReparse $python $false',
-    '[ordered]@{os="Windows";arch=$env:PROCESSOR_ARCHITECTURE;hermesHome=$hermesHome;hermesPath=$hermes;python=$python}|ConvertTo-Json -Compress'
+    '[ordered]@{os="Windows";arch=$env:PROCESSOR_ARCHITECTURE;hermesHome=$hermesHome;hermesPath=$kova;python=$python}|ConvertTo-Json -Compress'
   ].join(';')
 
   return JSON.parse((await ssh.exec(powerShellCommand(script))).trim())
@@ -75,7 +75,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
-public static class HermesMarkerNoFollow {
+public static class KovaMarkerNoFollow {
   [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
   private static extern SafeFileHandle CreateFile(string name, uint access, uint share, IntPtr security, uint creation, uint flags, IntPtr template);
   public static FileStream OpenRead(string name) {
@@ -99,12 +99,12 @@ public static class HermesMarkerNoFollow {
     '$installRoot=$hermesHome',
     '$parent=Split-Path -Parent $hermesHome',
     'if((Split-Path -Leaf $parent) -ieq "profiles"){$installRoot=Split-Path -Parent $parent}',
-    '$marker=Join-Path $installRoot ".hermes-update-in-progress"',
+    '$marker=Join-Path $installRoot ".kova-update-in-progress"',
     '$result="UNCERTAIN"',
     '$stream=$null;$memory=$null',
     'try{',
     'Assert-NoReparse $marker $true',
-    'if(-not (Test-Path -LiteralPath $marker -PathType Leaf)){$result="CLEAR"}else{$stream=[HermesMarkerNoFollow]::OpenRead($marker)',
+    'if(-not (Test-Path -LiteralPath $marker -PathType Leaf)){$result="CLEAR"}else{$stream=[KovaMarkerNoFollow]::OpenRead($marker)',
     'Assert-NoReparse $marker $false',
     '$memory=New-Object IO.MemoryStream;$stream.CopyTo($memory);$bytes=$memory.ToArray()',
     'if($bytes.Length -le 256){',
@@ -146,7 +146,7 @@ async function assertWindowsRemoteInstallUpdateClear(ssh, hermesHome) {
         .split(/\r?\n/)
         .pop() || ''
   } catch (cause) {
-    const error: any = new Error('Could not prove that the remote Hermes install is clear for SSH startup.')
+    const error: any = new Error('Could not prove that the remote Kova install is clear for SSH startup.')
     error.kind = 'update-in-progress'
     error.cause = cause
     throw error
@@ -160,8 +160,8 @@ async function assertWindowsRemoteInstallUpdateClear(ssh, hermesHome) {
 
   const error: any = new Error(
     live
-      ? `Remote Hermes update process ${live[1]} is still running; SSH startup is paused.`
-      : 'The remote Hermes update marker is unreadable or malformed; refusing SSH startup.'
+      ? `Remote Kova update process ${live[1]} is still running; SSH startup is paused.`
+      : 'The remote Kova update marker is unreadable or malformed; refusing SSH startup.'
   )
 
   error.kind = 'update-in-progress'
@@ -175,7 +175,7 @@ const TRANSPORT_KINDS = new Set([
   SSH_ERROR.UNREACHABLE
 ])
 
-async function detectRemotePlatform(ssh, explicitHermesPath = '') {
+async function detectRemotePlatform(ssh, explicitKovaPath = '') {
   try {
     const output = (await ssh.exec('uname -s; uname -m')).trim().split('\n')
 
@@ -192,7 +192,7 @@ async function detectRemotePlatform(ssh, explicitHermesPath = '') {
   }
 
   try {
-    return await probeWindowsRemote(ssh, explicitHermesPath)
+    return await probeWindowsRemote(ssh, explicitKovaPath)
   } catch (cause: any) {
     if (TRANSPORT_KINDS.has(cause?.kind)) {
       throw cause
@@ -215,7 +215,7 @@ async function detectRemotePlatform(ssh, explicitHermesPath = '') {
 }
 
 function helperCommand(runtime, operation, args = []) {
-  const argv = [runtime.python, '-m', 'hermes_cli.windows_ssh_runtime', operation, ...args]
+  const argv = [runtime.python, '-m', 'kova_cli.windows_ssh_runtime', operation, ...args]
 
   const script = [
     '$ErrorActionPreference="Stop"',
@@ -245,8 +245,8 @@ async function helper(ssh, runtime, operation, args = [], stdinData?) {
 }
 
 function atomicWindowsSpawnCommand(runtime, reservation: any = {}) {
-  const argv = [runtime.python, '-m', 'hermes_cli.windows_ssh_runtime', 'spawn']
-  const helper = operation => [runtime.python, '-m', 'hermes_cli.windows_ssh_runtime', operation]
+  const argv = [runtime.python, '-m', 'kova_cli.windows_ssh_runtime', 'spawn']
+  const helper = operation => [runtime.python, '-m', 'kova_cli.windows_ssh_runtime', operation]
 
   const script = [
     '$ErrorActionPreference="Stop"',
@@ -254,7 +254,7 @@ function atomicWindowsSpawnCommand(runtime, reservation: any = {}) {
     '$installRoot=$hermesHome',
     '$parent=Split-Path -Parent $hermesHome',
     'if((Split-Path -Leaf $parent) -ieq "profiles"){$installRoot=Split-Path -Parent $parent}',
-    '$marker=Join-Path $installRoot ".hermes-update-in-progress"',
+    '$marker=Join-Path $installRoot ".kova-update-in-progress"',
     '$mutexPath=$marker+".mutex"',
     '$mutex=[IO.File]::Open($mutexPath,[IO.FileMode]::OpenOrCreate,[IO.FileAccess]::ReadWrite,[IO.FileShare]::ReadWrite)',
     'try{',
@@ -548,7 +548,7 @@ async function connectWindowsRemote(deps) {
     ssh,
     ownershipId,
     profile = '',
-    remoteHermesPath = '',
+    remoteKovaPath = '',
     reuseToken = '',
     signal,
     pickLocalPort,
@@ -561,12 +561,12 @@ async function connectWindowsRemote(deps) {
   } = deps
 
   assertBootstrapNotSuperseded(signal)
-  const runtime = await probeWindowsRemote(ssh, remoteHermesPath)
+  const runtime = await probeWindowsRemote(ssh, remoteKovaPath)
   await assertWindowsRemoteInstallUpdateClear(ssh, runtime.hermesHome)
   const inspection = await helper(ssh, runtime, 'inspect', [runtime.hermesPath])
 
   if (!inspection.supported) {
-    const error: any = new Error('Update Hermes on the remote Windows host before connecting with Desktop SSH.')
+    const error: any = new Error('Update Kova on the remote Windows host before connecting with Desktop SSH.')
     error.kind = 'update-required'
     throw error
   }
@@ -574,7 +574,7 @@ async function connectWindowsRemote(deps) {
   runtime.hermesPath = inspection.path
   const hermesVersion = inspection.version || ''
   rememberLog(`[ssh-lifecycle] remote platform Windows/${runtime.arch}`)
-  rememberLog(`[ssh-lifecycle] located hermes at ${runtime.hermesPath}`)
+  rememberLog(`[ssh-lifecycle] located kova at ${runtime.hermesPath}`)
 
   await assertWindowsRemoteInstallUpdateClear(ssh, runtime.hermesHome)
   const lock = await helper(ssh, runtime, 'read-lock', [ownershipId])
@@ -758,7 +758,7 @@ function buildWindowsInteractiveCommand(remoteCwd = '') {
     )
   }
 
-  script.push('$host.UI.RawUI.WindowTitle="Hermes SSH"', 'powershell.exe -NoLogo')
+  script.push('$host.UI.RawUI.WindowTitle="Kova SSH"', 'powershell.exe -NoLogo')
 
   return powerShellCommand(script.join(';'))
 }

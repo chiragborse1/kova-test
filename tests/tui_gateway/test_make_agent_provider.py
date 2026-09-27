@@ -54,10 +54,10 @@ def test_apply_model_switch_does_not_leak_process_env():
             self.provider = kw["new_provider"]
 
     env_keys = (
-        "HERMES_MODEL",
-        "HERMES_INFERENCE_MODEL",
-        "HERMES_TUI_PROVIDER",
-        "HERMES_INFERENCE_PROVIDER",
+        "KOVA_MODEL",
+        "KOVA_INFERENCE_MODEL",
+        "KOVA_TUI_PROVIDER",
+        "KOVA_INFERENCE_PROVIDER",
     )
 
     sess_b = {
@@ -68,15 +68,15 @@ def test_apply_model_switch_does_not_leak_process_env():
 
     persisted_composer_profiles = []
     with (
-        patch("hermes_cli.model_switch.parse_model_flags",
+        patch("kova_cli.model_switch.parse_model_flags",
               return_value=("glm-5.1", None, False, False, True)),
-        patch("hermes_cli.model_switch.resolve_persist_behavior",
+        patch("kova_cli.model_switch.resolve_persist_behavior",
               return_value=False),
-        patch("hermes_cli.model_switch.switch_model", return_value=_FakeResult()),
+        patch("kova_cli.model_switch.switch_model", return_value=_FakeResult()),
         patch("tui_gateway.server._emit"),
         patch("tui_gateway.server._restart_slash_worker"),
         patch("tui_gateway.server._session_info", return_value={}),
-        patch("hermes_cli.model_switch.persist_model_selection") as mock_persist,
+        patch("kova_cli.model_switch.persist_model_selection") as mock_persist,
         patch(
             "tui_gateway.server._persist_live_session_runtime",
             side_effect=lambda session: persisted_composer_profiles.append(
@@ -121,7 +121,7 @@ def test_resumed_row_cannot_pin_stale_wire_onto_per_model_provider():
         return {"provider": provider, "requested_provider": provider, "api_mode": fresh[0], "base_url": fresh[1],
                 "api_key": "k", "source": "config"}
 
-    with patch("hermes_cli.runtime_provider.resolve_runtime_provider", side_effect=fake_resolve):
+    with patch("kova_cli.runtime_provider.resolve_runtime_provider", side_effect=fake_resolve):
         for stale_url in ("https://opencode.ai/zen/go", "https://opencode.ai/zen/v1"):
             _, runtime = server._resolve_agent_model_runtime(
                 {"model": "deepseek-v4-flash-vision-exp", "provider": "opencode-go",

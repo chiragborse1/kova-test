@@ -4,7 +4,7 @@ import { createClientSessionState } from '@/lib/chat-runtime'
 import { setActiveSessionId, setSessions } from '@/store/session'
 import { $sessionTiles } from '@/store/session-states'
 import { $toursEnabled } from '@/store/tours'
-import type { SessionInfo } from '@/types/hermes'
+import type { SessionInfo } from '@/types/kova'
 
 import { handleServerRequest, previewSessionRoute } from './server-requests'
 import type { ServerRequestContext } from './server-requests'

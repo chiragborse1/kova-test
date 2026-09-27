@@ -26,18 +26,18 @@ const desktop = (over: Partial<PluginRecord>): PluginRecord => ({
 describe('mergePluginPackages', () => {
   it('shows a unified package as ONE row with both halves, never two rows', () => {
     const rows = mergePluginPackages(
-      [desktop({ id: 'media', name: 'Media Studio', packageName: 'hermes-media-studio' })],
-      [agent({ name: 'hermes-media-studio', has_desktop_half: true, description: 'Generate media.' })]
+      [desktop({ id: 'media', name: 'Media Studio', packageName: 'kova-media-studio' })],
+      [agent({ name: 'kova-media-studio', has_desktop_half: true, description: 'Generate media.' })]
     )
 
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({ kind: 'both', agentMissingInProfile: false, desktopMissing: false })
     expect(rows[0].desktop?.id).toBe('media')
-    expect(rows[0].agent?.name).toBe('hermes-media-studio')
+    expect(rows[0].agent?.name).toBe('kova-media-studio')
   })
 
   it('a desktop half whose agent half is absent from THIS profile offers the install-here affordance', () => {
-    const rows = mergePluginPackages([desktop({ id: 'media', packageName: 'hermes-media-studio' })], [])
+    const rows = mergePluginPackages([desktop({ id: 'media', packageName: 'kova-media-studio' })], [])
 
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({ kind: 'both', agent: null, agentMissingInProfile: true })
@@ -50,7 +50,7 @@ describe('mergePluginPackages', () => {
   })
 
   // A catalog install used to land the desktop half at
-  // desktop-plugins/<name>/plugin.js with no .hermes-package.json, and the row
+  // desktop-plugins/<name>/plugin.js with no .kova-package.json, and the row
   // sat on "copying…" beside a second, already-enabled desktop row. The join is
   // the marker, not the folder name: Electron stamps it on install and adopts
   // marker-less copies on reconcile (see desktop-plugins-root.ts), so the page
@@ -59,49 +59,49 @@ describe('mergePluginPackages', () => {
     const rows = mergePluginPackages(
       [
         desktop({
-          id: 'hermes-talk',
-          name: 'Hermes Talk',
-          description: 'GPT-Live subscription or explicit API voice, with Hermes task delegation.',
-          packageName: 'hermes-talk',
-          file: '/Users/me/.hermes/desktop-plugins/hermes-talk/plugin.js'
+          id: 'kova-talk',
+          name: 'Kova Talk',
+          description: 'GPT-Live subscription or explicit API voice, with Kova task delegation.',
+          packageName: 'kova-talk',
+          file: '/Users/me/.kova/desktop-plugins/kova-talk/plugin.js'
         })
       ],
-      [agent({ name: 'hermes-talk', has_desktop_half: true, version: '0.21.0' })]
+      [agent({ name: 'kova-talk', has_desktop_half: true, version: '0.21.0' })]
     )
 
     expect(rows).toHaveLength(1)
     expect(rows[0]).toMatchObject({
-      key: 'hermes-talk',
-      name: 'Hermes Talk',
+      key: 'kova-talk',
+      name: 'Kova Talk',
       kind: 'both',
       desktopMissing: false,
       agentMissingInProfile: false
     })
-    expect(rows[0].desktop?.id).toBe('hermes-talk')
-    expect(rows[0].agent?.name).toBe('hermes-talk')
+    expect(rows[0].desktop?.id).toBe('kova-talk')
+    expect(rows[0].agent?.name).toBe('kova-talk')
   })
 
   it('keeps an unmarked app-root copy its own row rather than guessing from the folder name', () => {
     const rows = mergePluginPackages(
       [
         desktop({
-          id: 'hermes-talk',
-          name: 'Hermes Talk',
-          file: '/Users/me/.hermes/desktop-plugins/hermes-talk/plugin.js'
+          id: 'kova-talk',
+          name: 'Kova Talk',
+          file: '/Users/me/.kova/desktop-plugins/kova-talk/plugin.js'
         })
       ],
-      [agent({ name: 'hermes-talk', has_desktop_half: true })]
+      [agent({ name: 'kova-talk', has_desktop_half: true })]
     )
 
     expect(rows.map(row => [row.key, row.kind])).toEqual([
-      ['hermes-talk', 'both'],
-      ['desktop:hermes-talk', 'desktop']
+      ['kova-talk', 'both'],
+      ['desktop:kova-talk', 'desktop']
     ])
   })
 
   it('leaves a same-named standalone desktop plugin alone when the agent package has no desktop half', () => {
     const rows = mergePluginPackages(
-      [desktop({ id: 'clock', name: 'Clock', file: '/Users/me/.hermes/desktop-plugins/clock/plugin.js' })],
+      [desktop({ id: 'clock', name: 'Clock', file: '/Users/me/.kova/desktop-plugins/clock/plugin.js' })],
       [agent({ name: 'clock' })]
     )
 

@@ -15,8 +15,8 @@
  *
  * Skipped when a remote display already forced software rendering (the
  * `--disable-gpu-compositing` path covers it), under WSLg (vGPU is healthy
- * there), or when `HERMES_DESKTOP_DISABLE_GPU=0` keeps the GPU on.
- * `HERMES_DESKTOP_NVIDIA_SWIFTSHADER` overrides detection both ways.
+ * there), or when `KOVA_DESKTOP_DISABLE_GPU=0` keeps the GPU on.
+ * `KOVA_DESKTOP_NVIDIA_SWIFTSHADER` overrides detection both ways.
  *
  * Pure + dependency-free so it can be unit-tested and called before app ready.
  */
@@ -61,7 +61,7 @@ export function decideNvidiaEglFallback(options: {
   const remoteDisplayReason = options.remoteDisplayReason ?? null
   const driverMajor = options.driverMajor
 
-  const nvidiaOverride = String(env.HERMES_DESKTOP_NVIDIA_SWIFTSHADER || '')
+  const nvidiaOverride = String(env.KOVA_DESKTOP_NVIDIA_SWIFTSHADER || '')
     .trim()
     .toLowerCase()
 
@@ -73,8 +73,8 @@ export function decideNvidiaEglFallback(options: {
     return { enable: false, reason: null }
   }
 
-  // A user who forced GPU back on (HERMES_DESKTOP_DISABLE_GPU=0) owns that call.
-  const gpuOverride = String(env.HERMES_DESKTOP_DISABLE_GPU || '')
+  // A user who forced GPU back on (KOVA_DESKTOP_DISABLE_GPU=0) owns that call.
+  const gpuOverride = String(env.KOVA_DESKTOP_DISABLE_GPU || '')
     .trim()
     .toLowerCase()
 
@@ -102,7 +102,7 @@ export function decideNvidiaEglFallback(options: {
 
   const reason = detected
     ? `NVIDIA driver ${driverMajor} (>= ${NVIDIA_BROKEN_EGL_MAJOR})`
-    : 'override (HERMES_DESKTOP_NVIDIA_SWIFTSHADER)'
+    : 'override (KOVA_DESKTOP_NVIDIA_SWIFTSHADER)'
 
   return { enable: true, reason }
 }

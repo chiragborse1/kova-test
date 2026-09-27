@@ -122,7 +122,7 @@ describe('runManagedUpdate', () => {
 
   it('maps a thrown managed-update-in-progress IPC envelope to the same busy state', async () => {
     const error: Error & { code?: string } = new Error(
-      "Error invoking remote method 'hermes:connections:update-managed': " +
+      "Error invoking remote method 'kova:connections:update-managed': " +
         'SSH connection "linux-ssh" is paused while its managed update is in progress.'
     )
 

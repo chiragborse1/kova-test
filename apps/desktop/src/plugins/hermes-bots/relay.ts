@@ -7,7 +7,7 @@
  * drives the two doors, startBotRelay / stopBotRelay.
  */
 
-import { host, LruCache } from '@hermes/plugin-sdk'
+import { host, LruCache } from '@kova/plugin-sdk'
 
 import { botHandle, clearBotAttention, noteBotAttention } from './data'
 import { ID } from './shared'
@@ -15,7 +15,7 @@ import type { ProfileRoute, RosterRow } from './types'
 
 // ── cross-connection bot relay ────────────────────────────────────────────
 // Connections ARE the peer set: every gateway this Desktop holds a socket
-// to (local, remote URL, SSH, Hermes Cloud, docker) must be able to find
+// to (local, remote URL, SSH, Kova Cloud, docker) must be able to find
 // every other connection's agents and message them via message_agent. The
 // Desktop is the relay — it owns every socket. Two loops:
 //  - roster loop: pushes each gateway the union roster of agents on the
@@ -52,7 +52,7 @@ const RELAY_DRAIN_INTERVAL_MS = 30_000
 //
 // These three are mirrors of backend values, so a change there must not
 // silently invalidate this constant: relay-deliver-budget.test.ts reads
-// hermes_cli/config_defaults.py and tools/bot_relay.py and fails if the
+// kova_cli/config_defaults.py and tools/bot_relay.py and fails if the
 // mirrors drift or the margin stops being positive.
 const RELAY_TURN_LOCK_WAIT_MS = 120_000 // bot_mode.turn_wait_seconds default
 const RELAY_TURN_ATTEMPT_MS = 600_000 // tools/bot_relay.py TURN_ATTEMPT_TIMEOUT_SECONDS
@@ -288,7 +288,7 @@ async function relayAgentsOn(
         handle: botHandle(profile?.name, profile),
         connection_id: connection.id,
         connection_label: label,
-        title: String(profile?.ui_meta?.['hermes-bots']?.title || profile?.display_name || ''),
+        title: String(profile?.ui_meta?.['kova-bots']?.title || profile?.display_name || ''),
         description: String(profile?.description || '')
       }))
       .filter(row => row.profile)

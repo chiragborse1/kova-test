@@ -1,4 +1,4 @@
-import { compactNumber } from '@hermes/shared'
+import { compactNumber } from '@kova/shared'
 import { type MouseEvent, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { LogTail } from '@/components/chat/log-tail'
@@ -9,8 +9,8 @@ import { SearchField } from '@/components/ui/search-field'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { ResponsiveTabs } from '@/components/ui/tab-dropdown'
 import { Tip } from '@/components/ui/tooltip'
-import { getActionStatus, getLogs, getStatus, getUsageAnalytics, restartGateway, updateHermes } from '@/hermes'
-import type { ActionStatusResponse, AnalyticsResponse, SessionInfo, StatusResponse } from '@/hermes'
+import { getActionStatus, getLogs, getStatus, getUsageAnalytics, restartGateway, updateHermes } from '@/kova'
+import type { ActionStatusResponse, AnalyticsResponse, SessionInfo, StatusResponse } from '@/kova'
 import { useI18n } from '@/i18n'
 import { sessionTitle } from '@/lib/chat-runtime'
 import {
@@ -295,7 +295,7 @@ export function CommandCenterView({
     }
   }, [loadMorePending, onLoadMoreSessions])
 
-  // Client-side substring filter over the fetched tail (matches `hermes logs --search`).
+  // Client-side substring filter over the fetched tail (matches `kova logs --search`).
   const visibleLogs = useMemo(() => {
     const needle = logQuery.trim().toLowerCase()
 

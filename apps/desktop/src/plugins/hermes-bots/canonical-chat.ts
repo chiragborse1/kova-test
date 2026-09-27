@@ -8,8 +8,8 @@
  * with.
  */
 
-import * as sdk from '@hermes/plugin-sdk'
-import { host } from '@hermes/plugin-sdk'
+import * as sdk from '@kova/plugin-sdk'
+import { host } from '@kova/plugin-sdk'
 
 import { $botMeta, botMetaKey, botOwner, persistBotMetaSnapshot } from './data'
 import { botsText } from './i18n'
@@ -23,7 +23,7 @@ import type { BotMeta, CanonicalSession, RosterRow } from './types'
 // session titled exactly "Bot Chat" on that bot's profile. The core
 // UNIQUE(title) index makes (profile, "Bot Chat") an exact registry, so every
 // open consults that registry directly — there is nothing to verify, re-pin,
-// grandfather, or recover. Stored-id pins (ui_meta['hermes-bots'].chat) were
+// grandfather, or recover. Stored-id pins (ui_meta['kova-bots'].chat) were
 // the previous identity and are REMOVED: every lost-chat incident traced to a
 // dangled or stolen pointer that later guards then welded in. Legacy
 // ui_meta.chat keys are simply ignored.
@@ -44,7 +44,7 @@ export const PROFILE_SESSION_LIST_LIMIT = 200
 
 /** The one canonical title. (profile, CANONICAL_CHAT_TITLE) IS the bot's
  *  forever-chat identity — see the header above. Exported for the roster
- *  click path's tile-staleness probe (hermes-agent#90102), which must
+ *  click path's tile-staleness probe (kova-agent#90102), which must
  *  recognize canonical-titled tabs without restating the literal. */
 export const CANONICAL_CHAT_TITLE = 'Bot Chat'
 
@@ -94,7 +94,7 @@ async function openStoredBotChat(
   { background = false }: OpenStoredBotChatOptions = {}
 ): Promise<string> {
   if (!storedId || typeof host.openSession !== 'function') {
-    throw new Error('This Hermes Desktop version cannot open stored sessions')
+    throw new Error('This Kova Desktop version cannot open stored sessions')
   }
 
   const { bot, name, route } = botOwner(owner)
@@ -110,7 +110,7 @@ async function openStoredBotChat(
       : 60_000
 
   // A profile backend that just woke up can lose the hydration-timeout race
-  // even though the session is fine (hermes-agent#89617) — clicking Retry
+  // even though the session is fine (kova-agent#89617) — clicking Retry
   // succeeds because the backend is warm by then. retryHydrationTimeoutOnce
   // asks the SDK layer to retry that same wait internally, BEFORE it arms the
   // core stranded-session overlay: a plugin-side retry can't do this because
@@ -120,7 +120,7 @@ async function openStoredBotChat(
   // The SDK's surface-health check passes whenever ANY non-empty transcript is
   // painted, including a stale snapshot the session-states cache kept from the
   // previous time this bot was open — which left the pane showing old messages
-  // until an app restart (hermes-agent#93604). A resume is cheap and
+  // until an app restart (kova-agent#93604). A resume is cheap and
   // idempotent, so on this explicit user navigation we always request one.
   await host.openSession(storedId, {
     ...(route
@@ -194,7 +194,7 @@ export function notifyBotOpenFailure(error: unknown, bot: RosterRow, step: BotOp
   const detail = errorDetail(error)
 
   if (botModeGatewayNeedsUpdate(error)) {
-    const connectionLabel = bot.connectionLabel || bot.connectionId || 'Hermes'
+    const connectionLabel = bot.connectionLabel || bot.connectionId || 'Kova'
     host.notify?.({
       kind: 'error',
       title: b.openNeedsUpdateTitle,
@@ -623,7 +623,7 @@ export async function prepareBotSource(bot: RosterRow) {
   if (route && typeof host.requestProfile !== 'function') {
     throw new Error(
       getPluginCtx()?.i18n?.t('bot.remoteConnectionsUnsupported') ??
-        'Update Hermes Desktop to chat with bots on other connections.'
+        'Update Kova Desktop to chat with bots on other connections.'
     )
   }
 
@@ -650,7 +650,7 @@ export async function ensureBotMetadata(bot: RosterRow): Promise<BotMeta> {
   )
 
   const row = (result?.profiles || []).find(profile => profile?.name === backendProfile)
-  const server = row?.ui_meta?.['hermes-bots']
+  const server = row?.ui_meta?.['kova-bots']
 
   if (server && typeof server === 'object') {
     const key = botMetaKey(bot)

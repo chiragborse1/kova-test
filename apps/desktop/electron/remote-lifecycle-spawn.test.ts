@@ -80,11 +80,11 @@ interface SpawnFixture {
 }
 
 async function spawnFixture(launcher: 'setsid' | 'nohup', owned: boolean): Promise<SpawnFixture> {
-  const root: string = await mkdtemp(path.join(os.tmpdir(), 'hermes-spawn-'))
+  const root: string = await mkdtemp(path.join(os.tmpdir(), 'kova-spawn-'))
   const bin: string = path.join(root, 'bin')
   const shell: string = (await exec('command -v sh', { shell: 'sh' })).stdout.trim()
   const localPath = (remotePath: string): string => remotePath.replace(/^~/, root)
-  const env: NodeJS.ProcessEnv = { HOME: root, HERMES_HOME: path.join(root, '.hermes'), PATH: bin, LANG: 'C.UTF-8' }
+  const env: NodeJS.ProcessEnv = { HOME: root, KOVA_HOME: path.join(root, '.kova'), PATH: bin, LANG: 'C.UTF-8' }
 
   const run = async (command: string): Promise<{ stdout: string; stderr: string }> =>
     exec(command, { shell, env, timeout: 10_000 })
@@ -93,9 +93,9 @@ async function spawnFixture(launcher: 'setsid' | 'nohup', owned: boolean): Promi
     exec: async (command: string): Promise<string> => (await run(command)).stdout
   }
 
-  const hermesPath: string = path.join(root, 'fake hermes')
-  const hermesHome: string = path.join(root, '.hermes')
-  const marker: string = path.join(hermesHome, '.hermes-update-in-progress')
+  const hermesPath: string = path.join(root, 'fake kova')
+  const hermesHome: string = path.join(root, '.kova')
+  const marker: string = path.join(hermesHome, '.kova-update-in-progress')
 
   const lock: SpawnLock = {
     schemaVersion: LOCKFILE_SCHEMA_VERSION,
@@ -143,7 +143,7 @@ async function spawnFixture(launcher: 'setsid' | 'nohup', owned: boolean): Promi
 import json,os,signal,time
 from pathlib import Path
 pid=os.getpid()
-mutex=Path(os.environ['HERMES_HOME'])/'.hermes-update-in-progress.mutex'
+mutex=Path(os.environ['KOVA_HOME'])/'.kova-update-in-progress.mutex'
 identity=mutex.stat()
 fds=[]
 for fd in range(3,256):

@@ -4,7 +4,7 @@
  * gateway socket's home. Tab focus moves without swapping the socket, so
  * keying off `host.state.profile` highlighted the wrong bot whenever a focused
  * tab showed another profile's chat (community report: Newsanalyst chat open,
- * Hermes highlighted).
+ * Kova highlighted).
  *
  * Newer desktops publish the complete pair as `host.state.focusedSessionOwner`.
  * Older ones expose only `focusedSessionProfile`, a legacy HALF-SHAPE with no
@@ -33,7 +33,7 @@ const { state } = vi.hoisted(() => ({
 
 const store = <T>(read: () => T): Store<T> => ({ get: read, listen: () => () => undefined })
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return {
@@ -59,7 +59,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 /** $focusedBotOwner binds to host.state at module load, so each topology needs
  *  a fresh graph. */

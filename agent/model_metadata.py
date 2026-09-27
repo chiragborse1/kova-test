@@ -15,13 +15,13 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
-import hermes_yaml as yaml
+import kova_yaml as yaml
 
 from agent import model_metadata_http
 
 from utils import atomic_json_write, atomic_yaml_write, base_url_host_matches, base_url_hostname
 
-from hermes_constants import OPENROUTER_MODELS_URL, openrouter_variant_base
+from kova_constants import OPENROUTER_MODELS_URL, openrouter_variant_base
 from agent.message_metadata import PERSISTENCE_ONLY_MESSAGE_FIELDS
 
 logger = logging.getLogger(__name__)
@@ -145,8 +145,8 @@ _LOCAL_PROBE_DISK_TTL_SECONDS = 300.0
 
 
 def _cache_file(name: str) -> Path:
-    from hermes_constants import get_hermes_home
-    return get_hermes_home() / "cache" / name
+    from kova_constants import get_kova_home
+    return get_kova_home() / "cache" / name
 
 
 def _load_json_dict(path: Path) -> Dict[str, Any]:
@@ -236,7 +236,7 @@ def _get_endpoint_metadata_cache_path() -> Path:
 
 def _endpoint_disk_cache_get(normalized: str) -> Optional[Dict[str, Dict[str, Any]]]:
     """Fresh cross-process memo of a remote ``/models`` probe (same TTL as in-memory): one-shot
-    runs (``hermes -q``, cron) start cold and Nous bypasses the persistent context cache, so
+    runs (``kova -q``, cron) start cold and Nous bypasses the persistent context cache, so
     without this every launch paid the live probe. Local endpoints are never memoized."""
     models = _ttl_memo_get(_get_endpoint_metadata_cache_path(), normalized, _ENDPOINT_MODEL_CACHE_TTL, ts_key="at", value_key="models")
     return models if isinstance(models, dict) else None
@@ -445,7 +445,7 @@ _URL_TO_PROVIDER: Dict[str, str] = {
     "api.stepfun.ai": "stepfun", "api.stepfun.com": "stepfun", "api.arcee.ai": "arcee", "api.minimax": "minimax",
     "dashscope.aliyuncs.com": "alibaba", "dashscope-intl.aliyuncs.com": "alibaba", "portal.qwen.ai": "qwen-oauth",
     "openrouter.ai": "openrouter", "generativelanguage.googleapis.com": "gemini",
-    "inference-api.nousresearch.com": "nous", "api.deepseek.com": "deepseek",
+    "inference-api.openkova.com": "nous", "api.deepseek.com": "deepseek",
     "api.githubcopilot.com": "copilot", ".githubcopilot.com": "copilot", "models.github.ai": "copilot",
     "models.inference.ai.azure.com": "copilot",
     "api.fireworks.ai": "fireworks", "opencode.ai": "opencode-go", "api.x.ai": "xai",
@@ -491,7 +491,7 @@ def _strip_openrouter_routing_variant(
 
     Only the id used for LOOKUP is rewritten. The suffixed id the caller holds
     stays on the wire, so the routing opt-in is preserved — the same rule
-    :func:`hermes_cli.models.validate_requested_model` applies. Sharing the
+    :func:`kova_cli.models.validate_requested_model` applies. Sharing the
     base's cache key is intentional: the window is identical, so a variant and
     its base must never disagree.
 
@@ -618,7 +618,7 @@ def _skip_persistent_context_cache(base_url: str, provider: str) -> bool:
 
 def _is_codex_route(provider: str, base_url: str, custom_providers: list | None) -> bool:
     """True when the request travels the Codex Responses wire regardless of host: the native
-    ``openai-codex`` provider (also behind a ``HERMES_CODEX_BASE_URL`` / ``model.base_url`` proxy)
+    ``openai-codex`` provider (also behind a ``KOVA_CODEX_BASE_URL`` / ``model.base_url`` proxy)
     or a custom entry declaring ``api_mode: codex_responses``. The transport, not the hostname,
     decides which window the model actually gets (#116191)."""
     if (provider or "").strip().lower() == "openai-codex":
@@ -626,7 +626,7 @@ def _is_codex_route(provider: str, base_url: str, custom_providers: list | None)
     if not base_url:
         return False
     with contextlib.suppress(Exception):  # config unreadable → not a known Codex route
-        from hermes_cli.config import get_custom_provider_api_mode
+        from kova_cli.config import get_custom_provider_api_mode
         return get_custom_provider_api_mode(base_url, custom_providers) == "codex_responses"
     return False
 
@@ -1096,8 +1096,8 @@ def _resolve_endpoint_context_length(model: str, base_url: str, api_key: str = "
 
 def _get_context_cache_path() -> Path:
     """Path to the persistent context length cache file."""
-    from hermes_constants import get_hermes_home
-    return get_hermes_home() / "context_length_cache.yaml"
+    from kova_constants import get_kova_home
+    return get_kova_home() / "context_length_cache.yaml"
 
 
 def _load_context_cache_document() -> dict:
@@ -1212,9 +1212,9 @@ def _invalidate_cached_context_length(model: str, base_url: str) -> None:
     _LOCAL_CTX_PROBE_CACHE.pop(("ollama_show", bare, stripped), None)
     # Same for a memoised Bedrock probe failure (keyed by region, which the caller does not know):
     # the entry being dropped is the reason to ask the probe again, not to wait out its TTL.
-    from hermes_constants import hermes_home_key
+    from kova_constants import kova_home_key
     for memo_key in list(_BEDROCK_PROBE_FAILURE_CACHE):  # snapshot: another thread may be memoising
-        if memo_key[:2] == (hermes_home_key(), stripped) and memo_key[2] in (model, bare):
+        if memo_key[:2] == (kova_home_key(), stripped) and memo_key[2] in (model, bare):
             _BEDROCK_PROBE_FAILURE_CACHE.pop(memo_key, None)
     # Every key shape get_cached_context_length consults.
     stale_keys = {key, f"{model}@{base_url}", f"{key}/"}
@@ -1818,7 +1818,7 @@ def _codex_catalog_probe_allowed(access_token: str, base_url: str = "") -> bool:
     base = (base_url or "").strip() or CODEX_MODELS_CATALOG_ENDPOINT
     if not base_url_host_matches(base, "chatgpt.com"):
         return True
-    from hermes_cli.auth_constants import _decode_jwt_claims
+    from kova_cli.auth_constants import _decode_jwt_claims
     return bool(_decode_jwt_claims(access_token))
 
 
@@ -1903,7 +1903,7 @@ def _resolve_codex_oauth_context_length_with_source(model: str, access_token: st
             return bumped, source
         return ctx, source
     # The Codex catalog only knows the base slug (no -900k, no vendor/).
-    # ``-900k`` variants are Hermes picker aliases — the Codex catalog only knows the base slug, so resolve
+    # ``-900k`` variants are Kova picker aliases — the Codex catalog only knows the base slug, so resolve
     # against the stripped id. Also drop any ``vendor/`` namespace (``openai/gpt-5.6-sol-900k``): the
     # main-agent path normalizes it away before reaching here, but display/auxiliary callers pass it through
     # (#92797 review).
@@ -2025,8 +2025,8 @@ def _resolve_bedrock_context_length(model: str, base_url: str) -> Optional[int]:
     if not region:
         with contextlib.suppress(Exception):
             region = resolve_bedrock_region()
-    from hermes_constants import hermes_home_key
-    memo_key = (hermes_home_key(), cache_key_url.rstrip('/'), model, region)
+    from kova_constants import kova_home_key
+    memo_key = (kova_home_key(), cache_key_url.rstrip('/'), model, region)
     if region and not _bedrock_probe_failed_recently(memo_key):
         probed = probe_bedrock_context_length(model, region)
         if probed:
@@ -2089,9 +2089,9 @@ def _resolve_moa_context_length(model: str, custom_providers: list | None) -> Op
     """Step 0a: MoA virtual provider — ``model`` is a preset name, so every probe would miss. Resolve
     the aggregator's real provider+model (references are advisory). None on any failure."""
     try:
-        from hermes_cli.config import get_compatible_custom_providers, load_config
-        from hermes_cli.moa_config import resolve_moa_preset
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from kova_cli.config import get_compatible_custom_providers, load_config
+        from kova_cli.moa_config import resolve_moa_preset
+        from kova_cli.runtime_provider import resolve_runtime_provider
         config = load_config()
         if custom_providers is None:
             custom_providers = get_compatible_custom_providers(config)
@@ -2128,7 +2128,7 @@ def _config_override_context_length(model: str, base_url: str, provider: str, cu
     # helper self-resolves it from config (#69807).
     if base_url and model:
         with contextlib.suppress(Exception):  # fall through to probing
-            from hermes_cli.config import get_custom_provider_context_length
+            from kova_cli.config import get_custom_provider_context_length
             cp_ctx = get_custom_provider_context_length(model=model, base_url=base_url, custom_providers=custom_providers)
             if cp_ctx:
                 return cp_ctx
@@ -2141,7 +2141,7 @@ def _resolve_provider_aware_context_length(model: str, base_url: str, api_key: s
     # models.dev, and the provider-enforced limit for the rest.
     if effective_provider in {"copilot", "copilot-acp", "github-copilot"}:
         with contextlib.suppress(Exception):  # fall through to models.dev
-            from hermes_cli.models import get_copilot_model_context
+            from kova_cli.models import get_copilot_model_context
             ctx = get_copilot_model_context(model, api_key=api_key)
             if ctx:
                 return ctx
@@ -2231,7 +2231,7 @@ def get_model_context_length(
     # a user who pinned the fully-suffixed id keeps winning, and BEFORE every
     # cache/catalog lookup below so the base's real window is found instead of
     # a generic family default. Mirrors the validation path's base/suffix split
-    # in hermes_cli.models.validate_requested_model.
+    # in kova_cli.models.validate_requested_model.
     model = _strip_openrouter_routing_variant(model, base_url=base_url, provider=provider)
     # Endpoint-scoped metadata goes AHEAD of the persistent cache so a value learned on a
     # multiplexed provider's other endpoint cannot override it.
@@ -2247,7 +2247,7 @@ def get_model_context_length(
         return context
     is_bedrock_context = _is_bedrock_context(base_url, provider)
     # A Codex Responses route is keyed on its transport, not its host: behind a proxy
-    # (HERMES_CODEX_BASE_URL, model.base_url, custom api_mode: codex_responses) the URL looks
+    # (KOVA_CODEX_BASE_URL, model.base_url, custom api_mode: codex_responses) the URL looks
     # generic while the window is still the Codex OAuth one (#116191).
     codex_route = _is_codex_route(provider, base_url, custom_providers)
     # 1. Persistent cache (LM Studio / Codex routes excluded — see _skip_persistent_context_cache).
@@ -2295,7 +2295,7 @@ def get_model_context_length(
                 logger.info("Rejecting OpenRouter metadata context=%s for %r (known 32K underreport); falling through to hardcoded defaults", or_ctx, model)
             else:
                 return or_ctx
-    # 7. Local server before hardcoded defaults — ``Hermes-3-Llama-3.1-70B`` matches ``llama``
+    # 7. Local server before hardcoded defaults — ``hermes-3-llama-3.1-70b`` matches ``llama``
     # (131072) even when vLLM runs at a lower ``--max-model-len``.
     local_ctx = _probe_local_context_length(model, base_url, api_key, provider) if base_url and is_local_endpoint(base_url) else None
     if local_ctx:

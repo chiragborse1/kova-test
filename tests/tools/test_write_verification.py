@@ -9,7 +9,7 @@ from tools.file_tools import write_file_tool
 
 @pytest.fixture
 def workdir(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path / ".kova"))
     return tmp_path
 
 class TestWriteVerification:

@@ -1,8 +1,8 @@
 /**
  * One-time Desktop notice for plugins that import pre-decomposition module paths (PR #102117).
  *
- * The Python side (hermes_cli/plugin_compat.py) statically scans the user's enabled external plugins on
- * every CLI/gateway/TUI start and writes HERMES_HOME/.plugin-compat-report.json when any plugin imports a
+ * The Python side (kova_cli/plugin_compat.py) statically scans the user's enabled external plugins on
+ * every CLI/gateway/TUI start and writes KOVA_HOME/.plugin-compat-report.json when any plugin imports a
  * path scheduled for removal on 2026-09-14 (deleting the file when none do). Desktop reads that file at
  * boot and shows ONE modal, then records the dismissal in userData so the same set of affected plugins is
  * never shown again. A *different* set (a new affected plugin, or the removal date passing so the plugins
@@ -130,12 +130,12 @@ export function pendingNotice(hermesHome: string, userData: string): PendingNoti
   const copy = report.in_effect
     ? {
         title: 'Some plugins were turned off',
-        message: `These plugins were built for an older Hermes and were turned off: ${nameList}. Hermes works normally without them.`,
+        message: `These plugins were built for an older Kova and were turned off: ${nameList}. Kova works normally without them.`,
         detail: `Look for an updated version of each plugin or ask its author.\n\n${list}`
       }
     : {
         title: 'Some plugins need an update',
-        message: `These plugins were built for an older Hermes and will stop working on ${report.removal_date}: ${nameList}.`,
+        message: `These plugins were built for an older Kova and will stop working on ${report.removal_date}: ${nameList}.`,
         detail: `Look for an updated version or ask the plugin's author before then.\n\n${list}`
       }
 

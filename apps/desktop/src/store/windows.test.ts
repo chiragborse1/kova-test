@@ -11,7 +11,7 @@ import {
 } from './windows'
 
 const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const initialKovaDesktop = desktopWindow.hermesDesktop
 
 const notifyError = vi.fn()
 
@@ -36,8 +36,8 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+  if (initialKovaDesktop) {
+    desktopWindow.hermesDesktop = initialKovaDesktop
   } else {
     delete desktopWindow.hermesDesktop
   }

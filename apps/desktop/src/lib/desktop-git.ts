@@ -1,13 +1,13 @@
 import type {
-  HermesGitBaseBranch,
-  HermesGitBranch,
-  HermesGitWorktree,
-  HermesRepoPullRequests,
-  HermesRepoStatus,
-  HermesReviewList,
-  HermesReviewShipInfo
+  KovaGitBaseBranch,
+  KovaGitBranch,
+  KovaGitWorktree,
+  KovaRepoPullRequests,
+  KovaRepoStatus,
+  KovaReviewList,
+  KovaReviewShipInfo
 } from '@/global'
-import { hermesApi } from '@/hermes'
+import { hermesApi } from '@/kova'
 
 import { desktopFsProfile, isDesktopFsRemoteMode } from './desktop-fs'
 
@@ -23,7 +23,7 @@ function desktopApi<T>(path: string, body?: Record<string, unknown>): Promise<T>
   const desktop = window.hermesDesktop
 
   if (!desktop) {
-    throw new Error('Hermes Desktop bridge is unavailable')
+    throw new Error('Kova Desktop bridge is unavailable')
   }
 
   return hermesApi<T>(
@@ -49,7 +49,7 @@ function gitPost<T>(route: string, body: Record<string, unknown>): Promise<T> {
 
 const remoteGit: GitBridge = {
   worktreeList: async repoPath =>
-    (await gitGet<{ worktrees: HermesGitWorktree[] }>('worktrees', { path: repoPath })).worktrees,
+    (await gitGet<{ worktrees: KovaGitWorktree[] }>('worktrees', { path: repoPath })).worktrees,
 
   worktreeAdd: (repoPath, options) => gitPost('worktree/add', { path: repoPath, ...options }),
 
@@ -59,19 +59,19 @@ const remoteGit: GitBridge = {
   branchSwitch: (repoPath, branch) => gitPost('branch/switch', { branch, path: repoPath }),
 
   branchList: async repoPath =>
-    (await gitGet<{ branches: HermesGitBranch[] }>('branches', { path: repoPath })).branches,
+    (await gitGet<{ branches: KovaGitBranch[] }>('branches', { path: repoPath })).branches,
 
   baseBranchList: async repoPath =>
-    (await gitGet<{ branches: HermesGitBaseBranch[] }>('base-branches', { path: repoPath })).branches,
+    (await gitGet<{ branches: KovaGitBaseBranch[] }>('base-branches', { path: repoPath })).branches,
 
-  repoStatus: repoPath => gitGet<HermesRepoStatus | null>('status', { path: repoPath }),
+  repoStatus: repoPath => gitGet<KovaRepoStatus | null>('status', { path: repoPath }),
 
   fileDiff: async (repoPath, filePath) =>
     (await gitGet<{ diff: string }>('file-diff', { file: filePath, path: repoPath })).diff,
 
   review: {
     list: (repoPath, scope, baseRef) =>
-      gitGet<HermesReviewList>('review/list', { base: baseRef, path: repoPath, scope }),
+      gitGet<KovaReviewList>('review/list', { base: baseRef, path: repoPath, scope }),
 
     diff: async (repoPath, filePath, scope, baseRef, staged) =>
       (await gitGet<{ diff: string }>('review/diff', { base: baseRef, file: filePath, path: repoPath, scope, staged }))
@@ -92,10 +92,10 @@ const remoteGit: GitBridge = {
 
     push: repoPath => gitPost('review/push', { path: repoPath }),
 
-    shipInfo: repoPath => gitGet<HermesReviewShipInfo>('review/ship-info', { path: repoPath }),
+    shipInfo: repoPath => gitGet<KovaReviewShipInfo>('review/ship-info', { path: repoPath }),
 
     prList: (repoPath, branches, numbers) =>
-      gitPost<HermesRepoPullRequests>('review/pr-list', { branches, numbers: numbers ?? [], path: repoPath }),
+      gitPost<KovaRepoPullRequests>('review/pr-list', { branches, numbers: numbers ?? [], path: repoPath }),
 
     createPr: repoPath => gitPost('review/create-pr', { path: repoPath })
   },

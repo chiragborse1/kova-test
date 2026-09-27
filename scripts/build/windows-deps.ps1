@@ -1,4 +1,4 @@
-# Build-only prerequisites; setup-hermes.ps1 uses the same installer functions.
+# Build-only prerequisites; setup-kova.ps1 uses the same installer functions.
 param(
     [Parameter(Mandatory = $true)][string]$StateRoot,
     [string]$OpenSSLRoot,
@@ -11,7 +11,7 @@ $ErrorActionPreference = 'Stop'
 $before = @{}
 Get-ChildItem Env: | ForEach-Object { $before[$_.Name] = $_.Value }
 . (Join-Path $PSScriptRoot '..\windows-build-deps.ps1')
-Initialize-HermesArm64BuildTools -StateRoot $StateRoot -OpenSSLRoot $OpenSSLRoot
+Initialize-KovaArm64BuildTools -StateRoot $StateRoot -OpenSSLRoot $OpenSSLRoot
 
 $after = @{}
 Get-ChildItem Env: | ForEach-Object { $after[$_.Name] = $_.Value }

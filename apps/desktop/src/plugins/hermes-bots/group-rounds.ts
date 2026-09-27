@@ -3,7 +3,7 @@
  * @mention parse, the round-robin driver, the #93129 member holds, the stop
  * path, and the user send that starts it all.
  */
-import { host } from '@hermes/plugin-sdk'
+import { host } from '@kova/plugin-sdk'
 
 import { botFriendlyNames, botHandle, botMentionTag, mentionNameForms } from './data'
 import { groupFailureReason, recordGroupActivity } from './group-activity'
@@ -44,7 +44,7 @@ import type { Attachment, GroupMember, GroupMessage } from './types'
 // actually speaks is its own turn's choice — replying with exactly "(pass)"
 // (or nothing, or failing) is silence. Hard caps end every turn; a round in
 // which everyone passed means the conversation settled. Each member runs its
-// turn in its OWN persistent per-group Hermes session and is fed only the
+// turn in its OWN persistent per-group Kova session and is fed only the
 // room messages that are NEW since it last saw the room.
 
 /** Deterministic @mention parse. Handles @name, @"two words" via display
@@ -59,7 +59,7 @@ export function parseGroupChatMentions(text: unknown, members: GroupMember[]) {
   for (const member of members) {
     const title = String(member.title || '').trim()
     // Normalize legacy "default" handles without aliasing device-qualified
-    // defaults to @hermes: that would retarget the primary tag by roster order.
+    // defaults to @kova: that would retarget the primary tag by roster order.
     const handle = String(botHandle(member.name, member) || '').trim()
 
     const forms = new Set([

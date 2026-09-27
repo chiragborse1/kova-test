@@ -14,24 +14,24 @@ import pytest
 
 
 @pytest.fixture
-def hermes_env(tmp_path, monkeypatch):
-    home = tmp_path / ".hermes"
+def kova_env(tmp_path, monkeypatch):
+    home = tmp_path / ".kova"
     home.mkdir()
     (home / "scripts").mkdir()
     (home / "cron").mkdir()
     (home / "scripts" / "watch.sh").write_text("#!/usr/bin/env bash\necho alert\n")
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("KOVA_HOME", str(home))
 
     import importlib
-    import hermes_constants
+    import kova_constants
     import cron.jobs
 
-    importlib.reload(hermes_constants)
+    importlib.reload(kova_constants)
     importlib.reload(cron.jobs)
     return home
 
 
-def test_stale_empty_save_preserves_concurrent_no_agent_create(hermes_env):
+def test_stale_empty_save_preserves_concurrent_no_agent_create(kova_env):
     """Gateway-style stale writer with [] must not wipe a concurrent create."""
     from cron.jobs import create_job, load_jobs, save_jobs
 
@@ -56,7 +56,7 @@ def test_stale_empty_save_preserves_concurrent_no_agent_create(hermes_env):
     assert remaining[0].get("script") == "watch.sh"
 
 
-def test_remove_other_job_preserves_concurrent_create(hermes_env):
+def test_remove_other_job_preserves_concurrent_create(kova_env):
     """``cron remove`` of job A must not drop job B created mid-flight."""
     from cron.jobs import create_job, load_jobs, save_jobs
 
@@ -87,7 +87,7 @@ def test_remove_other_job_preserves_concurrent_create(hermes_env):
     assert ids == {watchdog["id"]}
 
 
-def test_intentional_remove_still_deletes(hermes_env):
+def test_intentional_remove_still_deletes(kova_env):
     from cron.jobs import create_job, get_job, remove_job
 
     job = create_job(
@@ -103,7 +103,7 @@ def test_intentional_remove_still_deletes(hermes_env):
     assert get_job(job["id"]) is None
 
 
-def test_replace_flag_allows_wholesale_rewrite(hermes_env):
+def test_replace_flag_allows_wholesale_rewrite(kova_env):
     from cron.jobs import create_job, load_jobs, save_jobs
 
     create_job(
@@ -121,7 +121,7 @@ def test_replace_flag_allows_wholesale_rewrite(hermes_env):
 
 
 
-def test_sibling_write_inside_section_is_merged(hermes_env):
+def test_sibling_write_inside_section_is_merged(kova_env):
     """A write that lands on disk after the section's load changes the stamp,
     so the save must re-merge instead of trusting its stale snapshot."""
     import cron.jobs as jobs
@@ -148,7 +148,7 @@ def test_sibling_write_inside_section_is_merged(hermes_env):
     assert ids == {job["id"], "bbbbbbbbbbbb"}
 
 
-def test_merge_does_not_mutate_caller_list(hermes_env):
+def test_merge_does_not_mutate_caller_list(kova_env):
     """The shrink-merge returns a new list; the caller's payload object must
     not grow as a side effect of save_jobs()."""
     from cron.jobs import create_job, save_jobs
@@ -167,7 +167,7 @@ def test_merge_does_not_mutate_caller_list(hermes_env):
     assert my_payload == [], "caller's list was mutated in place by the merge"
 
 
-def test_corrupt_disk_file_does_not_break_save(hermes_env):
+def test_corrupt_disk_file_does_not_break_save(kova_env):
     """A corrupt jobs.json under a save must not recurse or crash: the
     non-repairing peek returns None and the save overwrites cleanly."""
     import cron.jobs as jobs
@@ -180,7 +180,7 @@ def test_corrupt_disk_file_does_not_break_save(hermes_env):
     assert [j["id"] for j in load_jobs()] == ["aaaaaaaaaaaa"]
 
 
-def test_nested_create_survives_outer_stale_save(hermes_env):
+def test_nested_create_survives_outer_stale_save(kova_env):
     """A save inside a critical section invalidates the section's stamp, so
     an outer caller's later save with a pre-create payload must re-merge and
     keep the nested create (stamp refresh here would deterministically

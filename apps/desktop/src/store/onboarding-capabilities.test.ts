@@ -44,7 +44,7 @@ afterEach(() => {
 
 it('reads only the pinned backend and degrades safely on old or unavailable discovery', async () => {
   vi.stubGlobal('window', { hermesDesktop: { api } })
-  const scope = { connectionId: 'remote-studio', profile: 'hermes-setup' }
+  const scope = { connectionId: 'remote-studio', profile: 'kova-setup' }
   api.mockResolvedValueOnce({ entries: [], diagnostics: [] })
   expect(await readOnboardingCapabilities(scope)).toBe('')
   expect(api).toHaveBeenCalledWith(

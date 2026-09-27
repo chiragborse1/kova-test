@@ -19,7 +19,7 @@ export function displayName(bot: Partial<RosterRow>, meta?: BotMeta | null): str
 
   // Only THIN rows from another source trade the friendly name for their
   // connection label — the active gateway's own default must keep reading
-  // "Hermes". Annotated active rows carry sourceScoped too, and keying this
+  // "Kova". Annotated active rows carry sourceScoped too, and keying this
   // off sourceScoped renamed the user's main agent to an IP-derived label
   // (community report, Aug 17 2026).
   if (
@@ -36,7 +36,7 @@ export function displayName(bot: Partial<RosterRow>, meta?: BotMeta | null): str
     return meta.title.trim()
   }
 
-  // Core-profile display name (profile.yaml, set via `hermes profile rename
+  // Core-profile display name (profile.yaml, set via `kova profile rename
   // default <name>` or the dashboard) — the CLI-level equivalent of a Bot
   // Mode title. Rides the profiles.list row; presentation-only.
   if (typeof bot?.display_name === 'string' && bot.display_name.trim()) {
@@ -44,7 +44,7 @@ export function displayName(bot: Partial<RosterRow>, meta?: BotMeta | null): str
   }
 
   // An untitled backend row claimed by an alias reads as the alias name —
-  // never generic "Hermes" or a hostname-derived label.
+  // never generic "Kova" or a hostname-derived label.
   if (alias) {
     const raw = alias.name.replace(/[-_]+/g, ' ').trim()
 
@@ -52,10 +52,10 @@ export function displayName(bot: Partial<RosterRow>, meta?: BotMeta | null): str
   }
 
   // The primary profile is literally named "default" — as a bot identity
-  // that reads like nobody bothered. Present it as Hermes (the agent it is)
+  // that reads like nobody bothered. Present it as Kova (the agent it is)
   // unless the user gives it a real title.
   if ((bot.name || '').trim().toLowerCase() === 'default' && !bot.title) {
-    return 'Hermes'
+    return 'Kova'
   }
 
   const raw = (bot.title || bot.name || '').replace(/[-_]+/g, ' ').trim()
@@ -71,7 +71,7 @@ export function slugify(value: string, max = 64) {
     .slice(0, max)
 }
 
-/** The profile id the backend accepts (`hermes_cli.profiles._PROFILE_ID_RE`
+/** The profile id the backend accepts (`kova_cli.profiles._PROFILE_ID_RE`
  *  is ASCII-only), derived from whatever the user typed as the bot's name.
  *  Accented Latin folds to its base letters (`Résumé` → `resume`); every other
  *  letter or digit becomes a deterministic `u<hex>` token per NFC code point —

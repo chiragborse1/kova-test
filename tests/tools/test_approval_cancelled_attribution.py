@@ -21,11 +21,11 @@ def gateway_session(monkeypatch):
     mod._gateway_queues.clear()
     mod._gateway_notify_cbs.clear()
     mod._session_approved.clear()
-    for k in ("HERMES_CRON_SESSION", "HERMES_YOLO_MODE", "HERMES_INTERACTIVE"):
+    for k in ("KOVA_CRON_SESSION", "KOVA_YOLO_MODE", "KOVA_INTERACTIVE"):
         monkeypatch.delenv(k, raising=False)
-    monkeypatch.setenv("HERMES_GATEWAY_SESSION", "1")
-    monkeypatch.setenv("HERMES_SESSION_KEY", SESSION_KEY)
-    # ``--yolo`` is frozen at import from HERMES_YOLO_MODE; a host shell running yolo must not
+    monkeypatch.setenv("KOVA_GATEWAY_SESSION", "1")
+    monkeypatch.setenv("KOVA_SESSION_KEY", SESSION_KEY)
+    # ``--yolo`` is frozen at import from KOVA_YOLO_MODE; a host shell running yolo must not
     # auto-approve the gate under test.
     monkeypatch.setattr(mod, "_YOLO_MODE_FROZEN", False)
     monkeypatch.setattr(approval_context, "_get_approval_config", lambda: {"mode": "manual", "timeout": 60})
@@ -132,9 +132,9 @@ def test_coalesced_follower_inherits_the_leaders_cancellation(gateway_session):
 @pytest.fixture
 def cli_session(monkeypatch):
     mod._session_approved.clear()
-    for k in ("HERMES_CRON_SESSION", "HERMES_YOLO_MODE", "HERMES_GATEWAY_SESSION", "HERMES_EXEC_ASK"):
+    for k in ("KOVA_CRON_SESSION", "KOVA_YOLO_MODE", "KOVA_GATEWAY_SESSION", "KOVA_EXEC_ASK"):
         monkeypatch.delenv(k, raising=False)
-    monkeypatch.setenv("HERMES_INTERACTIVE", "1")
+    monkeypatch.setenv("KOVA_INTERACTIVE", "1")
     monkeypatch.setattr(mod, "_YOLO_MODE_FROZEN", False)
     monkeypatch.setattr(approval_context, "_get_approval_config", lambda: {"mode": "manual", "timeout": 60})
     hooks = []

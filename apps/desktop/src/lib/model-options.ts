@@ -1,6 +1,6 @@
-import type { ModelCapabilities, ModelOptionProvider, ModelOptionsResult } from '@hermes/shared'
+import type { ModelCapabilities, ModelOptionProvider, ModelOptionsResult } from '@kova/shared'
 
-import { getGlobalModelOptions, type HermesGateway } from '@/hermes'
+import { getGlobalModelOptions, type KovaGateway } from '@/kova'
 
 type CatalogProviderIdentity = Pick<ModelOptionProvider, 'aliases' | 'name' | 'slug'>
 
@@ -38,7 +38,7 @@ export function currentModelCapabilities(
 
 /** The single, deliberate exception to the sticky-pick rule above: the virtual
  *  `moa` provider. Its catalog row vanishes entirely once no MoA preset is
- *  enabled (`hermes_cli/inventory.py` filters it out of explicit-only
+ *  enabled (`kova_cli/inventory.py` filters it out of explicit-only
  *  catalogs), so a persisted manual pick pointing at it leaves the composer
  *  pill reading `Model · moa: default` forever (#90244). For this one provider
  *  — and only with a populated catalog in hand — row absence is authoritative:
@@ -95,7 +95,7 @@ interface ModelOptionsRequest {
    *  surfaces). Chat pickers default to true so only explicitly configured
    *  providers are listed (#56974). */
   explicitOnly?: boolean
-  gateway?: HermesGateway
+  gateway?: KovaGateway
   /** Owner-routed RPC. When set, catalog reads hit this dispatcher instead of
    *  `gateway.request` — a tile's model menu must not query the ambient
    *  chrome socket (#93892). */

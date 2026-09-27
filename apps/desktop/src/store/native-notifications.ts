@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
 import { translateNow } from '@/i18n'
-import { type HermesOpenTarget, resolveHermesOpenPath } from '@/lib/hermes-open-target'
+import { type KovaOpenTarget, resolveKovaOpenPath } from '@/lib/kova-open-target'
 import { persistString, storedString } from '@/lib/storage'
 
 import { $gateway } from './gateway'
@@ -17,7 +17,7 @@ import { isSessionGone, isSessionGoneForBackgroundPolling, markSessionGone } fro
 import { $activeSessionId, ownerLookupSessionRows, sessionMatchesStoredId } from './session'
 import { storedSessionIdForRuntimeId } from './session-states'
 
-export type { HermesOpenTarget }
+export type { KovaOpenTarget }
 
 // Native OS notifications (Electron `Notification`), separate from the in-app
 // toast feed in `notifications.ts`. Each kind toggles independently.
@@ -42,7 +42,7 @@ export interface NativeNotificationPrefs {
   kinds: Record<NativeNotificationKind, boolean>
 }
 
-const STORAGE_KEY = 'hermes:native-notifications'
+const STORAGE_KEY = 'kova:native-notifications'
 
 const DEFAULT_PREFS: NativeNotificationPrefs = {
   enabled: true,
@@ -122,7 +122,7 @@ function throttled(key: string, now: number): boolean {
   return false
 }
 
-// "Backgrounded" = the user isn't on Hermes. `document.hidden` only flips when
+// "Backgrounded" = the user isn't on Kova. `document.hidden` only flips when
 // minimized/occluded; an alt-tabbed window is visible-but-unfocused, so we also
 // check `document.hasFocus()`.
 function isBackgrounded(): boolean {
@@ -209,7 +209,7 @@ export interface NativeNotificationInput {
   icon?: string
   /**
    * Resolved hash-router path to open on body click when there is no
-   * `sessionId` (plugins). Same vocabulary as `hermes://index-network/intent/1`.
+   * `sessionId` (plugins). Same vocabulary as `kova://index-network/intent/1`.
    */
   activate?: string
   /** Renderer-side handle so click/action can invoke registered callbacks. */
@@ -263,8 +263,8 @@ export function dispatchNativeNotification(input: NativeNotificationInput): bool
 export interface PluginNotificationAction {
   id: string
   label: string
-  /** Navigate here on button press (path or `hermes://index-network/intent/1`). */
-  activate?: HermesOpenTarget
+  /** Navigate here on button press (path or `kova://index-network/intent/1`). */
+  activate?: KovaOpenTarget
   /** Renderer callback — only `id` crosses IPC; this stays in-process. */
   onAction?: () => void
 }
@@ -277,10 +277,10 @@ export interface PluginNativeNotificationInput {
   icon?: string
   /**
    * Where body-click should land. Accepts a plugin deep link
-   * (`hermes://index-network/intent/1`), a hash path (`/index-network/intent/1`),
+   * (`kova://index-network/intent/1`), a hash path (`/index-network/intent/1`),
    * or `{ path, params }` — all resolve through the same helper as OS deep links.
    */
-  activate?: HermesOpenTarget
+  activate?: KovaOpenTarget
   /** Extra work on body click (runs in addition to `activate` navigation). */
   onActivate?: () => void
   actions?: PluginNotificationAction[]
@@ -338,14 +338,14 @@ export function clearPluginNotifyHandlers(notifyId?: string): void {
 /** Native OS notification on behalf of a plugin. One "Plugin notifications"
  *  preference gates all plugins; the plugin id keys throttling/dedupe so two
  *  plugins can't collapse each other's notifications. Fires only while the
- *  user is away from Hermes — the in-app toast (`host.notify`) covers the
+ *  user is away from Kova — the in-app toast (`host.notify`) covers the
  *  foreground case. */
 export function dispatchPluginNativeNotification(pluginId: string, input: PluginNativeNotificationInput): void {
-  const activate = resolveHermesOpenPath(input.activate) ?? undefined
+  const activate = resolveKovaOpenPath(input.activate) ?? undefined
   const notifyId = input.onActivate || input.actions?.some(a => a.onAction) ? mintNotifyId(pluginId) : undefined
 
   const actions: NativeNotificationAction[] | undefined = input.actions?.map(action => ({
-    activate: resolveHermesOpenPath(action.activate) ?? undefined,
+    activate: resolveKovaOpenPath(action.activate) ?? undefined,
     id: action.id,
     text: action.label
   }))

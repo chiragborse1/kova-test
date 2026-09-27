@@ -165,9 +165,9 @@ export interface Translations {
     startedInBackground: string;
     stopped: string;
     updateHermes: string;
-    updateHermesConfirmMessage?: string;
-    updateHermesConfirmNow?: string;
-    updateHermesConfirmTitle?: string;
+    updateKovaConfirmMessage?: string;
+    updateKovaConfirmNow?: string;
+    updateKovaConfirmTitle?: string;
     updatingHermes: string;
     waitingForOutput: string;
   };
@@ -629,7 +629,7 @@ export interface Translations {
     fontMono?: string;
   };
 
-  // ── Achievements plugin (plugins/hermes-achievements) ──
+  // ── Achievements plugin (plugins/kova-achievements) ──
   achievements: {
     hero: {
       kicker: string;

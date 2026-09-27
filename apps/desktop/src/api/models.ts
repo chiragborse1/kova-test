@@ -1,4 +1,4 @@
-import type { ModelOptionsResult } from '@hermes/shared'
+import type { ModelOptionsResult } from '@kova/shared'
 
 import type {
   AnalyticsResponse,
@@ -7,7 +7,7 @@ import type {
   ModelAssignmentRequest,
   ModelAssignmentResponse,
   ModelInfoResponse
-} from '@/types/hermes'
+} from '@/types/kova'
 
 import { capabilityScoped, hermesApi, type ProfileScope, profileScoped, STARTUP_REQUEST_TIMEOUT_MS } from './client'
 
@@ -69,7 +69,7 @@ export interface RecommendedDefaultModel {
 }
 
 // Recommended default model for a freshly-authenticated provider. Mirrors the
-// curation `hermes model` does — for Nous it honors the free/paid tier so a
+// curation `kova model` does — for Nous it honors the free/paid tier so a
 // free user gets a free model instead of a paid default.
 export function getRecommendedDefaultModel(provider: string, profile?: ProfileScope): Promise<RecommendedDefaultModel> {
   return window.hermesDesktop.api<RecommendedDefaultModel>({

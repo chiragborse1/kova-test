@@ -10,9 +10,9 @@ import { describe, expect, it } from 'vitest'
 // Without it, raising the backend turn timeout would silently reintroduce
 // #93911 — the client giving up before a valid typed settlement arrives.
 
-const relaySource = readFileSync(join(process.cwd(), 'src/plugins/hermes-bots/relay.ts'), 'utf8')
+const relaySource = readFileSync(join(process.cwd(), 'src/plugins/kova-bots/relay.ts'), 'utf8')
 const repoRoot = join(process.cwd(), '..', '..')
-const configDefaults = readFileSync(join(repoRoot, 'hermes_cli/config_defaults.py'), 'utf8')
+const configDefaults = readFileSync(join(repoRoot, 'kova_cli/config_defaults.py'), 'utf8')
 const relayPlumbing = readFileSync(join(repoRoot, 'tools/bot_relay.py'), 'utf8')
 
 function tsConstant(name: string): number {

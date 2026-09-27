@@ -2,15 +2,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type * as HermesApi from '@/hermes'
+import type * as KovaApi from '@/kova'
 import { $desktopOnboarding, type DesktopOnboardingState, type OnboardingContext } from '@/store/onboarding'
 
 import { FlowPanel } from './flow'
 
 // Only the catalog fetch is replaced; the model assignment keeps its real path
 // down to window.hermesDesktop.api so the test observes the wire body.
-vi.mock('@/hermes', async importOriginal => ({
-  ...(await importOriginal<typeof HermesApi>()),
+vi.mock('@/kova', async importOriginal => ({
+  ...(await importOriginal<typeof KovaApi>()),
   getGlobalModelOptions: async () => ({
     providers: [
       { free_tier: false, models: ['gpt-5.6-terra'], name: 'OpenAI OAuth (ChatGPT)', slug: 'openai' },

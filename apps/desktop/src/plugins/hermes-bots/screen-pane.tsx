@@ -12,8 +12,8 @@
  * attaches is bounded to a few rapid retries before the error state.
  */
 
-import { Button, Codicon, EmptyState, GlyphSpinner, host, Tip, useValue } from '@hermes/plugin-sdk'
-import type { RpcEvent } from '@hermes/plugin-sdk'
+import { Button, Codicon, EmptyState, GlyphSpinner, host, Tip, useValue } from '@kova/plugin-sdk'
+import type { RpcEvent } from '@kova/plugin-sdk'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { useBots } from './i18n'
@@ -395,7 +395,7 @@ export function BotScreenPane({ bot }: { bot: RosterRow }) {
   )
 
   if (state?.unavailable) {
-    // A managed (Hermes Cloud) backend cannot be self-updated: its release is the platform's
+    // A managed (Kova Cloud) backend cannot be self-updated: its release is the platform's
     // choice, so say Screen has not reached it yet instead of an update instruction (#120852).
     const description = isManagedBackend(bot) ? t.screen.portalUnavailableManaged : t.screen.portalUnavailable
 

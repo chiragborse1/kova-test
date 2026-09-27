@@ -40,7 +40,7 @@ interface EditorState {
   label: string
   host: string
   keyPath: string
-  remoteHermesPath: string
+  remoteKovaPath: string
   // ssh remote profile, hydrated on edit so the duplicate key matches the
   // main-process one (user@host:port + profile); the editor doesn't expose it.
   remoteProfile: string
@@ -64,7 +64,7 @@ function editorFromConnection(conn: DesktopRegistryConnection): EditorState {
     // would silently resurrect the old values.
     host: conn.host ? `${conn.user ? `${conn.user}@` : ''}${conn.host}${conn.port ? `:${conn.port}` : ''}` : '',
     keyPath: conn.keyPath || '',
-    remoteHermesPath: conn.remoteHermesPath || '',
+    remoteKovaPath: conn.remoteKovaPath || '',
     remoteProfile: conn.remoteProfile || '',
     headers: (conn.headerNames || []).map(name => ({ name, stored: true, value: '' }))
   }
@@ -77,7 +77,7 @@ function emptyEditor(kind: DesktopConnectionKind): EditorState {
     label: '',
     host: '',
     keyPath: '',
-    remoteHermesPath: '',
+    remoteKovaPath: '',
     remoteProfile: '',
     headers: []
   }
@@ -211,7 +211,7 @@ function scrollableAncestor(element: HTMLElement): HTMLElement | null {
 
 /**
  * The connections registry section of Settings → Gateways: manage the named
- * agent sources (local runtime + any number of remote gateways / Hermes Cloud
+ * agent sources (local runtime + any number of remote gateways / Kova Cloud
  * instances / SSH hosts). Storage-level management — the active/primary
  * switchover UX is the connection-mode controls above this section.
  */
@@ -373,7 +373,7 @@ export function ConnectionsRegistrySection() {
           // of truth — never send separate user/port (see editorFromConnection).
           payload.host = editor.host
           payload.keyPath = editor.keyPath || undefined
-          payload.remoteHermesPath = editor.remoteHermesPath.trim()
+          payload.remoteKovaPath = editor.remoteKovaPath.trim()
         }
 
         const result = await bridge.save(payload)
@@ -500,7 +500,7 @@ export function ConnectionsRegistrySection() {
     [bridge, s.testFailed, s.testOk]
   )
 
-  // Fan out `hermes update` to every eligible source; per-connection results
+  // Fan out `kova update` to every eligible source; per-connection results
   // land as individual toasts so one dead box doesn't hide the others.
   const updateAll = useCallback(async () => {
     if (!bridge?.updateAll) {
@@ -846,13 +846,13 @@ export function ConnectionsRegistrySection() {
               <ListRow
                 action={
                   <Input
-                    onChange={e => setEditor({ ...editor, remoteHermesPath: e.target.value })}
-                    placeholder={t.settings.gateway.sshHermesPathPlaceholder}
-                    value={editor.remoteHermesPath}
+                    onChange={e => setEditor({ ...editor, remoteKovaPath: e.target.value })}
+                    placeholder={t.settings.gateway.sshKovaPathPlaceholder}
+                    value={editor.remoteKovaPath}
                   />
                 }
-                description={t.settings.gateway.sshHermesPathDesc}
-                title={t.settings.gateway.sshHermesPathTitle}
+                description={t.settings.gateway.sshKovaPathDesc}
+                title={t.settings.gateway.sshKovaPathTitle}
               />
             </>
           )}

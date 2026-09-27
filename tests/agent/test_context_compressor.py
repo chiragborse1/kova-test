@@ -19,7 +19,7 @@ from agent.context_compressor import (
     _is_summary_access_or_quota_error,
     _truncate_tool_call_args_json,
 )
-from hermes_state import SessionDB
+from kova_state import SessionDB
 
 
 class StubProviderError(Exception):
@@ -225,7 +225,7 @@ class TestSummarizeToolResultClarify:
             # gateway/run.py timeout + delivery-failure paths
             "[user did not respond within 15m]",
             "[clarify prompt could not be delivered]",
-            # hermes_cli/oneshot.py no-user callback
+            # kova_cli/oneshot.py no-user callback
             "[oneshot mode: no user available. Pick the best option from "
             "['a', 'b'] using your own judgment and continue.]",
         ],
@@ -255,7 +255,7 @@ class TestSummarizeToolResultClarify:
         """Producer→recognizer drift guard: run the REAL oneshot no-user
         callback and assert its output is filtered. If the producer's wording
         drifts away from _CLARIFY_NON_RESPONSE_PREFIXES, this fails."""
-        from hermes_cli.oneshot import _oneshot_clarify_callback
+        from kova_cli.oneshot import _oneshot_clarify_callback
 
         sentinels = (
             _oneshot_clarify_callback("Deploy when?", choices=["a", "b"]),
@@ -796,8 +796,8 @@ class TestAuthFailureAborts:
         # env var (#114405 / #78996) and must classify as permanent, not be retried.
         oauth_err = RuntimeError(
             "Provider 'minimax-oauth' is set in config.yaml but no credentials were found. "
-            "Run `hermes auth add minimax-oauth` to sign in, or switch to a different provider "
-            "with `hermes model`."
+            "Run `kova auth add minimax-oauth` to sign in, or switch to a different provider "
+            "with `kova model`."
         )
         assert _is_summary_access_or_quota_error(oauth_err) is True
 
@@ -845,7 +845,7 @@ class TestAuthFailureAborts:
         err = RuntimeError(
             "Provider 'opencode-zen' is set in config.yaml but no API key was "
             "found. Set the OPENCODE-ZEN_API_KEY environment variable, or switch "
-            "to a different provider with hermes model."
+            "to a different provider with kova model."
         )
         with patch(
             "agent.context_compressor.get_model_context_length", return_value=100000
@@ -1103,7 +1103,7 @@ class TestSustainedOverloadEscalation:
         restart the budget at zero, so a sustained outage never escalated (#123167;
         same contract as the durable fallback streak, #100185).
         """
-        from hermes_state import SessionDB
+        from kova_state import SessionDB
 
         db = SessionDB(db_path=tmp_path / "state.db")
         session_id = "OVERLOAD_FRESH_BIND"
@@ -2188,7 +2188,7 @@ class TestThresholdTokensCap:
     def test_default_config_uses_lower_effective_trigger(self, context_length):
         """Shipped defaults: the trigger is the LOWER of the ratio trigger and the absolute cap, so a
         1M window compacts at the cap while windows whose ratio trigger sits below it are untouched."""
-        from hermes_cli.config import DEFAULT_CONFIG
+        from kova_cli.config import DEFAULT_CONFIG
 
         default_pct = DEFAULT_CONFIG["compression"]["threshold"]
         default_cap = DEFAULT_CONFIG["compression"]["threshold_tokens"]
@@ -2248,7 +2248,7 @@ class TestThresholdTokensCap:
 
     def test_default_config_cap_survives_model_switch(self):
         """The shipped cap remains effective when the active model changes."""
-        from hermes_cli.config import DEFAULT_CONFIG
+        from kova_cli.config import DEFAULT_CONFIG
 
         with patch("agent.context_compressor.get_model_context_length", return_value=1_000_000):
             comp = ContextCompressor(
@@ -2318,7 +2318,7 @@ class TestTruncateToolCallArgsJson:
             )
         huge_content = "# Shopping Browser Setup Notes\n\n## Overview\n" + "x " * 400
         args_payload = _json.dumps({
-            "path": "~/.hermes/skills/shopping/browser-setup-notes.md",
+            "path": "~/.kova/skills/shopping/browser-setup-notes.md",
             "content": huge_content,
         })
         assert len(args_payload) > 500  # triggers the Pass-3 shrink
@@ -2337,7 +2337,7 @@ class TestTruncateToolCallArgsJson:
         shrunk = result[1]["tool_calls"][0]["function"]["arguments"]
         # Must parse — otherwise downstream provider returns 400
         parsed = _json.loads(shrunk)
-        assert parsed["path"] == "~/.hermes/skills/shopping/browser-setup-notes.md"
+        assert parsed["path"] == "~/.kova/skills/shopping/browser-setup-notes.md"
         assert parsed["content"].startswith(huge_content[:200])
         assert parsed["content"][200:].startswith(_COMPRESSION_MARKER_PREFIX)
 

@@ -33,7 +33,7 @@ const { clearBotAttentionMock, hostMock, noteBotAttentionMock, UnboundedCache } 
     pluginDecisions: {
       get: () => {
         try {
-          const raw = window.localStorage.getItem('hermes.desktop.pluginDecisions.v2')
+          const raw = window.localStorage.getItem('kova.desktop.pluginDecisions.v2')
 
           return raw ? (JSON.parse(raw) as Record<string, boolean>) : {}
         } catch {
@@ -56,14 +56,14 @@ const { clearBotAttentionMock, hostMock, noteBotAttentionMock, UnboundedCache } 
 }))
 
 // relay.ts imports ./shared, which holds the $pendingBotOpen atom.
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return { atom, host: hostMock, LruCache: UnboundedCache }
 })
 
 vi.mock('./data', () => ({
-  botHandle: (name: string) => (name === 'default' ? 'hermes' : name),
+  botHandle: (name: string) => (name === 'default' ? 'kova' : name),
   clearBotAttention: clearBotAttentionMock,
   noteBotAttention: noteBotAttentionMock
 }))
@@ -143,7 +143,7 @@ async function pushAndSettle(times = 1, event?: { connectionId?: string }) {
   await vi.advanceTimersByTimeAsync(RELAY_PUSH_DEBOUNCE_MS + 10)
 }
 
-const PLUGIN_DECISIONS_KEY = 'hermes.desktop.pluginDecisions.v2'
+const PLUGIN_DECISIONS_KEY = 'kova.desktop.pluginDecisions.v2'
 
 beforeEach(() => {
   vi.useFakeTimers()
@@ -342,7 +342,7 @@ describe('the 30s drain does not open a gateway socket with nothing to deliver (
   })
 
   it('does not dial when Bot Mode is off, even if an outbox event arrives', async () => {
-    window.localStorage.setItem(PLUGIN_DECISIONS_KEY, JSON.stringify({ 'hermes-bots': false }))
+    window.localStorage.setItem(PLUGIN_DECISIONS_KEY, JSON.stringify({ 'kova-bots': false }))
 
     const calls = respondWith(() => ({ envelopes: [{ id: 'env-1', target_connection: 'b' }] }))
     const { startBotRelay, stopBotRelay } = await loadRelay()
@@ -474,7 +474,7 @@ describe('the roster loop pushes the OTHER connections’ agents', () => {
     ])
     // The primary profile is published by its callable alias, never "default".
     expect(syncs[1].params.agents).toEqual([
-      expect.objectContaining({ connection_id: 'a', handle: 'hermes', profile: 'default' })
+      expect.objectContaining({ connection_id: 'a', handle: 'kova', profile: 'default' })
     ])
 
     stopBotRelay()
@@ -871,7 +871,7 @@ describe('the roster loop forgets a machine that left', () => {
       }
 
       if (call.method === 'bot_relay.roster.sync' && clearFails && !(call.params.agents as unknown[]).length) {
-        throw new Error('Hermes gateway is not connected')
+        throw new Error('Kova gateway is not connected')
       }
 
       return {}

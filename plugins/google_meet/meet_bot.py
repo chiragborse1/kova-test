@@ -1,10 +1,10 @@
 """Headless Google Meet bot — Playwright + live-caption scraping.
 
-Standalone subprocess spawned by ``process_manager.py``; configured via ``HERMES_MEET_*`` env,
-status + transcript written under ``$HERMES_MEET_OUT_DIR`` (filesystem is the only IPC).
+Standalone subprocess spawned by ``process_manager.py``; configured via ``KOVA_MEET_*`` env,
+status + transcript written under ``$KOVA_MEET_OUT_DIR`` (filesystem is the only IPC).
 No WebRTC audio parsing: Meet's live captions are watched via a MutationObserver — lossy and
 English-biased, but deterministic (no STT billing) and stable thanks to the ARIA role.
-Debug: ``HERMES_MEET_URL=... HERMES_MEET_OUT_DIR=./meet-out HERMES_MEET_HEADED=1 \\
+Debug: ``KOVA_MEET_URL=... KOVA_MEET_OUT_DIR=./meet-out KOVA_MEET_HEADED=1 \\
     python -m plugins.google_meet.meet_bot``
 """
 
@@ -22,7 +22,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Optional
 
-from hermes_cli.browser_runtime import chromium_executable
+from kova_cli.browser_runtime import chromium_executable
 from utils import atomic_json_write
 
 # Short three-segment code, a lookup URL, or /new. Anything else is rejected.
@@ -228,7 +228,7 @@ def _start_pcm_pump(rt: dict, bridge_info: dict, pcm_path: Path, state: "_BotSta
     target = bridge_info.get("write_target")
     if platform_tag == "linux":
         cmd = ["paplay", "--raw", "--rate=24000", "--format=s16le", "--channels=1",
-               f"--device={target or 'hermes_meet_sink'}", "-"]
+               f"--device={target or 'kova_meet_sink'}", "-"]
         missing = "paplay not found — install pulseaudio-utils for realtime on Linux"
     elif platform_tag == "darwin":
         # User must have BlackHole as default input; ffmpeg targets it by audiotoolbox index.
@@ -305,7 +305,7 @@ def _mac_audio_device_index(device_name: str) -> str:
 def _setup_realtime(rt: dict, api_key: str, state: _BotState) -> None:
     """Provision the virtual audio bridge; on any failure fall back to transcribe mode."""
     if not api_key:
-        state.set(error="realtime mode requested but no API key in HERMES_MEET_REALTIME_KEY/OPENAI_API_KEY — falling back to transcribe")
+        state.set(error="realtime mode requested but no API key in KOVA_MEET_REALTIME_KEY/OPENAI_API_KEY — falling back to transcribe")
         rt["enabled"] = False
         return
     try:
@@ -329,27 +329,27 @@ def _teardown_realtime(rt: dict) -> None:
             _quiet(getattr(rt[key], method), **kw)
 
 
-_BotConfig = SimpleNamespace  # everything the bot reads from ``HERMES_MEET_*`` env vars
+_BotConfig = SimpleNamespace  # everything the bot reads from ``KOVA_MEET_*`` env vars
 
 
 def _config_from_env() -> _BotConfig:
     env = os.environ.get
-    out_raw = env("HERMES_MEET_OUT_DIR", "").strip()
+    out_raw = env("KOVA_MEET_OUT_DIR", "").strip()
     return _BotConfig(
-        url=env("HERMES_MEET_URL", "").strip(),
+        url=env("KOVA_MEET_URL", "").strip(),
         out_dir=Path(out_raw) if out_raw else None,
-        headed=env("HERMES_MEET_HEADED", "").lower() in {"1", "true", "yes"},
-        auth_state=env("HERMES_MEET_AUTH_STATE", "").strip(),
-        guest_name=env("HERMES_MEET_GUEST_NAME", "Hermes Agent"),
-        duration_s=_parse_duration(env("HERMES_MEET_DURATION", "")),
-        realtime=env("HERMES_MEET_MODE", "transcribe").strip().lower() == "realtime",
-        # HERMES_MEET_REALTIME_KEY is resolved by process_manager.start() via the parent's
+        headed=env("KOVA_MEET_HEADED", "").lower() in {"1", "true", "yes"},
+        auth_state=env("KOVA_MEET_AUTH_STATE", "").strip(),
+        guest_name=env("KOVA_MEET_GUEST_NAME", "Kova Agent"),
+        duration_s=_parse_duration(env("KOVA_MEET_DURATION", "")),
+        realtime=env("KOVA_MEET_MODE", "transcribe").strip().lower() == "realtime",
+        # KOVA_MEET_REALTIME_KEY is resolved by process_manager.start() via the parent's
         # profile secret scope; OPENAI_API_KEY only serves standalone `python -m` runs.
-        realtime_api_key=env("HERMES_MEET_REALTIME_KEY") or env("OPENAI_API_KEY", ""),
-        realtime_model=env("HERMES_MEET_REALTIME_MODEL", "gpt-realtime"),
-        realtime_voice=env("HERMES_MEET_REALTIME_VOICE", "alloy"),
-        realtime_instructions=env("HERMES_MEET_REALTIME_INSTRUCTIONS", ""),
-        lobby_timeout=float(env("HERMES_MEET_LOBBY_TIMEOUT", "300")))
+        realtime_api_key=env("KOVA_MEET_REALTIME_KEY") or env("OPENAI_API_KEY", ""),
+        realtime_model=env("KOVA_MEET_REALTIME_MODEL", "gpt-realtime"),
+        realtime_voice=env("KOVA_MEET_REALTIME_VOICE", "alloy"),
+        realtime_instructions=env("KOVA_MEET_REALTIME_INSTRUCTIONS", ""),
+        lobby_timeout=float(env("KOVA_MEET_LOBBY_TIMEOUT", "300")))
 
 
 def _join(page, cfg: _BotConfig, state: _BotState, timeout: float = 30.0) -> None:
@@ -437,11 +437,11 @@ _CONTEXT_ARGS = {
 def run_bot() -> int:
     cfg = _config_from_env()
     if not _is_safe_meet_url(cfg.url):
-        sys.stderr.write("google_meet bot: refusing to launch — HERMES_MEET_URL must be a "
+        sys.stderr.write("google_meet bot: refusing to launch — KOVA_MEET_URL must be a "
                          "meet.google.com URL. got: %r\n" % cfg.url)
         return 2
     if cfg.out_dir is None:
-        sys.stderr.write("google_meet bot: HERMES_MEET_OUT_DIR is required\n")
+        sys.stderr.write("google_meet bot: KOVA_MEET_OUT_DIR is required\n")
         return 2
     state = _BotState(out_dir=cfg.out_dir, meeting_id=_meeting_id_from_url(cfg.url), url=cfg.url)
     # SIGTERM sets a flag (not an exception) so the Playwright teardown below still runs
@@ -458,7 +458,7 @@ def run_bot() -> int:
     except ImportError as e:
         state.set(error=f"playwright not installed: {e}", exited=True)
         sys.stderr.write("google_meet bot: playwright is not installed. Run "
-                         "`hermes meet install`\n")
+                         "`kova meet install`\n")
         if rt["bridge"]:
             rt["bridge"].teardown()
         return 3

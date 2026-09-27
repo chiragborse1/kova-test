@@ -10,7 +10,7 @@ import {
   attachmentPreviewDataUrl,
   type DroppedFile,
   extractDroppedFiles,
-  HERMES_PATHS_MIME,
+  KOVA_PATHS_MIME,
   partitionDroppedFiles,
   resolveImageAttachmentPreview,
   useComposerActions
@@ -57,7 +57,7 @@ describe('partitionDroppedFiles', () => {
     // extractDroppedFiles emits a dropped directory as a path-only entry so it
     // stays a @folder: ref instead of hitting file.attach, which can't stage a
     // directory ("file not found on gateway and no data_url provided").
-    const folder = inAppRef('/Users/jeff/projects/hermes', { isDirectory: true })
+    const folder = inAppRef('/Users/jeff/projects/kova', { isDirectory: true })
 
     const { inAppRefs, osDrops } = partitionDroppedFiles([folder])
 
@@ -109,7 +109,7 @@ function stubTransfer(
   })
 
   return {
-    getData: (mime: string) => (mime === HERMES_PATHS_MIME ? internalRaw : mime === 'text/uri-list' ? uriList : ''),
+    getData: (mime: string) => (mime === KOVA_PATHS_MIME ? internalRaw : mime === 'text/uri-list' ? uriList : ''),
     files: {
       length: files.length,
       item: (i: number) => files[i] ?? null
@@ -133,7 +133,7 @@ describe('extractDroppedFiles', () => {
   }
 
   it('emits a dropped directory as a path-only entry with isDirectory (no File to upload)', () => {
-    const transfer = stubTransfer([{ path: '/Users/jeff/projects/hermes', isDirectory: true }]) as DataTransfer & {
+    const transfer = stubTransfer([{ path: '/Users/jeff/projects/kova', isDirectory: true }]) as DataTransfer & {
       _pathByFile: Map<File, string>
     }
 
@@ -143,7 +143,7 @@ describe('extractDroppedFiles', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]?.isDirectory).toBe(true)
-    expect(result[0]?.path).toBe('/Users/jeff/projects/hermes')
+    expect(result[0]?.path).toBe('/Users/jeff/projects/kova')
     // A directory carries no bytes — it must NOT ride the File/upload pipeline.
     expect(result[0]?.file).toBeUndefined()
     // And it partitions as an in-app ref (→ @folder:), never an OS upload drop.
@@ -344,7 +344,7 @@ describe('useComposerActions native image drops', () => {
     const transientPath =
       '/var/folders/x7/example/T/TemporaryItems/NSIRD_screencaptureui_4roSuW/Screen Shot 2026-08-11.png'
 
-    const durablePath = '/Users/test/Library/Application Support/Hermes/composer-images/composer_saved.png'
+    const durablePath = '/Users/test/Library/Application Support/Kova/composer-images/composer_saved.png'
     const previewUrl = 'data:image/png;base64,c2NyZWVuc2hvdA=='
 
     const screenshot = new File([new Uint8Array([1, 2, 3])], 'Screen Shot 2026-08-11.png', {
@@ -413,7 +413,7 @@ describe('useComposerActions generated paste title metadata', () => {
     vi.clearAllMocks()
   })
 
-  it('marks only a Hermes-generated large paste with a bounded title preview', async () => {
+  it('marks only a Kova-generated large paste with a bounded title preview', async () => {
     const savePastedText = vi.fn(async () => '/tmp/composer-pastes/pasted-content.txt')
     const add = vi.fn<(attachment: ComposerAttachment) => void>()
     Object.defineProperty(window, 'hermesDesktop', { configurable: true, value: { savePastedText } })
@@ -645,7 +645,7 @@ describe('attachImagePath thumbnail separation', () => {
       ...original,
       attachedSessionId: 'session-1',
       label: 'photo.png',
-      path: '/root/.hermes/attachments/photo.png',
+      path: '/root/.kova/attachments/photo.png',
       uploadState: undefined
     })
 
@@ -657,7 +657,7 @@ describe('attachImagePath thumbnail separation', () => {
 
     expect($composerAttachments.get()[0]).toMatchObject({
       attachedSessionId: 'session-1',
-      path: '/root/.hermes/attachments/photo.png',
+      path: '/root/.kova/attachments/photo.png',
       thumbnailUrl: expect.stringMatching(/^data:image\/png;base64,/)
     })
   })
@@ -804,7 +804,7 @@ describe('resolveImageAttachmentPreview', () => {
 
   it('uses an object URL for an in-hand File/Blob (OS Explorer drop) and skips IPC base64', async () => {
     const readFileDataUrl = vi.fn(async () => LOCAL_PREVIEW)
-    const createObjectURL = vi.fn(() => 'blob:hermes-preview-1')
+    const createObjectURL = vi.fn(() => 'blob:kova-preview-1')
 
     vi.stubGlobal('window', { hermesDesktop: { readFileDataUrl } })
     vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL: vi.fn() })
@@ -812,7 +812,7 @@ describe('resolveImageAttachmentPreview', () => {
     const file = new File([new Uint8Array([1, 2, 3, 4])], 'Lattice.png', { type: 'image/png' })
     const preview = await resolveImageAttachmentPreview('C:\\Users\\Administrator\\Desktop\\Lattice.png', file)
 
-    expect(preview).toBe('blob:hermes-preview-1')
+    expect(preview).toBe('blob:kova-preview-1')
     expect(createObjectURL).toHaveBeenCalledWith(file)
     // The freeze path: never base64-load the dropped image over IPC.
     expect(readFileDataUrl).not.toHaveBeenCalled()

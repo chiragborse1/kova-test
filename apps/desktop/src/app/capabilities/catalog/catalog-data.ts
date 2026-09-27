@@ -1,4 +1,4 @@
-import { skillCatalogInstallIdentifier } from '@hermes/shared'
+import { skillCatalogInstallIdentifier } from '@kova/shared'
 import { queryOptions, useQuery } from '@tanstack/react-query'
 
 import { queryClient } from '@/lib/query-client'
@@ -40,10 +40,10 @@ export interface CatalogEntry {
   search: string
 }
 
-const DOCS_ORIGIN = 'https://hermes-agent.nousresearch.com'
+const DOCS_ORIGIN = 'https://kova-agent.openkova.com'
 // The public domain redirects here without CORS headers on the redirect.
 // Use the docs' actual static host, not GitHub's API or repository endpoints.
-const CATALOG_BASE = 'https://nousresearch.github.io/hermes-agent/docs/api'
+const CATALOG_BASE = 'https://openkova.github.io/kova-agent/docs/api'
 const text = (value: unknown): string => (typeof value === 'string' ? value : '')
 const strings = (value: unknown): string[] => (Array.isArray(value) ? value.filter(v => typeof v === 'string') : [])
 

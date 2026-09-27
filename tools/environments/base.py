@@ -1,4 +1,4 @@
-"""Base class for all Hermes execution environment backends.
+"""Base class for all Kova execution environment backends.
 
 Unified spawn-per-call model: every command spawns a fresh ``bash -c`` process.
 A session snapshot (env vars, functions, aliases) is captured once at init and
@@ -19,7 +19,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Callable, Iterable
 
-from hermes_constants import get_hermes_home
+from kova_constants import get_kova_home
 from tools.interrupt import consume_yield, is_interrupted, is_thread_interrupted
 from tools.environments.base_output import (
     ProcessHandle, _finalize_wait_result, _new_output_collector, _start_drain_thread,
@@ -34,8 +34,8 @@ from utils import env_var_enabled
 logger = logging.getLogger(__name__)
 
 # Opt-in debug tracing for the interrupt/activity/poll machinery
-# (HERMES_DEBUG_INTERRUPT=1). Off by default to avoid flooding gateway logs.
-_DEBUG_INTERRUPT = env_var_enabled("HERMES_DEBUG_INTERRUPT")
+# (KOVA_DEBUG_INTERRUPT=1). Off by default to avoid flooding gateway logs.
+_DEBUG_INTERRUPT = env_var_enabled("KOVA_DEBUG_INTERRUPT")
 
 # Extra seconds the ``run_bounded_sync`` backstop waits past the inner ``_wait_for_process``
 # deadline: the inner loop returns partial output + 124; the outer bound only fires when that
@@ -186,9 +186,9 @@ def touch_activity_if_due(state: dict, label: str) -> None:
 
 def get_sandbox_dir() -> Path:
     """Host-side root for all sandbox storage (Docker workspaces, Singularity
-    overlays/SIF cache). ``TERMINAL_SANDBOX_DIR`` overrides ``{HERMES_HOME}/sandboxes``."""
+    overlays/SIF cache). ``TERMINAL_SANDBOX_DIR`` overrides ``{KOVA_HOME}/sandboxes``."""
     custom = os.getenv("TERMINAL_SANDBOX_DIR")
-    p = Path(custom) if custom else get_hermes_home() / "sandboxes"
+    p = Path(custom) if custom else get_kova_home() / "sandboxes"
     p.mkdir(parents=True, exist_ok=True)
     return p
 
@@ -223,7 +223,7 @@ def _file_mtime_key(host_path: str) -> tuple[float, int] | None:
 
 
 class BaseEnvironment(ABC):
-    """Common interface and unified execution flow for all Hermes backends. Subclasses
+    """Common interface and unified execution flow for all Kova backends. Subclasses
     implement ``_run_bash()`` and ``cleanup()``; the base provides ``execute()`` with
     snapshot sourcing, CWD tracking, interrupt handling and timeout enforcement."""
 
@@ -233,7 +233,7 @@ class BaseEnvironment(ABC):
     # "heredoc" (embedded in the command; no built-in backend, plugins only).
     _stdin_mode: str = "pipe"  # "pipe" | "payload" | "heredoc"
 
-    # True only when commands execute on the SAME host as the Hermes process
+    # True only when commands execute on the SAME host as the Kova process
     # (LocalEnvironment); controller-host facts then describe the execution target.
     is_local: bool = False
 
@@ -264,8 +264,8 @@ class BaseEnvironment(ABC):
 
         self._session_id = uuid.uuid4().hex[:12]
         temp_dir = self.get_temp_dir().rstrip("/") or "/"
-        self._snapshot_path = f"{temp_dir}/hermes-snap-{self._session_id}.sh"
-        self._cwd_file = f"{temp_dir}/hermes-cwd-{self._session_id}.txt"
+        self._snapshot_path = f"{temp_dir}/kova-snap-{self._session_id}.sh"
+        self._cwd_file = f"{temp_dir}/kova-cwd-{self._session_id}.txt"
         self._cwd_marker = _cwd_marker(self._session_id)
         self._snapshot_ready = False
         self._snapshot_passthrough_names: set[str] = set()
@@ -297,7 +297,7 @@ class BaseEnvironment(ABC):
         """
         import base64
         import binascii
-        marker = f"__HERMES_FETCH_{uuid.uuid4().hex[:12]}__"
+        marker = f"__KOVA_FETCH_{uuid.uuid4().hex[:12]}__"
         quoted = shlex.quote(remote_path)
         # ``[ -f ]`` follows symlinks, so a link to a denied host file is judged by the CALLER on
         # ``readlink -f`` output before any bytes move.
@@ -430,14 +430,14 @@ class BaseEnvironment(ABC):
         Redirections apply left to right, so the substitution inherits the heredoc as its stdin;
         the heredoc stays outside ``<( )`` because bash 3.2 mis-parses bodies inside it. ``|| :``
         keeps an inherited ``set -e`` from killing the reader on read's EOF status."""
-        delimiter = f"HERMES_STDIN_{uuid.uuid4().hex[:12]}"
+        delimiter = f"KOVA_STDIN_{uuid.uuid4().hex[:12]}"
         return (f"{{\n{command}\n}} << '{delimiter}' < <(IFS= read -r -d '' s || :; printf '%s' \"${{s%?}}\")\n"
                 f"{stdin_data}\n{delimiter}")
 
     def _staged_stdin_path(self) -> str:
         """Unique sandbox path for staging a payload-mode stdin file."""
         temp_dir = self.get_temp_dir().rstrip("/") or "/"
-        return f"{temp_dir}/.hermes-stdin-{uuid.uuid4().hex}"
+        return f"{temp_dir}/.kova-stdin-{uuid.uuid4().hex}"
 
     @staticmethod
     def _redirect_stdin_from_file(command: str, path: str) -> str:
@@ -539,12 +539,12 @@ class BaseEnvironment(ABC):
         # Join the stdin writer before reading its error list: a child that exits without
         # reading stdin can otherwise race ahead of a recorded encode failure. The timeout
         # is a pure safety net (write raises BrokenPipeError once the pipe closes).
-        stdin_thread = getattr(proc, "_hermes_stdin_thread", None)
+        stdin_thread = getattr(proc, "_kova_stdin_thread", None)
         if stdin_thread is not None:
             stdin_thread.join(timeout=5)
         rendered = output.render()
         result = self._finalize_wait_result(output, rendered, proc.returncode)
-        if stdin_errors := getattr(proc, "_hermes_stdin_errors", None):
+        if stdin_errors := getattr(proc, "_kova_stdin_errors", None):
             result["stdin_error"] = err = str(stdin_errors[0])
             result["output"] = rendered + f"\n[stdin write failed: {err}]"
         return result
@@ -568,7 +568,7 @@ class BaseEnvironment(ABC):
         self._extract_cwd_from_output(result)
 
     def _extract_cwd_from_output(self, result: dict):
-        """Parse the ``__HERMES_CWD_{session}__`` marker from ``result["output"]``, update
+        """Parse the ``__KOVA_CWD_{session}__`` marker from ``result["output"]``, update
         ``self.cwd`` and strip the marker line. ``result["cwd_observed"]``/``["cwd"]`` are set
         only when THIS command emitted a marker: a killed/timed-out command emits none and
         ``self.cwd`` keeps the previous value. The environment is shared across sessions, so
@@ -770,7 +770,7 @@ import subprocess  # noqa: F401,E402
 
 _PLUGIN_COMPAT_LAZY = {
     'sanitize_task_id_for_path': ('tools.environments.path_utils', 'sanitize_task_id_for_path'),
-    'windows_hide_flags': ('hermes_cli._subprocess_compat', 'windows_hide_flags'),
+    'windows_hide_flags': ('kova_cli._subprocess_compat', 'windows_hide_flags'),
 }
 
 
@@ -779,7 +779,7 @@ def __getattr__(name):  # PEP 562 — lazy so no import cycles
     if target is None:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
     import importlib
-    from hermes_cli.plugin_compat import warn_once
+    from kova_cli.plugin_compat import warn_once
     warn_once(__name__, name, *target)
     return getattr(importlib.import_module(target[0]), target[1])
 # ---- END PLUGIN-COMPAT ----

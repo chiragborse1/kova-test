@@ -7,7 +7,7 @@ author: SHL0MS
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
+  kova:
     tags: [Creative, Ideation, Brainstorming, Methods, Inspiration]
     category: creative
     requires_toolsets: []

@@ -26,8 +26,8 @@ function handoffFixture(remote: boolean): { root: string; deps: CheckoutStrategy
   fs.mkdirSync(scriptDirectory, { recursive: true })
   fs.writeFileSync(path.join(scriptDirectory, IS_WINDOWS ? 'windows.ps1' : 'posix.sh'), '')
   fs.writeFileSync(path.join(scriptDirectory, 'runtime.ps1'), '')
-  fs.mkdirSync(path.join(root, '.hermes', 'bin'), { recursive: true })
-  fs.writeFileSync(path.join(root, '.hermes', 'bin', 'hermes.exe'), '')
+  fs.mkdirSync(path.join(root, '.kova', 'bin'), { recursive: true })
+  fs.writeFileSync(path.join(root, '.kova', 'bin', 'kova.exe'), '')
 
   const status: SourceUpdate = { supported: true, branch: 'main', targetSha: 'a'.repeat(40), updateAvailable: true }
 
@@ -148,7 +148,7 @@ it('a failed hand-off spawn keeps the app alive and reports the failure in plain
       await createCheckoutStrategy(deps).apply()
 
     expect(result).toMatchObject({ ok: false, error: 'updater-spawn-failed' })
-    expect(result.message).toMatch(/Hermes keeps running/)
+    expect(result.message).toMatch(/Kova keeps running/)
     expect(result.message).toMatch(/Details: .*ENOENT/)
     expect(result.message?.indexOf('Details:')).toBeGreaterThan(0)
     expect(deps.quit).not.toHaveBeenCalled()

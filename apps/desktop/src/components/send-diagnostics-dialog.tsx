@@ -26,9 +26,9 @@ import { ExternalLink, Loader2Icon, Lock } from '@/lib/icons'
 import { $sendDiagnostics, confirmSendDiagnostics, dismissSendDiagnostics } from '@/store/send-diagnostics'
 
 const SUPPORT_LINKS = [
-  { key: 'github', url: 'https://github.com/NousResearch/hermes-agent/issues' },
-  { key: 'portal', url: 'https://portal.nousresearch.com/help' },
-  { key: 'discord', url: 'https://discord.gg/NousResearch' }
+  { key: 'github', url: 'https://github.com/kova-agent/issues' },
+  { key: 'portal', url: 'https://portal.openkova.com/help' },
+  { key: 'discord', url: 'https://discord.gg/OpenKova' }
 ] as const
 
 export function SendDiagnosticsHost() {

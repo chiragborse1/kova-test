@@ -209,10 +209,10 @@ describe('ConnectionsRegistrySection', () => {
 
     await screen.findByText('Homelab')
     fireEvent.click(screen.getByText('Add connection'))
-    fireEvent.click(screen.getByRole('button', { name: 'Hermes Cloud' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Kova Cloud' }))
     fireEvent.change(screen.getByPlaceholderText('Homelab'), { target: { value: 'Team cloud' } })
     fireEvent.change(screen.getByPlaceholderText('http://homelab.lan:9119'), {
-      target: { value: 'https://team.hermes.cloud' }
+      target: { value: 'https://team.kova.cloud' }
     })
 
     // Cloud never takes a pasted token: no token box, a sign-in button instead.
@@ -224,7 +224,7 @@ describe('ConnectionsRegistrySection', () => {
     // draft must sign in on the legacy shared portal jar, which is the jar the
     // saved cloud entry reads — never a private per-connection jar.
     await waitFor(() =>
-      expect(oauthLoginConnectionConfig).toHaveBeenCalledWith('https://team.hermes.cloud', {
+      expect(oauthLoginConnectionConfig).toHaveBeenCalledWith('https://team.kova.cloud', {
         connectionId: null,
         label: 'Team cloud',
         authMode: 'oauth',
@@ -239,12 +239,12 @@ describe('ConnectionsRegistrySection', () => {
       authMode: 'oauth',
       kind: 'cloud',
       label: 'Team cloud',
-      url: 'https://team.hermes.cloud'
+      url: 'https://team.kova.cloud'
     })
     expect(save.mock.calls[0][0].token).toBeUndefined()
   })
 
-  it('saves a custom remote Hermes path for SSH connections', async () => {
+  it('saves a custom remote Kova path for SSH connections', async () => {
     render(<ConnectionsRegistrySection />)
 
     await waitFor(() => expect(screen.getByText('Homelab')).toBeTruthy())
@@ -253,7 +253,7 @@ describe('ConnectionsRegistrySection', () => {
     fireEvent.change(screen.getByPlaceholderText('Homelab'), { target: { value: 'Build host' } })
     fireEvent.change(screen.getByPlaceholderText('user@host:22'), { target: { value: 'dev@build.test:2222' } })
     fireEvent.change(screen.getByPlaceholderText('auto-detect'), {
-      target: { value: '/opt/hermes/bin/hermes' }
+      target: { value: '/opt/kova/bin/kova' }
     })
     fireEvent.click(screen.getByText('Save connection').closest('button')!)
 
@@ -262,11 +262,11 @@ describe('ConnectionsRegistrySection', () => {
       host: 'dev@build.test:2222',
       kind: 'ssh',
       label: 'Build host',
-      remoteHermesPath: '/opt/hermes/bin/hermes'
+      remoteKovaPath: '/opt/kova/bin/kova'
     })
   })
 
-  it('clears a saved remote Hermes path back to auto-detect', async () => {
+  it('clears a saved remote Kova path back to auto-detect', async () => {
     const sshRegistry: DesktopConnectionsRegistry = {
       ...registry,
       connections: [
@@ -276,7 +276,7 @@ describe('ConnectionsRegistrySection', () => {
           id: 'build-host',
           kind: 'ssh',
           label: 'Build host',
-          remoteHermesPath: '/opt/hermes/bin/hermes',
+          remoteKovaPath: '/opt/kova/bin/kova',
           tokenPreview: null,
           tokenSet: false,
           user: 'dev'
@@ -290,12 +290,12 @@ describe('ConnectionsRegistrySection', () => {
     await screen.findByText('Build host')
     fireEvent.click(screen.getByRole('button', { name: 'Edit' }))
     const pathInput = screen.getByPlaceholderText('auto-detect') as HTMLInputElement
-    expect(pathInput.value).toBe('/opt/hermes/bin/hermes')
+    expect(pathInput.value).toBe('/opt/kova/bin/kova')
     fireEvent.change(pathInput, { target: { value: '   ' } })
     fireEvent.click(screen.getByText('Save connection').closest('button')!)
 
     await waitFor(() => expect(save).toHaveBeenCalledTimes(1))
-    expect(save.mock.calls[0][0]).toMatchObject({ id: 'build-host', remoteHermesPath: '' })
+    expect(save.mock.calls[0][0]).toMatchObject({ id: 'build-host', remoteKovaPath: '' })
   })
 
   it('disables Local on create while the managed entry exists', async () => {

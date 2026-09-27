@@ -17,12 +17,12 @@ beforeEach(() => {
 
   document.body.replaceChildren()
   // The host hangs off documentElement, so clearing body does not reach it.
-  document.querySelector('hermes-watch')?.remove()
+  document.querySelector('kova-watch')?.remove()
   delete (window as unknown as Record<string, unknown>).__hermesWatch
 })
 
 /** The overlay lives in a closed shadow root, so a test can only see the host. */
-const host = () => document.querySelector('hermes-watch')
+const host = () => document.querySelector('kova-watch')
 
 /** …except through the parts the engine parks on the window for its own reuse,
  *  which is the only way to inspect what the overlay actually drew. */
@@ -44,7 +44,7 @@ describe('watchInPage', () => {
     watchInPage(document, holder, 'aim')
     watchInPage(document, holder, 'strike')
 
-    expect(document.querySelectorAll('hermes-watch')).toHaveLength(1)
+    expect(document.querySelectorAll('kova-watch')).toHaveLength(1)
     expect(host()?.parentElement).toBe(document.documentElement)
   })
 
@@ -200,7 +200,7 @@ describe('watchInPage', () => {
 
     expect(drawn().host).not.toBe(first)
     // …and the old one goes with it, rather than stacking a second overlay.
-    expect(document.querySelectorAll('hermes-watch')).toHaveLength(1)
+    expect(document.querySelectorAll('kova-watch')).toHaveLength(1)
   })
 
   it('clear releases the target so the tracking loop can stop', () => {

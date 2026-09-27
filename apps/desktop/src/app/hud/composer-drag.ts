@@ -90,7 +90,7 @@ function armGrab(state: PressState, workspaceTransfer: boolean): void {
  * are moving, so a window that keeps up reports the same clientX every frame.
  *
  * The size is snapshotted at press and sent with every move, so main can pin it
- * (see hermes:hud:move-by — a transparent frameless window drifts wider on
+ * (see kova:hud:move-by — a transparent frameless window drifts wider on
  * Windows otherwise). Crossing a display can fire pointercancel; that must
  * not end the grab, or the bar sticks on the first monitor.
  */

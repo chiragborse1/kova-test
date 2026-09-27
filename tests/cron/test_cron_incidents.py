@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import cron.incidents as incidents
 import cron.jobs as cron_jobs
 import cron.scheduler as sched
-from hermes_time import now as _hermes_now
+from kova_time import now as _kova_now
 
 
 def _point_db(monkeypatch, tmp_path):
@@ -53,13 +53,13 @@ def _tick_failing(job, tmp_path, deliveries, error="boom unrelated"):
         return None
 
     with cron_jobs.use_cron_store(tmp_path), \
-         patch("cron.scheduler._hermes_home", tmp_path), \
+         patch("cron.scheduler._kova_home", tmp_path), \
          patch("cron.scheduler_delivery._resolve_origin", return_value=None), \
-         patch("hermes_cli.env_loader.load_hermes_dotenv"), \
-         patch("hermes_cli.env_loader.reset_secret_source_cache"), \
-         patch("hermes_state_registry.acquire", return_value=fake_db), \
+         patch("kova_cli.env_loader.load_kova_dotenv"), \
+         patch("kova_cli.env_loader.reset_secret_source_cache"), \
+         patch("kova_state_registry.acquire", return_value=fake_db), \
          patch("tools.mcp_tool_discovery.discover_mcp_tools", return_value=[]), \
-         patch("hermes_cli.runtime_provider.resolve_runtime_provider",
+         patch("kova_cli.runtime_provider.resolve_runtime_provider",
                return_value={
                    "api_key": "test-key",
                    "base_url": "https://example.invalid/v1",
@@ -123,11 +123,11 @@ def test_error_change_mints_new_incident(monkeypatch, tmp_path):
 
 
 def test_redaction_applied_to_incident_error(monkeypatch, tmp_path):
-    # agent.redact snapshots _REDACT_ENABLED from HERMES_REDACT_SECRETS at
+    # agent.redact snapshots _REDACT_ENABLED from KOVA_REDACT_SECRETS at
     # module-import time. When another collected test module imports the
     # gateway/scheduler chain (e.g. test_codex_execution_paths.py), that
     # import happens at COLLECTION time — before the conftest env scrub —
-    # so a developer shell exporting HERMES_REDACT_SECRETS=false freezes
+    # so a developer shell exporting KOVA_REDACT_SECRETS=false freezes
     # redaction off and this test fails only in full-directory runs.
     # Pin the flag explicitly, matching the repo-wide pattern.
     monkeypatch.setattr("agent.redact._REDACT_ENABLED", True, raising=False)
@@ -233,7 +233,7 @@ def test_repeat_failure_alerts_once_then_reminds_after_cooldown(monkeypatch, tmp
     # A real (non-local) lane: the ping leaves the process, so the incident is marked alerted.
     job = _job(deliver="telegram:123")
     (tmp_path / "config.yaml").write_text("cron:\n  preflight: false\n", encoding="utf-8")
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     with cron_jobs.use_cron_store(tmp_path):
         cron_jobs.save_jobs([job])
         _tick_failing(job, tmp_path, deliveries, error="repeat boom")
@@ -245,7 +245,7 @@ def test_repeat_failure_alerts_once_then_reminds_after_cooldown(monkeypatch, tmp
         assert stored["last_status"] == "error", "the withheld run is still recorded"
 
         # Cooldown elapsed: exactly one reminder, then silent again.
-        stale = (_hermes_now() - timedelta(hours=7)).isoformat()
+        stale = (_kova_now() - timedelta(hours=7)).isoformat()
         with inc._transaction() as conn:
             conn.execute("UPDATE cron_incidents SET alerted_at=?", (stale,))
         _tick_failing(job, tmp_path, deliveries, error="repeat boom")
@@ -316,7 +316,7 @@ def test_best_effort_incident_store_failure_returns_false(monkeypatch, tmp_path)
 
 
 def test_cli_list_and_ack(monkeypatch, tmp_path, capsys):
-    from hermes_cli.cron import cron_incidents
+    from kova_cli.cron import cron_incidents
 
     inc = _point_db(monkeypatch, tmp_path)
     inc_id, _ = inc.upsert_incident("job-1", "provider timeout boom")

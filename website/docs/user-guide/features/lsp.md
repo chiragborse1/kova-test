@@ -6,7 +6,7 @@ description: "Real language servers (pyright, gopls, rust-analyzer, …) wired i
 
 # Language Server Protocol (LSP)
 
-Hermes runs full language servers — pyright, gopls, rust-analyzer,
+Kova runs full language servers — pyright, gopls, rust-analyzer,
 typescript-language-server, clangd, and ~20 more — as background
 subprocesses and feeds their semantic diagnostics into the post-write
 lint check used by `write_file` and `patch`. When the agent edits a
@@ -14,7 +14,7 @@ file, it sees exactly the errors that edit introduced — not just
 syntax errors, but **type errors, undefined names, missing imports,
 and project-wide semantic issues** the language server detects.
 
-This is the same architecture top-tier coding agents use. Hermes
+This is the same architecture top-tier coding agents use. Kova
 ships it self-contained: no editor host required, no plugins to
 install, no separate daemon to manage.
 
@@ -33,7 +33,7 @@ falls back silently to the syntax-only result.
 
 Concretely, on every successful `write_file` or `patch`:
 
-1. Hermes captures a baseline of current diagnostics for the file.
+1. Kova captures a baseline of current diagnostics for the file.
 2. Performs the write.
 3. Re-queries the language server, filters out diagnostics that were
    already in the baseline, and surfaces only the new ones.
@@ -91,8 +91,8 @@ agent sees a syntax-clean file with semantic problems as
 
 For "manual" entries, install the server through whatever toolchain
 manager makes sense for that language (rustup, ghcup, opam, brew,
-…). Hermes auto-detects the binary on PATH or in
-`<HERMES_HOME>/lsp/bin/`.
+…). Kova auto-detects the binary on PATH or in
+`<KOVA_HOME>/lsp/bin/`.
 
 ### PowerShell
 
@@ -105,14 +105,14 @@ host. Setup:
 2. Download the latest release zip from
    [PowerShellEditorServices releases](https://github.com/PowerShell/PowerShellEditorServices/releases)
    and extract it.
-3. Point Hermes at the extracted bundle — the directory that contains
+3. Point Kova at the extracted bundle — the directory that contains
    `PowerShellEditorServices/Start-EditorServices.ps1`. Either:
    - set `lsp.servers.powershell.command: ["/path/to/bundle"]` in
      `config.yaml`, or
-   - extract it to `<HERMES_HOME>/lsp/PowerShellEditorServices`, or
+   - extract it to `<KOVA_HOME>/lsp/PowerShellEditorServices`, or
    - export `PSES_BUNDLE_PATH=/path/to/bundle`.
 
-`hermes lsp status` reports `installed` once `pwsh` is found; if the
+`kova lsp status` reports `installed` once `pwsh` is found; if the
 bundle is missing you'll see a one-time warning in the logs with the
 download link.
 
@@ -128,40 +128,40 @@ composer global require laravel/lsp
 export PATH="$HOME/.config/composer/vendor/bin:$PATH"
 ```
 
-Hermes launches it as `laravel-lsp lsp` (stdio). There is no
-auto-install recipe; `hermes lsp status` shows `manual-only` until the
+Kova launches it as `laravel-lsp lsp` (stdio). There is no
+auto-install recipe; `kova lsp status` shows `manual-only` until the
 binary is found.
 
 A few servers are installed alongside a peer dependency that npm
 won't auto-pull. `typescript-language-server` and `@vue/language-server`
 require the `typescript` SDK importable from the same `node_modules`
-tree — Hermes installs `typescript@6` (the last JavaScript-based line;
+tree — Kova installs `typescript@6` (the last JavaScript-based line;
 TypeScript 7 is the Go port and ships no `tsserver.js`) together with
-the server when you run `hermes lsp install typescript` /
-`hermes lsp install vue-language-server` or auto-install fires on first use.
+the server when you run `kova lsp install typescript` /
+`kova lsp install vue-language-server` or auto-install fires on first use.
 
 Vue is pinned to `@vue/language-server@2`, started with
 `vue.hybridMode: false` so it hosts its own TypeScript service. The 3.x
 line only works behind a client-hosted `tsserver` tunnel (the VS Code /
-Neovim setup) that Hermes's generic client does not run, so it never
-publishes diagnostics. If an earlier Hermes installed 3.x, the log shows a
+Neovim setup) that Kova's generic client does not run, so it never
+publishes diagnostics. If an earlier Kova installed 3.x, the log shows a
 one-time `vue-language-server: ... 3.x` warning; delete
-`<HERMES_HOME>/lsp/node_modules/@vue` and `<HERMES_HOME>/lsp/bin/vue-language-server*`,
-then run `hermes lsp install vue-language-server` (the recipe co-installs the
+`<KOVA_HOME>/lsp/node_modules/@vue` and `<KOVA_HOME>/lsp/bin/vue-language-server*`,
+then run `kova lsp install vue-language-server` (the recipe co-installs the
 TypeScript SDK).
 
 ## CLI
 
 ```
-hermes lsp status          # service state + per-server install status
-hermes lsp list            # registry, optionally --installed-only
-hermes lsp install <id>    # eagerly install one server
-hermes lsp install-all     # try every server with a known recipe
-hermes lsp restart         # tear down running clients
-hermes lsp which <id>      # print resolved binary path
+kova lsp status          # service state + per-server install status
+kova lsp list            # registry, optionally --installed-only
+kova lsp install <id>    # eagerly install one server
+kova lsp install-all     # try every server with a known recipe
+kova lsp restart         # tear down running clients
+kova lsp which <id>      # print resolved binary path
 ```
 
-`hermes lsp status` is the best starting point — it shows which
+`kova lsp status` is the best starting point — it shows which
 languages will get semantic diagnostics today and which need a
 binary installed.
 
@@ -197,7 +197,7 @@ lsp:
 
   # After a server fails for a workspace (spawn error, or the request
   # outran its budget) that (server, root) pair is skipped. 0 = for the
-  # rest of the process (until `hermes lsp restart`); N = retried after
+  # rest of the process (until `kova lsp restart`); N = retried after
   # N seconds, so one transient stall does not silence a workspace
   # forever. Skips are logged once per root at INFO with the retry time.
   broken_retry_seconds: 0
@@ -213,22 +213,22 @@ lsp:
   # exclude_roots: ["~/work/huge-monorepo", "/srv/checkouts/*/vendor"]
 
   # How to handle missing server binaries.
-  #   auto    — install via npm/pip/go install into <HERMES_HOME>/lsp/bin
+  #   auto    — install via npm/pip/go install into <KOVA_HOME>/lsp/bin
   #   manual  — only use binaries already on PATH
   install_strategy: auto
 
   # Node package manager for the npm-based servers: npm (default), pnpm
-  # or yarn. Installs still land in <HERMES_HOME>/lsp/node_modules; a
+  # or yarn. Installs still land in <KOVA_HOME>/lsp/node_modules; a
   # manager that is configured but not installed — or a value outside
   # npm|pnpm|yarn — skips the install with a warning instead of silently
   # using npm, so a pnpm/yarn supply-chain policy (minimumReleaseAge,
   # allowBuilds, …) is never bypassed. Yarn Berry (2+): its default PnP
   # linker writes no node_modules/.bin, so set `nodeLinker: node-modules`
-  # in <HERMES_HOME>/lsp/.yarnrc.yml. pnpm 11 blocks git-hosted transitive
+  # in <KOVA_HOME>/lsp/.yarnrc.yml. pnpm 11 blocks git-hosted transitive
   # deps by default (ERR_PNPM_EXOTIC_SUBDEP); @vue/language-server 2.x pulls
   # one in, so under pnpm that server is skipped with the pnpm error in the
   # log — install it once with npm, or relax block-exotic-subdeps in
-  # <HERMES_HOME>/lsp/.npmrc if your policy allows it.
+  # <KOVA_HOME>/lsp/.npmrc if your policy allows it.
   package_manager: npm
 
   # How long an unused language-server client stays alive (seconds).
@@ -268,7 +268,7 @@ lsp:
 Any `lsp.servers` key that is **not** a built-in server id declares
 your own language server. It needs `command` and `extensions`; the
 other keys are optional. Custom servers are matched *before* the
-built-ins, so they can also take over an extension Hermes already
+built-ins, so they can also take over an extension Kova already
 handles.
 
 ```yaml
@@ -285,20 +285,20 @@ lsp:
 ```
 
 Custom servers are never auto-installed: put the binary on PATH (or
-give an absolute path) and `hermes lsp status` lists it as
+give an absolute path) and `kova lsp status` lists it as
 `installed`. A malformed entry is logged and skipped without
 affecting the other servers.
 
 ## Installation locations
 
-When `install_strategy: auto`, Hermes installs binaries into
-`<HERMES_HOME>/lsp/bin/`. NPM packages land in
-`<HERMES_HOME>/lsp/node_modules/` with bin symlinks one level up.
+When `install_strategy: auto`, Kova installs binaries into
+`<KOVA_HOME>/lsp/bin/`. NPM packages land in
+`<KOVA_HOME>/lsp/node_modules/` with bin symlinks one level up.
 Go binaries come from `go install` with `GOBIN` pointed at the
 staging dir.
 
 Nothing is ever installed to `/usr/local/`, `~/.local/`, or any other
-shared location — the staging dir is fully Hermes-owned and is
+shared location — the staging dir is fully Kova-owned and is
 removed when you reset the profile.
 
 ## Performance characteristics
@@ -325,7 +325,7 @@ which would let every later edit block for the cold-build duration.
 A server that fails for a workspace — spawn error, or a request that
 outran its budget — marks that `(server, root)` pair broken and every
 later request for it is skipped (logged once per root at INFO). By
-default the pair stays broken until `hermes lsp restart` or process
+default the pair stays broken until `kova lsp restart` or process
 exit; `lsp.broken_retry_seconds: N` retries it after N seconds so one
 transient stall does not cost the workspace its diagnostics for good.
 A root you never want served — one monorepo whose server cannot finish
@@ -348,17 +348,17 @@ respawned automatically on the next relevant file operation. Set
 for the life of the process.
 
 Servers are also released when their workspace goes away, even if they
-are not idle: removing a Hermes-managed worktree (`hermes -w` session
+are not idle: removing a Kova-managed worktree (`kova -w` session
 end, Kanban task cleanup, a delegated subagent's pruned worktree) shuts
 down that tree's language servers before `git worktree remove` runs, and
 the periodic sweep shuts down any server whose project root no longer
-exists on disk (deleted outside Hermes). The sweep is part of the idle
+exists on disk (deleted outside Kova). The sweep is part of the idle
 reaper, so `idle_timeout: 0` also disables deleted-root reaping; the
 worktree-removal release always runs. A multi-root server only drops the
 vanished folder and keeps serving its sibling roots.
 
 Servers that support multi-root workspaces (currently pyright) run as a
-**single process** per Hermes process: the first Python project spawns
+**single process** per Kova process: the first Python project spawns
 it, and every further project root — for example sibling git worktrees
 edited by parallel subagents — is attached to that same server as an
 additional workspace folder instead of starting another copy.
@@ -381,19 +381,19 @@ lsp:
 
 ## Troubleshooting
 
-**`hermes lsp status` shows a server as "missing"**
+**`kova lsp status` shows a server as "missing"**
 
-The binary isn't on PATH and isn't in `<HERMES_HOME>/lsp/bin/`. Run
-`hermes lsp install <server_id>` to attempt an auto-install, or
+The binary isn't on PATH and isn't in `<KOVA_HOME>/lsp/bin/`. Run
+`kova lsp install <server_id>` to attempt an auto-install, or
 install the binary manually through the language's normal toolchain.
 
-**`Backend warnings` section in `hermes lsp status`**
+**`Backend warnings` section in `kova lsp status`**
 
 Some servers ship as thin wrappers around an external CLI for actual
 diagnostics — they spawn cleanly and accept requests but never emit
 errors when the sidecar binary is missing. The most common case is
 `bash-language-server`, which delegates diagnostics to `shellcheck`.
-When `hermes lsp status` shows a `Backend warnings` section, install
+When `kova lsp status` shows a `Backend warnings` section, install
 the named tool through your OS package manager:
 
 ```
@@ -403,11 +403,11 @@ scoop install shellcheck    # Windows
 ```
 
 The same warning is logged once at server spawn time in
-`~/.hermes/logs/agent.log`.
+`~/.kova/logs/agent.log`.
 
 **Server starts but never returns diagnostics**
 
-Check `~/.hermes/logs/agent.log` for `[agent.lsp.client]` entries —
+Check `~/.kova/logs/agent.log` for `[agent.lsp.client]` entries —
 both stderr from the language server and protocol errors land
 there. Some servers (rust-analyzer especially) need to finish a
 project-wide index before they emit per-file diagnostics; the first
@@ -417,7 +417,7 @@ subsequent edits picking them up.
 **Server crashed**
 
 A crashed server is added to the broken-set and won't be retried for
-the rest of the session. Run `hermes lsp restart` to clear the set;
+the rest of the session. Run `kova lsp restart` to clear the set;
 the next edit re-spawns.
 
 **Editing a file outside any git repo**

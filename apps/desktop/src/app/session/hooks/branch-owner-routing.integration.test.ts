@@ -20,7 +20,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const dialed: { connectionId: string; profile: string }[] = []
 const sent: { method: string; params: Record<string, unknown>; url: string }[] = []
 
-class FakeHermesGateway {
+class FakeKovaGateway {
   connectionState = 'closed'
   private url = ''
 
@@ -65,9 +65,9 @@ class FakeHermesGateway {
   removeEventListener() {}
 }
 
-vi.mock('@/hermes', async importOriginal => ({
+vi.mock('@/kova', async importOriginal => ({
   ...(await importOriginal<Record<string, unknown>>()),
-  HermesGateway: FakeHermesGateway,
+  KovaGateway: FakeKovaGateway,
   setApiRequestConnection: vi.fn()
 }))
 

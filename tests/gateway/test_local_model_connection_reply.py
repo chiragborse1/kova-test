@@ -106,7 +106,7 @@ class TestGatewayConnectionErrorReply:
 
     def test_every_reply_names_a_slash_command_and_no_jargon(self):
         """Each shaped reply must give the chat user something they can run; 'provider' and
-        'gateway logs' are operator words (the log pointer is the `hermes logs` command)."""
+        'gateway logs' are operator words (the log pointer is the `kova logs` command)."""
         from gateway.run import _PROVIDER_ERROR_REPLIES
         replies = [reply for _, reply in _PROVIDER_ERROR_REPLIES] + [_gateway_provider_error_reply("zzz")]
         for reply in replies:
@@ -197,8 +197,8 @@ class TestQuotaExhaustedIsNotAnAuthFailure:
         from gateway.run_turn_runner import TurnRunner
         from gateway.session import SessionSource
         from gateway.turn_context import TurnContext
-        from hermes_cli.auth import AuthError
-        from hermes_cli.auth_constants import CODEX_RATE_LIMITED_CODE
+        from kova_cli.auth import AuthError
+        from kova_cli.auth_constants import CODEX_RATE_LIMITED_CODE
 
         def _resolve(**_kwargs):
             try:

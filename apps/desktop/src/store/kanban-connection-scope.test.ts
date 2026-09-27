@@ -1,23 +1,23 @@
 import { QueryObserver } from '@tanstack/react-query'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { HermesConnection } from '@/global'
+import type { KovaConnection } from '@/global'
 
 // A connection switch must leave every profile-scoped query refetched against
 // the NEW gateway — see the $activeConnectionId.listen comment in
 // store/connections.ts for why the switch's own wipe is not enough.
 //
 // Real store chain (store/gateway + store/profile + store/connections), only
-// the HermesGateway socket class stubbed — same harness as
+// the KovaGateway socket class stubbed — same harness as
 // plugin-socket-scope.test.ts.
 
-vi.mock('@/hermes', async importOriginal => {
+vi.mock('@/kova', async importOriginal => {
   const actual = await importOriginal<Record<string, unknown>>()
 
   return {
     ...actual,
     // Stub only the socket class so gateway activations don't dial real WS.
-    HermesGateway: class {
+    KovaGateway: class {
       connectionState = 'closed'
       connect = async (_wsUrl: string): Promise<void> => {
         this.connectionState = 'open'
@@ -39,7 +39,7 @@ const { $activeGatewayProfile } = await import('@/store/profile')
 const { selectConnection, setConnectionsRegistry, _resetConnectionsForTests } = await import('@/store/connections')
 const { setConnection } = await import('@/store/session')
 
-const conn = (over: Partial<HermesConnection> = {}): HermesConnection =>
+const conn = (over: Partial<KovaConnection> = {}): KovaConnection =>
   ({
     authMode: 'oauth',
     baseUrl: 'https://pool.invalid',
@@ -47,7 +47,7 @@ const conn = (over: Partial<HermesConnection> = {}): HermesConnection =>
     token: 'fake-test-token',
     wsUrl: 'wss://pool.invalid/api/ws?token=fake-test-token',
     ...over
-  }) as HermesConnection
+  }) as KovaConnection
 
 const registry = {
   connections: [

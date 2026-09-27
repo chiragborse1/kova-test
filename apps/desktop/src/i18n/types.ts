@@ -491,7 +491,7 @@ export interface Translations {
       loadingSessions: string
       retryingRemoteBackend: string
       startingDesktopConnection: string
-      startingHermesDesktop: string
+      startingKovaDesktop: string
     }
     errors: {
       backgroundExited: string
@@ -600,7 +600,7 @@ export interface Translations {
       openaiTtsNeedsKey: string
       codeSkewRestartRequired: string
       rpcOutOfSync: string
-      restartHermesFailed: string
+      restartKovaFailed: string
     }
     actions: {
       restartHermes: string
@@ -1421,9 +1421,9 @@ export interface Translations {
       sshPortDesc: string
       sshKeyTitle: string
       sshKeyDesc: string
-      sshHermesPathTitle: string
-      sshHermesPathDesc: string
-      sshHermesPathPlaceholder: string
+      sshKovaPathTitle: string
+      sshKovaPathDesc: string
+      sshKovaPathPlaceholder: string
       sshTestConnection: string
       sshConnect: string
       sshButtonsHint: string
@@ -2121,7 +2121,7 @@ export interface Translations {
       serverStates: {
         connected: string
         app_not_running: string
-        hermes_not_connected: string
+        kova_not_connected: string
         endpoint_unavailable: string
         no_interactive_session: string
         version_too_old: string
@@ -3787,8 +3787,8 @@ export interface Translations {
     alreadySignedInHeading: string
     alreadySignedInBody: string
     // First-launch set-up failure notice: the free tier could not be created at boot.
-    // One sentence per backend code (`hermes_cli/anon_auth.py::ANON_*`); the copy never says
-    // the free MODEL is off — what is unavailable is using Hermes without signing in.
+    // One sentence per backend code (`kova_cli/anon_auth.py::ANON_*`); the copy never says
+    // the free MODEL is off — what is unavailable is using Kova without signing in.
     setupFailed: {
       gateClosed: string
       paused: string
@@ -4300,8 +4300,8 @@ export interface Translations {
       errorChooseModel: string
       errorCompressConversation: string
       errorCompressFailed: string
-      errorOpenHermesFolder: string
-      errorOpenHermesFolderFailed: string
+      errorOpenKovaFolder: string
+      errorOpenKovaFolderFailed: string
       errorUpdateApiKey: string
       /** One-click recovery for an expired/revoked OAuth grant: re-runs that
        *  provider's sign-in flow (auth layer, authKind 'oauth'). */

@@ -187,7 +187,7 @@ test('FIX #72698: a rejected SSH key latches the boot failure and is never auto-
   assert.equal(isRetryableRemoteBootFailure(transient), true)
   assert.equal(shouldLatchSshAuthFailure({ attemptedRemote: false, isReauth: false, isSshAuthFailed: true }), false)
   // A remote lifecycle's filesystem "Permission denied" is not a credential rejection.
-  assert.equal(isSshAuthFailedBootFailure(new Error('mkdir: /opt/hermes: Permission denied')), false)
+  assert.equal(isSshAuthFailedBootFailure(new Error('mkdir: /opt/kova: Permission denied')), false)
 })
 
 test('FIX #95701: while a reauth rejection is latched, only re-emits of that failure reach the renderer', () => {
@@ -201,7 +201,7 @@ test('FIX #95701: while a reauth rejection is latched, only re-emits of that fai
   // sibling failure that would flip retryable back on.
   assert.equal(shouldHoldBootProgressForReauth(latched, { error: null }), true)
   assert.equal(shouldHoldBootProgressForReauth(latched, {}), true)
-  assert.equal(shouldHoldBootProgressForReauth(latched, { error: 'Could not reach the remote Hermes gateway' }), true)
+  assert.equal(shouldHoldBootProgressForReauth(latched, { error: 'Could not reach the remote Kova gateway' }), true)
 })
 
 test('FIX #95701: with no reauth latch every boot-progress update flows as before', () => {

@@ -37,7 +37,7 @@ export interface CheckoutStrategyDeps {
   resolveUpdaterBinary: () => string | null
   /**
    * True when one remote gateway serves this Desktop (app-global remote /
-   * cloud / SSH). The hand-off then tells `hermes update` not to (re)start a
+   * cloud / SSH). The hand-off then tells `kova update` not to (re)start a
    * local messaging gateway: with the same channel credentials as the remote
    * host it would become a competing long-poll consumer (#117529).
    */
@@ -56,14 +56,14 @@ export interface CheckoutStrategyDeps {
 
 /**
  * The manual command card for a checkout with no staged updater: the exact
- * `hermes update` line to run, branch-pinned to the checkout's current branch
- * for non-main (bare `hermes update` would silently switch the install
+ * `kova update` line to run, branch-pinned to the checkout's current branch
+ * for non-main (bare `kova update` would silently switch the install
  * off-branch).
  */
 export function buildManualUpdateCommand(currentBranch: string | null | undefined): string {
   return currentBranch && currentBranch !== 'HEAD' && currentBranch !== 'main'
-    ? `hermes update --branch ${currentBranch}`
-    : 'hermes update'
+    ? `kova update --branch ${currentBranch}`
+    : 'kova update'
 }
 
 /**
@@ -113,7 +113,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
     const targetLabel: string = status.channel ?? branch
 
     const manualCommand: string = status.channel
-      ? `hermes update --channel ${status.channel}`
+      ? `kova update --channel ${status.channel}`
       : buildManualUpdateCommand(branch)
 
     const updater: string | null = deps.resolveUpdaterBinary()
@@ -138,21 +138,21 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
 
     if (!deps.isWindows && (!updater || status.channel)) {
       // macOS/Linux: hand off to the repo-owned posix script — same shape as
-      // Windows (quit → detached orchestrator → `hermes update` → relaunch),
+      // Windows (quit → detached orchestrator → `kova update` → relaunch),
       // minus the venv-lock gauntlet POSIX doesn't need. The old in-app
       // updater (applyUpdatesPosixInApp) is gone with everything it dragged
-      // in: the HERMES_DESKTOP_CHILD_PID reaper-exclusion dance (#37532),
+      // in: the KOVA_DESKTOP_CHILD_PID reaper-exclusion dance (#37532),
       // the in-window rebuild retry, and the relaunch-outcome matrix — the
       // script owns swap/relaunch, and the app is DEAD during the update so
       // there is nothing to reap around. Checkouts that predate the script
-      // get the manual `hermes update` card once; their next update pulls it.
+      // get the manual `kova update` card once; their next update pulls it.
       return await applyPosixHandoff(targetArgs, targetLabel, manualCommand)
     }
 
     if (!updater || status.channel) {
       // No staged updater binary — this is a CLI-installed user (they ran
-      // `hermes desktop`, never the Tauri installer that self-copies
-      // hermes-setup.exe into HERMES_HOME). On Windows the repo hand-off
+      // `kova desktop`, never the Tauri installer that self-copies
+      // kova-setup.exe into KOVA_HOME). On Windows the repo hand-off
       // script serves them just as well as installer users — it only needs
       // PowerShell and the checkout — so fall through to the normal hand-off
       // when the script exists. Only when the checkout predates the script do
@@ -189,7 +189,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
     deps.emitUpdateProgress({
       stage: 'restart',
       message:
-        'Updating Hermes — this window will close and the updater will open. Don’t reopen Hermes yourself; it restarts automatically when the update finishes.',
+        'Updating Kova — this window will close and the updater will open. Don’t reopen Kova yourself; it restarts automatically when the update finishes.',
       percent: 100
     })
     deps.repairMacUpdaterHelper(updater)
@@ -229,7 +229,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
     // months-stale updater logic — pre-#67369 cache resolver, pre-#74782
     // marker adoption — producing failures that were fixed on main long ago
     // (2026-08-09 incident). scripts/desktop-update/windows.ps1 ships WITH the
-    // checkout, so each `hermes update` refreshes the code that drives the
+    // checkout, so each `kova update` refreshes the code that drives the
     // next one. Checkouts that predate the script fall back to the binary
     // path unchanged.
     const scriptHandoff = resolveUpdateScriptHandoff(updateRoot)
@@ -268,7 +268,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
         cwd: deps.hermesHome,
         env: {
           ...sourceUpdateEnvironment(updateRoot, deps.hermesHome),
-          HERMES_UPDATE_STARTED_AT: String(updateStartedAt)
+          KOVA_UPDATE_STARTED_AT: String(updateStartedAt)
         },
         // Never `true` here: DETACHED_PROCESS leaves the wrapper console-less, so
         // `start /b` hands PowerShell a new VISIBLE console whose QuickEdit
@@ -282,7 +282,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
       // the first moments of the hand-off — the script's step 0 overwrites it
       // with its own live $PID, and if the script never starts the wrapper's
       // dead pid makes the marker read as stale and self-delete (no wedge).
-      // The `hermes update` child adopts the SCRIPT's claim via
+      // The `kova update` child adopts the SCRIPT's claim via
       // update_lock.py's process-ancestry rule; no mtime heuristics needed.
       if (Number.isInteger(child.pid)) {
         writeUpdateMarker(deps.hermesHome, child.pid, { startedAt: updateStartedAt })
@@ -311,7 +311,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
       //
       // SKIPPED for pre-#74782 staged updaters: those have no self-PID
       // exclusion, so they read this very marker as a foreign live owner and
-      // abort with "Another Hermes update is already running (PID <itself>)" —
+      // abort with "Another Kova update is already running (PID <itself>)" —
       // an unbreakable loop, because the update that would replace the stale
       // binary is the one being refused. Losing the anti-respawn hardening is
       // strictly better than never updating again, and the updater still writes
@@ -402,7 +402,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
       String(process.pid)
     ]
 
-    // A remote-served Desktop owns no local messaging gateway: `hermes update
+    // A remote-served Desktop owns no local messaging gateway: `kova update
     // --gateway` would (re)start one here anyway, and with the same channel
     // credentials as the remote host it becomes a competing long-poll consumer
     // (#117529). Keep --gateway for the local-ownership default.
@@ -442,7 +442,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
       cwd: deps.hermesHome,
       env: {
         ...sourceUpdateEnvironment(updateRoot, deps.hermesHome),
-        HERMES_UPDATE_STARTED_AT: String(updateStartedAt)
+        KOVA_UPDATE_STARTED_AT: String(updateStartedAt)
       },
       detached: true,
       stdio: 'ignore'
@@ -459,7 +459,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
     deps.emitUpdateProgress({
       stage: 'restart',
       message:
-        'Updating Hermes — this window will close. Don’t reopen Hermes yourself; it restarts automatically when the update finishes.',
+        'Updating Kova — this window will close. Don’t reopen Kova yourself; it restarts automatically when the update finishes.',
       percent: 100
     })
 

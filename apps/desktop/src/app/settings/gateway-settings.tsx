@@ -1,4 +1,4 @@
-import { isGatewayReauthRequired } from '@hermes/shared'
+import { isGatewayReauthRequired } from '@kova/shared'
 import { useStore } from '@nanostores/react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -54,7 +54,7 @@ import { useSettingDeepLink } from './use-setting-deep-link'
 
 type Mode = 'local' | 'remote' | 'cloud' | 'ssh'
 type AuthMode = 'oauth' | 'token'
-// Hermes Cloud discovery lifecycle for the cloud-mode panel.
+// Kova Cloud discovery lifecycle for the cloud-mode panel.
 type CloudDiscoverStatus = 'idle' | 'loading' | 'done' | 'error'
 
 export interface GatewaySettingsState {
@@ -76,7 +76,7 @@ export interface GatewaySettingsState {
   sshUser: string
   sshPort: number | null
   sshKeyPath: string
-  sshRemoteHermesPath: string
+  sshRemoteKovaPath: string
   sshRemoteProfile: string
 }
 
@@ -97,7 +97,7 @@ const EMPTY_STATE: GatewaySettingsState = {
   sshUser: '',
   sshPort: null,
   sshKeyPath: '',
-  sshRemoteHermesPath: '',
+  sshRemoteKovaPath: '',
   sshRemoteProfile: ''
 }
 
@@ -344,7 +344,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   // so confirm resumes the right one.
   const [plainTextConfirm, setPlainTextConfirm] = useState<null | { apply: boolean }>(null)
 
-  // --- Hermes Cloud (cloud mode) state ---
+  // --- Kova Cloud (cloud mode) state ---
   // One portal session powers discovery + the silent per-agent cascade. These
   // track the cloud panel: whether we're signed in, the discovered agent list,
   // and which agent is mid-connect.
@@ -529,7 +529,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
     state.sshUser,
     state.sshPort,
     state.sshKeyPath,
-    state.sshRemoteHermesPath,
+    state.sshRemoteKovaPath,
     state.sshRemoteProfile
   ])
 
@@ -544,7 +544,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
           sshUser: state.sshUser.trim() || undefined,
           sshPort: state.sshPort,
           sshKeyPath: state.sshKeyPath.trim() || undefined,
-          sshRemoteHermesPath: state.sshRemoteHermesPath.trim(),
+          sshRemoteKovaPath: state.sshRemoteKovaPath.trim(),
           // A blank clears an existing remote-profile mapping.
           sshRemoteProfile: state.sshRemoteProfile.trim()
         }),
@@ -597,7 +597,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
 
       const errors = {
         'auth-failed': g.sshErrAuth,
-        'hermes-not-found': g.sshErrNotInstalled,
+        'kova-not-found': g.sshErrNotInstalled,
         'host-key-changed': g.sshErrHostKey,
         timeout: g.sshErrTimeout,
         unreachable: g.sshErrUnreachable,
@@ -644,7 +644,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
     await performSave(apply, false)
   }
 
-  // --- Hermes Cloud handlers ---
+  // --- Kova Cloud handlers ---
 
   // Pull the discovered agent list over the shared portal session. Tolerant of
   // a lapsed session: a needsCloudLogin error flips us back to signed-out.
@@ -1005,7 +1005,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
       if (!result.reachable) {
         const errors = {
           'auth-failed': g.sshErrAuth,
-          'hermes-not-found': g.sshErrNotInstalled,
+          'kova-not-found': g.sshErrNotInstalled,
           'host-key-changed': g.sshErrHostKey,
           timeout: g.sshErrTimeout,
           unreachable: g.sshErrUnreachable,
@@ -1113,7 +1113,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
         </div>
       </div>
 
-      {/* Hermes Cloud panel: one portal sign-in, then a discovered-agent picker
+      {/* Kova Cloud panel: one portal sign-in, then a discovered-agent picker
           whose selection drives the silent per-agent cascade + a cloud
           connection. Replaces the URL/token form while in cloud mode. */}
       {state.mode === 'cloud' && !state.envOverride ? (
@@ -1240,7 +1240,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
                     <AlertCircle className="mt-0.5 size-4 shrink-0" />
                     <span>
                       {g.cloudNoAgents.before}
-                      <ExternalLink href="https://portal.nousresearch.com/agents" showExternalIcon={false}>
+                      <ExternalLink href="https://portal.openkova.com/agents" showExternalIcon={false}>
                         {g.cloudNoAgents.linkText}
                       </ExternalLink>
                       {g.cloudNoAgents.after}
@@ -1294,7 +1294,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
         </div>
       ) : null}
 
-      {/* An env-pinned remote (HERMES_DESKTOP_REMOTE_URL) still renders this
+      {/* An env-pinned remote (KOVA_DESKTOP_REMOTE_URL) still renders this
           block: the override pins the URL/mode, but the browser SESSION is not
           env-owned — docs promise "you still sign in from the Gateway settings
           panel" (user-guide/desktop.md). Hiding it left a lapsed session with
@@ -1405,13 +1405,13 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
             action={
               <Input
                 className={cn('h-8 font-mono', CONTROL_TEXT)}
-                onChange={event => setState(current => ({ ...current, sshRemoteHermesPath: event.target.value }))}
-                placeholder={g.sshHermesPathPlaceholder}
-                value={state.sshRemoteHermesPath}
+                onChange={event => setState(current => ({ ...current, sshRemoteKovaPath: event.target.value }))}
+                placeholder={g.sshKovaPathPlaceholder}
+                value={state.sshRemoteKovaPath}
               />
             }
-            description={g.sshHermesPathDesc}
-            title={g.sshHermesPathTitle}
+            description={g.sshKovaPathDesc}
+            title={g.sshKovaPathTitle}
           />
         </div>
       ) : null}

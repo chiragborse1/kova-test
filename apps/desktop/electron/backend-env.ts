@@ -4,7 +4,7 @@ import path from 'node:path'
 
 // macOS apps launched from Finder/Dock inherit only /usr/bin:/bin:/usr/sbin:/sbin,
 // which misses Homebrew and user-installed CLI tools (codex, git credential
-// helpers). Hermes' own managed tools need no PATH help — the backend composes
+// helpers). Kova' own managed tools need no PATH help — the backend composes
 // their environment in-process via pm — but user tools on PATH do.
 const POSIX_SANE_PATH_ENTRIES = Object.freeze([
   '/opt/homebrew/bin',
@@ -57,9 +57,9 @@ function appendUniquePathEntries(entries, { delimiter = path.delimiter } = {}) {
   return ordered.join(delimiter)
 }
 
-function resolveHermesHomePath(hermesHome, { pathModule, homedir = os.homedir() }: any) {
+function resolveKovaHomePath(hermesHome, { pathModule, homedir = os.homedir() }: any) {
   // fish (and any shell when the value is quoted) hands a literal `~` through; path.resolve()
-  // would pin it under cwd and the Python backend inherits that absolute path via HERMES_HOME.
+  // would pin it under cwd and the Python backend inherits that absolute path via KOVA_HOME.
   let raw = String(hermesHome)
 
   if (raw === '~' || raw.startsWith('~/') || (pathModule === path.win32 && raw.startsWith('~\\'))) {
@@ -73,7 +73,7 @@ function isProfileHome(resolved, pathModule) {
   return pathModule.basename(pathModule.dirname(resolved)).toLowerCase() === 'profiles'
 }
 
-function normalizeHermesHomeRoot(
+function normalizeKovaHomeRoot(
   hermesHome,
   { pathModule = pathModuleForPlatform(process.platform), homedir = os.homedir() }: any = {}
 ) {
@@ -81,7 +81,7 @@ function normalizeHermesHomeRoot(
     return hermesHome
   }
 
-  const resolved = resolveHermesHomePath(hermesHome, { pathModule, homedir })
+  const resolved = resolveKovaHomePath(hermesHome, { pathModule, homedir })
 
   return isProfileHome(resolved, pathModule) ? pathModule.dirname(pathModule.dirname(resolved)) : resolved
 }
@@ -90,7 +90,7 @@ function normalizeHermesHomeRoot(
 const PROCESS_ENV_NAMES = new Set([
   'APPDATA',
   'COMSPEC',
-  'HERMES_HOME',
+  'KOVA_HOME',
   'HOME',
   'LANG',
   'LC_ALL',
@@ -126,9 +126,9 @@ function readTextOrEmpty(fsModule, file) {
 }
 
 /**
- * Parent env for a local `hermes serve` child of `profile` (#68367).
+ * Parent env for a local `kova serve` child of `profile` (#68367).
  *
- * `hermes desktop` loads its launch profile's `.env`/`.op.env` into os.environ
+ * `kova desktop` loads its launch profile's `.env`/`.op.env` into os.environ
  * before exec'ing Electron, so `process.env` carries that profile's platform
  * credentials. A child for ANOTHER profile would inherit them ahead of its own
  * dotenv (`.op.env` is even skipped once OP_SERVICE_ACCOUNT_TOKEN is set) and,
@@ -139,7 +139,7 @@ function readTextOrEmpty(fsModule, file) {
  * declared pass through everywhere.
  *
  * `profile` null/empty means no `--profile` flag: the child follows the sticky
- * `active_profile` like a bare `hermes serve` (`_apply_profile_override`).
+ * `active_profile` like a bare `kova serve` (`_apply_profile_override`).
  */
 function profileBackendParentEnv({
   hermesHome,
@@ -156,7 +156,7 @@ function profileBackendParentEnv({
   }
 
   const fold = platform === 'win32' ? (value: string) => value.toUpperCase() : (value: string) => value
-  const inheritedHome = currentEnv?.HERMES_HOME ? resolveHermesHomePath(currentEnv.HERMES_HOME, { pathModule }) : null
+  const inheritedHome = currentEnv?.KOVA_HOME ? resolveKovaHomePath(currentEnv.KOVA_HOME, { pathModule }) : null
   const launchHome = inheritedHome && isProfileHome(inheritedHome, pathModule) ? inheritedHome : hermesHome
   const name = profile || readTextOrEmpty(fsModule, pathModule.join(hermesHome, 'active_profile')).trim()
   const targetHome = !name || name === 'default' ? hermesHome : pathModule.join(hermesHome, 'profiles', name)
@@ -198,7 +198,7 @@ function buildDesktopBackendEnv({ currentEnv = process.env, platform = process.p
     PYTHONHOME: '',
     // Force PEP 540 UTF-8 mode in the spawned Python backend so its stdio and
     // subprocess defaults are UTF-8 even on non-UTF-8 Windows locales (GBK,
-    // cp1252, ...). hermes_bootstrap sets this inside the child too, but only
+    // cp1252, ...). kova_bootstrap sets this inside the child too, but only
     // after import — anything emitted earlier (interpreter startup errors,
     // pre-bootstrap tracebacks) still decodes with the locale default without
     // this. User's explicit setting wins. Re-port of PR #56499 (echoriver89).
@@ -211,7 +211,7 @@ export {
   appendUniquePathEntries,
   buildDesktopBackendEnv,
   delimiterForPlatform,
-  normalizeHermesHomeRoot,
+  normalizeKovaHomeRoot,
   pathEnvKey,
   POSIX_SANE_PATH_ENTRIES,
   profileBackendParentEnv

@@ -1,8 +1,8 @@
-"""Lightweight i18n for Hermes' static user-facing strings (approval prompts, a few gateway replies).
+"""Lightweight i18n for Kova' static user-facing strings (approval prompts, a few gateway replies).
 
 Catalogs are ``locales/<lang>.yaml`` flattened to dotted keys. Missing keys
 fall back to English, then to the key itself, so a broken catalog never crashes.
-Language resolution: explicit ``lang=`` > ``HERMES_LANGUAGE`` > ``display.language`` > ``en``.
+Language resolution: explicit ``lang=`` > ``KOVA_LANGUAGE`` > ``display.language`` > ``en``.
 """
 
 from __future__ import annotations
@@ -54,17 +54,17 @@ _catalog_lock = threading.Lock()
 
 
 def _locales_dir() -> Path:
-    """Locale dir: ``HERMES_BUNDLED_LOCALES`` (sealed packaging, e.g. Nix) if it exists, else ``<repo-root>/locales``.
+    """Locale dir: ``KOVA_BUNDLED_LOCALES`` (sealed packaging, e.g. Nix) if it exists, else ``<repo-root>/locales``.
 
     The source path is returned even when missing so ``_load_catalog`` can log
     the path it looked at rather than raise.
     """
-    override = os.getenv("HERMES_BUNDLED_LOCALES", "").strip()
+    override = os.getenv("KOVA_BUNDLED_LOCALES", "").strip()
     if override and Path(override).is_dir():
         return Path(override)
     if override:
         logger.warning(
-            "HERMES_BUNDLED_LOCALES points to a non-directory path (%s); "
+            "KOVA_BUNDLED_LOCALES points to a non-directory path (%s); "
             "falling back to bundled/source locale resolution", override,
         )
     return Path(__file__).resolve().parent.parent / "locales"
@@ -100,7 +100,7 @@ def _load_catalog(lang: str) -> dict[str, str]:
         logger.debug("i18n catalog missing for %s at %s", lang, path)
         return _cache_catalog(lang, flat)
     try:
-        import hermes_yaml as yaml
+        import kova_yaml as yaml
         with path.open("r", encoding="utf-8-sig") as f:
             _flatten_into(yaml.safe_load(f) or {}, "", flat)
     except Exception as exc:
@@ -119,12 +119,12 @@ def _flatten_into(node: Any, prefix: str, out: dict[str, str]) -> None:
 
 
 @lru_cache(maxsize=8)
-def _config_language_cached(hermes_home: str) -> str | None:
+def _config_language_cached(kova_home: str) -> str | None:
     """``display.language`` from config.yaml, read once per profile home (``t()`` is a hot path).
     Keyed by home so a multiplexed gateway serving several profiles doesn't freeze the first
     profile's language for every other profile."""
     try:
-        from hermes_cli.config import load_config_readonly
+        from kova_cli.config import load_config_readonly
         lang = (load_config_readonly().get("display") or {}).get("language")
         return _normalize_lang(lang) if lang else None
     except Exception as exc:
@@ -133,8 +133,8 @@ def _config_language_cached(hermes_home: str) -> str | None:
 
 
 def _config_language() -> str | None:
-    from hermes_constants import get_hermes_home
-    return _config_language_cached(str(get_hermes_home()))
+    from kova_constants import get_kova_home
+    return _config_language_cached(str(get_kova_home()))
 
 
 def reset_language_cache() -> None:
@@ -145,14 +145,14 @@ def reset_language_cache() -> None:
 
 
 def get_language() -> str:
-    """Resolve the active language using env > config > default order. ``HERMES_LANGUAGE`` is a
+    """Resolve the active language using env > config > default order. ``KOVA_LANGUAGE`` is a
     per-profile ``.env`` value, so it is read through the secret scope: under multiplexing a raw
     environ read would impose the default profile's language on every other profile."""
     from agent.secret_scope import UnscopedSecretError, get_secret
     try:
-        env_lang = get_secret("HERMES_LANGUAGE")
+        env_lang = get_secret("KOVA_LANGUAGE")
     except UnscopedSecretError:
-        env_lang = os.environ.get("HERMES_LANGUAGE")  # unscoped default-profile path: environ IS its own value
+        env_lang = os.environ.get("KOVA_LANGUAGE")  # unscoped default-profile path: environ IS its own value
     return _normalize_lang(env_lang) if env_lang else _config_language() or DEFAULT_LANGUAGE
 
 

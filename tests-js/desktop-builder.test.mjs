@@ -33,7 +33,7 @@ function fixture() {
   put(join(app, 'index.html'), '<html><div id="app"></div><script type="module" src="/src/index.js"></script></html>')
   put(join(app, 'src/index.js'), 'document.getElementById("app").textContent = "built renderer"')
   put(join(app, 'electron/entry.ts'), "await import('./main')")
-  put(join(app, 'electron/main.ts'), 'console.log(JSON.stringify({ stamp: __HERMES_INSTALL_STAMP__, identity: __HERMES_PRODUCT_IDENTITY__ }))')
+  put(join(app, 'electron/main.ts'), 'console.log(JSON.stringify({ stamp: __KOVA_INSTALL_STAMP__, identity: __KOVA_PRODUCT_IDENTITY__ }))')
   put(join(app, 'electron/preload.ts'), 'globalThis.fixturePreload = "compiled preload"')
   put(join(app, 'electron/preview-guest-preload-entry.ts'), 'globalThis.fixtureGuestPreload = "compiled guest preload"')
   cpSync(join(repo, 'apps/desktop/product-identity.cjs'), join(app, 'product-identity.cjs'))
@@ -99,7 +99,7 @@ test('desktop compiler consumes explicit immutable inputs, replaces variants, an
   put(input.stamp, JSON.stringify({ schemaVersion: 1, payload: 'bundled', updateMechanism: 'microsoft-store', commit: 'b'.repeat(40), tag: null }))
   // Ambient variant/tag must not override explicit stamp inputs or cached CJS identity.
   execFileSync(process.execPath, [join(repo, 'scripts/build/desktop.mjs'), ...Object.entries(input).flatMap(([key, value]) => [`--${key === 'nativeDeps' ? 'native-deps' : key}`, value])], {
-    cwd: tmpdir(), env: { ...process.env, PATH: '', HERMES_DESKTOP_VARIANT: 'light', HERMES_PAYLOAD_TAG: 'v1.0.0+canary.20260911T000000Z' }, stdio: 'pipe',
+    cwd: tmpdir(), env: { ...process.env, PATH: '', KOVA_DESKTOP_VARIANT: 'light', KOVA_PAYLOAD_TAG: 'v1.0.0+canary.20260911T000000Z' }, stdio: 'pipe',
   })
   expect(run().identity.store).toBe(true)
   expect(run().identity.light).toBe(false)
@@ -148,7 +148,7 @@ test('in-tree desktop products rebuild after build exists without replacing prep
   // even when that input itself is an earlier builder-owned product.
   const built = files(input.out)
   for (const prepared of [
-    { stamp: join(input.out, 'hermes-build.json') },
+    { stamp: join(input.out, 'kova-build.json') },
     { nativeDeps: join(input.out, 'node_modules') },
     { icons: input.out },
   ]) {

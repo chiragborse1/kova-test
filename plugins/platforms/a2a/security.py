@@ -41,7 +41,7 @@ def _configured_trusted_peers() -> frozenset[str]:
     if raw:
         return frozenset(p.strip() for p in raw.split(",") if p.strip())
     try:
-        from hermes_cli.config import load_config
+        from kova_cli.config import load_config
         peers = ((load_config() or {}).get("a2a") or {}).get("trusted_peers", [])
         if isinstance(peers, list):
             return frozenset(str(peer).strip() for peer in peers if str(peer).strip())
@@ -201,10 +201,10 @@ def is_safe_callback_url(url: str, *, localhost_mode: Optional[bool] = None) -> 
 def audit(direction: str, peer: str, task_id: str, summary: str) -> None:
     """Append an audit record (direction: inbound | outbound | push). Never raises."""
     try:
-        from hermes_constants import get_hermes_home
+        from kova_constants import get_kova_home
         rec = {"ts": time.time(), "direction": direction, "peer": peer, "task_id": task_id, "summary": (summary or "")[:500]}
-        get_hermes_home().mkdir(parents=True, exist_ok=True)
-        with (get_hermes_home() / "a2a_audit.jsonl").open("a", encoding="utf-8") as fh:
+        get_kova_home().mkdir(parents=True, exist_ok=True)
+        with (get_kova_home() / "a2a_audit.jsonl").open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
     except Exception:
         logger.debug("A2A: audit write failed", exc_info=True)

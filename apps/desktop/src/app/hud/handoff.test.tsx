@@ -18,7 +18,7 @@ import { useHudHandoff } from './handoff'
 type HudChanged = (state: { open: boolean; sessionId: null | string }) => void
 
 const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const initialKovaDesktop = desktopWindow.hermesDesktop
 let emitHudChanged: HudChanged | null = null
 
 beforeEach(() => {
@@ -36,8 +36,8 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+  if (initialKovaDesktop) {
+    desktopWindow.hermesDesktop = initialKovaDesktop
   } else {
     delete desktopWindow.hermesDesktop
   }

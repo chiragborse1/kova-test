@@ -1,11 +1,11 @@
-# nix/homeManagerModules.nix — the Home Manager module for hermes-agent
+# nix/homeManagerModules.nix — the Home Manager module for kova-agent
 #
-# This module is the user-level equivalent of nixosModules.default. Hermes is
+# This module is the user-level equivalent of nixosModules.default. Kova is
 # an agent for one person. The credentials, the memory, the sessions and the
 # cron jobs all belong to that person. Thus a user-level module is correct on
 # each distribution, and not only on NixOS.
 #
-# `services.hermes-agent` is the same option set on both modules. All of the
+# `services.kova-agent` is the same option set on both modules. All of the
 # options except the system-level ones come from nix/moduleCommon.nix, so an
 # example from the NixOS documentation works here without a change. Only the
 # necessary parts are different:
@@ -17,24 +17,24 @@
 #   changed   systemd.services         -> systemd.user.services or
 #                                        launchd.agents
 #   changed   system.activationScripts -> home.activation
-#   changed   addToSystemPackages      -> programs.hermes-agent.enable and
+#   changed   addToSystemPackages      -> programs.kova-agent.enable and
 #                                        home.sessionVariables
-#   added     programs.hermes-agent    the CLI and the desktop application,
+#   added     programs.kova-agent    the CLI and the desktop application,
 #                                      because Home Manager separates an
 #                                      installation from a daemon
-#   changed   stateDir (+ "/.hermes")  -> hermesHome, set directly
+#   changed   stateDir (+ "/.kova")  -> hermesHome, set directly
 #
 # To use the module:
-#   imports = [ hermes-agent.homeManagerModules.default ];
-#   programs.hermes-agent = {
-#     enable = true;          # the hermes CLI on your PATH
+#   imports = [ kova-agent.homeManagerModules.default ];
+#   programs.kova-agent = {
+#     enable = true;          # the kova CLI on your PATH
 #     desktop.enable = true;  # the Electron application and a launcher
 #   };
-#   services.hermes-agent = {
+#   services.kova-agent = {
 #     enable = true;
 #     gateway.enable = true;
 #     settings.model.default = "anthropic/claude-sonnet-4";
-#     environmentFiles = [ config.sops.secrets."hermes/env".path ];
+#     environmentFiles = [ config.sops.secrets."kova/env".path ];
 #   };
 #
 # CAUTION: Enable linger for the account. Without linger, systemd stops the
@@ -54,12 +54,12 @@
     }:
 
     let
-      cfg = config.services.hermes-agent;
-      cfgPrograms = config.programs.hermes-agent;
+      cfg = config.services.kova-agent;
+      cfgPrograms = config.programs.kova-agent;
       common = import ./moduleCommon.nix { inherit lib; };
 
       effectivePackage = common.effectivePackage cfg;
-      hermes-agent = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+      kova-agent = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
       inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
 
@@ -73,28 +73,28 @@
 
       # ── The desktop launcher ───────────────────────────────────────────
       # A GUI launcher reads no shell profile, so home.sessionVariables does
-      # not reach it, and the application would open ~/.hermes while the
+      # not reach it, and the application would open ~/.kova while the
       # services use hermesHome. Thus the launcher carries the value itself.
       #
-      # HERMES_MANAGED rides along only when the services are enabled. That
+      # KOVA_MANAGED rides along only when the services are enabled. That
       # variable makes the CLI refuse a configuration change and name the
       # rebuild command. A person who enables `programs.` alone has no
       # activation and no managed configuration, so the application must not
       # claim one and refuse an edit that nothing else owns.
       desktopEnvironment = {
-        HERMES_HOME = cfg.hermesHome;
+        KOVA_HOME = cfg.hermesHome;
       }
       // lib.optionalAttrs cfg.enable {
-        inherit (processEnvironment) HERMES_MANAGED;
+        inherit (processEnvironment) KOVA_MANAGED;
       }
       // lib.optionalAttrs desktopUsesService {
-        HERMES_DESKTOP_REMOTE_URL = "http://${cfg.backend.host}:${toString cfg.backend.port}";
+        KOVA_DESKTOP_REMOTE_URL = "http://${cfg.backend.host}:${toString cfg.backend.port}";
       };
 
       # The application reaches the backend of the service only when there is
       # a backend to reach AND a shared token to present with. Without the
-      # token the desktop resolver throws ("HERMES_DESKTOP_REMOTE_URL is set
-      # but HERMES_DESKTOP_REMOTE_TOKEN is not"), so the two variables travel
+      # token the desktop resolver throws ("KOVA_DESKTOP_REMOTE_URL is set
+      # but KOVA_DESKTOP_REMOTE_TOKEN is not"), so the two variables travel
       # together or not at all.
       desktopUsesService = cfg.enable && cfg.backend.mode != "none" && cfg.backend.sessionTokenFile != null;
 
@@ -102,11 +102,11 @@
       # writes a --set value into the Nix store, which all users can read.
       desktopRun = lib.optional desktopUsesService ''
         if [ -r ${lib.escapeShellArg cfg.backend.sessionTokenFile} ]; then
-          HERMES_DESKTOP_REMOTE_TOKEN="$(tr -d '\r\n' < ${lib.escapeShellArg cfg.backend.sessionTokenFile})"
-          export HERMES_DESKTOP_REMOTE_TOKEN
+          KOVA_DESKTOP_REMOTE_TOKEN="$(tr -d '\r\n' < ${lib.escapeShellArg cfg.backend.sessionTokenFile})"
+          export KOVA_DESKTOP_REMOTE_TOKEN
         else
-          echo "hermes-desktop: cannot read the session token at ${cfg.backend.sessionTokenFile}." >&2
-          echo "hermes-desktop: the application starts its own backend instead of the one of the service." >&2
+          echo "kova-desktop: cannot read the session token at ${cfg.backend.sessionTokenFile}." >&2
+          echo "kova-desktop: the application starts its own backend instead of the one of the service." >&2
         fi
       '';
 
@@ -178,32 +178,32 @@
 
     in
     {
-      # ── programs.hermes-agent — the installation ───────────────────────
+      # ── programs.kova-agent — the installation ───────────────────────
       # Home Manager separates "install this application for me" from "run
-      # this daemon". Hermes needs both, and a person can want one without
+      # this daemon". Kova needs both, and a person can want one without
       # the other: an application with no gateway, or a headless gateway on
       # a machine with no display.
       #
-      # `services.hermes-agent` stays the authority for the state and the
+      # `services.kova-agent` stays the authority for the state and the
       # configuration. This module reads hermesHome and the backend address
       # from it, and never the reverse.
-      options.programs.hermes-agent = {
+      options.programs.kova-agent = {
         enable = lib.mkEnableOption ''
-          the Hermes Agent command line application.
+          the Kova Agent command line application.
 
-          This adds `hermes` to home.packages, and exports HERMES_HOME with
+          This adds `kova` to home.packages, and exports KOVA_HOME with
           home.sessionVariables. An interactive shell then uses the same
-          state as `services.hermes-agent`
+          state as `services.kova-agent`
         '';
 
         package = lib.mkOption {
           type = lib.types.package;
           default = effectivePackage;
-          defaultText = lib.literalExpression "config.services.hermes-agent.package";
+          defaultText = lib.literalExpression "config.services.kova-agent.package";
           description = ''
-            The hermes-agent package to install.
+            The kova-agent package to install.
 
-            The default follows `services.hermes-agent.package`, and applies
+            The default follows `services.kova-agent.package`, and applies
             `extraPythonPackages` and `extraDependencyGroups` from that
             module. Thus the command line and the services are one build,
             and a plugin that the services can load is a plugin that your
@@ -213,67 +213,67 @@
 
         desktop = {
           enable = lib.mkEnableOption ''
-            the Hermes Desktop application (Electron).
+            the Kova Desktop application (Electron).
 
-            This adds `hermes-desktop` to home.packages, with an XDG
-            launcher entry on Linux. The launcher starts the same Hermes
-            runtime that `package` gives, and reads the HERMES_HOME of
-            `services.hermes-agent`. Thus the application, the interactive
+            This adds `kova-desktop` to home.packages, with an XDG
+            launcher entry on Linux. The launcher starts the same Kova
+            runtime that `package` gives, and reads the KOVA_HOME of
+            `services.kova-agent`. Thus the application, the interactive
             shell and the services share one state directory.
 
-            The Electron application carries its own Hermes runtime with
+            The Electron application carries its own Kova runtime with
             the usual distribution. This module gives it the Nix package
-            instead, with HERMES_DESKTOP_HERMES. It installs no second copy
-            of Hermes, and it downloads nothing on the first start
+            instead, with KOVA_DESKTOP_HERMES. It installs no second copy
+            of Kova, and it downloads nothing on the first start
           '';
 
           package = lib.mkOption {
             type = lib.types.package;
             default = cfgPrograms.package.hermesDesktop;
-            defaultText = lib.literalExpression "config.programs.hermes-agent.package.hermesDesktop";
+            defaultText = lib.literalExpression "config.programs.kova-agent.package.hermesDesktop";
             description = ''
-              The hermes-desktop package to use.
+              The kova-desktop package to use.
 
               The default follows `package`, and thus also
-              `services.hermes-agent.extraPythonPackages` and
+              `services.kova-agent.extraPythonPackages` and
               `extraDependencyGroups`, because the desktop application is a
               passthru of the agent package. A package that you set here
-              carries its own Hermes runtime, and this module cannot make
+              carries its own Kova runtime, and this module cannot make
               it agree with the services.
             '';
           };
         };
       };
 
-      options.services.hermes-agent =
+      options.services.kova-agent =
         common.sharedOptions {
-          defaultPackage = hermes-agent;
-          defaultPackageText = lib.literalExpression "hermes-agent.packages.\${system}.default";
+          defaultPackage = kova-agent;
+          defaultPackageText = lib.literalExpression "kova-agent.packages.\${system}.default";
           defaultWorkingDirectory = config.home.homeDirectory;
           defaultWorkingDirectoryText = lib.literalExpression "config.home.homeDirectory";
         }
         // {
           hermesHome = lib.mkOption {
             type = lib.types.str;
-            default = "${config.home.homeDirectory}/.hermes";
-            defaultText = lib.literalExpression ''"''${config.home.homeDirectory}/.hermes"'';
+            default = "${config.home.homeDirectory}/.kova";
+            defaultText = lib.literalExpression ''"''${config.home.homeDirectory}/.kova"'';
             description = ''
-              The value of HERMES_HOME. This state directory holds
+              The value of KOVA_HOME. This state directory holds
               config.yaml, .env, auth.json, the sessions, the skills, the
               memory and the cron jobs.
 
-              The NixOS module takes a `stateDir` and adds `/.hermes` to it.
-              This module sets HERMES_HOME directly. Thus an existing
-              ~/.hermes continues to work, and you can give the directory any
+              The NixOS module takes a `stateDir` and adds `/.kova` to it.
+              This module sets KOVA_HOME directly. Thus an existing
+              ~/.kova continues to work, and you can give the directory any
               name.
             '';
-            example = "/home/alice/.hermes-work";
+            example = "/home/alice/.kova-work";
           };
 
-          # `installPackage` moved to `programs.hermes-agent.enable`. The
+          # `installPackage` moved to `programs.kova-agent.enable`. The
           # option is dead, but it must not be silent: it defaulted to true,
           # so a person who never named it still got the command line, and a
-          # quiet removal gives them a machine with no `hermes` and no
+          # quiet removal gives them a machine with no `kova` and no
           # message. mkOption with an assertion, and not
           # mkRemovedOptionModule, because the message must name the exact
           # replacement for the value they set.
@@ -282,7 +282,7 @@
             default = null;
             visible = false;
             description = ''
-              Removed. Use `programs.hermes-agent.enable` instead.
+              Removed. Use `programs.kova-agent.enable` instead.
             '';
           };
 
@@ -291,19 +291,19 @@
 
       config = lib.mkMerge [
 
-        # ── programs.hermes-agent — the installation ──────────────────────
+        # ── programs.kova-agent — the installation ──────────────────────
         # Outside the `services.enable` guard on purpose. A person can want
         # the command line or the application on a machine that runs no
         # daemon at all.
         (lib.mkIf cfgPrograms.enable {
           home.packages = [ cfgPrograms.package ];
-          home.sessionVariables.HERMES_HOME = cfg.hermesHome;
+          home.sessionVariables.KOVA_HOME = cfg.hermesHome;
         })
 
         # A launcher from the desktop menu reads no shell profile, so the
-        # HERMES_HOME that `programs.enable` exports does not reach it. Home
+        # KOVA_HOME that `programs.enable` exports does not reach it. Home
         # Manager writes only systemd.user.sessionVariables into
-        # environment.d, and this module does not put HERMES_HOME there,
+        # environment.d, and this module does not put KOVA_HOME there,
         # because that file applies to each user unit. Thus the launcher
         # carries the value itself. See desktopEnvironment above.
         (lib.mkIf cfgPrograms.desktop.enable {
@@ -315,7 +315,7 @@
             {
               # `installPackage` was removed in favour of the programs/services
               # split. It defaulted to true, so a quiet removal leaves a person
-              # with no `hermes` on the PATH and no message.
+              # with no `kova` on the PATH and no message.
               assertion = cfg.installPackage == null;
               message = common.installPackageRemovedMessage cfg.installPackage;
             }
@@ -327,30 +327,30 @@
 
             # ── Merge MCP servers into settings ────────────────────────────
             (lib.mkIf (cfg.mcpServers != { }) {
-              services.hermes-agent.settings.mcp_servers = common.mcpServersToConfig cfg.mcpServers;
+              services.kova-agent.settings.mcp_servers = common.mcpServersToConfig cfg.mcpServers;
             })
 
             {
               assertions =
                 common.pluginNameAssertions {
                   inherit cfg;
-                  optionPath = "services.hermes-agent";
+                  optionPath = "services.kova-agent";
                 }
                 ++ common.workspaceFilesAssertions {
                   inherit cfg;
-                  opt = options.services.hermes-agent.workingDirectory;
-                  optionPath = "services.hermes-agent";
+                  opt = options.services.kova-agent.workingDirectory;
+                  optionPath = "services.kova-agent";
                 }
                 ++ common.backendBindAssertions {
                   inherit cfg;
-                  optionPath = "services.hermes-agent";
+                  optionPath = "services.kova-agent";
                 }
                 ++ [
                   {
                     # The interface poll reads `ip`, which iproute2 supplies on
                     # Linux only.
                     assertion = !isDarwin || cfg.backend.waitFor != "interface";
-                    message = "services.hermes-agent.backend.waitFor = \"interface\" works on Linux only. Use \"hostname\" on Darwin.";
+                    message = "services.kova-agent.backend.waitFor = \"interface\" works on Linux only. Use \"hostname\" on Darwin.";
                   }
                 ];
             }
@@ -394,14 +394,14 @@
 
             # ── Linux: systemd user services ───────────────────────────────
             (lib.mkIf (isLinux && cfg.gateway.enable) {
-              systemd.user.services.hermes-agent = mkUnit {
-                description = "Hermes Agent Gateway";
+              systemd.user.services.kova-agent = mkUnit {
+                description = "Kova Agent Gateway";
                 argv = common.gatewayArgv cfg;
               };
             })
 
             (lib.mkIf (isLinux && cfg.backend.mode != "none") {
-              systemd.user.services.hermes-backend = mkUnit {
+              systemd.user.services.kova-backend = mkUnit {
                 description = common.backendDescription cfg;
                 argv = common.backendArgv { inherit pkgs cfg; };
               };
@@ -409,16 +409,16 @@
 
             # ── Darwin: launchd agents ─────────────────────────────────────
             (lib.mkIf (isDarwin && cfg.gateway.enable) {
-              launchd.agents.hermes-agent = mkAgent {
+              launchd.agents.kova-agent = mkAgent {
                 argv = common.gatewayArgv cfg;
-                logName = "hermes-agent";
+                logName = "kova-agent";
               };
             })
 
             (lib.mkIf (isDarwin && cfg.backend.mode != "none") {
-              launchd.agents.hermes-backend = mkAgent {
+              launchd.agents.kova-backend = mkAgent {
                 argv = common.backendArgv { inherit pkgs cfg; };
-                logName = "hermes-backend";
+                logName = "kova-backend";
               };
             })
           ]

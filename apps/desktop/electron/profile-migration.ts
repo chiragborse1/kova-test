@@ -15,15 +15,15 @@ export const PROFILE_SCORE_MIN_SIZE_BYTES = 1024
 
 export interface MigrationDeps {
   legacyActivePath: string
-  /** Default profile home (`~/.hermes`). Default's state.db and gateway.pid live here. */
+  /** Default profile home (`~/.kova`). Default's state.db and gateway.pid live here. */
   hermesHome: string
-  /** Named-profile root (`~/.hermes/profiles`). Does not contain `default`. */
+  /** Named-profile root (`~/.kova/profiles`). Does not contain `default`. */
   profilesRoot: string
   existsSync: (path: string) => boolean
   readFileSync: (path: string, encoding: 'utf8') => string
   statSync: (path: string) => { size: number; mtimeMs: number }
   readdirSync: (path: string, options?: { withFileTypes?: boolean }) => Dirent[]
-  isHermesProcess: (pid: number) => boolean
+  isKovaProcess: (pid: number) => boolean
   now: () => number
   writeJson: (path: string, payload: MigrationDecision) => void
   isValidProfileName: (name: string) => boolean
@@ -47,7 +47,7 @@ export function profileGatewayPidPath(name: string, hermesHome: string, profiles
   return name === 'default' ? `${hermesHome}/gateway.pid` : `${profilesRoot}/${name}/gateway.pid`
 }
 
-function resolveHermesHome(profilesRoot: string, hermesHome?: string): string {
+function resolveKovaHome(profilesRoot: string, hermesHome?: string): string {
   if (hermesHome) {
     return hermesHome
   }
@@ -97,7 +97,7 @@ export function readLegacyActiveProfile(
 }
 
 /**
- * Return the profile names whose gateway.pid file points to a live hermes process.
+ * Return the profile names whose gateway.pid file points to a live kova process.
  * Tolerates missing/malformed pid files and stale-but-recycled PIDs (the latter is
  * the whole reason we check both liveness AND cmdline identity).
  *
@@ -107,9 +107,9 @@ export function readLegacyActiveProfile(
 export function findRunningGatewayProfiles(
   profilesRoot: string,
   allProfiles: string[],
-  deps: Pick<MigrationDeps, 'existsSync' | 'readFileSync' | 'isHermesProcess'> & { hermesHome?: string }
+  deps: Pick<MigrationDeps, 'existsSync' | 'readFileSync' | 'isKovaProcess'> & { hermesHome?: string }
 ): string[] {
-  const hermesHome = resolveHermesHome(profilesRoot, deps.hermesHome)
+  const hermesHome = resolveKovaHome(profilesRoot, deps.hermesHome)
   const running: string[] = []
 
   for (const name of allProfiles) {
@@ -133,7 +133,7 @@ export function findRunningGatewayProfiles(
       continue
     }
 
-    if (deps.isHermesProcess(pid)) {
+    if (deps.isKovaProcess(pid)) {
       running.push(name)
     }
   }
@@ -228,7 +228,7 @@ export function listProfileDirs(deps: MigrationDeps): string[] {
     .map(e => e.name)
 }
 
-/** Default is always a candidate; it is `$HERMES_HOME`, not `$HERMES_HOME/profiles/default`. */
+/** Default is always a candidate; it is `$KOVA_HOME`, not `$KOVA_HOME/profiles/default`. */
 export function withDefaultCandidate(named: string[]): string[] {
   return ['default', ...named.filter(name => name !== 'default')]
 }
@@ -289,7 +289,7 @@ export function migrateActiveProfileIfMissing(desktopProfileConfigPath: string, 
   )
 
   // Same as the heuristic rung: pinning `default` into active-profile.json
-  // launches `hermes --profile default` and is worse than writing nothing
+  // launches `kova --profile default` and is worse than writing nothing
   // (legacy sticky / implicit default). Covers a lone default gateway.pid.
   if (!decision || decision.profile === 'default') {
     if (existing?.migrated) {

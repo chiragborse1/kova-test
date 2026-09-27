@@ -941,7 +941,7 @@ describe('selectConnection', () => {
     $connection.set({ connectionId: 'local', mode: 'local', profile: 'mac', registryScoped: true })
     $activeGatewayProfile.set('mac')
 
-    expect(JSON.parse(localStorage.getItem('hermes.desktop.lastProfileByConnection') || '{}')).toEqual({
+    expect(JSON.parse(localStorage.getItem('kova.desktop.lastProfileByConnection') || '{}')).toEqual({
       local: 'mac'
     })
 

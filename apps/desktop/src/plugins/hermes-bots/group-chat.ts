@@ -9,7 +9,7 @@
  * store, one writer.
  */
 
-import { atom, host } from '@hermes/plugin-sdk'
+import { atom, host } from '@kova/plugin-sdk'
 
 import { $botMeta, $lastRoster, botRosterKey } from './data'
 import { groupMemberReferencesConnection, markOrphanedGroupMemberDescriptor } from './hygiene'
@@ -46,7 +46,7 @@ export const $groupNeedsYou = atom<Record<string, boolean>>({})
 // the room renders answer cards from it.
 export const $groupClarify = atom<Record<string, GroupPrompt>>({})
 
-const GROUP_CHAT_SYNC_META_KEY = 'hermes-bots-groups'
+const GROUP_CHAT_SYNC_META_KEY = 'kova-bots-groups'
 // Gateway ui_meta is capped after Python JSON serialization. Keep a healthy
 // margin below that limit because Python escapes Unicode while JS does not.
 const GROUP_CHAT_SYNC_MAX_BYTES = 48000
@@ -71,7 +71,7 @@ interface GroupChatSyncRoom {
   roomId?: string
 }
 
-/** The v3 envelope stored under the default profile's `hermes-bots-groups`
+/** The v3 envelope stored under the default profile's `kova-bots-groups`
  *  ui_meta key. `deleted` maps a room key to its tombstone revision. */
 interface GroupChatSyncSnapshot {
   deleted?: Record<string, number>
@@ -1083,7 +1083,7 @@ function groupChatSyncPayloadEqual(
 /** Every default-profile gateway route this Desktop can currently reach.
  *  The projection fans out to ALL of them, so any single gateway can die or
  *  be removed without losing the shared room state, and gateway-only
- *  clients (Hermes Go, headless backends) see rooms regardless of which
+ *  clients (Kova Go, headless backends) see rooms regardless of which
  *  gateway a Desktop was foregrounding when the room was used. */
 async function groupChatSyncTargetConnections() {
   const targets = new Set<string>()
@@ -1430,11 +1430,11 @@ export const GROUP_CHAT_MAX_MEMBERS = 6
  *  a Bot Mode title or a core profile display_name (e.g. default renamed to
  *  "Lucy") labels the speaker everywhere this helper feeds — the "X is
  *  thinking…" working line, the activity feed, and transcript lines — so a
- *  renamed bot never shows up as its raw profile id or a stale "Hermes"
- *  (community report, Aug 21 2026: renamed default still read "Hermes is
+ *  renamed bot never shows up as its raw profile id or a stale "Kova"
+ *  (community report, Aug 21 2026: renamed default still read "Kova is
  *  thinking…" in group rooms). The untitled primary profile is literally
- *  named "default" — render it as Hermes (matching displayName and the
- *  @hermes handle) so the main agent never loses its name in rooms.
+ *  named "default" — render it as Kova (matching displayName and the
+ *  @kova handle) so the main agent never loses its name in rooms.
  *
  *  Accepts either a member key (`connectionId::profile`, what the activity
  *  feed records) or a raw profile name (legacy rooms, the round prompt).
@@ -1443,7 +1443,7 @@ export const GROUP_CHAT_MAX_MEMBERS = 6
  *  same pipeline the Bots tab renders — and a raw name resolves the same
  *  way when exactly one roster row carries it. Same-named members that
  *  resolve to the same label get their connection label appended, so two
- *  failing `default`s are never one anonymous "Hermes" — judged against the
+ *  failing `default`s are never one anonymous "Kova" — judged against the
  *  ROOM's seats when the caller names the room (#94869: a room whose only
  *  `reviewer` is local reads plain "Reviewer" however many other connections
  *  expose one), against the whole roster otherwise. A key with no roster row
@@ -1479,7 +1479,7 @@ export function groupSpeakerLabel(name?: null | string, group?: null | string) {
     const connection = trimmed.slice(0, boundary)
     const profile = trimmed.slice(boundary + 2)
     const title = String(meta?.[trimmed]?.title || meta?.[profile]?.title || '').trim()
-    const label = title || (profile.toLowerCase() === 'default' ? 'Hermes' : profile)
+    const label = title || (profile.toLowerCase() === 'default' ? 'Kova' : profile)
 
     // Another connection still exposes this name: keep them tellable apart.
     return rows.some(bot => bot.name === profile) ? `${label} · ${connection}` : label
@@ -1495,7 +1495,7 @@ export function groupSpeakerLabel(name?: null | string, group?: null | string) {
   }
 
   // Legacy rungs for names the roster cannot place: a bare-keyed Bot Mode
-  // title, then the local row's display_name, then default → Hermes.
+  // title, then the local row's display_name, then default → Kova.
   const title = String(meta?.[trimmed]?.title || '').trim()
 
   if (title) {
@@ -1509,7 +1509,7 @@ export function groupSpeakerLabel(name?: null | string, group?: null | string) {
     return renamed
   }
 
-  return isDefault ? 'Hermes' : trimmed
+  return isDefault ? 'Kova' : trimmed
 }
 
 /** Trim a room log + its watermarks to the retained window, keeping

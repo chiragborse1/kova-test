@@ -43,13 +43,13 @@ test('a route that selects nothing fails instead of running an empty green matri
   expect(() => generate('windows: no-such-method')).toThrow()
 })
 
-test('the pr route runs one script install updated by hermes update per OS start, nothing else', () => {
+test('the pr route runs one script install updated by kova update per OS start, nothing else', () => {
   const pr: Matrices = generate('pr')
 
   expect(legNames(pr).sort()).toEqual([
-    'linux: installer-script -> hermes-update (HEAD -> NEXT)',
-    'linux: installer-script -> hermes-update (v2026.6.19 -> HEAD)',
-    'macos: installer-script -> hermes-update (v2026.6.19 -> HEAD)',
-    'windows: installer-script -> hermes-update (HEAD -> NEXT)',
+    'linux: installer-script -> kova-update (HEAD -> NEXT)',
+    'linux: installer-script -> kova-update (v2026.6.19 -> HEAD)',
+    'macos: installer-script -> kova-update (v2026.6.19 -> HEAD)',
+    'windows: installer-script -> kova-update (HEAD -> NEXT)',
   ])
 })

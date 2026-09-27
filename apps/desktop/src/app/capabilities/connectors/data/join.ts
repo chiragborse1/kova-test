@@ -7,9 +7,9 @@ import type {
   McpRuntimeStatus,
   McpServerRuntimeRow,
   McpServerSummary
-} from '@hermes/shared'
+} from '@kova/shared'
 
-import type { McpCatalogEntry } from '@/hermes'
+import type { McpCatalogEntry } from '@/kova'
 import { connectorTitle } from '@/lib/connector-tools'
 import { type McpServers, serverEnabled } from '@/lib/mcp-servers'
 

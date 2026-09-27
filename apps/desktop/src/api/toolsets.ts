@@ -5,7 +5,7 @@ import type {
   ToolsetConfig,
   ToolsetInfo,
   ToolsetModelsResponse
-} from '@/types/hermes'
+} from '@/types/kova'
 
 import { capabilityScoped, hermesApi, type ProfileScope, profileScoped } from './client'
 

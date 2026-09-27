@@ -18,7 +18,7 @@ function Surface(): React.JSX.Element {
 function summary(allowed: boolean): DesktopUninstallSummary {
   return {
     code_removal_allowed: allowed,
-    hermes_home: '/test/home',
+    kova_home: '/test/home',
     agent_installed: true,
     gui_installed: true,
     source_built_artifacts: [],
@@ -62,7 +62,7 @@ it.each(['external', 'missing-policy', 'probe-failed', 'loading'] as const)(
       render(<UninstallSection />)
     })
     expect(getSummary).toHaveBeenCalledOnce()
-    expect(screen.queryByText('Uninstall Hermes')).toBeNull()
+    expect(screen.queryByText('Uninstall Kova')).toBeNull()
     expect(screen.queryByRole('button', { name: /Uninstall/ })).toBeNull()
     expect(screen.queryByText('Danger zone')).toBeNull()
     expect(run).not.toHaveBeenCalled()

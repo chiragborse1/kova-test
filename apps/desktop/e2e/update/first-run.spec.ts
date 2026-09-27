@@ -1,8 +1,8 @@
 /**
  * Failure class: FIRST RUN on a healthy install.
  *
- * A user who installed Hermes with scripts/install.sh and built the Desktop
- * app with `hermes desktop` opens the app. It must find that install and go
+ * A user who installed Kova with scripts/install.sh and built the Desktop
+ * app with `kova desktop` opens the app. It must find that install and go
  * straight to chat — on the first launch and on every later one — and never
  * show the first-run setup chooser or start the bootstrap installer
  * (#123888, #123800: the chooser / installer came back on every launch while
@@ -10,8 +10,8 @@
  * bootstrap marker first: a usable install is recognised off the filesystem.
  *
  * Real entry point: the packaged app the install built, launched with the
- * install's environment and no HERMES_DESKTOP_HERMES_ROOT override, so the app
- * resolves the backend the way it does for a user ($HERMES_HOME/hermes-agent).
+ * install's environment and no KOVA_DESKTOP_KOVA_ROOT override, so the app
+ * resolves the backend the way it does for a user ($KOVA_HOME/kova-agent).
  */
 
 import * as fs from 'node:fs'
@@ -71,7 +71,7 @@ test('a healthy local install opens straight to chat on every launch: no setup c
         if (launch === 2) {
           // A usable install the Desktop bootstrap never stamped (a CLI install from before the
           // marker, or one whose marker was lost): usability, not the marker, decides.
-          fs.rmSync(path.join(facts.checkout, '.hermes-bootstrap-complete'), { force: true })
+          fs.rmSync(path.join(facts.checkout, '.kova-bootstrap-complete'), { force: true })
         }
 
         const installer = startInstallerSampler(facts)
@@ -121,7 +121,7 @@ test('a healthy local install opens straight to chat on every launch: no setup c
     }
 
     expect(
-      fs.existsSync(path.join(facts.hermesHome, 'hermes-agent', '.git')),
+      fs.existsSync(path.join(facts.hermesHome, 'kova-agent', '.git')),
       'the install is still the git checkout the installer made'
     ).toBe(true)
   } finally {

@@ -135,7 +135,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const [home, url] = process.argv.slice(2)
 
   if (!home || !url || !path.isAbsolute(home)) {
-    throw new Error('usage: node mock-provider-config.ts ABSOLUTE_HERMES_HOME MOCK_URL')
+    throw new Error('usage: node mock-provider-config.ts ABSOLUTE_KOVA_HOME MOCK_URL')
   }
 
   writeMockProviderConfig(home, url)

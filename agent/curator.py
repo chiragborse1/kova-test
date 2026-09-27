@@ -20,7 +20,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Set
 
-from hermes_constants import get_hermes_home
+from kova_constants import get_kova_home
 from agent.skill_utils import get_disabled_skill_names
 from tools import skill_usage
 from utils import atomic_json_write
@@ -37,7 +37,7 @@ DEFAULT_CONSOLIDATE = False
 # --- .curator_state — persistent scheduler + status ---
 
 def _state_file() -> Path:
-    return get_hermes_home() / "skills" / ".curator_state"
+    return get_kova_home() / "skills" / ".curator_state"
 
 
 def load_state() -> Dict[str, Any]:
@@ -81,9 +81,9 @@ def _subdict(node: Any, *keys: str) -> Dict[str, Any]:
 
 
 def _read_config_section(*path: str, label: str, log: logging.Logger = logger) -> Dict[str, Any]:
-    """Read a nested section of ~/.hermes/config.yaml. Tolerates missing file."""
+    """Read a nested section of ~/.kova/config.yaml. Tolerates missing file."""
     try:
-        from hermes_cli.config import load_config_readonly
+        from kova_cli.config import load_config_readonly
         cfg = load_config_readonly()
     except Exception as e:
         log.debug("Failed to load config for %s: %s", label, e)
@@ -120,7 +120,7 @@ _warned_bad_values: set = set()
 
 def _bounded_count(key: str, default: int) -> int:
     """*key* (a ``curator.<key>`` day/hour count), floored at 1 like ``curator prune --days`` already
-    refuses (hermes_cli/curator.py::_cmd_prune). A value < 1 collapses stale_cutoff/archive_cutoff
+    refuses (kova_cli/curator.py::_cmd_prune). A value < 1 collapses stale_cutoff/archive_cutoff
     onto or past "now" in apply_automatic_transitions(), mass-transitioning every skill with any
     past activity on the next automatic pass — unlike the manual prune path this runs unconfirmed,
     so it falls back to the default instead of acting on the bad value."""
@@ -143,7 +143,7 @@ def get_archive_after_days() -> int:
 
 
 def get_consolidate() -> bool:
-    """LLM consolidation pass — OFF by default (prune only, no aux-model fork); ``hermes curator run --consolidate`` overrides per invocation."""
+    """LLM consolidation pass — OFF by default (prune only, no aux-model fork); ``kova curator run --consolidate`` overrides per invocation."""
     return bool(_load_config().get("consolidate", DEFAULT_CONSOLIDATE))
 
 
@@ -159,7 +159,7 @@ def _parse_iso(ts: Optional[str]) -> Optional[datetime]:
 def should_run_now(now: Optional[datetime] = None) -> bool:
     """Gates: curator.enabled, not paused, ``last_run_at`` present AND older than interval_hours. First observation seeds
     ``last_run_at`` to now and defers one interval, so a fresh install/update never mutates the library on its first tick.
-    ``hermes curator run`` bypasses this; the idle check is the caller's."""
+    ``kova curator run`` bypasses this; the idle check is the caller's."""
     if not is_enabled() or is_paused():
         return False
     state = load_state()
@@ -168,7 +168,7 @@ def should_run_now(now: Optional[datetime] = None) -> bool:
     if last is None:
         try:
             state["last_run_at"] = now.isoformat()
-            state["last_run_summary"] = "deferred first run — curator seeded, will run after one interval; use `hermes curator run --dry-run` to preview now"
+            state["last_run_summary"] = "deferred first run — curator seeded, will run after one interval; use `kova curator run --dry-run` to preview now"
             save_state(state)
         except Exception as e:  # pragma: no cover — best-effort persistence
             logger.debug("Failed to seed curator last_run_at: %s", e)
@@ -278,7 +278,7 @@ CURATOR_DRY_RUN_BANNER = (
     "produce on a live run — but describe the actions you WOULD take, "
     "not actions you took. A downstream reviewer will read the report "
     "and decide whether to approve a live run with "
-    "`hermes curator run` (no flag).\n"
+    "`kova curator run` (no flag).\n"
     "\n"
     "If you accidentally take a mutating action, say so explicitly in "
     "the summary so the reviewer can revert it.\n"
@@ -287,7 +287,7 @@ CURATOR_DRY_RUN_BANNER = (
 
 
 CURATOR_REVIEW_PROMPT = (
-    "You are running as Hermes' background skill CURATOR. This is an "
+    "You are running as Kova' background skill CURATOR. This is an "
     "UMBRELLA-BUILDING consolidation pass, not a passive audit and not a "
     "duplicate-finder.\n\n"
     "The goal of the skill collection is a LIBRARY OF CLASS-LEVEL "
@@ -317,7 +317,7 @@ CURATOR_REVIEW_PROMPT = (
     "to local curator-managed skills only; external skills are externally "
     "owned and read-only to this background curator.\n"
     "2. DO NOT delete any skill. Archiving (moving the skill's directory "
-    "into ~/.hermes/skills/.archive/) is the maximum destructive action. "
+    "into ~/.kova/skills/.archive/) is the maximum destructive action. "
     "Archives are recoverable; deletion is not.\n"
     "3. DO NOT touch skills shown as pinned=yes. Skip them entirely.\n"
     "3b. DO NOT archive, delete, consolidate, move, or otherwise modify any "
@@ -346,7 +346,7 @@ CURATOR_REVIEW_PROMPT = (
     "How to work — not optional:\n"
     "1. Scan the full candidate list. Identify PREFIX CLUSTERS (skills "
     "sharing a first word or domain keyword). Examples you are likely "
-    "to find: hermes-config-*, hermes-dashboard-*, gateway-*, codex-*, "
+    "to find: kova-config-*, kova-dashboard-*, gateway-*, codex-*, "
     "ollama-*, anthropic-*, gemini-*, mcp-*, salvage-*, pr-*, "
     "competitor-*, python-*, security-*, etc. Expect 10-25 clusters.\n"
     "2. For each cluster with 2+ members, do NOT ask 'are these pairs "
@@ -382,7 +382,7 @@ CURATOR_REVIEW_PROMPT = (
     "then `skill_manage action=delete` on the source. Never a terminal move "
     "— a shell mv/cp writes the same bytes with no ledger entry, so the "
     "archive that follows snapshots an already-stripped package and "
-    "`hermes curator rollback` restores a hollow skill (issue #96962).\n\n"
+    "`kova curator rollback` restores a hollow skill (issue #96962).\n\n"
     "Package integrity — not optional:\n"
     "Before demoting or archiving a skill, inspect it as a COMPLETE "
     "directory package, not just SKILL.md. A skill root may include "
@@ -470,8 +470,8 @@ CURATOR_REVIEW_PROMPT = (
 # --- Per-run reports — {YYYYMMDD-HHMMSS}/run.json + REPORT.md under logs/curator/ ---
 
 def _reports_root() -> Path:
-    """``~/.hermes/logs/curator/`` (telemetry next to agent.log, not under skills/). mkdir'd here too so gateway-only / bare-library entry paths work."""
-    root = get_hermes_home() / "logs" / "curator"
+    """``~/.kova/logs/curator/`` (telemetry next to agent.log, not under skills/). mkdir'd here too so gateway-only / bare-library entry paths work."""
+    root = get_kova_home() / "logs" / "curator"
     try:
         root.mkdir(parents=True, exist_ok=True)
     except OSError as e:
@@ -549,7 +549,7 @@ def _parse_structured_summary(llm_final: str) -> Dict[str, List[Dict[str, str]]]
     data = None
     if match:
         try:
-            import hermes_yaml as yaml
+            import kova_yaml as yaml
             data = yaml.safe_load(match.group(1))
         except Exception:
             pass
@@ -664,10 +664,10 @@ def _build_rename_summary(*, before_names: Set[str], after_report: List[Dict[str
     lines = [f"archived {total} skill(s):"] + entries[:SHOW]
     if total > SHOW:
         lines.append(f"  … and {total - SHOW} more")
-    lines.append("full report: hermes curator status")
+    lines.append("full report: kova curator status")
     umbrellas = sorted({e.get("into") for e in diff.consolidated if e.get("into")})
     if umbrellas:
-        lines.append(f"keep an umbrella stable: hermes curator pin {umbrellas[0]}")
+        lines.append(f"keep an umbrella stable: kova curator pin {umbrellas[0]}")
     return "\n".join(lines)
 
 
@@ -771,11 +771,11 @@ def _cron_rewrite_lines(entry: Dict[str, Any]) -> List[str]:
 _REPORT_SECTIONS = (
     ("consolidated", "Consolidated into umbrella skills",
      "_These skills were **absorbed into another skill** during this run — their content still lives, just under a different name. "
-     "The original directory was moved to `~/.hermes/skills/.archive/` for safety and can be restored via "
-     "`hermes curator restore <name>` if the consolidation was wrong._\n", _consolidated_lines, 50, "see `run.json`"),
+     "The original directory was moved to `~/.kova/skills/.archive/` for safety and can be restored via "
+     "`kova curator restore <name>` if the consolidation was wrong._\n", _consolidated_lines, 50, "see `run.json`"),
     ("pruned", "Pruned — archived for staleness",
      "_These skills were archived without being merged into an umbrella (e.g. stale, unused, or judged irrelevant). "
-     "Directories live under `~/.hermes/skills/.archive/`. Restore any via `hermes curator restore <name>`._\n",
+     "Directories live under `~/.kova/skills/.archive/`. Restore any via `kova curator restore <name>`._\n",
      _pruned_lines, 50, "see `run.json`"),
     ("added", "New skills this run", "_Usually these are new class-level umbrellas created via `skill_manage action=create`._\n",
      lambda n: [f"- `{n}`"], None, ""),
@@ -820,8 +820,8 @@ def _render_report_markdown(p: Dict[str, Any]) -> str:
         lines += ["## LLM final summary\n", final, ""]
     elif not error and (p.get("llm_summary") or ""):
         lines += ["## LLM summary\n", p.get("llm_summary"), ""]
-    lines += ["## Recovery\n", "- Restore an archived skill: `hermes curator restore <name>`",
-              "- All archives live under `~/.hermes/skills/.archive/` and are recoverable by `mv`",
+    lines += ["## Recovery\n", "- Restore an archived skill: `kova curator restore <name>`",
+              "- All archives live under `~/.kova/skills/.archive/` and are recoverable by `mv`",
               "- See `run.json` in this directory for the full machine-readable record.", ""]
     return "\n".join(lines)
 
@@ -948,7 +948,7 @@ def run_curator_review(
 
     # Persist before the LLM pass so a crash mid-review still records the run.
     # Dry-run does NOT bump last_run_at/run_count (a preview must not push the
-    # next real pass out) but still records a summary for `hermes curator status`.
+    # next real pass out) but still records a summary for `kova curator status`.
     prefix = "dry-run auto: " if dry_run else "auto: "
     state = {**load_state(), "last_run_summary": f"{prefix}{auto_summary}"}
     if not dry_run:
@@ -967,7 +967,7 @@ def run_curator_review(
             llm_meta = _llm_meta("skipped (consolidation off)")
         elapsed = (datetime.now(timezone.utc) - start).total_seconds()
         state2 = {**load_state(), "last_run_duration_seconds": elapsed, "last_run_summary": final_summary}
-        # Per-run report, best-effort; path recorded for `hermes curator status`.
+        # Per-run report, best-effort; path recorded for `kova curator status`.
         try:
             report_path = _write_run_report(
                 started_at=start, elapsed_seconds=elapsed, auto_counts=counts, auto_summary=auto_summary,
@@ -1036,8 +1036,8 @@ def _resolve_review_provider() -> tuple:
     rp: Dict[str, Any] = {}
     overrides, provider, model_name, binding = {}, None, "", None
     try:
-        from hermes_cli.config import load_config_readonly
-        from hermes_cli.runtime_provider import resolve_runtime_provider
+        from kova_cli.config import load_config_readonly
+        from kova_cli.runtime_provider import resolve_runtime_provider
         binding = _resolve_review_runtime(load_config_readonly())
         model_name = binding.model
         rp = resolve_runtime_provider(
@@ -1071,8 +1071,8 @@ def _run_llm_review(prompt: str) -> Dict[str, Any]:
         acp_command = rp.get("command")
         if isinstance(acp_command, str) and acp_command:
             agent_kwargs.update(acp_command=acp_command, acp_args=list(rp.get("args") or []))
-        from hermes_cli.config import load_config_readonly
-        from hermes_constants import resolve_reasoning_config
+        from kova_cli.config import load_config_readonly
+        from kova_constants import resolve_reasoning_config
 
         review_agent = AIAgent(
             model=model_name, provider=provider, api_key=rp.get("api_key"), base_url=rp.get("base_url"),
@@ -1135,7 +1135,7 @@ _CLAIM_STALE_SECONDS = 3600.0
 
 
 def _run_claim_path() -> Path:
-    return get_hermes_home() / "skills" / ".locks" / "curator-run"
+    return get_kova_home() / "skills" / ".locks" / "curator-run"
 
 
 def _claim_run() -> bool:

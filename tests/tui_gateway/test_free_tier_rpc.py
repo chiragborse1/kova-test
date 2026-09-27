@@ -10,8 +10,8 @@ import time
 import pytest
 
 import tui_gateway.server as srv
-from hermes_cli import anon_auth
-from hermes_cli.auth import _auth_store_lock, _load_auth_store, _save_auth_store
+from kova_cli import anon_auth
+from kova_cli.auth import _auth_store_lock, _load_auth_store, _save_auth_store
 
 
 def _jwt(**claims) -> str:
@@ -31,7 +31,7 @@ def _fresh_process_memos():
     """``free_tier.provision`` routes through the boot record when one exists; a record another
     test file left behind (has_identity) would make it skip the mint. Per-process state, per test,
     both ways so this file leaves nothing behind either."""
-    from hermes_cli import free_tier_bootstrap
+    from kova_cli import free_tier_bootstrap
 
     def _reset():
         free_tier_bootstrap.reset_for_tests()
@@ -43,20 +43,20 @@ def _fresh_process_memos():
 
 @pytest.fixture
 def guest(tmp_path, monkeypatch):
-    monkeypatch.setenv("HERMES_SHARED_AUTH_DIR", str(tmp_path / "shared-store"))
-    monkeypatch.setenv("HERMES_GUEST_ONBOARDING", "1")
+    monkeypatch.setenv("KOVA_SHARED_AUTH_DIR", str(tmp_path / "shared-store"))
+    monkeypatch.setenv("KOVA_GUEST_ONBOARDING", "1")
     with _auth_store_lock():
         store = _load_auth_store()
         store.setdefault("providers", {})["nous"] = {
             "auth_method": anon_auth.ANON_AUTH_METHOD, "account_tier": "anonymous", "anon_token": "anon_0001",
             "client_id": "nas-anonymous", "access_token": _jwt(), "expires_at": "2999-01-01T00:00:00+00:00",
-            "inference_base_url": "https://welcome-api.nousresearch.com/v1"}
+            "inference_base_url": "https://welcome-api.openkova.com/v1"}
         store["active_provider"] = "nous"
         _save_auth_store(store)
 
 
 def _set_guest_off(monkeypatch):
-    from hermes_cli import config as cfg_mod
+    from kova_cli import config as cfg_mod
     monkeypatch.setattr(anon_auth, "guest_enabled", lambda: False)
     return cfg_mod
 
@@ -94,8 +94,8 @@ def test_billing_state_answers_the_free_tier_locally(guest, monkeypatch):
 def test_status_without_an_identity_is_a_pure_read(tmp_path, monkeypatch):
     """The desktop polls ``free_tier.status`` every status round; a poll must never create the identity
     (that is the boot bootstrap's job)."""
-    monkeypatch.setenv("HERMES_SHARED_AUTH_DIR", str(tmp_path / "shared-store"))
-    monkeypatch.setenv("HERMES_GUEST_ONBOARDING", "1")
+    monkeypatch.setenv("KOVA_SHARED_AUTH_DIR", str(tmp_path / "shared-store"))
+    monkeypatch.setenv("KOVA_GUEST_ONBOARDING", "1")
     monkeypatch.setattr(anon_auth, "ensure_portal_identity",
                         lambda **kw: (_ for _ in ()).throw(AssertionError("free_tier.status must not mint")))
     status = _call("free_tier.status")
@@ -105,8 +105,8 @@ def test_status_without_an_identity_is_a_pure_read(tmp_path, monkeypatch):
 def test_provision_sets_the_free_tier_up_through_the_lifecycle_primitive(tmp_path, monkeypatch):
     """``free_tier.provision`` is the desktop's explicit retry: it calls the one creator
     (``ensure_portal_identity(explicit=True)``) only when no identity exists, and reports the outcome."""
-    monkeypatch.setenv("HERMES_SHARED_AUTH_DIR", str(tmp_path / "shared-store"))
-    monkeypatch.setenv("HERMES_GUEST_ONBOARDING", "1")
+    monkeypatch.setenv("KOVA_SHARED_AUTH_DIR", str(tmp_path / "shared-store"))
+    monkeypatch.setenv("KOVA_GUEST_ONBOARDING", "1")
     calls = []
     real_ensure = anon_auth.ensure_portal_identity
 

@@ -33,12 +33,12 @@ import {
 const execFileAsync = promisify(execFile)
 
 test('redactSecrets scrubs the spawn-time session token env var', () => {
-  const line = 'setsid env HERMES_DASHBOARD_SESSION_TOKEN=abc123deadbeef HERMES_DESKTOP=1 hermes dashboard'
+  const line = 'setsid env KOVA_DASHBOARD_SESSION_TOKEN=abc123deadbeef KOVA_DESKTOP=1 kova dashboard'
   const out = redactSecrets(line)
   assert.ok(!out.includes('abc123deadbeef'))
-  assert.match(out, /HERMES_DASHBOARD_SESSION_TOKEN=<redacted>/)
+  assert.match(out, /KOVA_DASHBOARD_SESSION_TOKEN=<redacted>/)
   // non-secret env vars are preserved
-  assert.match(out, /HERMES_DESKTOP=1/)
+  assert.match(out, /KOVA_DESKTOP=1/)
 })
 
 test('redactSecrets scrubs ?token= and ?ticket= URL params', () => {
@@ -48,11 +48,11 @@ test('redactSecrets scrubs ?token= and ?ticket= URL params', () => {
   assert.ok(!redactSecrets('?token=supersecret').includes('supersecret'))
 })
 
-test('redactSecrets scrubs Authorization and X-Hermes-Session-Token headers', () => {
+test('redactSecrets scrubs Authorization and X-Kova-Session-Token headers', () => {
   assert.match(redactSecrets('Authorization: Bearer tok_9999'), /Authorization: Bearer <redacted>/)
   assert.ok(!redactSecrets('Authorization: Bearer tok_9999').includes('tok_9999'))
-  assert.match(redactSecrets('X-Hermes-Session-Token: hdr_888'), /X-Hermes-Session-Token: ?<redacted>/)
-  assert.ok(!redactSecrets('X-Hermes-Session-Token: hdr_888').includes('hdr_888'))
+  assert.match(redactSecrets('X-Kova-Session-Token: hdr_888'), /X-Kova-Session-Token: ?<redacted>/)
+  assert.ok(!redactSecrets('X-Kova-Session-Token: hdr_888').includes('hdr_888'))
 })
 
 test('redactSecrets handles null/undefined and non-secret text untouched', () => {
@@ -99,7 +99,7 @@ test('controlSocketPath default base stays under sun_path even with the temp-lis
   // OpenSSH binds a temporary listener at `<ControlPath>.<16 random chars>` (a
   // 17-byte suffix) while opening the master. The macOS regression was the
   // default base under os.tmpdir() (/var/folders/.../T/) pushing it over 104.
-  const p = controlSocketPath('hermes', 'remote-build-server', 22) // no baseDir → default
+  const p = controlSocketPath('kova', 'remote-build-server', 22) // no baseDir → default
   const worstCase = `${p}.0123456789abcdef` // mimic the .<16-char> temp suffix
   assert.ok(
     worstCase.length <= 104,
@@ -175,8 +175,8 @@ test('target builds user@host or bare host', () => {
 
 test('buildExecArgs ends with host then the remote command', () => {
   const conn = { user: 'me', host: 'box', port: 22, keyPath: '', controlPath: '/tmp/x.sock' }
-  const args = buildExecArgs(conn, 'command -v hermes', 15000)
-  assert.equal(args[args.length - 1], 'command -v hermes')
+  const args = buildExecArgs(conn, 'command -v kova', 15000)
+  assert.equal(args[args.length - 1], 'command -v kova')
   assert.equal(args[args.length - 2], 'me@box')
   assert.ok(args.includes('BatchMode=yes'))
 })
@@ -408,7 +408,7 @@ test('open() evicts a wedged master (check passes, exec hangs) and dials fresh',
 })
 
 test('close() removes the control socket when -O exit fails', async () => {
-  const dir = path.join(os.tmpdir(), `hermes-ssh-close-${process.pid}-${Date.now()}`)
+  const dir = path.join(os.tmpdir(), `kova-ssh-close-${process.pid}-${Date.now()}`)
   fs.mkdirSync(dir, { recursive: true, mode: 0o700 })
 
   const spawnFn = scriptedSpawn(args => {
@@ -432,7 +432,7 @@ test('close() removes the control socket when -O exit fails', async () => {
 })
 
 test('open() creates the control-socket directory if it does not exist', async () => {
-  const dir = path.join(os.tmpdir(), `hermes-ssh-test-${process.pid}-${Date.now()}`)
+  const dir = path.join(os.tmpdir(), `kova-ssh-test-${process.pid}-${Date.now()}`)
   assert.ok(!fs.existsSync(dir), 'precondition: control dir absent')
   const spawnFn = scriptedSpawn(args => (args.includes('check') ? { code: 255 } : { code: 0 }))
   const conn = new SshConnection({ host: 'box', user: 'me' }, { spawnFn, mux: true, controlDir: dir })
@@ -577,7 +577,7 @@ test('open() records what the failed ssh did in the desktop log (#80836)', async
       args.includes('check') ? { code: 255, stderr: 'no control path' } : { signal: 'SIGTERM', stderr: '' }
     )
 
-    const controlDir = path.join(os.tmpdir(), `hermes-ssh-connect-log-${process.pid}-${Date.now()}`)
+    const controlDir = path.join(os.tmpdir(), `kova-ssh-connect-log-${process.pid}-${Date.now()}`)
 
     const conn = new SshConnection(
       { host: 'box', user: 'me' },
@@ -1310,7 +1310,7 @@ test('withRemoteTimeout kills a hung probe remotely instead of orphaning it (#11
   }
 
   // Shape: POSIX watchdog — macOS remotes have no GNU `timeout`.
-  const wrapped = withRemoteTimeout('hermes --version 2>&1', 15)
+  const wrapped = withRemoteTimeout('kova --version 2>&1', 15)
 
   assert.ok(!/(^|[ ;(])timeout[ ;]/.test(wrapped), 'no GNU timeout dependency')
   assert.ok(

@@ -4,7 +4,7 @@ const host = vi.hoisted(() => ({
   exposeInMainWorld: vi.fn(),
   send: vi.fn<(channel: string, line: string) => void>(),
   sendSync: vi.fn((channel: string): unknown =>
-    channel === 'hermes:feature-flags' ? { localModels: true, guestOnboarding: true, skipIntro: true } : {}
+    channel === 'kova:feature-flags' ? { localModels: true, guestOnboarding: true, skipIntro: true } : {}
   )
 }))
 
@@ -21,7 +21,7 @@ it('publishes the feature flags answered by main before the renderer starts', as
 
   expect(registration).toBeDefined()
   expect(registration![1]).toMatchObject({ localModelsEnabled: true, guestOnboardingEnabled: true, skipIntro: true })
-  expect(host.sendSync).toHaveBeenCalledWith('hermes:feature-flags')
+  expect(host.sendSync).toHaveBeenCalledWith('kova:feature-flags')
 })
 
 it('forwards full renderer error lines through the exposed bridge', async (): Promise<void> => {
@@ -32,5 +32,5 @@ it('forwards full renderer error lines through the exposed bridge', async (): Pr
 
   expect(bridge?.logLine).toBeTypeOf('function')
   bridge?.logLine?.(line)
-  expect(host.send).toHaveBeenCalledExactlyOnceWith('hermes:logs:renderer-line', line)
+  expect(host.send).toHaveBeenCalledExactlyOnceWith('kova:logs:renderer-line', line)
 })

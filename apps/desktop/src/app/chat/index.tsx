@@ -1,5 +1,5 @@
 import { type AppendMessage, AssistantRuntimeProvider, type ThreadMessage } from '@assistant-ui/react'
-import type { ModelOptionsResult } from '@hermes/shared'
+import type { ModelOptionsResult } from '@kova/shared'
 import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import type { ReadableAtom } from 'nanostores'
@@ -17,7 +17,7 @@ import { usePaneGroup, usePaneVisible } from '@/components/pane-shell/pane-visib
 import { $hoveredTreeGroup, $sessionTileDragging, $sessionTileEdgeHover } from '@/components/pane-shell/tree/store'
 import { PromptOverlays } from '@/components/prompt-overlays'
 import { TitleMenuTrigger } from '@/components/ui/title-menu-trigger'
-import { type HermesGateway } from '@/hermes'
+import { type KovaGateway } from '@/kova'
 import { useI18n } from '@/i18n'
 import type { ChatMessage } from '@/lib/chat-messages'
 import { NEW_SESSION_TITLE, quickModelOptions, sessionTitle } from '@/lib/chat-runtime'
@@ -89,7 +89,7 @@ import { advanceSessionTranscriptWindow, type SessionWindowMemo } from './transc
 import { useTranscriptRetention } from './use-transcript-retention'
 
 interface ChatViewProps extends Omit<React.ComponentProps<'div'>, 'onSubmit'> {
-  gateway: HermesGateway | null
+  gateway: KovaGateway | null
   modelOptionsOwnerConnectionId?: string
   modelOptionsProfile?: string
   modelMenuContent?: React.ReactNode

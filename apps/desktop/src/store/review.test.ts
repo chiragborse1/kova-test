@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { HermesReviewFile, HermesReviewShipInfo } from '@/global'
+import type { KovaReviewFile, KovaReviewShipInfo } from '@/global'
 
 import {
   $reviewCommitMsgBusy,
@@ -44,8 +44,8 @@ vi.mock('@/lib/oneshot', () => ({ requestOneShot: (args: unknown) => requestOneS
 // branch either.
 vi.mock('./coding-status', () => ({ refreshRepoStatus: vi.fn(), repoStatusForCwd: () => ({ get: () => null }) }))
 
-function file(path: string, over: Partial<HermesReviewFile> = {}): HermesReviewFile {
-  return { path, status: 'modified', staged: false, added: 1, removed: 0, ...over } as HermesReviewFile
+function file(path: string, over: Partial<KovaReviewFile> = {}): KovaReviewFile {
+  return { path, status: 'modified', staged: false, added: 1, removed: 0, ...over } as KovaReviewFile
 }
 
 type ReviewStub = Record<string, ReturnType<typeof vi.fn>>
@@ -355,7 +355,7 @@ describe('ship flow', () => {
 
   it('createOrOpenPr opens the existing PR without creating a new one', async () => {
     const review = stubReview()
-    $reviewShipInfo.set({ ghReady: true, pr: { url: 'https://example.com/pr/9' } } as HermesReviewShipInfo)
+    $reviewShipInfo.set({ ghReady: true, pr: { url: 'https://example.com/pr/9' } } as KovaReviewShipInfo)
 
     await createOrOpenPr()
 
@@ -381,7 +381,7 @@ describe('ship flow', () => {
 describe('refreshShipInfo', () => {
   it('resets ship info when there is no bridge', async () => {
     delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
-    $reviewShipInfo.set({ ghReady: true, pr: { url: 'x' } } as HermesReviewShipInfo)
+    $reviewShipInfo.set({ ghReady: true, pr: { url: 'x' } } as KovaReviewShipInfo)
 
     await refreshShipInfo()
 
@@ -394,7 +394,7 @@ describe('refreshShipInfo', () => {
         throw new Error('gh missing')
       })
     })
-    $reviewShipInfo.set({ ghReady: true, pr: { url: 'x' } } as HermesReviewShipInfo)
+    $reviewShipInfo.set({ ghReady: true, pr: { url: 'x' } } as KovaReviewShipInfo)
 
     await refreshShipInfo()
 

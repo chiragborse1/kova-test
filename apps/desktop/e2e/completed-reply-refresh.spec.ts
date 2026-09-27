@@ -49,7 +49,7 @@ test('a delayed history read cannot remove the latest completed reply', async ()
       const handlers = (ipcMain as unknown as { _invokeHandlers: Map<string, (...args: any[]) => Promise<any>> })
         ._invokeHandlers
 
-      const original = handlers.get('hermes:api')!
+      const original = handlers.get('kova:api')!
 
       const control = {
         admitted: false,
@@ -68,8 +68,8 @@ test('a delayed history read cannot remove the latest completed reply', async ()
       })
 
       ;(globalThis as any).__historyRead = control
-      ipcMain.removeHandler('hermes:api')
-      ipcMain.handle('hermes:api', async (event: unknown, request: { path: string }) => {
+      ipcMain.removeHandler('kova:api')
+      ipcMain.handle('kova:api', async (event: unknown, request: { path: string }) => {
         if (!control.admitted && request.path.startsWith(`/api/sessions/${sessionId}/messages?`)) {
           control.admitted = true
           await readGate

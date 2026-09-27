@@ -35,7 +35,7 @@ import {
   Textarea,
   useI18n,
   useValue
-} from '@hermes/plugin-sdk'
+} from '@kova/plugin-sdk'
 import { useEffect, useRef, useState } from 'react'
 
 import { avatarColor, blobatarSvg, botAppearance, BotFace } from './avatar'
@@ -463,7 +463,7 @@ export function CreateAgentDialog({ open, onClose, onConfigureModel, roster }: C
           void requestForTarget('profiles.configure', {
             name: slug,
             ui_meta: {
-              'hermes-bots': look
+              'kova-bots': look
             }
           }).catch(() => undefined)
 

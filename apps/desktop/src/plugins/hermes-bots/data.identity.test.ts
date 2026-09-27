@@ -40,7 +40,7 @@ const { hostMock } = vi.hoisted(() => ({
   }
 }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom: nanoAtom } = await import('nanostores')
 
   return {
@@ -52,7 +52,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 /** Gateway rows carry a session id on `last_session` that the plugin's
  *  `SessionPreview` type deliberately does not model; the fixtures keep it so
@@ -72,8 +72,8 @@ beforeEach(() => {
 })
 
 describe('the @handle a bot answers to', () => {
-  it('presents the primary profile as @hermes — "default" never surfaces in the UI', () => {
-    expect(botHandle('default')).toBe('hermes')
+  it('presents the primary profile as @kova — "default" never surfaces in the UI', () => {
+    expect(botHandle('default')).toBe('kova')
     expect(botHandle('ops')).toBe('ops')
   })
 
@@ -84,7 +84,7 @@ describe('the @handle a bot answers to', () => {
 
 describe('renamed bots stay taggable', () => {
   it('drops reserved tokens so a rename cannot hijack a built-in tag', () => {
-    expect(mentionNameForms('Hermes')).toEqual([])
+    expect(mentionNameForms('Kova')).toEqual([])
     expect(mentionNameForms('@everyone')).toEqual([])
     expect(mentionNameForms('')).toEqual([])
   })
@@ -94,8 +94,8 @@ describe('renamed bots stay taggable', () => {
 
     expect(botMentionTag(row({ name: 'writer' }))).toBe('research-buddy')
     expect(botMentionTag(row({ name: 'ops' }))).toBe('ops')
-    expect(botMentionTag(row({ name: 'default' }))).toBe('hermes')
-    // display_name (`hermes profile rename`) drives the tag too.
+    expect(botMentionTag(row({ name: 'default' }))).toBe('kova')
+    // display_name (`kova profile rename`) drives the tag too.
     expect(botMentionTag(row({ display_name: 'Deal Finder', name: 'scout' }))).toBe('deal-finder')
   })
 
@@ -131,11 +131,11 @@ describe('resolving @mentions against the roster', () => {
     expect(resolveRosterMentions('ping @bob-mac-mini', roster, live).map(bot => bot.name)).toEqual(['bob'])
   })
 
-  it('never treats @hermes in your own chat as a handoff to yourself', () => {
-    expect(resolveRosterMentions('@hermes do it', roster, { connectionId: 'local', name: 'default' })).toEqual([])
+  it('never treats @kova in your own chat as a handoff to yourself', () => {
+    expect(resolveRosterMentions('@kova do it', roster, { connectionId: 'local', name: 'default' })).toEqual([])
     // From ANOTHER bot's chat the same tag is a real handoff.
     expect(
-      resolveRosterMentions('@hermes do it', roster, { connectionId: 'mac-mini', name: 'dixie' }).map(bot => bot.name)
+      resolveRosterMentions('@kova do it', roster, { connectionId: 'mac-mini', name: 'dixie' }).map(bot => bot.name)
     ).toEqual(['default'])
   })
 
@@ -253,7 +253,7 @@ describe('roster search narrows without re-ranking', () => {
       'agency-audio-designer',
       'agency-ai-engineer'
     ])
-    expect(filterBots(roster, meta, '@hermes').map(bot => bot.name)).toEqual(['default'])
+    expect(filterBots(roster, meta, '@kova').map(bot => bot.name)).toEqual(['default'])
     expect(filterBots(roster, meta, 'default').map(bot => bot.name)).toEqual(['default'])
   })
 
@@ -344,7 +344,7 @@ describe('needs-attention badge (#93091 item 3)', () => {
         'Error code: 401 - {"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"}}'
       )
     ).toBe('provider_auth_or_access')
-    expect(reasonFor('No LLM provider configured. Run hermes model to pick one.')).toBe('missing_config')
+    expect(reasonFor('No LLM provider configured. Run kova model to pick one.')).toBe('missing_config')
     expect(reasonFor('No access token found for profile')).toBe('missing_config')
     expect(reasonFor('Your account is out of funds')).toBe('provider_quota_limit')
     expect(reasonFor('quota exceeded for this billing period')).toBe('provider_quota_limit')

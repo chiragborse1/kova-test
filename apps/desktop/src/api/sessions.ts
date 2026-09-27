@@ -8,7 +8,7 @@ import type {
   SessionMessage,
   SessionMessagesResponse,
   SessionSearchResponse
-} from '@/types/hermes'
+} from '@/types/kova'
 
 import {
   ambientOwnerConnectionId,
@@ -45,7 +45,7 @@ function sessionScoped(scope?: ProfileScope): { connectionId?: string; profile?:
 /**
  * The profile a session WRITE must name in its body. The PATCH handler reads
  * its target DB from `body.profile` alone (`_with_db(body.profile, ...)`), and
- * under multiplex-only there is no per-profile backend whose HERMES_HOME could
+ * under multiplex-only there is no per-profile backend whose KOVA_HOME could
  * stand in for it: an unnamed owner lands the rename/pin/archive/mark-read on
  * the shared backend's own state.db. "Unnamed" therefore means "the profile I
  * am looking at", not "whatever home the backend was launched in".

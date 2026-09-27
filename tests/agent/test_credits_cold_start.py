@@ -1,7 +1,7 @@
 """Tests for cold-start credits hydration at session open.
 
 The L3 cold-start seed primes agent._credits_state from /api/oauth/account (or a
-HERMES_DEV_CREDITS_FIXTURE) so depletion AND the 90% grant warning fire immediately
+KOVA_DEV_CREDITS_FIXTURE) so depletion AND the 90% grant warning fire immediately
 at session open, not only after the first inference header. These tests assert the
 notice policy fires correctly for a seed-shaped CreditsState with the warn90 latch
 primed the way conversation_loop does it.
@@ -48,7 +48,7 @@ def test_cold_start_healthy_no_notice():
 
 
 def test_dev_fixtures_drive_cold_start():
-    """Every HERMES_DEV_CREDITS_FIXTURE state produces a valid seed CreditsState."""
+    """Every KOVA_DEV_CREDITS_FIXTURE state produces a valid seed CreditsState."""
     import os
 
     from agent.credits_tracker import dev_fixture_credits_state
@@ -59,15 +59,15 @@ def test_dev_fixtures_drive_cold_start():
         "depleted": ["credits.depleted"],
     }
     for name, want in expected.items():
-        os.environ["HERMES_DEV_CREDITS"] = "1"  # fixtures gate on the dev flag
-        os.environ["HERMES_DEV_CREDITS_FIXTURE"] = name
+        os.environ["KOVA_DEV_CREDITS"] = "1"  # fixtures gate on the dev flag
+        os.environ["KOVA_DEV_CREDITS_FIXTURE"] = name
         try:
             fx = dev_fixture_credits_state()
             assert fx is not None, name
             assert _cold_start_notices(fx) == want, (name, _cold_start_notices(fx))
         finally:
-            os.environ.pop("HERMES_DEV_CREDITS_FIXTURE", None)
-            os.environ.pop("HERMES_DEV_CREDITS", None)
+            os.environ.pop("KOVA_DEV_CREDITS_FIXTURE", None)
+            os.environ.pop("KOVA_DEV_CREDITS", None)
 
 
 # ── seed_credits_at_session_start: the shared session-open hydrator ───────────
@@ -113,13 +113,13 @@ def _seed(agent, fixture):
 
     from agent.credits_tracker import seed_credits_at_session_start
 
-    os.environ["HERMES_DEV_CREDITS"] = "1"  # fixtures gate on the dev flag
-    os.environ["HERMES_DEV_CREDITS_FIXTURE"] = fixture
+    os.environ["KOVA_DEV_CREDITS"] = "1"  # fixtures gate on the dev flag
+    os.environ["KOVA_DEV_CREDITS_FIXTURE"] = fixture
     try:
         return seed_credits_at_session_start(agent)
     finally:
-        os.environ.pop("HERMES_DEV_CREDITS_FIXTURE", None)
-        os.environ.pop("HERMES_DEV_CREDITS", None)
+        os.environ.pop("KOVA_DEV_CREDITS_FIXTURE", None)
+        os.environ.pop("KOVA_DEV_CREDITS", None)
 
 
 
@@ -254,10 +254,10 @@ def test_agent_without_session_id_falls_back_to_prior_behavior(monkeypatch):
 
 # ── background seed: the pricing warm the free-model gate depends on ─────────
 
-_NOUS_BASE = "https://inference-api.nousresearch.com/v1"
+_NOUS_BASE = "https://inference-api.openkova.com/v1"
 # One subscription-billed row, keyed on the pre-/v1 root the picker caches under.
 _SUBSCRIPTION_CATALOG = {
-    "https://inference-api.nousresearch.com": {
+    "https://inference-api.openkova.com": {
         "openai/gpt-5.6-luna": {
             "prompt": "0.0000002000", "completion": "0.0000012000", "billing_mode": "subscription",
         },
@@ -280,7 +280,7 @@ class _DepletedAccount:
 
 def _cold_pricing_cache(monkeypatch):
     """Empty the process-wide pricing cache (and its expiry map) so the peek starts cold."""
-    from hermes_cli import models_pricing
+    from kova_cli import models_pricing
 
     monkeypatch.setattr(models_pricing, "_pricing_cache", {})
     monkeypatch.setattr(models_pricing, "_pricing_cache_retry_after", {})
@@ -297,7 +297,7 @@ def _run_bg_seed(monkeypatch, agent, *, warm):
     import threading
 
     import agent.memory_provider as memory_provider
-    import hermes_cli.nous_account as nous_account
+    import kova_cli.nous_account as nous_account
     from agent import credits_tracker
 
     release_worker = threading.Event()
@@ -313,7 +313,7 @@ def _run_bg_seed(monkeypatch, agent, *, warm):
         spawned.append(thread)
         return thread
 
-    monkeypatch.delenv("HERMES_DEV_CREDITS", raising=False)  # fixtures would take the sync path
+    monkeypatch.delenv("KOVA_DEV_CREDITS", raising=False)  # fixtures would take the sync path
     monkeypatch.setattr(credits_tracker, "_warm_nous_pricing_cache", _gated_warm)
     monkeypatch.setattr(memory_provider, "spawn_context_thread", _capture_spawn)
     monkeypatch.setattr(nous_account, "get_nous_portal_account_info", lambda *a, **kw: _DepletedAccount())

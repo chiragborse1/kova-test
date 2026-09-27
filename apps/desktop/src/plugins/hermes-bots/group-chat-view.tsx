@@ -10,7 +10,7 @@
  * touch stay below, in `group-panes.ts`.
  */
 
-import * as sdk from '@hermes/plugin-sdk'
+import * as sdk from '@kova/plugin-sdk'
 import {
   atom,
   Button,
@@ -33,7 +33,7 @@ import {
   ToggleRow,
   useI18n,
   useValue
-} from '@hermes/plugin-sdk'
+} from '@kova/plugin-sdk'
 import type { ClipboardEvent, DragEvent, ReactNode } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
@@ -1107,7 +1107,7 @@ export function GroupChatWorkspace({ group, members, onBack, visible = true }: G
 
     // Match this speaker back to its member descriptor so display
     // names and disambiguating handles come from the roster (the
-    // primary "default" profile renders as Hermes, remote dupes
+    // primary "default" profile renders as Kova, remote dupes
     // carry their @name-device handle) instead of raw profile ids.
     const member = isUser
       ? null

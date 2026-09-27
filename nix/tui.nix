@@ -1,4 +1,4 @@
-# Self-contained Hermes TUI, compiled by the same recipe as npm.
+# Self-contained Kova TUI, compiled by the same recipe as npm.
 { hermesNpmLib, ... }:
 hermesNpmLib.buildNpmPackage {
   dirs = [
@@ -19,8 +19,8 @@ hermesNpmLib.buildNpmPackage {
 
   installPhase = ''
     runHook preInstall
-    mkdir -p $out/lib/hermes-tui
-    cp -r "$TMPDIR/tui-product/." $out/lib/hermes-tui/
+    mkdir -p $out/lib/kova-tui
+    cp -r "$TMPDIR/tui-product/." $out/lib/kova-tui/
     runHook postInstall
   '';
 }

@@ -9,7 +9,7 @@ import {
   fetchStoredTranscriptAcrossBackends,
   getLatestSessionMessages,
   PROMPT_SUBMIT_REQUEST_TIMEOUT_MS
-} from '@/hermes'
+} from '@/kova'
 import { translateNow } from '@/i18n/runtime'
 import { type ChatMessage, chatMessageText, toChatMessages } from '@/lib/chat-messages'
 import { markReasoningEffortPending } from '@/lib/chat-runtime'
@@ -29,7 +29,7 @@ import {
   sessionTileOwnerRoute,
   setSessionTileDelegate
 } from '@/store/session-states'
-import type { SessionResumeResult } from '@/types/hermes'
+import type { SessionResumeResult } from '@/types/kova'
 
 import type { usePromptActions } from '../../session/hooks/use-prompt-actions'
 import { singleFlightSessionResume } from '../../session/hooks/use-prompt-actions/single-flight-resume'

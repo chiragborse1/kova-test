@@ -1,4 +1,4 @@
-"""Pyright uses the project environment before the Hermes runtime fallback."""
+"""Pyright uses the project environment before the Kova runtime fallback."""
 
 import os
 import subprocess
@@ -12,12 +12,12 @@ from pm.store import current_target
 
 
 def _seed_pm_python(tmp_path, monkeypatch):
-    """Stage a pm bundled-install layout: HERMES_RUNTIME_DIR -> store with a
+    """Stage a pm bundled-install layout: KOVA_RUNTIME_DIR -> store with a
     manifest sibling (bundled), a python entry, and facts recording it."""
     payload = tmp_path / "payload"
     store = payload / "tools"
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("HERMES_RUNTIME_DIR", str(store))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("KOVA_RUNTIME_DIR", str(store))
     lock = Lockfile(paths.lockfile_path())
     package = get_package("python")
     target = current_target()

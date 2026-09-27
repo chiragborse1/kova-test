@@ -11,7 +11,7 @@ const windowsMock = vi.hoisted(() => ({
 vi.mock('@/store/windows', () => windowsMock)
 
 const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const initialKovaDesktop = desktopWindow.hermesDesktop
 
 function installBridge() {
   const onExternalOpenFailed = vi.fn()
@@ -37,8 +37,8 @@ afterEach(() => {
   vi.restoreAllMocks()
   cleanup()
 
-  if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+  if (initialKovaDesktop) {
+    desktopWindow.hermesDesktop = initialKovaDesktop
   } else {
     delete desktopWindow.hermesDesktop
   }

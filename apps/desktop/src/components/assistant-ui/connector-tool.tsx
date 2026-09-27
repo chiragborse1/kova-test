@@ -1,5 +1,5 @@
 import type { ToolCallMessagePartProps } from '@assistant-ui/react'
-import type { ConnectionTargetState, ConnectorsConnectResult } from '@hermes/shared'
+import type { ConnectionTargetState, ConnectorsConnectResult } from '@kova/shared'
 import { useStore } from '@nanostores/react'
 import { type RefObject, useEffect, useMemo, useRef, useState } from 'react'
 
@@ -59,7 +59,7 @@ export function useConnectionOwner(sessionId: null | string, active: boolean): C
   return owner
 }
 
-/** The browser leg of a connection came back through `hermes://connections/done`. Show the session
+/** The browser leg of a connection came back through `kova://connections/done`. Show the session
  *  that opened the operation and tell its backend to read the account now instead of at its next
  *  tick. Nothing in the link is trusted to move a row: the op id only names which card to show, and
  *  the backend reads the account itself. An operation this window holds no card for, or one that

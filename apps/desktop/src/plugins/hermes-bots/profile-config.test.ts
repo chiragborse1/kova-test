@@ -46,7 +46,7 @@ const { confirmMock, hostMock, invalidateMock } = vi.hoisted(() => ({
   invalidateMock: vi.fn()
 }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return {
@@ -73,7 +73,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 // The SOUL protocol append has its own suite; here it must not rewrite the
 // text under the assertions.
 vi.mock('./soul', () => ({ ensureMessagingProtocol: (soul: string) => soul }))

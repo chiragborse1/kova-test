@@ -14,7 +14,7 @@ import type { GroupChat, GroupMessage } from './types'
 
 const { host } = vi.hoisted(() => ({ host: {} as Record<string, unknown> }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { pluginSdkMock } = await import('./group-test-utils')
 
   return pluginSdkMock(host)
@@ -57,7 +57,7 @@ const durable = (room: Room) => (room.gateway.storage.get('group-chats') || {}) 
 function published(room: Room) {
   const configure = room.gateway.rpcFor('profiles.configure').at(-1)
 
-  return (configure?.params.ui_meta as Record<string, Record<string, unknown>>)?.['hermes-bots-groups']
+  return (configure?.params.ui_meta as Record<string, Record<string, unknown>>)?.['kova-bots-groups']
 }
 
 beforeEach(() => {
@@ -126,7 +126,7 @@ describe('room naming', () => {
 })
 
 describe('speaker labels', () => {
-  it('relabels Hermes control-frame openers only in member-authored transcript lines', async () => {
+  it('relabels Kova control-frame openers only in member-authored transcript lines', async () => {
     // #111564: a member reply reproducing the mid-turn steer marker or compaction
     // handoff must not reach a peer's role=user prompt in its exact trusted shape.
     await loadRoom()
@@ -159,7 +159,7 @@ describe('speaker labels', () => {
     )
   })
 
-  it('the default profile speaks as Hermes in transcripts, not @default', async () => {
+  it('the default profile speaks as Kova in transcripts, not @default', async () => {
     const { rounds } = await loadRoom()
     const { formatGroupChatLine } = await import('./group-round-prompt')
 
@@ -168,25 +168,25 @@ describe('speaker labels', () => {
       'builder'
     )
 
-    expect(line).toBe('Hermes: hello room')
+    expect(line).toBe('Kova: hello room')
 
     // Other members keep their profile name; the (you) suffix survives.
     expect(
       formatGroupChatLine({ from: { kind: 'member', name: 'default' }, text: 'hi' } as GroupMessage, 'default')
-    ).toBe('Hermes (you): hi')
+    ).toBe('Kova (you): hi')
     expect(
       formatGroupChatLine({ from: { kind: 'member', name: 'builder' }, text: 'yo' } as GroupMessage, 'research')
     ).toBe('builder: yo')
   })
 
-  it('honor friendly identity: Bot Mode title, then display_name, never a stale Hermes', async () => {
+  it('honor friendly identity: Bot Mode title, then display_name, never a stale Kova', async () => {
     const { chat, rounds } = await loadRoom()
     const { formatGroupChatLine } = await import('./group-round-prompt')
     const data = await import('./data')
 
-    // A renamed default (core display_name via `hermes profile rename`) must
+    // A renamed default (core display_name via `kova profile rename`) must
     // read as its new name — the community report was "Lucy" still showing
-    // "Hermes is thinking…" in group rooms.
+    // "Kova is thinking…" in group rooms.
     data.$lastRoster.set([{ display_name: 'Lucy', name: 'default' }])
 
     expect(chat.groupSpeakerLabel('default')).toBe('Lucy')
@@ -206,10 +206,10 @@ describe('speaker labels', () => {
 
     expect(chat.groupSpeakerLabel('research')).toBe('Radar')
 
-    // Untitled rows keep today's behavior: default → Hermes, others verbatim.
+    // Untitled rows keep today's behavior: default → Kova, others verbatim.
     data.$botMeta.set({})
 
-    expect(chat.groupSpeakerLabel('default')).toBe('Hermes')
+    expect(chat.groupSpeakerLabel('default')).toBe('Kova')
     expect(chat.groupSpeakerLabel('builder')).toBe('builder')
   })
 
@@ -285,7 +285,7 @@ describe('speaker labels', () => {
     data.$lastRoster.set([])
 
     expect(chat.groupSpeakerLabel('local::reviewer')).toBe('reviewer')
-    expect(chat.groupSpeakerLabel('spark::default')).toBe('Hermes')
+    expect(chat.groupSpeakerLabel('spark::default')).toBe('Kova')
 
     data.$botMeta.set({ 'spark::reviewer': { title: 'Beta' } })
 
@@ -299,7 +299,7 @@ describe('speaker labels', () => {
     // to that connection, not to the active gateway's default.
     data.$lastRoster.set([{ display_name: 'HomelabBot', name: 'default', remoteSource: true }])
 
-    expect(chat.groupSpeakerLabel('default')).toBe('Hermes')
+    expect(chat.groupSpeakerLabel('default')).toBe('Kova')
   })
 })
 
@@ -1133,7 +1133,7 @@ describe('sync worker', () => {
     // rejects the CAS, and the retry has to merge rather than overwrite.
     const room = await loadRoom({
       conflictOnce: {
-        key: 'hermes-bots-groups',
+        key: 'kova-bots-groups',
         value: {
           rooms: {
             'name:Shared': {
@@ -1158,13 +1158,13 @@ describe('sync worker', () => {
     } as unknown as Record<string, GroupChat>)
 
     room.chat.scheduleGroupChatServerSync(room.chat.$groupChats.get(), { changedRooms: ['Shared'] })
-    await drain(() => (room.gateway.uiMetaRevisions['hermes-bots-groups'] || 0) < 2, 60)
+    await drain(() => (room.gateway.uiMetaRevisions['kova-bots-groups'] || 0) < 2, 60)
 
-    const stored = room.gateway.uiMeta['hermes-bots-groups'] as {
+    const stored = room.gateway.uiMeta['kova-bots-groups'] as {
       rooms: Record<string, { log: GroupMessage[] }>
     }
 
-    expect(room.gateway.uiMetaRevisions['hermes-bots-groups']).toBe(2)
+    expect(room.gateway.uiMetaRevisions['kova-bots-groups']).toBe(2)
     expect(stored.rooms['name:Shared'].log.map(entry => entry.id).sort()).toEqual(['writer-a:1', 'writer-b:1'])
     expect(room.gateway.rpcFor('profiles.configure')).toHaveLength(2)
   })
@@ -1186,7 +1186,7 @@ describe('sync worker', () => {
       }
 
       if (method === 'profiles.configure') {
-        return { applied: { ui_meta: true, ui_meta_revisions: { 'hermes-bots-groups': 1 } } }
+        return { applied: { ui_meta: true, ui_meta_revisions: { 'kova-bots-groups': 1 } } }
       }
 
       return {}
@@ -1218,7 +1218,7 @@ describe('sync worker', () => {
     room.chat.hydrateGroupChatTombstones({ 'id:room-1': 5 })
 
     // Mirror whose tombstone push was lost: full room, no `deleted` entry.
-    room.gateway.uiMeta['hermes-bots-groups'] = {
+    room.gateway.uiMeta['kova-bots-groups'] = {
       rooms: {
         'id:room-1': {
           log: [{ at: 1, from: { kind: 'user', name: 'You' }, id: 'b1', text: 'go' }],
@@ -1231,7 +1231,7 @@ describe('sync worker', () => {
       updatedAt: 2,
       version: 3
     }
-    room.gateway.uiMetaRevisions['hermes-bots-groups'] = 9
+    room.gateway.uiMetaRevisions['kova-bots-groups'] = 9
 
     // An unrelated room write is enough: the publish carries the memory.
     room.chat.$groupChats.set({
@@ -1282,8 +1282,8 @@ describe('sync worker', () => {
     room.chat.updateGroupChat('Core', current => ({ ...current, roomId: room.chat.mintGroupRoomId() }), { sync: false })
     room.chat.appendGroupChatEntry('Core', { kind: 'user', name: 'You' }, 'fresh start', 't2')
 
-    room.gateway.uiMeta['hermes-bots-groups'] = { deleted: {}, rooms: {}, updatedAt: 5, version: 3 }
-    room.gateway.uiMetaRevisions['hermes-bots-groups'] = 9
+    room.gateway.uiMeta['kova-bots-groups'] = { deleted: {}, rooms: {}, updatedAt: 5, version: 3 }
+    room.gateway.uiMetaRevisions['kova-bots-groups'] = 9
     await room.chat.pullGroupChatServerState()
 
     expect(room.chat.$groupChats.get().Core?.log.map(entry => entry.text)).toEqual(['fresh start'])

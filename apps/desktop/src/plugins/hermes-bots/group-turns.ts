@@ -6,7 +6,7 @@
  * Room-level sequencing lives in group-rounds.ts, which drives these.
  */
 
-import { APPROVAL_RESPOND_TIMEOUT_MS, host } from '@hermes/plugin-sdk'
+import { APPROVAL_RESPOND_TIMEOUT_MS, host } from '@kova/plugin-sdk'
 
 import { noteBotAttention } from './data'
 import { groupFailureReason, recordGroupActivity } from './group-activity'
@@ -52,7 +52,7 @@ interface GroupTurnTranscriptMessage {
 }
 
 /** What a finished turn left behind: the member's reply, or the notice of the
- *  `failed_turn` row Hermes closed it with (the member never answered), or
+ *  `failed_turn` row Kova closed it with (the member never answered), or
  *  null when no assistant row landed. */
 type GroupTurnPick = { failedNotice: string } | null | string
 

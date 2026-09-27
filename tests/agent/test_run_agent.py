@@ -59,7 +59,7 @@ def test_is_destructive_command_treats_cp_as_mutating():
 def _mock_plugin_discovery(monkeypatch):
     # Tool definitions are supplied by these unit fixtures. Scanning every
     # bundled plugin again for each isolated test home adds no coverage.
-    monkeypatch.setattr("hermes_cli.plugins.discover_plugins", lambda: None)
+    monkeypatch.setattr("kova_cli.plugins.discover_plugins", lambda: None)
 
 
 @pytest.fixture()
@@ -190,7 +190,7 @@ def test_malformed_memory_config_still_builds_default_store():
     malformed = {"memory": "not-a-mapping"}
     with (
         patch(
-            "hermes_cli.config.load_config_readonly",
+            "kova_cli.config.load_config_readonly",
             return_value=malformed,
         ),
         patch(
@@ -242,7 +242,7 @@ def test_aiagent_reuses_existing_errors_log_handler():
     """Repeated AIAgent init should not accumulate duplicate errors.log handlers."""
     root_logger = logging.getLogger()
     original_handlers = list(root_logger.handlers)
-    error_log_path = (run_agent._hermes_home / "logs" / "errors.log").resolve()
+    error_log_path = (run_agent._kova_home / "logs" / "errors.log").resolve()
 
     try:
         for handler in list(root_logger.handlers):
@@ -615,7 +615,7 @@ class TestInit:
             patch("model_tools.get_tool_definitions", return_value=[]),
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
-            patch("hermes_cli.config.load_config", return_value={}), patch("hermes_cli.config.load_config_readonly", return_value={}),
+            patch("kova_cli.config.load_config", return_value={}), patch("kova_cli.config.load_config_readonly", return_value={}),
         ):
             a = AIAgent(
                 api_key="test-k...7890",
@@ -638,11 +638,11 @@ class TestInit:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"prompt_caching": {"cache_ttl": falsy_value}},
             ),
             patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"prompt_caching": {"cache_ttl": falsy_value}},
             ),
         ):
@@ -666,11 +666,11 @@ class TestInit:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"prompt_caching": {"cache_ttl": False}},
             ),
             patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"prompt_caching": {"cache_ttl": False}},
             ),
         ):
@@ -697,10 +697,10 @@ class TestInit:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"model": {"max_tokens": 4096}},
             ), patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"model": {"max_tokens": 4096}},
             ),
         ):
@@ -965,10 +965,10 @@ class TestToolUseEnforcementConfig:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"agent": {"tool_use_enforcement": True}},
             ), patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"agent": {"tool_use_enforcement": True}},
             ),
         ):
@@ -1001,10 +1001,10 @@ class TestExecutionGuidanceConfig:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"agent": agent_cfg},
             ), patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"agent": agent_cfg},
             ),
         ):
@@ -1062,10 +1062,10 @@ class TestTaskCompletionGuidance:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"agent": agent_cfg},
             ), patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"agent": agent_cfg},
             ),
         ):
@@ -1099,10 +1099,10 @@ class TestTaskCompletionGuidance:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"agent": {"task_completion_guidance": True}},
             ), patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"agent": {"task_completion_guidance": True}},
             ),
         ):
@@ -1134,10 +1134,10 @@ class TestEnvironmentProbeIntegration:
             patch("model_tools.check_toolset_requirements", return_value={}),
             patch("agent.process_bootstrap.OpenAI"),
             patch(
-                "hermes_cli.config.load_config",
+                "kova_cli.config.load_config",
                 return_value={"agent": {"environment_probe": environment_probe}},
             ), patch(
-                "hermes_cli.config.load_config_readonly",
+                "kova_cli.config.load_config_readonly",
                 return_value={"agent": {"environment_probe": environment_probe}},
             ),
         ):
@@ -1327,7 +1327,7 @@ class TestBuildApiKwargs:
     def test_core_responses_preserves_supported_xhigh(self, agent, monkeypatch):
         """The core GitHub Responses path must preserve a supported xhigh."""
         monkeypatch.setattr(
-            "hermes_cli.models.github_model_reasoning_efforts",
+            "kova_cli.models.github_model_reasoning_efforts",
             lambda _model: ["none", "low", "medium", "high", "xhigh"],
         )
         agent.model = "gpt-5.5"
@@ -1581,8 +1581,8 @@ class TestExecuteToolCalls:
             hook_calls.append((hook_name, kwargs))
             return []
 
-        monkeypatch.setattr("hermes_cli.lifecycle.invoke_hook", _capture_hook)
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.invoke_hook", _capture_hook)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
 
         with (
             patch("model_tools.handle_function_call", side_effect=KeyboardInterrupt),
@@ -1610,9 +1610,9 @@ class TestExecuteToolCalls:
         messages = []
         hook_calls = []
 
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
         monkeypatch.setattr(
-            "hermes_cli.lifecycle.invoke_hook",
+            "kova_cli.lifecycle.invoke_hook",
             lambda hook_name, **kwargs: hook_calls.append((hook_name, kwargs)) or [],
         )
 
@@ -1637,9 +1637,9 @@ class TestExecuteToolCalls:
         mock_msg = _mock_assistant_msg(content="", tool_calls=[tc])
         messages = []
         hook_calls = []
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
         monkeypatch.setattr(
-            "hermes_cli.lifecycle.invoke_hook",
+            "kova_cli.lifecycle.invoke_hook",
             lambda hook_name, **kwargs: hook_calls.append((hook_name, kwargs)) or [],
         )
         with patch("model_tools.handle_function_call", return_value="ok") as mock_hfc:
@@ -1663,9 +1663,9 @@ class TestExecuteToolCalls:
         mock_msg = _mock_assistant_msg(content="", tool_calls=[tc])
         messages = []
         hook_calls = []
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
         monkeypatch.setattr(
-            "hermes_cli.lifecycle.invoke_hook",
+            "kova_cli.lifecycle.invoke_hook",
             lambda hook_name, **kwargs: hook_calls.append((hook_name, kwargs)) or [],
         )
 
@@ -1697,8 +1697,8 @@ class TestExecuteToolCalls:
         assert "tool was not executed" in messages[0]["content"].lower()
 
     def test_result_truncation_over_100k(self, agent, tmp_path, monkeypatch):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path / ".hermes"))
-        (tmp_path / ".hermes").mkdir()
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path / ".kova"))
+        (tmp_path / ".kova").mkdir()
         tc = _mock_tool_call(name="web_search", arguments="{}", call_id="c1")
         mock_msg = _mock_assistant_msg(content="", tool_calls=[tc])
         messages = []
@@ -2020,7 +2020,7 @@ class TestConcurrentToolExecution:
         messages = []
 
         monkeypatch.setattr(
-            "hermes_cli.plugins._dispatch_pre_tool_call_hooks",
+            "kova_cli.plugins._dispatch_pre_tool_call_hooks",
             lambda *args, **kwargs: ("Blocked by policy", None),
         )
         agent._checkpoint_mgr.enabled = True
@@ -2065,12 +2065,12 @@ class TestConcurrentToolExecution:
             "tool_request": [],
             "tool_execution": [execution_middleware],
         })
-        monkeypatch.setattr("hermes_cli.plugins.get_plugin_manager", lambda: manager)
+        monkeypatch.setattr("kova_cli.plugins.get_plugin_manager", lambda: manager)
         monkeypatch.setattr(
-            "hermes_cli.lifecycle.invoke_hook",
+            "kova_cli.lifecycle.invoke_hook",
             lambda hook_name, **kwargs: hook_calls.append((hook_name, kwargs)) or [],
         )
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
 
         with patch(
             "model_tools.handle_function_call",
@@ -2094,7 +2094,7 @@ class TestConcurrentToolExecution:
         """Blocked memory tool should not reset the nudge counter."""
         agent._turns_since_memory = 5
         monkeypatch.setattr(
-            "hermes_cli.plugins._dispatch_pre_tool_call_hooks",
+            "kova_cli.plugins._dispatch_pre_tool_call_hooks",
             lambda *args, **kwargs: ("Blocked", None),
         )
         with patch("tools.memory_tool.memory_tool", side_effect=AssertionError("should not run")):
@@ -2112,18 +2112,18 @@ class TestConcurrentToolExecution:
         dispatched = []
         duplicate_errors = []
         monkeypatch.setattr(
-            "hermes_cli.middleware.apply_tool_request_middleware",
+            "kova_cli.middleware.apply_tool_request_middleware",
             lambda _name, args, **_kwargs: SimpleNamespace(
                 payload=args,
                 trace=[],
             ),
         )
         monkeypatch.setattr(
-            "hermes_cli.middleware.run_tool_execution_middleware",
+            "kova_cli.middleware.run_tool_execution_middleware",
             lambda _name, args, callback, **_kwargs: callback(args),
         )
         monkeypatch.setattr(
-            "hermes_cli.plugins._dispatch_pre_tool_call_hooks",
+            "kova_cli.plugins._dispatch_pre_tool_call_hooks",
             lambda *_args, **_kwargs: (None, None),
         )
         monkeypatch.setattr(tool_executor, "_begin_tool_execution", lambda *_a, **_k: None)
@@ -2165,18 +2165,18 @@ class TestConcurrentToolExecution:
         errors = []
         barrier = threading.Barrier(2)
         monkeypatch.setattr(
-            "hermes_cli.middleware.apply_tool_request_middleware",
+            "kova_cli.middleware.apply_tool_request_middleware",
             lambda _name, args, **_kwargs: SimpleNamespace(
                 payload=args,
                 trace=[],
             ),
         )
         monkeypatch.setattr(
-            "hermes_cli.middleware.run_tool_execution_middleware",
+            "kova_cli.middleware.run_tool_execution_middleware",
             lambda _name, args, callback, **_kwargs: callback(args),
         )
         monkeypatch.setattr(
-            "hermes_cli.plugins._dispatch_pre_tool_call_hooks",
+            "kova_cli.plugins._dispatch_pre_tool_call_hooks",
             lambda *_args, **_kwargs: (None, None),
         )
         monkeypatch.setattr(tool_executor, "_begin_tool_execution", lambda *_a, **_k: None)
@@ -2247,14 +2247,14 @@ class TestAgentRuntimePostHookOwnershipSync:
 
         hook_calls = []
         monkeypatch.setattr(
-            "hermes_cli.plugins._dispatch_pre_tool_call_hooks",
+            "kova_cli.plugins._dispatch_pre_tool_call_hooks",
             lambda *args, **kwargs: (None, None),
         )
         monkeypatch.setattr(
-            "hermes_cli.lifecycle.invoke_hook",
+            "kova_cli.lifecycle.invoke_hook",
             lambda hook_name, **kwargs: hook_calls.append((hook_name, kwargs)) or [],
         )
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
         monkeypatch.setattr(
             "tools.todo_tool.todo_tool",
             lambda **kwargs: '{"ok":true}',
@@ -2346,12 +2346,12 @@ class TestRuntimeToolTransformToolResult:
     @staticmethod
     def _install_rewriting_transform(agent, monkeypatch):
         monkeypatch.setattr(
-            "hermes_cli.plugins._dispatch_pre_tool_call_hooks",
+            "kova_cli.plugins._dispatch_pre_tool_call_hooks",
             lambda *args, **kwargs: (None, None),
         )
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", lambda name: True)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", lambda name: True)
         monkeypatch.setattr(
-            "hermes_cli.lifecycle.invoke_hook",
+            "kova_cli.lifecycle.invoke_hook",
             lambda hook_name, **kwargs: (
                 [f'REWRITTEN[{kwargs["tool_name"]}]{kwargs["result"]}']
                 if hook_name == "transform_tool_result"
@@ -3037,7 +3037,7 @@ class TestHandleMaxIterations:
         output ...'. The sanitizer renames the blank name to a non-empty
         sentinel so the call and its result stay PAIRED (no orphaned output,
         no 400) while the result content is preserved — it must NOT drop the
-        call, because hermes' dispatch loop keeps empty-name calls paired with
+        call, because kova' dispatch loop keeps empty-name calls paired with
         an anti-priming result for self-correction (#47967). (#12807)"""
         messages = [
             {
@@ -3106,11 +3106,11 @@ class TestRunConversation:
                 return_value="/profile",
             ),
             patch(
-                "hermes_cli.observability.relay_shared_metrics.start_task_run",
+                "kova_cli.observability.relay_shared_metrics.start_task_run",
                 side_effect=start_error,
             ),
             patch(
-                "hermes_cli.observability.relay_shared_metrics.finish_task_run"
+                "kova_cli.observability.relay_shared_metrics.finish_task_run"
             ) as finish_task_run,
             patch("agent.conversation_loop.run_conversation") as run_conversation,
         ):
@@ -3306,10 +3306,10 @@ class TestRunConversation:
         with (
             patch("model_tools.handle_function_call", return_value="search result"),
             patch(
-                "hermes_cli.lifecycle.has_hook",
+                "kova_cli.lifecycle.has_hook",
                 side_effect=lambda name: name in {"pre_api_request", "post_api_request"},
             ),
-            patch("hermes_cli.lifecycle.invoke_hook", side_effect=_record_hook),
+            patch("kova_cli.lifecycle.invoke_hook", side_effect=_record_hook),
             patch.object(agent, "_persist_session"),
             patch.object(agent, "_save_trajectory"),
             patch.object(agent, "_cleanup_task_resources"),
@@ -3353,10 +3353,10 @@ class TestRunConversation:
                 return_value=failed_result,
             ),
             patch(
-                "hermes_cli.observability.relay_shared_metrics.start_task_run",
+                "kova_cli.observability.relay_shared_metrics.start_task_run",
             ),
             patch(
-                "hermes_cli.observability.relay_shared_metrics.finish_task_run",
+                "kova_cli.observability.relay_shared_metrics.finish_task_run",
                 side_effect=lambda **_kwargs: order.append("metrics"),
             ),
             patch.object(
@@ -3393,12 +3393,12 @@ class TestRunConversation:
             payload_counts["response"] += 1
             return {}
 
-        monkeypatch.setattr("hermes_cli.lifecycle.has_hook", _has_hook)
+        monkeypatch.setattr("kova_cli.lifecycle.has_hook", _has_hook)
         monkeypatch.setattr(agent, "_api_request_payload_for_hook", _request_payload)
         monkeypatch.setattr(agent, "_api_response_payload_for_hook", _response_payload)
 
         with (
-            patch("hermes_cli.lifecycle.invoke_hook", return_value=[]),
+            patch("kova_cli.lifecycle.invoke_hook", return_value=[]),
             patch.object(agent, "_persist_session"),
             patch.object(agent, "_save_trajectory"),
             patch.object(agent, "_cleanup_task_resources"),
@@ -4194,7 +4194,7 @@ class TestRunConversation:
 
         Regression test for #20316: when running below the threshold_tokens
         cutoff, run_conversation must still consult the engine's
-        should_compress_preflight() hook so engines like hermes-lcm can
+        should_compress_preflight() hook so engines like kova-lcm can
         perform incremental maintenance (e.g. leaf-chunk compaction)
         without waiting for the 75% context fill threshold.
         """
@@ -4441,7 +4441,7 @@ class TestRunConversation:
         network drop — that wording sends the user chasing a network
         problem a stream_diag log with finish_reason_seen=False would
         already have ruled out."""
-        from hermes_constants import PARTIAL_STREAM_STUB_ID
+        from kova_constants import PARTIAL_STREAM_STUB_ID
 
         self._setup_agent(agent)
         bad_tc = _mock_tool_call(
@@ -4479,7 +4479,7 @@ class TestRunConversation:
         keep printing the original 'stream ended before completion'
         wording — issue #102766 asks that this case's existing wording
         stay as-is, only the clean-EOF case gets new wording."""
-        from hermes_constants import PARTIAL_STREAM_STUB_ID
+        from kova_constants import PARTIAL_STREAM_STUB_ID
 
         self._setup_agent(agent)
         bad_tc = _mock_tool_call(
@@ -4550,7 +4550,7 @@ class TestRunConversation:
         retry up to 3 times rather than hard-failing after one — and recover
         if a retry produces a complete tool call. Regression for the false
         'model hit max output tokens' on Opus when the stream simply dropped."""
-        from hermes_constants import PARTIAL_STREAM_STUB_ID
+        from kova_constants import PARTIAL_STREAM_STUB_ID
 
         self._setup_agent(agent)
         agent.valid_tool_names.add("write_file")
@@ -4595,7 +4595,7 @@ class TestRunConversation:
         carries a tool_calls list). Confirms the zero-byte trigger is wired
         end-to-end through the retry loop, not just detected at the
         chat_completion_helpers unit level."""
-        from hermes_constants import PARTIAL_STREAM_STUB_ID
+        from kova_constants import PARTIAL_STREAM_STUB_ID
 
         self._setup_agent(agent)
         agent.valid_tool_names.add("write_file")
@@ -4681,7 +4681,7 @@ class TestRunConversation:
         self._setup_agent(agent)
         agent.max_iterations = 2
 
-        monkeypatch.setenv("HERMES_KANBAN_TASK", "t_test_task_123")
+        monkeypatch.setenv("KOVA_KANBAN_TASK", "t_test_task_123")
 
         # Return a tool call for every iteration to exhaust the budget.
         tc = _mock_tool_call(name="web_search", arguments="{}", call_id="c1")
@@ -4701,9 +4701,9 @@ class TestRunConversation:
 
         with (
             patch("model_tools.handle_function_call", return_value="ok"),
-            patch("hermes_cli.kanban_db_dispatch._record_task_failure",
+            patch("kova_cli.kanban_db_dispatch._record_task_failure",
                   mock_record_failure),
-            patch("hermes_cli.kanban_db_connect.connect", mock_connect),
+            patch("kova_cli.kanban_db_connect.connect", mock_connect),
             patch.object(agent, "_persist_session"),
             patch.object(agent, "_save_trajectory"),
             patch.object(agent, "_cleanup_task_resources"),
@@ -4728,12 +4728,12 @@ class TestRunConversation:
         assert call.kwargs.get("end_run") is True
 
     def test_no_kanban_block_when_not_in_kanban_mode(self, agent, monkeypatch):
-        """The exhaustion bridge must NOT fire when HERMES_KANBAN_TASK
+        """The exhaustion bridge must NOT fire when KOVA_KANBAN_TASK
         is unset (non-kanban runs are unaffected by #29747 gap 2)."""
         self._setup_agent(agent)
         agent.max_iterations = 2
 
-        monkeypatch.delenv("HERMES_KANBAN_TASK", raising=False)
+        monkeypatch.delenv("KOVA_KANBAN_TASK", raising=False)
 
         tc = _mock_tool_call(name="web_search", arguments="{}", call_id="c1")
         tool_resp = _mock_response(
@@ -4750,7 +4750,7 @@ class TestRunConversation:
 
         with (
             patch("model_tools.handle_function_call", return_value="ok"),
-            patch("hermes_cli.kanban_db_dispatch._record_task_failure",
+            patch("kova_cli.kanban_db_dispatch._record_task_failure",
                   mock_record_failure),
             patch.object(agent, "_persist_session"),
             patch.object(agent, "_save_trajectory"),
@@ -5365,7 +5365,7 @@ class TestNousCredentialRefresh:
             captured.update(kwargs)
             return {
                 "api_key": "new-nous-key",
-                "base_url": "https://inference-api.nousresearch.com/v1",
+                "base_url": "https://inference-api.openkova.com/v1",
             }
 
         def _fake_openai(**kwargs):
@@ -5373,7 +5373,7 @@ class TestNousCredentialRefresh:
             return _RebuiltClient()
 
         monkeypatch.setattr(
-            "hermes_cli.auth.resolve_nous_runtime_credentials", _fake_resolve
+            "kova_cli.auth.resolve_nous_runtime_credentials", _fake_resolve
         )
 
         existing = _ExistingClient()
@@ -5401,7 +5401,7 @@ class TestNousCredentialRefresh:
         assert captured["force_refresh"] is True
         assert rebuilt["kwargs"]["api_key"] == "new-nous-key"
         assert (
-            rebuilt["kwargs"]["base_url"] == "https://inference-api.nousresearch.com/v1"
+            rebuilt["kwargs"]["base_url"] == "https://inference-api.openkova.com/v1"
         )
         assert "default_headers" not in rebuilt["kwargs"]
         assert isinstance(agent.client, _RebuiltClient)
@@ -5420,9 +5420,9 @@ class TestNousCredentialRefresh:
         agent.api_mode = "anthropic_messages"
         agent.model = "anthropic/claude-opus-4.8"
         agent.api_key = "stale-nous-key"
-        agent.base_url = "https://inference-api.nousresearch.com/v1"
+        agent.base_url = "https://inference-api.openkova.com/v1"
         agent._anthropic_api_key = "stale-nous-key"
-        agent._anthropic_base_url = "https://inference-api.nousresearch.com/v1"
+        agent._anthropic_base_url = "https://inference-api.openkova.com/v1"
         agent._client_kwargs = {}
         agent.client = None
 
@@ -5436,7 +5436,7 @@ class TestNousCredentialRefresh:
             captured.update(kwargs)
             return {
                 "api_key": "fresh-portal-jwt",
-                "base_url": "https://inference-api.nousresearch.com/v1",
+                "base_url": "https://inference-api.openkova.com/v1",
             }
 
         def _fake_rebuild():
@@ -5444,7 +5444,7 @@ class TestNousCredentialRefresh:
             agent._anthropic_client = _RebuiltAnthropic()
 
         monkeypatch.setattr(
-            "hermes_cli.auth.resolve_nous_runtime_credentials", _fake_resolve
+            "kova_cli.auth.resolve_nous_runtime_credentials", _fake_resolve
         )
         monkeypatch.setattr(agent, "_rebuild_anthropic_client", _fake_rebuild)
         monkeypatch.setattr(
@@ -5458,10 +5458,10 @@ class TestNousCredentialRefresh:
         assert ok is True
         assert captured["force_refresh"] is True
         assert agent.api_key == "fresh-portal-jwt"
-        assert agent.base_url == "https://inference-api.nousresearch.com/v1"
+        assert agent.base_url == "https://inference-api.openkova.com/v1"
         assert agent._anthropic_api_key == "fresh-portal-jwt"
         assert agent._anthropic_base_url == (
-            "https://inference-api.nousresearch.com/v1"
+            "https://inference-api.openkova.com/v1"
         )
         assert rebuild_calls["count"] == 1
         assert isinstance(agent._anthropic_client, _RebuiltAnthropic)
@@ -5600,7 +5600,7 @@ class TestGpt5ApiModeRouting:
     def test_nous_gpt5_stays_on_chat_completions(self, agent):
         """Nous serves gpt-5.x on /chat/completions — must not upgrade to codex_responses."""
         agent.provider = "nous"
-        agent.base_url = "https://inference-api.nousresearch.com/v1"
+        agent.base_url = "https://inference-api.openkova.com/v1"
         agent.api_mode = "chat_completions"
         agent.model = "openai/gpt-5.5"
         assert not agent._is_direct_openai_url()
@@ -6373,7 +6373,7 @@ class TestStreamingApiCall:
         # (id=PARTIAL_STREAM_STUB_ID, tool_calls=None so it can't execute,
         # finish_reason=length so the loop's continuation machinery fires with
         # chunking guidance) rather than stamping a normal 'length' truncation.
-        from hermes_constants import PARTIAL_STREAM_STUB_ID
+        from kova_constants import PARTIAL_STREAM_STUB_ID
         chunks = [
             _make_chunk(tool_calls=[_make_tc_delta(0, "call_1", "write_file", '{"path":"x.txt","content":"hel')]),
         ]
@@ -6410,7 +6410,7 @@ class TestStreamingApiCall:
         # Cut after the first digit of "timeout": 600. Every string is closed, so the
         # prefix repairs to valid JSON that carries timeout=6. Without a finish_reason
         # nothing says the model was done: retry, never run what happened to arrive.
-        from hermes_constants import PARTIAL_STREAM_STUB_ID
+        from kova_constants import PARTIAL_STREAM_STUB_ID
         raw = '{"command": "make deploy", "timeout": 6'
         chunks = [_make_chunk(tool_calls=[_make_tc_delta(0, "call_1", "terminal", raw)])]
         if finish_reason:

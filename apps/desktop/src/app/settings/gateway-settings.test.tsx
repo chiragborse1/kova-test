@@ -1,4 +1,4 @@
-import { GatewayReauthRequiredError } from '@hermes/shared'
+import { GatewayReauthRequiredError } from '@kova/shared'
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -331,7 +331,7 @@ describe('GatewaySettings', () => {
     expect(agentSignIn).toHaveBeenCalledExactlyOnceWith('https://new-a.example')
     expect(applyConnectionConfig).toHaveBeenCalledTimes(1)
   })
-  // #114856: an env-pinned remote (HERMES_DESKTOP_REMOTE_URL) whose session
+  // #114856: an env-pinned remote (KOVA_DESKTOP_REMOTE_URL) whose session
   // lapsed could not be re-authenticated from Settings → Gateway at all — the
   // whole remote block (URL + probe + Authentication) was hidden behind
   // `!state.envOverride`, so the recovery card's "Gateway settings" escape led

@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { HermesGitBaseBranch } from '@/global'
+import type { KovaGitBaseBranch } from '@/global'
 import { $worktreeDialog } from '@/store/projects'
 
 import { BaseBranchPicker } from './base-branch-picker'
@@ -9,13 +9,13 @@ import { WorktreeDialog } from './worktree-dialog'
 
 type ActGlobal = typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
 
-const MAIN: HermesGitBaseBranch = { isDefault: true, isRemote: true, name: 'origin/main' }
-const FEAT: HermesGitBaseBranch = { isDefault: false, isRemote: false, name: 'feat-x' }
+const MAIN: KovaGitBaseBranch = { isDefault: true, isRemote: true, name: 'origin/main' }
+const FEAT: KovaGitBaseBranch = { isDefault: false, isRemote: false, name: 'feat-x' }
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 // The bridge answers after an IPC round trip, as the Electron one does.
-const listing = (answer: () => HermesGitBaseBranch[]) =>
+const listing = (answer: () => KovaGitBaseBranch[]) =>
   vi.fn(async (_repoPath: string) => {
     await sleep(5)
 
@@ -60,7 +60,7 @@ describe('BaseBranchPicker loading', () => {
         throw new Error('404 Not Found')
       }
     ]
-  ])('lists the repo once on %s', async (_case, answer: () => HermesGitBaseBranch[]) => {
+  ])('lists the repo once on %s', async (_case, answer: () => KovaGitBaseBranch[]) => {
     const baseBranchList = listing(answer)
     installGit({ baseBranchList })
 
@@ -71,11 +71,11 @@ describe('BaseBranchPicker loading', () => {
   })
 
   it('a list from the previous repo does not set the base of the next', async () => {
-    const land: Record<string, (list: HermesGitBaseBranch[]) => void> = {}
+    const land: Record<string, (list: KovaGitBaseBranch[]) => void> = {}
 
     const baseBranchList = vi.fn(
       (repoPath: string) =>
-        new Promise<HermesGitBaseBranch[]>(resolve => {
+        new Promise<KovaGitBaseBranch[]>(resolve => {
           land[repoPath] = resolve
         })
     )

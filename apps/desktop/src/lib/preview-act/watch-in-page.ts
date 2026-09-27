@@ -296,13 +296,13 @@ export function watchInPage(doc: Document, holder: WatchHolder, stage: WatchStag
   const build = () => {
     // A host from an earlier build of this function may still be on the page.
     // Clear it out rather than stacking a second.
-    const stale = doc.querySelectorAll('hermes-watch')
+    const stale = doc.querySelectorAll('kova-watch')
 
     for (let i = 0; i < stale.length; i++) {
       stale[i].remove()
     }
 
-    const host = doc.createElement('hermes-watch')
+    const host = doc.createElement('kova-watch')
 
     host.setAttribute('aria-hidden', 'true')
     host.setAttribute('popover', 'manual')

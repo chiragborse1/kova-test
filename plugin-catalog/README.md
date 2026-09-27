@@ -1,9 +1,9 @@
-# Hermes Plugin Catalog
+# Kova Plugin Catalog
 
-Curated, Nous-approved Hermes plugins. Each YAML file in this directory
+Curated, Nous-approved Kova plugins. Each YAML file in this directory
 (except `removed.yaml`) is one catalog entry, discoverable via
-`hermes plugins catalog` / `hermes plugins search` and installable with
-`hermes plugins install <name>`.
+`kova plugins catalog` / `kova plugins search` and installable with
+`kova plugins install <name>`.
 
 ## Admission policy
 
@@ -11,7 +11,7 @@ Presence in this directory **is** the trust signal. The rules that keep it
 meaningful:
 
 1. **Human-merged gate.** Entries are added *only* via a PR to the
-   `hermes-agent` repository, reviewed and merged by a maintainer. There is
+   `kova-agent` repository, reviewed and merged by a maintainer. There is
    no self-serve registry, no automated ingestion.
 2. **Exact SHA pins are mandatory.** Every entry pins a full 40-character
    commit SHA. Branches, tags, and short SHAs are rejected by the loader.
@@ -21,7 +21,7 @@ meaningful:
    remote `plugin.js` loaders). The exact SHA pin *is* the trust model; a
    self-updater lets an installed copy move to a commit nobody reviewed.
    Updates reach users only through a SHA-bump PR here plus
-   `hermes plugins update <name>`. Keep the updater in the standalone
+   `kova plugins update <name>`. Keep the updater in the standalone
    distribution if you want one; strip it from the catalog build.
 4. **SHA bumps are new PRs.** Updating an entry's pin is a new PR whose diff
    (old SHA → new SHA) is re-reviewed like any other change — reviewers are
@@ -29,7 +29,7 @@ meaningful:
 5. **Owner-or-major-contributor submissions, or a maintainer-curated sweep.**
    An entry may be submitted by the plugin repository's owner or a major
    contributor to it; drive-by submissions of third-party repos are declined.
-   Hermes maintainers may also add entries in batches from a reviewed sweep
+   Kova maintainers may also add entries in batches from a reviewed sweep
    of community plugins (every pin validated and scanned at the pinned
    commit, self-updater and credential-store checks run, English-first UI).
    Authors of swept-in entries keep control: a PR from the owner adjusting
@@ -39,7 +39,7 @@ meaningful:
    (tools, hooks, middleware, env vars) must match what the plugin actually
    registers at the pinned commit. Validation fails the entry otherwise —
    undeclared capability creep is treated as a security issue.
-7. **The install scanner runs at admission.** `hermes plugins validate` includes
+7. **The install scanner runs at admission.** `kova plugins validate` includes
    the `security scan` check: `dangerous` fails the entry; `caution` findings
    appear as warnings in the CI log and the reviewer reads them before merging.
    In exchange, installs at the pinned SHA accept `caution` without a prompt
@@ -48,16 +48,16 @@ meaningful:
    in the Desktop renderer with the app's full authority (the loader isolates
    errors, not capabilities), so a listed one may only use the plugin SDK:
    no prototype patching (`X.prototype.y =`, `Object.defineProperty(...prototype`),
-   no `eval`/`new Function`, no `import()` of anything but `@hermes/plugin-sdk`
+   no `eval`/`new Function`, no `import()` of anything but `@kova/plugin-sdk`
    / `react` (app bundle chunks, blob or http URLs included), no script-tag
-   injection, no reaching into the app's internal stores. `hermes plugins
+   injection, no reaching into the app's internal stores. `kova plugins
    validate` refuses these at admission (`desktop surface` check); a plugin
    that needs a capability the SDK lacks asks for an SDK hook instead of
    patching around it.
-9. **Dependency security policy is the plugin's.** Hermes's 14-day
-   `exclude-newer` quarantine covers Hermes's own dependencies only; a plugin's
+9. **Dependency security policy is the plugin's.** Kova's 14-day
+   `exclude-newer` quarantine covers Kova's own dependencies only; a plugin's
    `python_dependencies` / `pyproject.toml` install under the plugin's policy
-   (no quarantine, still inside Hermes's core constraints). Reviewers read the
+   (no quarantine, still inside Kova's core constraints). Reviewers read the
    dependency list at the pinned SHA: bare floors (`>=X` with no upper bound)
    and floors on the newest release get a request for the oldest
    API-compatible floor plus an upper bound, and authors are strongly
@@ -100,7 +100,7 @@ so the Desktop catalog and the docs site never fetch from third-party hosts;
 pin the raw URL to the entry's commit and the picture is as immutable as the
 code.
 
-Every entry gets a page at `https://hermes-agent.nousresearch.com/docs/plugins/<name>`
+Every entry gets a page at `https://kova-agent.openkova.com/docs/plugins/<name>`
 and every maintainer a page at `/docs/plugins/by/<maintainer>`, both generated
 from these files at docs build time. `screenshots:` fills the page's gallery;
 the build fetches the README (from `subdir` if set, else the repo root) **at the

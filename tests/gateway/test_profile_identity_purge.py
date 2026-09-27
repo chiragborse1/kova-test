@@ -1,4 +1,4 @@
-"""Profile identity purge for `hermes profile delete`: the delete-only path, and what an unserve
+"""Profile identity purge for `kova profile delete`: the delete-only path, and what an unserve
 must leave alone.
 
 `_unserve_profile()` runs for every name that leaves the served set — a rename's old name leaves it
@@ -43,9 +43,9 @@ def _entry(session_key, chat_id, profile):
 
 
 def _state_db():
-    from hermes_constants import get_hermes_home
-    from hermes_state import SessionDB
-    return SessionDB(Path(get_hermes_home()) / "state.db")
+    from kova_constants import get_kova_home
+    from kova_state import SessionDB
+    return SessionDB(Path(get_kova_home()) / "state.db")
 
 
 def _runner_stub(store):

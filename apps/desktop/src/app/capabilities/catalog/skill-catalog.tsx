@@ -2,11 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { capabilityScoped } from '@/api/client'
-import { getOfficialSkills, type ProfileScope, profileScopeKey } from '@/hermes'
+import { getOfficialSkills, type ProfileScope, profileScopeKey } from '@/kova'
 import { useI18n } from '@/i18n'
 import { HUB_SOURCES_KEY, installHubSkill, notifyHubActionFailed, OFFICIAL_SKILLS_KEY } from '@/store/hub-actions'
 import { notify } from '@/store/notifications'
-import type { SkillHubSourcesResponse, SkillInfo } from '@/types/hermes'
+import type { SkillHubSourcesResponse, SkillInfo } from '@/types/kova'
 
 import { CatalogAlert } from './catalog-alert'
 import { CatalogBrowser } from './catalog-browser'

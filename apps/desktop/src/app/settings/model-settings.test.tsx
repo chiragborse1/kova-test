@@ -25,8 +25,8 @@ const setModelAssignment = vi.fn()
 const getRecommendedDefaultModel = vi.fn()
 const saveMoaModels = vi.fn()
 const setEnvVar = vi.fn()
-const getHermesConfigRecord = vi.fn()
-const saveHermesConfig = vi.fn()
+const getKovaConfigRecord = vi.fn()
+const saveKovaConfig = vi.fn()
 const startManualLocalEndpoint = vi.fn()
 const startManualOnboarding = vi.fn()
 const startManualProviderOAuth = vi.fn()
@@ -34,7 +34,7 @@ let profileSwitchHandler: (() => void) | null = null
 
 // Keep the real read-origin helpers (WeakMap peek/bind) live: the shared
 // config hook reaches them through the barrel, and a bare mock would throw.
-vi.mock('@/hermes', async () => ({
+vi.mock('@/kova', async () => ({
   ...(await vi.importActual<typeof ConfigApi>('@/api/config')),
   getGlobalModelInfo: (profile?: null | string) => getGlobalModelInfo(profile),
   getGlobalModelOptions: (opts?: unknown, profile?: null | string) => getGlobalModelOptions(opts, profile),
@@ -46,8 +46,8 @@ vi.mock('@/hermes', async () => ({
   getRecommendedDefaultModel: (slug: string) => getRecommendedDefaultModel(slug),
   saveMoaModels: (body: unknown) => saveMoaModels(body),
   setEnvVar: (key: string, value: string) => setEnvVar(key, value),
-  getHermesConfigRecord: () => getHermesConfigRecord(),
-  saveHermesConfig: (config: unknown) => saveHermesConfig(config),
+  getKovaConfigRecord: () => getKovaConfigRecord(),
+  saveKovaConfig: (config: unknown) => saveKovaConfig(config),
   setApiRequestProfile: () => {}
 }))
 
@@ -64,28 +64,28 @@ vi.mock('../hooks/use-on-profile-switch', () => ({
 }))
 
 beforeEach(() => {
-  getGlobalModelInfo.mockResolvedValue({ provider: 'nous', model: 'hermes-4' })
+  getGlobalModelInfo.mockResolvedValue({ provider: 'nous', model: 'kova-4' })
   getGlobalModelOptions.mockResolvedValue({
     providers: [
       {
         name: 'Nous',
         slug: 'nous',
-        models: ['hermes-4', 'hermes-4-mini'],
+        models: ['kova-4', 'kova-4-mini'],
         authenticated: true,
-        capabilities: { 'hermes-4': { reasoning: true, fast: true } }
+        capabilities: { 'kova-4': { reasoning: true, fast: true } }
       }
     ]
   })
   getAuxiliaryModels.mockResolvedValue({
-    main: { provider: 'nous', model: 'hermes-4' },
+    main: { provider: 'nous', model: 'kova-4' },
     tasks: [{ task: 'vision', provider: 'auto', model: '', base_url: '' }]
   })
   getMoaModels.mockResolvedValue(null)
-  setModelAssignment.mockResolvedValue({ ok: true, provider: 'nous', model: 'hermes-4', gateway_tools: [] })
-  getRecommendedDefaultModel.mockResolvedValue({ provider: 'nous', model: 'hermes-4', free_tier: null })
+  setModelAssignment.mockResolvedValue({ ok: true, provider: 'nous', model: 'kova-4', gateway_tools: [] })
+  getRecommendedDefaultModel.mockResolvedValue({ provider: 'nous', model: 'kova-4', free_tier: null })
   setEnvVar.mockResolvedValue({ ok: true })
-  getHermesConfigRecord.mockResolvedValue({ agent: { reasoning_effort: 'medium', service_tier: 'normal' } })
-  saveHermesConfig.mockResolvedValue({ ok: true })
+  getKovaConfigRecord.mockResolvedValue({ agent: { reasoning_effort: 'medium', service_tier: 'normal' } })
+  saveKovaConfig.mockResolvedValue({ ok: true })
 })
 
 afterEach(() => {
@@ -196,7 +196,7 @@ describe('ModelSettings', () => {
   it('replaces the selected provider and model when the active profile changes', async () => {
     getGlobalModelInfo
       .mockResolvedValueOnce({ provider: 'custom', model: 'local-a' })
-      .mockResolvedValueOnce({ provider: 'nous', model: 'hermes-4' })
+      .mockResolvedValueOnce({ provider: 'nous', model: 'kova-4' })
     getGlobalModelOptions
       .mockResolvedValueOnce({
         providers: [
@@ -213,9 +213,9 @@ describe('ModelSettings', () => {
           {
             name: 'Nous',
             slug: 'nous',
-            models: ['hermes-4'],
+            models: ['kova-4'],
             authenticated: true,
-            capabilities: { 'hermes-4': { reasoning: true, fast: true } }
+            capabilities: { 'kova-4': { reasoning: true, fast: true } }
           }
         ]
       })
@@ -238,7 +238,7 @@ describe('ModelSettings', () => {
         {
           name: 'Nous',
           slug: 'nous',
-          models: ['hermes-4'],
+          models: ['kova-4'],
           authenticated: true
         },
         {
@@ -284,17 +284,17 @@ describe('ModelSettings', () => {
     // The cached record is a default-expanded snapshot; a CLI pin made after it
     // loaded is not in it. Echoing the whole record back would reset that
     // auxiliary slot to auto/'' (#95460) — only the edited key may be sent.
-    getHermesConfigRecord.mockResolvedValue({
+    getKovaConfigRecord.mockResolvedValue({
       agent: { reasoning_effort: 'medium', service_tier: 'normal' },
       auxiliary: { curator: { provider: 'auto', model: '', reasoning_effort: 'high' } }
     })
     renderModelSettings()
-    await waitFor(() => expect(getHermesConfigRecord).toHaveBeenCalled())
+    await waitFor(() => expect(getKovaConfigRecord).toHaveBeenCalled())
 
     const fastSwitch = await screen.findByRole('switch')
     fireEvent.click(fastSwitch)
 
-    await waitFor(() => expect(saveHermesConfig).toHaveBeenCalledWith({ agent: { service_tier: 'fast' } }))
+    await waitFor(() => expect(saveKovaConfig).toHaveBeenCalledWith({ agent: { service_tier: 'fast' } }))
   })
 
   it('hides the reasoning/speed defaults when the main model reports no capabilities', async () => {
@@ -303,23 +303,23 @@ describe('ModelSettings', () => {
         {
           name: 'Nous',
           slug: 'nous',
-          models: ['hermes-4'],
+          models: ['kova-4'],
           authenticated: true,
-          capabilities: { 'hermes-4': { reasoning: false, fast: false } }
+          capabilities: { 'kova-4': { reasoning: false, fast: false } }
         }
       ]
     })
 
     renderModelSettings()
-    await waitFor(() => expect(getHermesConfigRecord).toHaveBeenCalled())
+    await waitFor(() => expect(getKovaConfigRecord).toHaveBeenCalled())
 
     expect(screen.queryByRole('switch')).toBeNull()
   })
 
   it('edits auxiliary reasoning effort and applies it with the assignment', async () => {
     getAuxiliaryModels.mockResolvedValueOnce({
-      main: { provider: 'nous', model: 'hermes-4' },
-      tasks: [{ task: 'vision', provider: 'nous', model: 'hermes-4', base_url: '', reasoning_effort: null }]
+      main: { provider: 'nous', model: 'kova-4' },
+      tasks: [{ task: 'vision', provider: 'nous', model: 'kova-4', base_url: '', reasoning_effort: null }]
     })
 
     renderModelSettings()
@@ -336,7 +336,7 @@ describe('ModelSettings', () => {
 
     await waitFor(() =>
       expect(setModelAssignment).toHaveBeenCalledWith({
-        model: 'hermes-4',
+        model: 'kova-4',
         provider: 'nous',
         scope: 'auxiliary',
         task: 'vision',
@@ -354,7 +354,7 @@ describe('ModelSettings', () => {
 
     await waitFor(() =>
       expect(setModelAssignment).toHaveBeenCalledWith({
-        model: 'hermes-4',
+        model: 'kova-4',
         provider: 'nous',
         scope: 'auxiliary',
         task: 'vision'
@@ -418,7 +418,7 @@ describe('ModelSettings', () => {
       provider: 'openrouter',
       model: 'anthropic/claude-opus-4.7',
       gateway_tools: [],
-      stale_aux: [{ task: 'compression', provider: 'nous', model: 'hermes-4' }]
+      stale_aux: [{ task: 'compression', provider: 'nous', model: 'kova-4' }]
     })
 
     renderModelSettings()
@@ -436,7 +436,7 @@ describe('ModelSettings', () => {
     'localizes stale auxiliary warnings in %s without resetting assignments',
     async locale => {
       getAuxiliaryModels.mockResolvedValueOnce({
-        main: { provider: 'nous', model: 'hermes-4' },
+        main: { provider: 'nous', model: 'kova-4' },
         tasks: [{ task: 'curator', provider: 'openrouter', model: 'fixture-model', base_url: '' }]
       })
       const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
@@ -462,7 +462,7 @@ describe('ModelSettings', () => {
 
   it('shows a persistent banner when a loaded aux slot mismatches the main provider', async () => {
     getAuxiliaryModels.mockResolvedValueOnce({
-      main: { provider: 'nous', model: 'hermes-4' },
+      main: { provider: 'nous', model: 'kova-4' },
       tasks: [{ task: 'curator', provider: 'openrouter', model: 'anthropic/claude-opus-4.7', base_url: '' }]
     })
 
@@ -474,7 +474,7 @@ describe('ModelSettings', () => {
 
   it('does not warn when an aux slot uses the main alias', async () => {
     getAuxiliaryModels.mockResolvedValueOnce({
-      main: { provider: 'nous', model: 'hermes-4' },
+      main: { provider: 'nous', model: 'kova-4' },
       tasks: [{ task: 'vision', provider: 'main', model: 'kimi-k3', base_url: '' }]
     })
 
@@ -524,7 +524,7 @@ describe('ModelSettings MoA preset editor', () => {
     presets: {
       default: {
         reference_models: [
-          { provider: 'nous', model: 'hermes-4' },
+          { provider: 'nous', model: 'kova-4' },
           { provider: 'openrouter', model: 'deepseek/deepseek-v4-pro' }
         ],
         aggregator: { provider: 'openrouter', model: 'anthropic/claude-opus-4.8' },
@@ -535,7 +535,7 @@ describe('ModelSettings MoA preset editor', () => {
       }
     },
     reference_models: [
-      { provider: 'nous', model: 'hermes-4' },
+      { provider: 'nous', model: 'kova-4' },
       { provider: 'openrouter', model: 'deepseek/deepseek-v4-pro' }
     ],
     aggregator: { provider: 'openrouter', model: 'anthropic/claude-opus-4.8' },
@@ -551,9 +551,9 @@ describe('ModelSettings MoA preset editor', () => {
         {
           name: 'Nous',
           slug: 'nous',
-          models: ['hermes-4', 'hermes-4-mini'],
+          models: ['kova-4', 'kova-4-mini'],
           authenticated: true,
-          capabilities: { 'hermes-4': { reasoning: true, fast: true } }
+          capabilities: { 'kova-4': { reasoning: true, fast: true } }
         },
         {
           name: 'OpenRouter',
@@ -599,7 +599,7 @@ describe('ModelSettings MoA preset editor', () => {
       expect(saved.default_preset).toBe('default')
       expect(saved.presets.default.reference_models[0]).toMatchObject({
         provider: 'nous',
-        model: 'hermes-4',
+        model: 'kova-4',
         enabled: false
       })
     }
@@ -706,7 +706,7 @@ describe('ModelSettings MoA preset editor', () => {
           presets: expect.objectContaining({
             default: expect.objectContaining({
               reference_models: [
-                expect.objectContaining({ provider: 'nous', model: 'hermes-4', enabled: false }),
+                expect.objectContaining({ provider: 'nous', model: 'kova-4', enabled: false }),
                 expect.objectContaining({ provider: 'openrouter', model: 'deepseek/deepseek-v4-pro' })
               ]
             })
@@ -721,7 +721,7 @@ describe('ModelSettings MoA preset editor', () => {
 
 describe('ModelSettings code-skew 503', () => {
   const skewError = new Error(
-    'Error invoking remote method \'hermes:api\': Error: 503: {"detail":"Restart required: This process is running code from 08b4875f4a but the checkout on disk is now 48d2528066. The model picker would risk a stale-module crash — restart the Desktop-owned backend to load the new code (use Restart backend in Hermes Desktop, or quit and reopen the app)"}'
+    'Error invoking remote method \'kova:api\': Error: 503: {"detail":"Restart required: This process is running code from 08b4875f4a but the checkout on disk is now 48d2528066. The model picker would risk a stale-module crash — restart the Desktop-owned backend to load the new code (use Restart backend in Kova Desktop, or quit and reopen the app)"}'
   )
 
   afterEach(() => {
@@ -737,7 +737,7 @@ describe('ModelSettings code-skew 503', () => {
       expect(screen.getByText(/running old code after an update/i)).toBeTruthy()
     })
     expect(screen.getByRole('button', { name: 'Restart backend' })).toBeTruthy()
-    expect(screen.queryByText(/hermes:api/)).toBeNull()
+    expect(screen.queryByText(/kova:api/)).toBeNull()
     expect(screen.queryByText(/systemctl/)).toBeNull()
   })
 

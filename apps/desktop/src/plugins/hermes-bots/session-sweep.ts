@@ -7,7 +7,7 @@
  * scheduler without pulling a view in.
  */
 
-import { host } from '@hermes/plugin-sdk'
+import { host } from '@kova/plugin-sdk'
 
 import { PROFILE_SESSION_LIST_LIMIT } from './canonical-chat'
 import { $lastRoster } from './data'
@@ -238,7 +238,7 @@ function hidePersistedBotSession(bot: RosterRow, sessionId: string, profileOverr
 }
 
 // Titles Bot Mode itself mints for its plumbing sessions. Bot-to-bot CLI
-// handoffs (`hermes -p <bot> chat --in ~ -c "Bot Chat" --create-if-missing`)
+// handoffs (`kova -p <bot> chat --in ~ -c "Bot Chat" --create-if-missing`)
 // create sessions with EXACTLY these titles; the "Group: " prefix is the
 // member-session title ensureGroupChatSession has
 // used since group chats shipped. Exact/prefix matching is deliberate — a

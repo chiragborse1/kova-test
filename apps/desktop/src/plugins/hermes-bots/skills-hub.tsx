@@ -6,7 +6,7 @@
  * it reaches back into neither.
  */
 
-import { Button, host, Input, useI18n } from '@hermes/plugin-sdk'
+import { Button, host, Input, useI18n } from '@kova/plugin-sdk'
 import { useEffect, useRef, useState } from 'react'
 
 import { useBots } from './i18n'
@@ -14,13 +14,13 @@ import { requestForBot } from './routing'
 import type { RosterRow } from './types'
 
 // ── skills hub section: the REAL hub page (docs) embedded as a picker ──────
-// https://hermes-agent.nousresearch.com/docs/skills?embed=picker hides the
+// https://kova-agent.openkova.com/docs/skills?embed=picker hides the
 // docs chrome and adds "+ Add to this Agent" per card, posting
-// {type: 'hermes-skill-pick', ...} to us (hermes-agent#86243). We validate
+// {type: 'kova-skill-pick', ...} to us (kova-agent#86243). We validate
 // the origin, install via skills.manage, and bubble onInstalled so the
 // checklist above gains the row. Search-box fallback kept for offline use.
 
-const HUB_ORIGIN = 'https://hermes-agent.nousresearch.com'
+const HUB_ORIGIN = 'https://kova-agent.openkova.com'
 const HUB_PICKER_URL = HUB_ORIGIN + '/docs/skills?embed=picker'
 /** One `skills.manage action=search` hit. */
 interface HubSkillResult {
@@ -66,7 +66,7 @@ export function HubSkillsSection({ bot, onInstalled }: HubSkillsSectionProps) {
 
       const data = event.data
 
-      if (!data || data.type !== 'hermes-skill-pick' || !data.name) {
+      if (!data || data.type !== 'kova-skill-pick' || !data.name) {
         return
       }
 

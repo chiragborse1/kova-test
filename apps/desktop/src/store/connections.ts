@@ -28,7 +28,7 @@ import {
 import { $activeSessionId, $connection, $selectedStoredSessionId } from '@/store/session'
 import { isPeerInstanceWindow, windowProfileOverride } from '@/store/windows'
 
-const LAST_PROFILE_STORAGE_KEY = 'hermes.desktop.lastProfileByConnection'
+const LAST_PROFILE_STORAGE_KEY = 'kova.desktop.lastProfileByConnection'
 
 // Every await of a source switch is bounded. A wedged spawn, ticket mint,
 // handshake or IPC (the #93454 class) must surface as a failed click — not a

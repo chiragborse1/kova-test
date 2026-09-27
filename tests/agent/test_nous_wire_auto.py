@@ -15,7 +15,7 @@ from types import SimpleNamespace
 import pytest
 
 from agent import nous_wire
-from hermes_cli import providers as _providers
+from kova_cli import providers as _providers
 
 
 def _resp(**kw):
@@ -51,7 +51,7 @@ class TestWireChoice:
 
 def _agent(**kw):
     a = SimpleNamespace(provider="nous", model="anthropic/claude-fable-5.1", api_mode="chat_completions",
-                        api_key="k", base_url="https://inference-api.nousresearch.com/v1", session_id="s")
+                        api_key="k", base_url="https://inference-api.openkova.com/v1", session_id="s")
     for k, v in kw.items():
         setattr(a, k, v)
     return a
@@ -118,14 +118,14 @@ class TestHook:
 
 def test_real_agent_usage_recorder_calls_the_hook_once(tmp_path, monkeypatch):
     """The wiring: record_response_usage on a real AIAgent invokes the hook on call 1 only."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     (tmp_path / "config.yaml").write_text("nous:\n  anthropic_wire: auto\n", encoding="utf-8")
     from run_agent import AIAgent
     from agent import turn_usage
     calls = []
     monkeypatch.setattr(nous_wire, "maybe_switch_wire_after_first_response",
                         lambda agent, response, n: calls.append((n, nous_wire.classify_upstream(response))) or False)
-    a = AIAgent(api_key="jwt", base_url="https://inference-api.nousresearch.com/v1", provider="nous",
+    a = AIAgent(api_key="jwt", base_url="https://inference-api.openkova.com/v1", provider="nous",
                 api_mode="chat_completions", model="anthropic/claude-fable-5.1", session_id="t", platform="cli",
                 quiet_mode=True, skip_context_files=True, skip_memory=True, save_trajectories=False, enabled_toolsets=["file"])
     try:

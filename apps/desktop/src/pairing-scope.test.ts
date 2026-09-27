@@ -19,7 +19,7 @@ describe('pairing requests carry the active profile', () => {
   })
 
   it('scopes approve and revoke by body, and the listing by query', async () => {
-    const mod = await import('@/hermes')
+    const mod = await import('@/kova')
     mod.setApiRequestProfile('work')
 
     await mod.approvePairing('telegram', 'a'.repeat(16))
@@ -34,7 +34,7 @@ describe('pairing requests carry the active profile', () => {
   })
 
   it('omits the profile entirely for single-profile users', async () => {
-    const mod = await import('@/hermes')
+    const mod = await import('@/kova')
     mod.setApiRequestProfile(null)
 
     await mod.approvePairing('telegram', 'a'.repeat(16))

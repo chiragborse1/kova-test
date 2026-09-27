@@ -3,7 +3,7 @@
  * frame as the bot's profile picture.
  */
 
-import { Button, cn, GlyphSpinner, host, Input, LruCache, RowButton, useQuery } from '@hermes/plugin-sdk'
+import { Button, cn, GlyphSpinner, host, Input, LruCache, RowButton, useQuery } from '@kova/plugin-sdk'
 import { useEffect, useState } from 'react'
 
 import { useBots } from './i18n'
@@ -159,7 +159,7 @@ export function PetTab({ image, onImage }: PetTabProps) {
   if (!pets.length) {
     return (
       <div className="px-2 py-3 text-center text-xs text-(--ui-text-tertiary)">
-        No pets in the petdex gallery. Run `hermes pets` to explore.
+        No pets in the petdex gallery. Run `kova pets` to explore.
       </div>
     )
   }

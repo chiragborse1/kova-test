@@ -274,7 +274,7 @@ class TestSendViaRestApi:
         # Verify the REST API was called with correct payload
         call_args = mock_session.post.call_args
         assert "/api/services/persistent_notification/create" in call_args[0][0]
-        assert call_args[1]["json"]["title"] == "Hermes Agent"
+        assert call_args[1]["json"]["title"] == "Kova Agent"
         assert call_args[1]["json"]["message"] == "Test notification"
         assert "Bearer tok" in call_args[1]["headers"]["Authorization"]
 
@@ -296,7 +296,7 @@ class TestLocalNetworkConnectHint:
         """The same errno from a Terminal-run gateway (or another OS) must not be blamed on macOS."""
         from plugins.platforms.homeassistant.adapter import _connect_error_detail
 
-        monkeypatch.delenv("HERMES_SUPERVISED_CHILD", raising=False)
+        monkeypatch.delenv("KOVA_SUPERVISED_CHILD", raising=False)
         monkeypatch.delenv("XPC_SERVICE_NAME", raising=False)
         err = OSError(errno.EHOSTUNREACH, "No route to host")
         assert _connect_error_detail(err) == str(err)
@@ -307,7 +307,7 @@ class TestLocalNetworkConnectHint:
         """Only the launchd-supervised gateway can be denied by Local Network Privacy (#71206)."""
         from plugins.platforms.homeassistant.adapter import _connect_error_detail
 
-        monkeypatch.setenv("HERMES_SUPERVISED_CHILD", "1")
+        monkeypatch.setenv("KOVA_SUPERVISED_CHILD", "1")
         err = OSError(errno.EHOSTUNREACH, "No route to host")
         detail = _connect_error_detail(err)
         assert detail.startswith(str(err))

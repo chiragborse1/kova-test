@@ -1,9 +1,9 @@
-"""Concurrent and foreign git state in the install, through a real ``hermes update``.
+"""Concurrent and foreign git state in the install, through a real ``kova update``.
 
 Users' checkouts carry state other tools left: an ``index.lock`` from a crashed (or a still
 running) git, an abandoned interactive rebase, a detached HEAD from a ``git checkout <sha>``,
 sometimes with work committed on it. One HEAD install over smart HTTP is shared; each cell seeds
-one such state on a clean ``main``, publishes an upstream release and runs ``hermes update --yes``.
+one such state on a clean ``main``, publishes an upstream release and runs ``kova update --yes``.
 
 The property: the update either heals the state and lands on the release, or refuses with a
 message naming the obstacle, leaving HEAD and the tree as they were and claiming nothing false;
@@ -70,7 +70,7 @@ def test_live_index_lock_is_refused_truthfully(w):
     with known_failure(r"claims .*history diverged",
                        "gated on #124642: a ff-merge blocked by index.lock is reported as diverged history, "
                        "a rescue ref is written and `git reset --hard` is advised"):
-        assert "diverged" not in out and not w.refs("refs/hermes-update-backups"), (
+        assert "diverged" not in out and not w.refs("refs/kova-update-backups"), (
             f"an index.lock refusal claims local history diverged (and writes a rescue ref):\n{w.diag(cp)}")
 
 

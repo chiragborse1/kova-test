@@ -36,7 +36,7 @@ import net from 'node:net'
 import os from 'node:os'
 import path from 'node:path'
 
-import { platformDefaultHermesHome } from './data-paths'
+import { platformDefaultKovaHome } from './data-paths'
 
 const DEFAULT_CONNECT_TIMEOUT_MS = 15_000
 const DEFAULT_EXEC_TIMEOUT_MS = 20_000
@@ -44,7 +44,7 @@ const DEFAULT_FORWARD_TIMEOUT_MS = 15_000
 
 // Remote-side watchdog for probe commands, in seconds. runSsh SIGKILLs the
 // LOCAL ssh child on timeout, but the remote command keeps running as an
-// orphan (ppid=1) — a hung remote CLI (e.g. a wedged `hermes --version`)
+// orphan (ppid=1) — a hung remote CLI (e.g. a wedged `kova --version`)
 // accumulates orphans that busy-loop (#110478). Kept under
 // DEFAULT_EXEC_TIMEOUT_MS so the remote kill lands before the local timeout.
 const REMOTE_PROBE_TIMEOUT_SECS = 15
@@ -147,8 +147,8 @@ function validateKeyPath(keyPath) {
 // Token / secret redaction
 
 const _REDACTIONS: Array<[RegExp, string]> = [
-  [/(HERMES_DASHBOARD_SESSION_TOKEN=)(\S+)/g, '$1<redacted>'],
-  [/(X-Hermes-Session-Token["']?\s*[:=]\s*["']?)([^\s"'&]+)/gi, '$1<redacted>'],
+  [/(KOVA_DASHBOARD_SESSION_TOKEN=)(\S+)/g, '$1<redacted>'],
+  [/(X-Kova-Session-Token["']?\s*[:=]\s*["']?)([^\s"'&]+)/gi, '$1<redacted>'],
   [/(Authorization["']?\s*:\s*Bearer\s+)(\S+)/gi, '$1<redacted>'],
   [/([?&](?:token|ticket)=)([^\s&"']+)/gi, '$1<redacted>'],
   // SSH target with a non-numeric segment where a port belongs
@@ -197,15 +197,15 @@ function controlSocketPath(user, host, port, baseDir?, identity: any = {}) {
 
 function shortControlDir(): string {
   // no-tmp: ok — AF_UNIX's short path budget rules out a deep HOME/TMPDIR; the parent and child are checked before use.
-  return `/tmp/hermes-ssh-${process.getuid!()}`
+  return `/tmp/kova-ssh-${process.getuid!()}`
 }
 
 function defaultControlDir(): string {
   if (process.platform === 'win32') {
-    return path.join(os.tmpdir(), 'hermes-desktop-ssh')
+    return path.join(os.tmpdir(), 'kova-desktop-ssh')
   }
 
-  const homeDir = path.join(platformDefaultHermesHome(os.homedir()), 'desktop-ssh')
+  const homeDir = path.join(platformDefaultKovaHome(os.homedir()), 'desktop-ssh')
 
   // Include the filename and OpenSSH's temporary-listener suffix in the byte budget.
   return Buffer.byteLength(path.join(homeDir, '0123456789abcdef.sock.0123456789abcdef')) <= 104

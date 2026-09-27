@@ -48,7 +48,7 @@ describe('public catalog data', () => {
         name: 'Apple Design',
         identifier: 'apple-design',
         source: 'ClawHub',
-        installCmd: 'hermes skills install clawhub/apple-design'
+        installCmd: 'kova skills install clawhub/apple-design'
       }
     ])
 
@@ -119,7 +119,7 @@ describe('public catalog data', () => {
 
     expect(await fetchCatalog(kind)).toEqual(parseCatalog(kind, rows))
     expect(fetch).toHaveBeenCalledExactlyOnceWith(
-      `https://nousresearch.github.io/hermes-agent/docs/api/${kind}.json`,
+      `https://openkova.github.io/kova-agent/docs/api/${kind}.json`,
       expect.objectContaining({ credentials: 'omit', signal: expect.any(AbortSignal) })
     )
   })

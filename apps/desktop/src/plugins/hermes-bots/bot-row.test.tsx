@@ -15,7 +15,7 @@
  * old plugin.js bundle and rendered it against a hand-built jsx stub.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
+import type * as KovaSdk from '@kova/plugin-sdk'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -35,8 +35,8 @@ const { ensureAgent, ensureBotMetadata, notifyError, openRosterBot, requestProfi
     warmProfile: vi.fn()
   }))
 
-vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const sdk = await importOriginal<typeof HermesSdk>()
+vi.mock('@kova/plugin-sdk', async importOriginal => {
+  const sdk = await importOriginal<typeof KovaSdk>()
 
   return {
     ...sdk,
@@ -196,7 +196,7 @@ describe('context-menu mutations hydrate the alias first', () => {
     const [route, , params] = requestProfile.mock.calls.find(([, method]) => method === 'profiles.configure')!
 
     expect(route.profile).toBe('worker')
-    expect(params).toMatchObject({ name: 'backend-worker', ui_meta: { 'hermes-bots': { pinned: false } } })
+    expect(params).toMatchObject({ name: 'backend-worker', ui_meta: { 'kova-bots': { pinned: false } } })
   })
 })
 

@@ -7,7 +7,7 @@ import {
   olderPageReader
 } from '@/app/chat/transcript-backfill'
 import { preserveLocalPendingTurnMessages } from '@/app/session/hooks/use-session-actions/utils'
-import { getLatestSessionMessages, type ProfileScope } from '@/hermes'
+import { getLatestSessionMessages, type ProfileScope } from '@/kova'
 import { type ChatMessage, preserveLocalAssistantErrors, sealOpenToolParts, toChatMessages } from '@/lib/chat-messages'
 import { createClientSessionState } from '@/lib/chat-runtime'
 import { sessionMessagesSignature } from '@/lib/session-signatures'
@@ -803,7 +803,7 @@ interface BackgroundSyncParams {
   refreshActiveTranscript: () => Promise<unknown> | unknown
   refreshCronJobs: () => Promise<unknown> | unknown
   refreshCurrentModel: (force?: boolean) => Promise<unknown> | unknown
-  refreshHermesConfig: () => Promise<unknown> | unknown
+  refreshKovaConfig: () => Promise<unknown> | unknown
   refreshMessagingSessions: () => Promise<unknown> | unknown
   refreshSessions: () => Promise<unknown> | unknown
   requestGateway: GatewayRequester
@@ -876,7 +876,7 @@ export function useBackgroundSync({
   refreshActiveTranscript,
   refreshCronJobs,
   refreshCurrentModel,
-  refreshHermesConfig,
+  refreshKovaConfig,
   refreshMessagingSessions,
   refreshSessions,
   requestGateway,
@@ -1245,7 +1245,7 @@ export function useBackgroundSync({
     )
   }, [changeEventsAvailable, cronChangeTick, gatewayState, refreshCronJobs])
 
-  // projects.changed (projects.db moved: a CLI `hermes projects create`, another
+  // projects.changed (projects.db moved: a CLI `kova projects create`, another
   // window's folder picker, a `set_primary` from the workspace settings) refreshes
   // both the projects list and the sidebar tree — the desktop's own mutations
   // refresh optimistically, so this only needs to cover writers in OTHER
@@ -1310,7 +1310,7 @@ export function useBackgroundSync({
   useEffect(() => {
     if (gatewayState === 'open' && !activeSessionId && freshDraftReady) {
       void refreshCurrentModel()
-      void refreshHermesConfig()
+      void refreshKovaConfig()
     }
-  }, [activeSessionId, freshDraftReady, gatewayState, refreshCurrentModel, refreshHermesConfig])
+  }, [activeSessionId, freshDraftReady, gatewayState, refreshCurrentModel, refreshKovaConfig])
 }

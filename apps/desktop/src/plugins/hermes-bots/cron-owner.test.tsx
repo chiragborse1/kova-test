@@ -8,15 +8,15 @@
  * job cannot invalidate every other bot's list.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
-import { queryClient } from '@hermes/plugin-sdk'
+import type * as KovaSdk from '@kova/plugin-sdk'
+import { queryClient } from '@kova/plugin-sdk'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { request } = vi.hoisted(() => ({ request: vi.fn(async () => ({})) }))
 
-vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const sdk = await importOriginal<typeof HermesSdk>()
+vi.mock('@kova/plugin-sdk', async importOriginal => {
+  const sdk = await importOriginal<typeof KovaSdk>()
 
   return { ...sdk, host: { ...sdk.host, request } }
 })
@@ -46,7 +46,7 @@ describe('cache eviction is scoped to one owner', () => {
   it('invalidates that owner\u2019s list and nothing else', async () => {
     await invalidateRoutineOwner('ops')
 
-    expect(invalidateQueries).toHaveBeenCalledWith({ exact: true, queryKey: ['hermes-bots', 'routines', 'ops'] })
+    expect(invalidateQueries).toHaveBeenCalledWith({ exact: true, queryKey: ['kova-bots', 'routines', 'ops'] })
   })
 })
 
@@ -65,6 +65,6 @@ describe('a row mutation addresses the owner that rendered it', () => {
     await waitFor(() => expect(invalidateQueries).toHaveBeenCalled())
 
     expect(request).toHaveBeenCalledWith('cron.manage', { action: 'pause', name: 'digest', profile: 'ops' })
-    expect(invalidateQueries).toHaveBeenCalledWith({ exact: true, queryKey: ['hermes-bots', 'routines', 'ops'] })
+    expect(invalidateQueries).toHaveBeenCalledWith({ exact: true, queryKey: ['kova-bots', 'routines', 'ops'] })
   })
 })

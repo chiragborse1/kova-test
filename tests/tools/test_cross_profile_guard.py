@@ -19,29 +19,29 @@ import pytest
 
 @pytest.fixture
 def fake_hermes(tmp_path, monkeypatch):
-    """Build a two-profile Hermes layout and point HERMES_HOME at
-    the hermes-security profile (matching the original-incident shape).
+    """Build a two-profile Kova layout and point KOVA_HOME at
+    the kova-security profile (matching the original-incident shape).
     """
-    root = tmp_path / "fake-hermes"
+    root = tmp_path / "fake-kova"
     (root / "skills" / "shared-skill").mkdir(parents=True)
     (root / "skills" / "shared-skill" / "SKILL.md").write_text(
         "---\nname: shared-skill\ndescription: default copy.\n---\n"
     )
 
-    sec_home = root / "profiles" / "hermes-security"
+    sec_home = root / "profiles" / "kova-security"
     (sec_home / "skills").mkdir(parents=True)
 
     coder_home = root / "profiles" / "coder"
     (coder_home / "skills").mkdir(parents=True)
 
-    monkeypatch.setenv("HERMES_HOME", str(sec_home))
+    monkeypatch.setenv("KOVA_HOME", str(sec_home))
 
-    import hermes_constants
-    monkeypatch.setattr(hermes_constants, "get_default_hermes_root", lambda: root)
+    import kova_constants
+    monkeypatch.setattr(kova_constants, "get_default_kova_root", lambda: root)
 
     import agent.file_safety as fs
-    monkeypatch.setattr(fs, "_hermes_home_path", lambda: sec_home)
-    monkeypatch.setattr(fs, "_hermes_root_path", lambda: root)
+    monkeypatch.setattr(fs, "_kova_home_path", lambda: sec_home)
+    monkeypatch.setattr(fs, "_kova_root_path", lambda: root)
 
     return {
         "root": root,
@@ -127,7 +127,7 @@ class TestSkillManageCrossProfileErrorUX:
         profile, but 'foo' lives in default. Error must point at default."""
         self._make_skill_in_profile(fake_hermes["root"], "default-only-skill")
 
-        # Re-import the module so SKILLS_DIR picks up HERMES_HOME (set in
+        # Re-import the module so SKILLS_DIR picks up KOVA_HOME (set in
         # the fixture). Skill_manager_tool computes SKILLS_DIR at import.
         import importlib
         import tools.skill_manager_tool
@@ -135,7 +135,7 @@ class TestSkillManageCrossProfileErrorUX:
         from tools.skill_manager_tool import _skill_not_found_error
 
         err = _skill_not_found_error("default-only-skill")
-        assert "not found in active profile 'hermes-security'" in err
+        assert "not found in active profile 'kova-security'" in err
         assert "default" in err
 
     def test_genuinely_missing_skill_keeps_helpful_hint(
@@ -148,7 +148,7 @@ class TestSkillManageCrossProfileErrorUX:
         from tools.skill_manager_tool import _skill_not_found_error
 
         err = _skill_not_found_error("totally-imaginary-skill")
-        assert "not found in active profile 'hermes-security'" in err
+        assert "not found in active profile 'kova-security'" in err
         assert "skills_list" in err
 
 # ---------------------------------------------------------------------------

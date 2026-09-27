@@ -7,9 +7,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 // spawn as a background slot wait and the click waits out the probe's 20s
 // timeout before anything promotes it.
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/kova', () => ({
   setApiRequestConnection: vi.fn(),
-  HermesGateway: class {
+  KovaGateway: class {
     connectionState = 'closed'
     connect = async (): Promise<void> => {
       this.connectionState = 'open'

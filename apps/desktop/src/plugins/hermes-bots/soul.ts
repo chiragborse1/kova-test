@@ -7,7 +7,7 @@
  * a custom SOUL is saved, and the roster backfills profiles that predate it.
  */
 
-import { host } from '@hermes/plugin-sdk'
+import { host } from '@kova/plugin-sdk'
 
 import { botHandle, serverInjectsProtocol } from './data'
 import { displayName } from './labels'
@@ -29,7 +29,7 @@ function messagingProtocolSection(name: string, roster: RosterRow[] | null | und
     'into it, like a DM. To message a teammate, run:',
     '',
     '```',
-    'hermes -p <agent-name> chat --in ~ -c "Bot Chat" --create-if-missing -Q -q "Message from \uD83E\uDD16 ' +
+    'kova -p <agent-name> chat --in ~ -c "Bot Chat" --create-if-missing -Q -q "Message from \uD83E\uDD16 ' +
       handle +
       ' (@' +
       handle +
@@ -57,7 +57,7 @@ function messagingProtocolSection(name: string, roster: RosterRow[] | null | und
     '"tell <name> ...", that is a handoff: message that agent, wait for the',
     'reply, and report back.',
     '',
-    'The roster grows over time — run `hermes profile list` for the LIVE',
+    'The roster grows over time — run `kova profile list` for the LIVE',
     'teammate list before a handoff. Teammates when you were created:',
     ...(teammates.length
       ? teammates.map(b => `- \`${b.name}\`${b.description ? ` — ${b.description}` : ''}`)

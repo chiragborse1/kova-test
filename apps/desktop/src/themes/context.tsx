@@ -9,7 +9,7 @@
  * The two are persisted independently. Shift+X toggles light/dark.
  */
 
-import { ensureContrast, mix, parseColor } from '@hermes/shared/color'
+import { ensureContrast, mix, parseColor } from '@kova/shared/color'
 import { useStore } from '@nanostores/react'
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
@@ -38,15 +38,15 @@ import { $userThemes, listAllThemes, resolveTheme } from './user-themes'
 // Legacy global skin (pre per-profile themes). Still the inheritance fallback
 // for any profile without its own assignment, so single-profile users and old
 // installs are unaffected.
-const SKIN_KEY = 'hermes-desktop-theme-v2'
-const MODE_KEY = 'hermes-desktop-mode-v1'
+const SKIN_KEY = 'kova-desktop-theme-v2'
+const MODE_KEY = 'kova-desktop-mode-v1'
 // Per-profile skin + light/dark mode assignments: { [profileKey]: value }. A
 // profile inherits the global default until it's given its own appearance.
-const PROFILE_SKINS_KEY = 'hermes-desktop-profile-themes-v1'
-const PROFILE_MODES_KEY = 'hermes-desktop-profile-modes-v1'
+const PROFILE_SKINS_KEY = 'kova-desktop-profile-themes-v1'
+const PROFILE_MODES_KEY = 'kova-desktop-profile-modes-v1'
 // Last active profile, recorded so the boot-time paint can pick that profile's
 // theme before the gateway reports which profile actually launched.
-const LAST_PROFILE_KEY = 'hermes-desktop-active-profile-v1'
+const LAST_PROFILE_KEY = 'kova-desktop-active-profile-v1'
 // Skins that no longer exist. A profile still pointing at one falls back to
 // DEFAULT_SKIN_NAME rather than painting a name nothing resolves.
 const RETIRED_SKINS = new Set(['nous-light', 'default', 'gold'])
@@ -116,7 +116,7 @@ const APPEARANCE_KEYS = new Set([SKIN_KEY, PROFILE_SKINS_KEY, MODE_KEY, PROFILE_
 const rememberActiveProfileKey = (profile: string) => persistString(LAST_PROFILE_KEY, profile)
 
 // ─── Color math (for synthesised light variants of dark-only skins) ────────
-// mix / ensureContrast live in @hermes/shared/color (shared with the TUI);
+// mix / ensureContrast live in @kova/shared/color (shared with the TUI);
 // readableInk in ./color pins the desktop's near-black ink.
 
 function synthLightColors(seed: DesktopTheme): DesktopThemeColors {
@@ -313,8 +313,8 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
   // they let a brand-new window paint the themed background on its very first
   // frame, before this module has even loaded.
   try {
-    window.localStorage.setItem('hermes-boot-background', chromeBg)
-    window.localStorage.setItem('hermes-boot-color-scheme', rendered)
+    window.localStorage.setItem('kova-boot-background', chromeBg)
+    window.localStorage.setItem('kova-boot-color-scheme', rendered)
   } catch {
     // Storage may be unavailable (private mode / quota); the inline script
     // falls back to prefers-color-scheme.
@@ -332,7 +332,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
   // Inject / clear customCSS from the skin (mirrors web/src/themes/context.tsx).
   // A theme carries the optional customCSS field; we inject/remove a single
   // <style> tag to keep the DOM clean and avoid stale rules on switch.
-  const cssId = 'hermes-desktop-custom-css'
+  const cssId = 'kova-desktop-custom-css'
   let cssEl = document.getElementById(cssId) as HTMLStyleElement | null
   const customCSS = theme.customCSS?.trim()
 
@@ -556,7 +556,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const clearThemePreview = useCallback(() => setPreview(null), [])
 
-  // Drain a backend-driven skin switch (Hermes authoring/activating a skin from a
+  // Drain a backend-driven skin switch (Kova authoring/activating a skin from a
   // prompt, or `/skin` on another surface). setTheme persists it per profile, so
   // the choice sticks like any manual pick.
   const pendingSkin = useStore($pendingSkinApply)

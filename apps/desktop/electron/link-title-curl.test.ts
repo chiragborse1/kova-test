@@ -18,7 +18,7 @@ const BIG5_TITLE = Buffer.from([
 ])
 
 const TRAILER = Buffer.from(
-  '\nhermes-content-type:text/html; charset=big5\nhermes-url-effective:https://example.test/final'
+  '\nkova-content-type:text/html; charset=big5\nkova-url-effective:https://example.test/final'
 )
 
 describe('parseCurlTitleResponse', () => {

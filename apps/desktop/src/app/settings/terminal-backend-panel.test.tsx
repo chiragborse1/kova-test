@@ -2,13 +2,13 @@ import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-libra
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { deferred } from '@/test/deferred'
-import type { TerminalBackendsResponse } from '@/types/hermes'
+import type { TerminalBackendsResponse } from '@/types/kova'
 
 const getTerminalBackends = vi.fn()
 const selectTerminalBackend = vi.fn()
 const confirmMock = vi.fn()
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/kova', () => ({
   getTerminalBackends: () => getTerminalBackends(),
   selectTerminalBackend: (backend: string) => selectTerminalBackend(backend)
 }))
@@ -52,7 +52,7 @@ function backends(overrides: Partial<TerminalBackendsResponse> = {}): TerminalBa
         description: 'Run commands on a remote host over SSH.',
         active: false,
         status: 'ready',
-        detail: 'hermes@devbox'
+        detail: 'kova@devbox'
       }
     ],
     ...overrides

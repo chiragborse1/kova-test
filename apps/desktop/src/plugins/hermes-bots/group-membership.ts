@@ -418,7 +418,7 @@ export function durableGroupChatMembers(bots: RosterRow[]): GroupMember[] {
     // connection switch the live roster row may be gone, and renamed-tag
     // mentions must still resolve against the persisted member.
     const title = String(
-      botRosterMeta(bot, $botMeta.get())?.title || bot.ui_meta?.['hermes-bots']?.title || bot.title || ''
+      botRosterMeta(bot, $botMeta.get())?.title || bot.ui_meta?.['kova-bots']?.title || bot.title || ''
     ).trim()
 
     return {

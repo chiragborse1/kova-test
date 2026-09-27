@@ -7,7 +7,7 @@ import { $gateway } from './gateway'
 import { $introReveal, hasSeenIntroReveal, markIntroRevealSeen } from './intro-reveal'
 import { DEFAULT_ANSWERS, setOnboardingAnswers } from './onboarding-answers'
 
-const PHASE_KEY = 'hermes-onboarding-phase-v1'
+const PHASE_KEY = 'kova-onboarding-phase-v1'
 
 export const ONBOARDING_PHASES = ['idle', 'cinematic', 'guided', 'skipped', 'handoff', 'done'] as const
 
@@ -81,7 +81,7 @@ export function beginOnboardingFlow(): void {
   }
 }
 
-/** The guided first launch without its intro film (HERMES_SKIP_INTRO). Same
+/** The guided first launch without its intro film (KOVA_SKIP_INTRO). Same
  * eligibility as the film path minus the film itself: the film is recorded as
  * watched and the film-to-guide seam fires immediately, instead of waiting
  * for a completion that never comes. */

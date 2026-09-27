@@ -1,8 +1,8 @@
 import { writeFileSync } from 'node:fs'
 
-import type { ScrollBoxHandle } from '@hermes/ink'
-import { evictInkCaches } from '@hermes/ink'
-import type { InflightTurn, SessionResumeResult, Usage } from '@hermes/shared/gateway-events'
+import type { ScrollBoxHandle } from '@kova/ink'
+import { evictInkCaches } from '@kova/ink'
+import type { InflightTurn, SessionResumeResult, Usage } from '@kova/shared/gateway-events'
 import { type RefObject, useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { STARTUP_WORKSPACE_CWD } from '../config/env.js'
@@ -45,7 +45,7 @@ const statusFromLiveSession = (status?: string, running = false) => {
   return running || status === 'working' ? 'running…' : 'ready'
 }
 
-export const writeActiveSessionFile = (sessionId: null | string, file = process.env.HERMES_TUI_ACTIVE_SESSION_FILE) => {
+export const writeActiveSessionFile = (sessionId: null | string, file = process.env.KOVA_TUI_ACTIVE_SESSION_FILE) => {
   if (!file || !sessionId) {
     return
   }

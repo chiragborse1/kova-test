@@ -1,18 +1,18 @@
 /**
- * Hermes Bot Mode — a "one chat per agent" roster for the Hermes desktop.
+ * Kova Bot Mode — a "one chat per agent" roster for the Kova desktop.
  *
- * Left pane "Bots": one row per Hermes profile (a bot = an agent profile) with
+ * Left pane "Bots": one row per Kova profile (a bot = an agent profile) with
  * a customizable avatar (shape + color + eyes, image, or pet). Click opens that
  * bot's chat; right-click → Edit Profile (avatar, title, description).
  * "New Bot" creates a profile — Name / Title / Description with an
  * "Advanced" disclosure for full profile config.
  *
- * Right tile "Routines": scheduled tasks (Hermes cron jobs) scoped to the
+ * Right tile "Routines": scheduled tasks (Kova cron jobs) scoped to the
  * bot you're currently chatting with — follows the live gateway profile.
  *
  * Bots message each other straight into each bot's ONE canonical "Bot
  * Chat" — @-mentions deliver over gateway RPCs (no CLI relay), and
- * bot-initiated sends use `hermes -p <bot> chat --in ~ -c "Bot Chat"`.
+ * bot-initiated sends use `kova -p <bot> chat --in ~ -c "Bot Chat"`.
  */
 
 import {
@@ -23,8 +23,8 @@ import {
   PALETTE_AREA,
   SIDEBAR_PROFILE_GROUP_HEADER_AREA,
   translateNow
-} from '@hermes/plugin-sdk'
-import type { ChatEmptyProps, PluginContext, ProfileGroupRoute } from '@hermes/plugin-sdk'
+} from '@kova/plugin-sdk'
+import type { ChatEmptyProps, PluginContext, ProfileGroupRoute } from '@kova/plugin-sdk'
 
 import { startFaceClock, stopFaceClock } from './avatar'
 import {
@@ -140,7 +140,7 @@ export default {
     // query cache — useRoster keeps it ≤5s stale and the popover must answer
     // synchronously per keystroke. Multi-source rosters contribute their
     // precomputed @name-device handles via botHandle. The active profile is
-    // excluded (a bot doesn't @ itself); 'default' surfaces as @hermes.
+    // excluded (a bot doesn't @ itself); 'default' surfaces as @kova.
     ctx.register({
       id: 'mention-completions',
       area: COMPOSER_AREAS.atCompletions,
@@ -722,7 +722,7 @@ export default {
       registerRoutinesPane(true)
     }
 
-    // A bot's chat before it has spoken: core's splash is Hermes' wordmark and
+    // A bot's chat before it has spoken: core's splash is Kova' wordmark and
     // stands down for any session that exists, so the bot titles its own.
     ctx.register({
       id: 'chat-empty',
@@ -852,12 +852,12 @@ export default {
             const handle = botHandle(bot.name, bot)
 
             const title = String(
-              botRosterMeta(bot, $botMeta.get())?.title || bot.ui_meta?.['hermes-bots']?.title || bot.title || ''
+              botRosterMeta(bot, $botMeta.get())?.title || bot.ui_meta?.['kova-bots']?.title || bot.title || ''
             ).trim()
 
             // message_agent only resolves canonical identities: the relay
             // matches a roster row's handle/profile (± @connection-id), the
-            // local path a bare profile name or 'hermes'. botHandle() prefers
+            // local path a bare profile name or 'kova'. botHandle() prefers
             // the row's source-qualified UI alias ('default-vera'), which
             // neither resolver accepts — annotate the canonical form instead.
             const target =

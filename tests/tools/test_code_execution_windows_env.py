@@ -94,10 +94,10 @@ class TestNativeLegacyEncodingControls:
         test ever starts failing (i.e. default write succeeds), it means
         Python's default encoding has changed and the explicit UTF-8
         requirement may be obsolete — reconsider the fix."""
-        from tools.code_execution_tool import generate_hermes_tools_module
+        from tools.code_execution_tool import generate_kova_tools_module
         import tempfile
 
-        stub = generate_hermes_tools_module(["terminal"], transport="uds")
+        stub = generate_kova_tools_module(["terminal"], transport="uds")
         # Find a non-ASCII character we can use to prove the corruption.
         non_ascii = [c for c in stub if ord(c) > 127]
         if not non_ascii:
@@ -188,7 +188,7 @@ def _configured_timezone_child_env():
     return code_execution_env._build_child_env(
         rpc_endpoint="socket",
         rpc_token="token",
-        tmpdir="/tmp/hermes-code-execution-test",
+        tmpdir="/tmp/kova-code-execution-test",
         child_python=sys.executable,
     )
 
@@ -202,7 +202,7 @@ def test_windows_live_child_offset_matches_os_zone_when_timezone_is_configured(m
     ``time.timezone == 0`` (+01:00 instead of -07:00) while ``time.tzname`` still read correctly."""
     import json
 
-    monkeypatch.setattr("hermes_time.get_timezone_name", lambda: "America/Los_Angeles")
+    monkeypatch.setattr("kova_time.get_timezone_name", lambda: "America/Los_Angeles")
     child_env = _configured_timezone_child_env()
     assert "TZ" not in child_env
 

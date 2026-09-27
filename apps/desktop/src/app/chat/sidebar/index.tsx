@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/sidebar'
 import { Tip, TipKeybindLabel } from '@/components/ui/tooltip'
 import { useContributions } from '@/contrib/react/use-contributions'
-import { searchSessions, type SessionInfo, type SessionSearchResult } from '@/hermes'
+import { searchSessions, type SessionInfo, type SessionSearchResult } from '@/kova'
 import { useI18n } from '@/i18n'
 import { comboTokens } from '@/lib/keybinds/combo'
 import { sessionMatchesSearch } from '@/lib/session-search'
@@ -225,7 +225,7 @@ const SIDEBAR_NAV: SidebarNavItem[] = [
     route: MESSAGING_ROUTE,
     keybindActionId: 'nav.messaging'
   },
-  // Artifacts and Scheduled jobs are outputs of running Hermes the developer
+  // Artifacts and Scheduled jobs are outputs of running Kova the developer
   // way; Capabilities and Messaging are how anyone sets it up.
   {
     id: 'artifacts',
@@ -281,7 +281,7 @@ const HEADER_NAV_BTN =
 // by id; the snippet stands in for the preview).
 
 // The backend's FTS layer wraps matched terms in literal '>>>' / '<<<'
-// highlight markers (sqlite snippet() delimiters — see hermes_state_search.py).
+// highlight markers (sqlite snippet() delimiters — see kova_state_search.py).
 // The sidebar renders the snippet as plain text, so the markers must be
 // stripped or a search for "foo" paints rows titled ">>>foo<<<".
 // Exported for tests.
@@ -574,10 +574,10 @@ export function ChatSidebar({
       timeout = setTimeout(() => setNewSessionKbdFlash(false), 140)
     }
 
-    window.addEventListener('hermes:new-session-shortcut', onShortcut)
+    window.addEventListener('kova:new-session-shortcut', onShortcut)
 
     return () => {
-      window.removeEventListener('hermes:new-session-shortcut', onShortcut)
+      window.removeEventListener('kova:new-session-shortcut', onShortcut)
       clearTimeout(timeout)
     }
   }, [])
@@ -1137,7 +1137,7 @@ export function ChatSidebar({
   const [scopedRepoWorktrees] = useRepoWorktreeMap(scopedRepoPaths, inEnteredProject)
 
   // Re-probe worktree lanes on out-of-band git changes the renderer can't see.
-  // A turn can `git worktree add/remove` in the terminal (e.g. you ask Hermes to
+  // A turn can `git worktree add/remove` in the terminal (e.g. you ask Kova to
   // "remove that worktree"), and the window never blurs during an in-app chat,
   // so nothing would otherwise re-run the visual probe. Re-sync when a working
   // session settles (its turn finished) or the window refocuses (an external

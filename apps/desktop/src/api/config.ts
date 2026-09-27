@@ -4,15 +4,15 @@ import type {
   CustomEndpointUpdate,
   CustomEndpointValidationResponse,
   EnvVarInfo,
-  HermesConfig,
-  HermesConfigRecord,
+  KovaConfig,
+  KovaConfigRecord,
   LogsResponse,
   OAuthPollResponse,
   OAuthProvidersResponse,
   OAuthStartResponse,
   OAuthSubmitResponse,
   StatusResponse
-} from '@/types/hermes'
+} from '@/types/kova'
 
 import { capabilityScoped, hermesApi, type ProfileScope, profileScoped, STARTUP_REQUEST_TIMEOUT_MS } from './client'
 
@@ -128,8 +128,8 @@ export function getLogs(params: {
   })
 }
 
-export function getHermesConfig(profile?: string): Promise<HermesConfig> {
-  return hermesApi<HermesConfig>({
+export function getKovaConfig(profile?: string): Promise<KovaConfig> {
+  return hermesApi<KovaConfig>({
     ...profileScoped(profile),
     path: '/api/config',
     timeoutMs: STARTUP_REQUEST_TIMEOUT_MS
@@ -141,10 +141,10 @@ export function getHermesConfig(profile?: string): Promise<HermesConfig> {
 async function fetchBoundConfigRecord(
   profile: ProfileScope,
   request: { path: string; timeoutMs?: number }
-): Promise<HermesConfigRecord> {
+): Promise<KovaConfigRecord> {
   const origin = capabilityScoped(profile ?? undefined)
 
-  const record = await window.hermesDesktop.api<HermesConfigRecord>({ ...origin, ...request })
+  const record = await window.hermesDesktop.api<KovaConfigRecord>({ ...origin, ...request })
 
   if (record && typeof record === 'object') {
     bindConfigReadOrigin(record, origin)
@@ -153,31 +153,31 @@ async function fetchBoundConfigRecord(
   return record
 }
 
-export function getHermesConfigRecord(
+export function getKovaConfigRecord(
   profile?: ProfileScope,
   { includeDefaults = true }: { includeDefaults?: boolean } = {}
-): Promise<HermesConfigRecord> {
+): Promise<KovaConfigRecord> {
   return fetchBoundConfigRecord(profile, {
     path: includeDefaults ? '/api/config' : '/api/config?include_defaults=false'
   })
 }
 
-export function getHermesConfigDefaults(): Promise<HermesConfigRecord> {
+export function getKovaConfigDefaults(): Promise<KovaConfigRecord> {
   return fetchBoundConfigRecord(undefined, {
     path: '/api/config/defaults',
     timeoutMs: STARTUP_REQUEST_TIMEOUT_MS
   })
 }
 
-export function getHermesConfigSchema(profile?: null | string): Promise<ConfigSchemaResponse> {
+export function getKovaConfigSchema(profile?: null | string): Promise<ConfigSchemaResponse> {
   return hermesApi<ConfigSchemaResponse>({
     ...profileScoped(profile),
     path: '/api/config/schema'
   })
 }
 
-export function saveHermesConfig(
-  config: HermesConfigRecord,
+export function saveKovaConfig(
+  config: KovaConfigRecord,
   profile?: ProfileScope,
   { preserveLanguage = false }: { preserveLanguage?: boolean } = {}
 ): Promise<{ ok: boolean }> {
@@ -189,10 +189,10 @@ export function saveHermesConfig(
   })
 }
 
-/** Capability-scoped counterpart of saveHermesConfig — writes the config of
+/** Capability-scoped counterpart of saveKovaConfig — writes the config of
  *  the profile/connection the Capabilities scope selector points at (possibly
- *  on another registered gateway), mirroring getHermesConfigRecord. */
-export function saveHermesConfigRecord(config: HermesConfigRecord, profile?: ProfileScope): Promise<{ ok: boolean }> {
+ *  on another registered gateway), mirroring getKovaConfigRecord. */
+export function saveKovaConfigRecord(config: KovaConfigRecord, profile?: ProfileScope): Promise<{ ok: boolean }> {
   return window.hermesDesktop.api<{ ok: boolean }>({
     ...resolveConfigWriteScope(config, profile),
     path: '/api/config',

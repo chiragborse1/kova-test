@@ -799,7 +799,7 @@ const ErrorRecoveryActions: FC = () => {
   const model = useStore($currentModel)
   const connection = useStore($connection)
 
-  // Open Logs reveals the LOCAL Electron profile's HERMES_HOME/logs. On a
+  // Open Logs reveals the LOCAL Electron profile's KOVA_HOME/logs. On a
   // remote/cloud connection the failed turn's gateway+agent logs live on the
   // remote box — the local folder only holds Desktop-side transport logs, so
   // the label says "Open Desktop logs" there instead of implying it opens the
@@ -834,7 +834,7 @@ const ErrorRecoveryActions: FC = () => {
   }, [])
 
   // Reveal a local folder through Electron; `logsRoot` is the profile's
-  // HERMES_HOME/logs, and its parent is the Hermes data folder itself (what
+  // KOVA_HOME/logs, and its parent is the Kova data folder itself (what
   // the user needs to see to free space after a disk-full failure).
   const openLocalDir = useCallback(async (resolve: (logsRoot: string) => string, failedMessage: string) => {
     try {
@@ -861,9 +861,9 @@ const ErrorRecoveryActions: FC = () => {
     [copy.errorOpenLogsFailed, openLocalDir]
   )
 
-  const openHermesFolder = useCallback(
-    () => openLocalDir(root => root.replace(/[\\/]+logs[\\/]*$/, ''), copy.errorOpenHermesFolderFailed),
-    [copy.errorOpenHermesFolderFailed, openLocalDir]
+  const openKovaFolder = useCallback(
+    () => openLocalDir(root => root.replace(/[\\/]+logs[\\/]*$/, ''), copy.errorOpenKovaFolderFailed),
+    [copy.errorOpenKovaFolderFailed, openLocalDir]
   )
 
   const diagnosticsText = useCallback(
@@ -924,9 +924,9 @@ const ErrorRecoveryActions: FC = () => {
           to={updateApiKeyRoute(surface)}
         />
       )}
-      {plan.openHermesFolder && localFolders && (
-        <button className="aui-error-action" onClick={() => void openHermesFolder()} type="button">
-          {copy.errorOpenHermesFolder}
+      {plan.openKovaFolder && localFolders && (
+        <button className="aui-error-action" onClick={() => void openKovaFolder()} type="button">
+          {copy.errorOpenKovaFolder}
         </button>
       )}
       {plan.retry && (

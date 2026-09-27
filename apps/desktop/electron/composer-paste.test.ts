@@ -15,8 +15,8 @@ afterEach(() => {
 })
 
 describe('writeComposerPaste', () => {
-  it('lands the paste directly under <HERMES_HOME>/composer-pastes so the backend admits it', async () => {
-    const hermesHome = fs.mkdtempSync(path.join(os.tmpdir(), 'hermes-home-'))
+  it('lands the paste directly under <KOVA_HOME>/composer-pastes so the backend admits it', async () => {
+    const hermesHome = fs.mkdtempSync(path.join(os.tmpdir(), 'kova-home-'))
     scratch.push(hermesHome)
 
     const filePath = await writeComposerPaste(hermesHome, 'pasted body')

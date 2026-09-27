@@ -1,6 +1,6 @@
-"""Hermes-managed Camofox state helpers.
+"""Kova-managed Camofox state helpers.
 
-With managed persistence enabled, Hermes sends a deterministic userId derived from the
+With managed persistence enabled, Kova sends a deterministic userId derived from the
 active profile so Camofox maps it to the same persistent browser profile across restarts.
 """
 
@@ -10,16 +10,16 @@ import uuid
 from pathlib import Path
 from typing import Dict, Optional
 
-from hermes_constants import get_hermes_home
+from kova_constants import get_kova_home
 
 
 def get_camofox_state_dir() -> Path:
     """Return the profile-scoped root directory for Camofox persistence."""
-    return get_hermes_home() / "browser_auth" / "camofox"
+    return get_kova_home() / "browser_auth" / "camofox"
 
 
 def get_camofox_identity(task_id: Optional[str] = None) -> Dict[str, str]:
-    """Stable Hermes-managed Camofox identity: userId is profile-scoped, session key is
+    """Stable Kova-managed Camofox identity: userId is profile-scoped, session key is
     scoped to the logical browser task so new tabs in the same profile reuse it."""
     scope_root = str(get_camofox_state_dir())
     user_digest = uuid.uuid5(uuid.NAMESPACE_URL, f"camofox-user:{scope_root}").hex[:10]

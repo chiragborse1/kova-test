@@ -208,7 +208,7 @@ class TestOutboundRedaction:
 
 class TestAudit:
     def test_audit_writes_jsonl(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         security.audit("inbound", "peer-y", "task-1", "hello world")
         audit_file = tmp_path / "a2a_audit.jsonl"
         assert audit_file.exists()
@@ -225,10 +225,10 @@ class TestAudit:
 class TestAgentCardV1:
     def test_card_shape(self):
         card = protocol.build_agent_card(
-            name="hermes-test", url="http://localhost:9900/",
+            name="kova-test", url="http://localhost:9900/",
             description="test", skills=[], streaming=False, auth_required=False,
         )
-        assert card["name"] == "hermes-test"
+        assert card["name"] == "kova-test"
         # v1.0: no top-level protocolVersion / preferredTransport —
         # consolidated into supportedInterfaces[].
         assert "protocolVersion" not in card
@@ -373,7 +373,7 @@ class TestV1Task:
 
 class TestPersistence:
     def test_persist_and_load(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         protocol.persist_message("ctx-abc", "user", "hello", "task-1")
         protocol.persist_message("ctx-abc", "agent", "hi back", "task-1")
         convo = protocol.load_conversation("ctx-abc")
@@ -382,18 +382,18 @@ class TestPersistence:
         assert convo[1]["text"] == "hi back"
 
     def test_list_conversations(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         protocol.persist_message("ctx-1", "user", "a", "t")
         protocol.persist_message("ctx-2", "user", "b", "t")
         assert set(protocol.list_conversations()) == {"ctx-1", "ctx-2"}
 
     def test_load_missing_is_empty(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         assert protocol.load_conversation("nope") == []
 
     def test_a2a_history_tool_recalls_conversation(self, monkeypatch, tmp_path):
         """load_conversation is wired to production via the a2a_history tool."""
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         protocol.persist_message("ctx-recall", "user", "what is 2+2", "t1")
         protocol.persist_message("ctx-recall", "agent", "4", "t1")
         out = tools.a2a_history({"context_id": "ctx-recall"})
@@ -488,7 +488,7 @@ class TestRegistryDispatchConvention:
     uses (`entry.handler(args, **kwargs)`), not keyword params."""
 
     def test_register_then_dispatch_via_registry(self, monkeypatch, tmp_path):
-        monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+        monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         monkeypatch.setattr(tools, "_load_config", lambda: {})
         from tools.registry import registry
 
@@ -1525,22 +1525,22 @@ class TestV1SpecRegressionFixes:
         fakebin = tmp_path / "bin"
         fakebin.mkdir()
         calls = tmp_path / "calls.jsonl"
-        hermes = fakebin / "hermes"
-        hermes.write_text("""#!/usr/bin/env python3
+        kova = fakebin / "kova"
+        kova.write_text("""#!/usr/bin/env python3
 import json, os, sqlite3, sys, time
-calls = os.environ['FAKE_HERMES_CALLS']
+calls = os.environ['FAKE_KOVA_CALLS']
 with open(calls, 'a') as f:
     f.write(json.dumps(sys.argv[1:]) + '\\n')
-home = os.environ['HERMES_HOME']
+home = os.environ['KOVA_HOME']
 con = sqlite3.connect(os.path.join(home, 'state.db'))
 if '--resume' not in sys.argv:
     con.execute('INSERT INTO sessions (id, source, started_at, title) VALUES (?, ?, ?, ?)', ('sess-1', 'a2a', time.time(), None))
     con.commit()
 print('fake reply')
 """)
-        hermes.chmod(0o755)
+        kova.chmod(0o755)
         monkeypatch.setenv("PATH", str(fakebin) + os.pathsep + os.environ.get("PATH", ""))
-        monkeypatch.setenv("FAKE_HERMES_CALLS", str(calls))
+        monkeypatch.setenv("FAKE_KOVA_CALLS", str(calls))
         monkeypatch.setattr("plugins.platforms.a2a.adapter._profile_home", lambda profile: str(profile_home))
 
         adapter = A2AAdapter(PlatformConfig(enabled=True, extra={
@@ -1666,7 +1666,7 @@ class TestMultiplexConstructionScope:
 def test_load_conversation_skips_non_dict_lines(monkeypatch, tmp_path):
     """A scalar line in a conversation file must not break replay or pollute
     the list[dict] contract."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     protocol.persist_message("ctx-mixed", "user", "hello", "t1")
     path = protocol._conv_path("ctx-mixed")
     with open(path, "a", encoding="utf-8") as f:

@@ -1,4 +1,4 @@
-import { LOCAL_CONNECTION_ID } from '@hermes/shared'
+import { LOCAL_CONNECTION_ID } from '@kova/shared'
 import { useRef, useState } from 'react'
 
 import { FirstRunRemoteSetup } from '@/components/remote-setup/first-run'
@@ -24,7 +24,7 @@ export interface LocalDeviceTarget {
   connectionId: string
   label: string
   profile?: string
-  /** The switch replaces the center with a fresh session, even when Hermes is already installed. */
+  /** The switch replaces the center with a fresh session, even when Kova is already installed. */
   replaceCenter?: boolean
 }
 

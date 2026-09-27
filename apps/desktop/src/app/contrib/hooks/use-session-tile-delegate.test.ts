@@ -3,18 +3,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { reasoningEffortPending } from '@/app/chat/session-view'
 import type { ClientSessionState } from '@/app/types'
-import type * as HermesModule from '@/hermes'
+import type * as KovaModule from '@/kova'
 import { textPart } from '@/lib/chat-messages'
 import { createClientSessionState } from '@/lib/chat-runtime'
 import { $notifications } from '@/store/notifications'
 import { setSessionOwnerHint, setSessions } from '@/store/session'
 import { $sessionTiles, sessionTileDelegate } from '@/store/session-states'
-import type { SessionInfo } from '@/types/hermes'
+import type { SessionInfo } from '@/types/kova'
 
 import { useSessionTileDelegate } from './use-session-tile-delegate'
 
-vi.mock('@/hermes', async importActual => ({
-  ...(await importActual<typeof HermesModule>()),
+vi.mock('@/kova', async importActual => ({
+  ...(await importActual<typeof KovaModule>()),
   getLatestSessionMessages: vi.fn(async () => ({ messages: [], session_id: '' }))
 }))
 vi.mock('@/store/gateway', async importActual => ({
@@ -23,7 +23,7 @@ vi.mock('@/store/gateway', async importActual => ({
   requestGatewayForProfile: vi.fn()
 }))
 
-const { getLatestSessionMessages } = await import('@/hermes')
+const { getLatestSessionMessages } = await import('@/kova')
 const { requestGatewayForAgent, requestGatewayForProfile } = await import('@/store/gateway')
 
 const row = (over: Partial<SessionInfo>): SessionInfo =>

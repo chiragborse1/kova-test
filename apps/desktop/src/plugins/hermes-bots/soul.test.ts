@@ -22,10 +22,10 @@ const { hostMock, serverInjects } = vi.hoisted(() => ({
   serverInjects: { value: false }
 }))
 
-vi.mock('@hermes/plugin-sdk', () => ({ host: hostMock }))
+vi.mock('@kova/plugin-sdk', () => ({ host: hostMock }))
 
 vi.mock('./data', () => ({
-  botHandle: (name: string) => (String(name).toLowerCase() === 'default' ? 'hermes' : name),
+  botHandle: (name: string) => (String(name).toLowerCase() === 'default' ? 'kova' : name),
   // A live binding in the real module — useRoster flips it from the roster
   // response, so the mock has to be a getter too.
   get serverInjectsProtocol() {
@@ -69,7 +69,7 @@ describe('appending the protocol to an existing SOUL', () => {
     expect(once).toMatch(/I am the default profile on this machine/)
     expect(once).toMatch(/`researcher` — research specialist/)
     // The primary profile addresses itself by its callable alias.
-    expect(once).toMatch(/@hermes/)
+    expect(once).toMatch(/@kova/)
     expect(once).not.toMatch(/@default/)
 
     const twice = ensureMessagingProtocol(once, 'default', roster)

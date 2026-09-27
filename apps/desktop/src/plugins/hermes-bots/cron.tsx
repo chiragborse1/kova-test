@@ -1,5 +1,5 @@
 /**
- * Routines: the Hermes cron jobs scoped to the bot you're chatting with — the
+ * Routines: the Kova cron jobs scoped to the bot you're chatting with — the
  * list query and its owner resolution, the schedule picker, the create and
  * detail dialogs, and the pane the right tile renders.
  */
@@ -36,7 +36,7 @@ import {
   useI18n,
   useQuery,
   useValue
-} from '@hermes/plugin-sdk'
+} from '@kova/plugin-sdk'
 import { useState } from 'react'
 
 import { avatarColor, botAppearance, BotFace } from './avatar'
@@ -70,7 +70,7 @@ function showsHandle(name: string, meta: BotMeta | null | undefined, bot?: Roste
 //
 // Jobs are namespaced "[bot:<name>] <routine>". A job running in the active
 // bot profile uses the plain instruction; a different profile keeps the
-// hermes -p <bot> chat delegation wrapper so the run reaches that bot's
+// kova -p <bot> chat delegation wrapper so the run reaches that bot's
 // history. The tile follows the bot you're chatting with (gateway profile).
 const BOT_TAG_RE = /^\[bot:([a-z0-9][a-z0-9_-]*)\]\s*/i
 const SAFE_ROUTINE_MARKER = '[bot-mode:routine:v2] '
@@ -282,7 +282,7 @@ export function routinePrompt(
   return (
     `${SAFE_ROUTINE_MARKER}You are running the scheduled routine "${title}" for agent '${bot}'. ` +
     `Execute it AS that agent so the run lands in its own history: run this in the terminal and relay the output:\n\n` +
-    `hermes -p ${shellQuote(bot)} chat -c ${shellQuote(`Routine: ${title}`)} -q ${shellQuote(`[Scheduled routine] ${instruction}`)}\n\n` +
+    `kova -p ${shellQuote(bot)} chat -c ${shellQuote(`Routine: ${title}`)} -q ${shellQuote(`[Scheduled routine] ${instruction}`)}\n\n` +
     `If the command fails, report the error instead.`
   )
 }
@@ -610,7 +610,7 @@ export function RoutineRow({ job, onOpen, owner }: RoutineRowProps) {
 
 // Structured schedule picker: frequency first, then only the detail that
 // frequency needs (time of day, weekday, day of month, interval). Emits a
-// Hermes-native schedule string; Advanced exposes it raw.
+// Kova-native schedule string; Advanced exposes it raw.
 type ScheduleFreq = 'once' | 'hourly' | 'daily' | 'weekdays' | 'weekly' | 'monthly' | 'interval' | 'advanced'
 
 /** Picker form state. Every detail field stays a string: they are edited as
@@ -665,7 +665,7 @@ const TIMES = (() => {
   return out
 })()
 
-/** Compose the Hermes schedule string from picker state. */
+/** Compose the Kova schedule string from picker state. */
 function composeSchedule(state: ScheduleState): string {
   const [h, m] = (state.time || '9:0').split(':').map(Number)
 

@@ -7,7 +7,7 @@ import {
 } from '@/app/chat/transcript-backfill'
 import { toChatMessages } from '@/lib/chat-messages'
 import { $transcriptTailBySessionId, transcriptTailState } from '@/store/transcript-tail'
-import type { SessionMessagesResponse } from '@/types/hermes'
+import type { SessionMessagesResponse } from '@/types/kova'
 
 import { setApiRequestConnection, setApiRequestLocalMode, setApiRequestProfile } from './client'
 import { getLatestSessionMessages, LATEST_SESSION_MESSAGES_LIMIT } from './sessions'

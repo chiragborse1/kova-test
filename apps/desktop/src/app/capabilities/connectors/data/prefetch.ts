@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 
-import type { ProfileScope } from '@/hermes'
+import type { ProfileScope } from '@/kova'
 import { queryClient } from '@/lib/query-client'
 
 import type { ConnectorCardModel } from '../types'

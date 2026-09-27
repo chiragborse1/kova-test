@@ -102,40 +102,40 @@ _PERSISTENCE_CAUSE_EXPLANATIONS: Dict[str, str] = {
         "session id, then send your message again."
     ),
     "turn_lease": (
-        "the turn was stopped because another Hermes process "
+        "the turn was stopped because another Kova process "
         "took over this session. Your reply was not saved — wait "
         "for the other process to finish, then send your message "
         "again."
     ),
     "session_row_missing": (
         "this session was deleted from storage while the chat was still open, "
-        "and Hermes could not recreate it, so this message was not saved. "
+        "and Kova could not recreate it, so this message was not saved. "
         "Send your message again; if it keeps failing, run "
-        "`hermes {profile_arg}doctor`."
+        "`kova {profile_arg}doctor`."
     ),
     "locked": (
         "the turn was stopped because session storage was busy "
-        "(another Hermes process was writing to the state "
+        "(another Kova process was writing to the state "
         "database). Your message should already be saved — "
         "please send it again in a moment."
     ),
     # The forensic runbook for both (WAL generations, manifest.json, sidecars) lives in the
-    # logger.error at hermes_state.py::_raise_if_db_replaced — never in the chat reply.
+    # logger.error at kova_state.py::_raise_if_db_replaced — never in the chat reply.
     "replaced": (
-        "the session database file was replaced while Hermes was running, so this "
-        "message was not saved (a copy is kept in {home}/sessions/). Stop Hermes "
-        "(`hermes {profile_arg}gateway stop`), run `hermes {profile_arg}doctor` — not "
-        "`hermes {profile_arg}doctor --fix`, which would repair the wrong file in place — "
+        "the session database file was replaced while Kova was running, so this "
+        "message was not saved (a copy is kept in {home}/sessions/). Stop Kova "
+        "(`kova {profile_arg}gateway stop`), run `kova {profile_arg}doctor` — not "
+        "`kova {profile_arg}doctor --fix`, which would repair the wrong file in place — "
         "then start it again and send your message once more. Advanced recovery steps are "
         "in the log."
     ),
     "deleted_wal": (
-        "another Hermes process still holds an old copy of the session database's write-ahead "
-        "log, so Hermes stopped writing to keep the file safe and this message was not saved (a "
-        "copy is kept in {home}/sessions/). Nothing is lost. Quit every Hermes process on this "
-        "profile (Desktop app, `hermes {profile_arg}gateway stop`, dashboard, cron), run "
-        "`hermes {profile_arg}doctor` — it names any process still holding the log — then start "
-        "Hermes again and send your message once more. Do not run `doctor --fix` or delete "
+        "another Kova process still holds an old copy of the session database's write-ahead "
+        "log, so Kova stopped writing to keep the file safe and this message was not saved (a "
+        "copy is kept in {home}/sessions/). Nothing is lost. Quit every Kova process on this "
+        "profile (Desktop app, `kova {profile_arg}gateway stop`, dashboard, cron), run "
+        "`kova {profile_arg}doctor` — it names any process still holding the log — then start "
+        "Kova again and send your message once more. Do not run `doctor --fix` or delete "
         "any state.db files while they run. Guide: {recovery_docs}"
     ),
     "corrupt": (
@@ -143,10 +143,10 @@ _PERSISTENCE_CAUSE_EXPLANATIONS: Dict[str, str] = {
         "reported structural corruption (the transcript would "
         "have been lost on restart). Freeing disk space will "
         "not help. Recovery options:\n"
-        "1. Run `hermes {profile_arg}doctor --fix`\n"
+        "1. Run `kova {profile_arg}doctor --fix`\n"
         "2. Stop the gateway, then recover with:\n"
-        "   hermes {profile_arg}sessions recover --source {db_path} --inspect-only\n"
-        "   (if it reports recoverable) hermes {profile_arg}sessions recover "
+        "   kova {profile_arg}sessions recover --source {db_path} --inspect-only\n"
+        "   (if it reports recoverable) kova {profile_arg}sessions recover "
         "--source {db_path} --output recovered-state.db\n"
         "   — recovery snapshots the damaged file first; do NOT "
         "run `sqlite3 ... \".recover\"` against the live "
@@ -161,20 +161,20 @@ _PERSISTENCE_CAUSE_EXPLANATIONS: Dict[str, str] = {
         "the turn was stopped because the session search index (FTS5) "
         "is corrupt and could not be detached, so this message was not "
         "saved. The message store itself is not damaged: do not run "
-        "recovery tools or restore a backup. Run `hermes {profile_arg}doctor --fix` "
-        "(or restart Hermes, which repairs the index on open), then "
+        "recovery tools or restore a backup. Run `kova {profile_arg}doctor --fix` "
+        "(or restart Kova, which repairs the index on open), then "
         "send your message again."
     ),
     "disk": (
-        "Hermes couldn't save this conversation to disk, so it stopped rather than lose "
+        "Kova couldn't save this conversation to disk, so it stopped rather than lose "
         "your messages. The disk is probably full: free some space (or fix the permissions "
         "on {home}/state.db), then send your message again."
     ),
 }
 _PERSISTENCE_DEFAULT_EXPLANATION = (
-    "Hermes couldn't save this conversation, so it stopped rather than lose your messages. "
-    "Possible causes: the drive is out of room, or another Hermes process is holding the "
-    "database. Close other Hermes windows, run `hermes {profile_arg}doctor` to check "
+    "Kova couldn't save this conversation, so it stopped rather than lose your messages. "
+    "Possible causes: the drive is out of room, or another Kova process is holding the "
+    "database. Close other Kova windows, run `kova {profile_arg}doctor` to check "
     "storage, then send your message again."
 )
 
@@ -206,7 +206,7 @@ def _display_flag_enabled(agent, *, env_var: str, config_key: str, cache_attr: s
 
     ``env_var`` overrides on every call and is never cached. Reads the persisted config.yaml
     so gateway and CLI share the setting; ``load_config`` is imported lazily (startup cycle,
-    and tests patch it at ``hermes_cli.config``). Any failure → True (safe default: on)."""
+    and tests patch it at ``kova_cli.config``). Any failure → True (safe default: on)."""
     try:
         env = os.environ.get(env_var)
         if env is not None:
@@ -215,7 +215,7 @@ def _display_flag_enabled(agent, *, env_var: str, config_key: str, cache_attr: s
         if cached is not None:
             return cached
         try:
-            from hermes_cli.config import load_config as _load_config
+            from kova_cli.config import load_config as _load_config
             _cfg = _load_config() or {}
         except Exception:
             _cfg = {}
@@ -259,7 +259,7 @@ class TurnExplainersMixin:
             if changed is not None:
                 changed.update(landed_paths)
             # Feed the checkpoint agent-write ledger so /rollback's safe mode can tell
-            # Hermes-authored content from later user hand-edits.
+            # Kova-authored content from later user hand-edits.
             mgr = getattr(self, "_checkpoint_mgr", None)
             if mgr is not None and getattr(mgr, "enabled", False):
                 from tools.file_tools_paths import container_backend_for_task
@@ -300,16 +300,16 @@ class TurnExplainersMixin:
         }
 
     def _file_mutation_verifier_enabled(self) -> bool:
-        """``display.file_mutation_verifier`` / ``HERMES_FILE_MUTATION_VERIFIER`` (a patchable seam)."""
+        """``display.file_mutation_verifier`` / ``KOVA_FILE_MUTATION_VERIFIER`` (a patchable seam)."""
         return _display_flag_enabled(
-            self, env_var="HERMES_FILE_MUTATION_VERIFIER", config_key="file_mutation_verifier",
+            self, env_var="KOVA_FILE_MUTATION_VERIFIER", config_key="file_mutation_verifier",
             cache_attr="_file_mutation_verifier_enabled_cache",
         )
 
     def _turn_completion_explainer_enabled(self) -> bool:
-        """``display.turn_completion_explainer`` / ``HERMES_TURN_COMPLETION_EXPLAINER``."""
+        """``display.turn_completion_explainer`` / ``KOVA_TURN_COMPLETION_EXPLAINER``."""
         return _display_flag_enabled(
-            self, env_var="HERMES_TURN_COMPLETION_EXPLAINER", config_key="turn_completion_explainer",
+            self, env_var="KOVA_TURN_COMPLETION_EXPLAINER", config_key="turn_completion_explainer",
             cache_attr="_turn_completion_explainer_enabled_cache",
         )
 
@@ -379,26 +379,26 @@ class TurnExplainersMixin:
         if body is not None and "{model}" in body:
             body = body.format(model=model or "The model")
         if body is None and reason == "session_persistence_failed":
-            from hermes_constants import display_hermes_home, profile_cli_selector
-            from hermes_state_errors import STORAGE_RECOVERY_DOCS_URL
+            from kova_constants import display_kova_home, profile_cli_selector
+            from kova_state_errors import STORAGE_RECOVERY_DOCS_URL
 
-            # Copy-pasteable, so pin every `hermes` command to the profile whose store failed:
+            # Copy-pasteable, so pin every `kova` command to the profile whose store failed:
             # a multi-profile backend (Desktop serve) hosts sessions whose state.db is NOT the
-            # process default, and a bare `hermes` follows active_profile (#105887).
+            # process default, and a bare `kova` follows active_profile (#105887).
             body = (
                 _PERSISTENCE_CAUSE_EXPLANATIONS.get(
                     persistence_cause or "unknown", _PERSISTENCE_DEFAULT_EXPLANATION
                 )
-                .replace("{home}", display_hermes_home())
+                .replace("{home}", display_kova_home())
                 .replace("{profile_arg}", profile_cli_selector())
                 .replace("{recovery_docs}", STORAGE_RECOVERY_DOCS_URL)
             )
             if persistence_cause in ("corrupt", "fts_index"):
-                from hermes_constants import get_default_hermes_root
-                from hermes_state import _default_db_path
+                from kova_constants import get_default_kova_root
+                from kova_state import _default_db_path
 
                 body = body.replace("{db_path}", str(db_path or _default_db_path()))
                 body = body.replace(
-                    "{backups_dir}", str(get_default_hermes_root() / "backups")
+                    "{backups_dir}", str(get_default_kova_root() / "backups")
                 )
         return _NO_REPLY + body if body else ""

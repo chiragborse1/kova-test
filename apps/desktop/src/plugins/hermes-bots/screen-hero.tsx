@@ -7,7 +7,7 @@
  * where the user can take over.
  */
 
-import { Codicon } from '@hermes/plugin-sdk'
+import { Codicon } from '@kova/plugin-sdk'
 import { useEffect, useRef, useState } from 'react'
 
 import { botSelectionKey } from './data'

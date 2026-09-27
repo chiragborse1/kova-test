@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@hermes/ink": ["src/types/hermes-ink.d.ts"]
+      "@kova/ink": ["src/types/kova-ink.d.ts"]
     }
   }
 }

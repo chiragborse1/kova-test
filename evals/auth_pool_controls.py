@@ -90,21 +90,21 @@ def main():
                         row.update(auth_type="oauth", source="manual:device_code")
                     state = dict(access_token=token("singleton"), refresh_token="fixture-refresh-1",
                                  expires_at=now+3600, portal_base_url=f"http://127.0.0.1:{server.server_port}",
-                                 scope="inference:invoke", inference_base_url="https://inference-api.nousresearch.com/v1")
+                                 scope="inference:invoke", inference_base_url="https://inference-api.openkova.com/v1")
                     rows[1].update(source="device_code", **state)
                     providers["nous"] = state
                 store = home / "auth.json"
                 store.write_text(json.dumps({"version": 1, "providers": providers, "active_provider": provider, "credential_pool": {provider: rows}}), encoding="utf-8")
                 env = {k: v for k, v in os.environ.items() if not any(t in k for t in
-                       ("TOKEN", "API_KEY", "SECRET", "PASSWORD", "HERMES", "PYTEST"))}
-                env.update(HOME=temp, HERMES_HOME=temp, HERMES_SHARED_AUTH_DIR=str(home / "shared"), PYTHONPATH=str(Path(args.repo).absolute()), TERM="xterm")
+                       ("TOKEN", "API_KEY", "SECRET", "PASSWORD", "KOVA", "PYTEST"))}
+                env.update(HOME=temp, KOVA_HOME=temp, KOVA_SHARED_AUTH_DIR=str(home / "shared"), PYTHONPATH=str(Path(args.repo).absolute()), TERM="xterm")
                 bootstrap = ("import sys, httpx; original_send=httpx.Client.send; "
                              "httpx.Client.send=lambda self, request, **kw: original_send(self, request, **kw) "
                              "if request.url.host == '127.0.0.1' else (_ for _ in ()).throw(AssertionError('NONLOCAL_NETWORK')); "
-                             "from hermes_cli import auth_codex; "
+                             "from kova_cli import auth_codex; "
                              f"auth_codex.CODEX_OAUTH_TOKEN_URL='http://127.0.0.1:{server.server_port}/token'; "
-                             "from hermes_cli.main import main; "
-                             f"sys.argv=['hermes','auth',*{command!r}]; main()")
+                             "from kova_cli.main import main; "
+                             f"sys.argv=['kova','auth',*{command!r}]; main()")
                 master, slave = pty.openpty()
                 child = subprocess.Popen([sys.executable, "-c", bootstrap], cwd=args.repo,
                                          env=env, stdin=slave, stdout=slave, stderr=slave)

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { SessionMessage } from '@/types/hermes'
+import type { SessionMessage } from '@/types/kova'
 
 import { toChatMessages } from './chat-messages'
 import { messagesIfTranscriptBehind } from './stale-transcript-guard'

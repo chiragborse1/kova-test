@@ -12,7 +12,7 @@ export function preUpdateBackupEnabled(value: unknown): boolean {
   return typeof value !== 'string' || !DISABLED_BACKUP_MODES.has(value.trim().toLowerCase())
 }
 
-export interface HermesConfigRuntime {
+export interface KovaConfigRuntime {
   command?: string | null
   args?: string[]
   env?: NodeJS.ProcessEnv
@@ -20,7 +20,7 @@ export interface HermesConfigRuntime {
 }
 
 export async function readPreUpdateBackupEnabled(
-  runtime: HermesConfigRuntime | Promise<HermesConfigRuntime>,
+  runtime: KovaConfigRuntime | Promise<KovaConfigRuntime>,
   hermesHome: string,
   run = execFileAsync
 ): Promise<boolean> {
@@ -33,7 +33,7 @@ export async function readPreUpdateBackupEnabled(
 
     const result = await run(resolvedRuntime.command, resolvedRuntime.args, {
       encoding: 'utf8',
-      env: { ...process.env, ...resolvedRuntime.env, HERMES_HOME: hermesHome },
+      env: { ...process.env, ...resolvedRuntime.env, KOVA_HOME: hermesHome },
       shell: Boolean(resolvedRuntime.shell),
       timeout: 15_000,
       windowsHide: true

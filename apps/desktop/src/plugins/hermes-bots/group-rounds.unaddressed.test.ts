@@ -26,7 +26,7 @@ import { $groupChats } from './group-chat'
 import { unaddressedGroupMentions } from './group-rounds'
 import type { GroupMember, GroupMessage } from './types'
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return {
@@ -41,7 +41,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 const members = [{ name: 'alpha' }, { name: 'beta' }, { name: 'gamma' }] as GroupMember[]
 

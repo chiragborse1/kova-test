@@ -1,6 +1,6 @@
-# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
+# Kova Agent bootstrap: git checkout + venv + kova command on PATH.
 # Heavy dependencies (tool binaries, browsers, node) are pm's job after
-# this: `hermes pm install`. Stage protocol kept for Hermes-Setup:
+# this: `kova pm install`. Stage protocol kept for Kova-Setup:
 #   -Manifest             print the stage list as JSON
 #   -Stage NAME [-Json]   run one stage
 #   -NonInteractive       skip stages that need input
@@ -8,16 +8,16 @@
 #   -ProtocolVersion      print the stage protocol version
 #   -SkipBrowser          do not install the browser tools (agent-browser +
 #                         Chromium); remembered by later installs and
-#                         `hermes update`, undone by
-#                         `hermes pm install agent-browser`
+#                         `kova update`, undone by
+#                         `kova pm install agent-browser`
 #   -Verbose              stream every child command's output (the default
 #                         with redirected output and in CI)
 [CmdletBinding(PositionalBinding=$false)]
 param(
     [string]$Branch = "main",
     [string]$Commit = "",
-    [string]$HermesHome = $(if ($env:HERMES_HOME) { $env:HERMES_HOME } else { "$env:LOCALAPPDATA\hermes" }),
-    [string]$InstallDir = $(if ($env:HERMES_HOME) { "$env:HERMES_HOME\hermes-agent" } else { "$env:LOCALAPPDATA\hermes\hermes-agent" }),
+    [string]$KovaHome = $(if ($env:KOVA_HOME) { $env:KOVA_HOME } else { "$env:LOCALAPPDATA\kova" }),
+    [string]$InstallDir = $(if ($env:KOVA_HOME) { "$env:KOVA_HOME\kova-agent" } else { "$env:LOCALAPPDATA\kova\kova-agent" }),
     [switch]$Manifest,
     [string]$Stage,
     [switch]$ProtocolVersion,
@@ -25,8 +25,8 @@ param(
     [switch]$Json,
     [switch]$IncludeDesktop,
     # Same opt-out as install.sh --skip-browser: PM records it, so later
-    # installs and `hermes update` keep the browser tools off until
-    # `hermes pm install agent-browser` opts back in.
+    # installs and `kova update` keep the browser tools off until
+    # `kova pm install agent-browser` opts back in.
     [switch]$SkipBrowser,
     # Print the paths this install would use, as JSON on stdout, and exit
     # without touching anything. The first question on any "installer says a
@@ -60,7 +60,7 @@ $script:BoundParams = $PSBoundParameters
 # Under iex, script scope is the caller's session and outlives a run; start
 # each run without the previous run's answer (see Set-LauncherUserPath).
 $script:BinDirOnCallerPath = $null
-$RepoUrl = if ($env:HERMES_REPO_URL) { $env:HERMES_REPO_URL } else { "https://github.com/NousResearch/hermes-agent.git" }
+$RepoUrl = if ($env:KOVA_REPO_URL) { $env:KOVA_REPO_URL } else { "https://github.com/kova-agent.git" }
 
 # --- BEGIN GENERATED: bootstrap pins (scripts/gen-bootstrap-pins.py) ---
 # Derived from pm/lock.json. DO NOT EDIT BY HAND:
@@ -69,12 +69,12 @@ $script:UvPinVersion = "0.12.3"
 $script:UvPinFiles = @{
     "win32-x64" = @{
         Url    = "https://github.com/astral-sh/uv/releases/download/0.12.3/uv-x86_64-pc-windows-msvc.zip"
-        MirrorUrl = "https://hermes-assets.nousresearch.com/upstream/sha256/b23350c79e8ad0192b8124af13a0f17e8d4e4549524785e1aef389ae5a06990e"
+        MirrorUrl = "https://kova-assets.openkova.com/upstream/sha256/b23350c79e8ad0192b8124af13a0f17e8d4e4549524785e1aef389ae5a06990e"
         Sha256 = "b23350c79e8ad0192b8124af13a0f17e8d4e4549524785e1aef389ae5a06990e"
     }
     "win32-arm64" = @{
         Url    = "https://github.com/astral-sh/uv/releases/download/0.12.3/uv-aarch64-pc-windows-msvc.zip"
-        MirrorUrl = "https://hermes-assets.nousresearch.com/upstream/sha256/4343217d668727b8a8eb5cad92389a1d2eeead93c89940d1b955ba1bb15462eb"
+        MirrorUrl = "https://kova-assets.openkova.com/upstream/sha256/4343217d668727b8a8eb5cad92389a1d2eeead93c89940d1b955ba1bb15462eb"
         Sha256 = "4343217d668727b8a8eb5cad92389a1d2eeead93c89940d1b955ba1bb15462eb"
     }
 }
@@ -83,12 +83,12 @@ $script:GitPinVersion = "2.53.0+3"
 $script:GitPinFiles = @{
     "win32-x64" = @{
         Url    = "https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.3/Git-2.53.0.3-64-bit.tar.bz2"
-        MirrorUrl = "https://hermes-assets.nousresearch.com/upstream/sha256/1661f02e85a7901ad7920e2a358ee3772ed9066b00d8590bf2d9046ef10aa8b2"
+        MirrorUrl = "https://kova-assets.openkova.com/upstream/sha256/1661f02e85a7901ad7920e2a358ee3772ed9066b00d8590bf2d9046ef10aa8b2"
         Sha256 = "1661f02e85a7901ad7920e2a358ee3772ed9066b00d8590bf2d9046ef10aa8b2"
     }
     "win32-arm64" = @{
         Url    = "https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.3/Git-2.53.0.3-arm64.tar.bz2"
-        MirrorUrl = "https://hermes-assets.nousresearch.com/upstream/sha256/4015f05a68bd2bcf3cc6c426e8d44b65d670fbb879225bb7b7c347cfc3a2758a"
+        MirrorUrl = "https://kova-assets.openkova.com/upstream/sha256/4015f05a68bd2bcf3cc6c426e8d44b65d670fbb879225bb7b7c347cfc3a2758a"
         Sha256 = "4015f05a68bd2bcf3cc6c426e8d44b65d670fbb879225bb7b7c347cfc3a2758a"
     }
 }
@@ -101,7 +101,7 @@ $script:GitPinFiles = @{
 # contains a space ("First Last" -> FIRST~1.LAS), a dot, or an accented
 # character. It can then expose %TEMP%, %TMP%, %LOCALAPPDATA%, %APPDATA% and
 # %USERPROFILE% -- plus everything derived from them, including the default
-# HERMES_HOME and InstallDir -- in that short form:
+# KOVA_HOME and InstallDir -- in that short form:
 #   C:\Users\FIRST~1.LAS\AppData\Local\Temp
 # PowerShell's FileSystem provider mishandles the aliased component once it
 # reaches a provider cmdlet (Tee-Object -FilePath, Out-File, New-Item,
@@ -135,7 +135,7 @@ function Write-PathDiag {
     # carries everything these lines say.
     param([string]$Message)
     if ($ShowResolvedPaths) { return }
-    [Console]::Error.WriteLine("[hermes] $Message")
+    [Console]::Error.WriteLine("[kova] $Message")
 }
 
 function Get-LongProfileRoot {
@@ -221,17 +221,17 @@ function ConvertTo-LongPath {
     # 1. kernel32. Compiled on first use only, so a normal profile never pays
     #    the Add-Type cost (this file is re-entered once per install stage).
     try {
-        if (-not ([System.Management.Automation.PSTypeName]'HermesInstall.LongPath').Type) {
-            Add-Type -Namespace 'HermesInstall' -Name 'LongPath' -MemberDefinition @'
+        if (-not ([System.Management.Automation.PSTypeName]'KovaInstall.LongPath').Type) {
+            Add-Type -Namespace 'KovaInstall' -Name 'LongPath' -MemberDefinition @'
 [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
 public static extern int GetLongPathNameW(string lpszShortPath, System.Text.StringBuilder lpszLongPath, int cchBuffer);
 '@
         }
         $buffer = New-Object System.Text.StringBuilder 4096
-        $length = [HermesInstall.LongPath]::GetLongPathNameW($Path, $buffer, $buffer.Capacity)
+        $length = [KovaInstall.LongPath]::GetLongPathNameW($Path, $buffer, $buffer.Capacity)
         if ($length -gt $buffer.Capacity) {
             $buffer = New-Object System.Text.StringBuilder $length
-            $length = [HermesInstall.LongPath]::GetLongPathNameW($Path, $buffer, $buffer.Capacity)
+            $length = [KovaInstall.LongPath]::GetLongPathNameW($Path, $buffer, $buffer.Capacity)
         }
         if ($length -gt 0) {
             $expanded = $buffer.ToString()
@@ -302,33 +302,33 @@ function Initialize-ResolvedPaths {
     $script:NormalizedProfilePaths = Set-LongProfileEnvVars
 
     # Re-derive the install paths now that the env vars behind their defaults
-    # are long. An explicitly passed -HermesHome / -InstallDir is normalized
+    # are long. An explicitly passed -KovaHome / -InstallDir is normalized
     # in place rather than replaced, so a caller's choice is never
     # overwritten by a default. The script's own $PSBoundParameters was
     # captured at script scope ($script:BoundParams) because a function body
     # sees its own binding, not the script's.
-    $resolvedHome = if ($script:BoundParams.ContainsKey('HermesHome')) {
-        ConvertTo-LongPath $HermesHome
+    $resolvedHome = if ($script:BoundParams.ContainsKey('KovaHome')) {
+        ConvertTo-LongPath $KovaHome
     } else {
         ConvertTo-LongPath $(
-            if ($env:HERMES_HOME) { $env:HERMES_HOME } else { "$env:LOCALAPPDATA\hermes" }
+            if ($env:KOVA_HOME) { $env:KOVA_HOME } else { "$env:LOCALAPPDATA\kova" }
         )
     }
     $resolvedDir = if ($script:BoundParams.ContainsKey('InstallDir')) {
         ConvertTo-LongPath $InstallDir
     } else {
-        Join-Path $resolvedHome 'hermes-agent'
+        Join-Path $resolvedHome 'kova-agent'
     }
     # The param() variables live in the CALLER's scope, which is the script
     # scope only under -File. Under the documented
     # `& ([scriptblock]::Create((irm ...)))` install they live in the
     # scriptblock's scope and `$script:` names the caller's session instead,
-    # so `$script:HermesHome` read '' and every stage's bare $HermesHome kept
+    # so `$script:KovaHome` read '' and every stage's bare $KovaHome kept
     # the un-normalized value. Scope 1 is where param() bound in every mode
     # (-File, scriptblock, dot-source).
-    Set-Variable -Scope 1 -Name HermesHome -Value $resolvedHome
+    Set-Variable -Scope 1 -Name KovaHome -Value $resolvedHome
     Set-Variable -Scope 1 -Name InstallDir -Value $resolvedDir
-    $env:HERMES_HOME = $resolvedHome
+    $env:KOVA_HOME = $resolvedHome
 
     # Captured here, where the values are final. The report goes to STDOUT as
     # JSON under -ShowResolvedPaths: on Windows a child's stderr does not
@@ -340,16 +340,16 @@ function Initialize-ResolvedPaths {
         normalized        = $script:NormalizedPathRewrites
         resolver          = $script:LastResolver
         temp              = $env:TEMP
-        hermes_home       = $resolvedHome
+        kova_home       = $resolvedHome
         install_dir       = $resolvedDir
     }
 }
 
 # Resolve the pm store root (same resolution as pm's store_root()):
-# $env:HERMES_RUNTIME_DIR wins, else <HermesHome>\tools.
+# $env:KOVA_RUNTIME_DIR wins, else <KovaHome>\tools.
 function Get-PmStoreRoot {
-    if ($env:HERMES_RUNTIME_DIR) { return $env:HERMES_RUNTIME_DIR }
-    return (Join-Path $HermesHome "tools")
+    if ($env:KOVA_RUNTIME_DIR) { return $env:KOVA_RUNTIME_DIR }
+    return (Join-Path $KovaHome "tools")
 }
 
 # The MACHINE's architecture (registry PROCESSOR_ARCHITECTURE), not the
@@ -504,7 +504,7 @@ function Get-Uv {
         Remove-Item -Path $uvExe -Force
     }
     Log "downloading uv $($script:UvPinVersion) ($target)"
-    $tmpDir = Join-Path ([IO.Path]::GetTempPath()) "hermes-uv-bootstrap-$PID"
+    $tmpDir = Join-Path ([IO.Path]::GetTempPath()) "kova-uv-bootstrap-$PID"
     try {
         New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
         $zipPath = Join-Path $tmpDir "uv.zip"
@@ -537,7 +537,7 @@ function Get-PinnedGit {
     $gitExe = Join-Path $entry "cmd\git.exe"
     if (Test-Path $gitExe) { return $gitExe }
     Log "installing git $($script:GitPinVersion) ($target)"
-    $tmpDir = Join-Path ([IO.Path]::GetTempPath()) "hermes-git-bootstrap-$PID"
+    $tmpDir = Join-Path ([IO.Path]::GetTempPath()) "kova-git-bootstrap-$PID"
     try {
         New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
         $tarPath = Join-Path $tmpDir "git.tar.bz2"
@@ -595,7 +595,7 @@ function Write-Err([string]$msg) { Write-Host "[X] $msg" -ForegroundColor Red }
 function Write-Banner {
     Write-Host ""
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
-    Write-Host "|             * Hermes Agent Installer                    |" -ForegroundColor Magenta
+    Write-Host "|             * Kova Agent Installer                    |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
     Write-Host "|  An open source AI agent by Nous Research.              |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
@@ -616,10 +616,10 @@ function Invoke-Native([scriptblock]$Command) {
 
 # Interactive runs collapse child-process output (git, uv, pm, the builds)
 # into one status line. CI, -Verbose and redirected output -- the
-# Hermes-Setup -Json driver, E2E transcripts -- keep the full stream those
+# Kova-Setup -Json driver, E2E transcripts -- keep the full stream those
 # readers parse.
 function Test-QuietOutput {
-    if ($env:CI -or $env:GITHUB_ACTIONS -or $env:HERMES_INSTALL_VERBOSE) { return $false }
+    if ($env:CI -or $env:GITHUB_ACTIONS -or $env:KOVA_INSTALL_VERBOSE) { return $false }
     if ($VerbosePreference -ne 'SilentlyContinue') { return $false }
     try { return -not [Console]::IsOutputRedirected } catch { return $false }
 }
@@ -642,7 +642,7 @@ function Invoke-Logged {
     param([string]$StatusLabel, [scriptblock]$NativeBlock, [switch]$MayFail)
     $logWriter = $null
     if (Test-QuietOutput) {
-        $logPath = Join-Path (Join-Path $HermesHome 'logs') 'install.log'
+        $logPath = Join-Path (Join-Path $KovaHome 'logs') 'install.log'
         try {
             New-Item -ItemType Directory -Force -Path (Split-Path -Parent $logPath) | Out-Null
             $logWriter = New-Object System.IO.StreamWriter($logPath, $true, (New-Object System.Text.UTF8Encoding($false)))
@@ -709,11 +709,11 @@ function Emit-Frame([bool]$ok, [string]$name, [bool]$skipped, [string]$reason = 
 $ProductTitle = if ($IncludeDesktop) { "Install command and app + desktop" } else { "Install command and app" }
 $Stages = @(
     @{ name = "prerequisites"; title = "System prerequisites"; category = "runtime"; needs_user_input = $false },
-    @{ name = "repository"; title = "Download Hermes Agent"; category = "runtime"; needs_user_input = $false },
+    @{ name = "repository"; title = "Download Kova Agent"; category = "runtime"; needs_user_input = $false },
     @{ name = "venv"; title = "Create Python environment"; category = "runtime"; needs_user_input = $false },
     @{ name = "python-deps"; title = "Install Python dependencies"; category = "runtime"; needs_user_input = $false },
     @{ name = "config"; title = "Prepare config and skills"; category = "configuration"; needs_user_input = $false },
-    # The shared completion tail -- the same call `hermes update` makes -- so
+    # The shared completion tail -- the same call `kova update` makes -- so
     # the manifest and the run cannot disagree. -IncludeDesktop selects the
     # desktop product inside this stage instead of adding a second build stage.
     @{ name = "products"; title = $ProductTitle; category = "runtime"; needs_user_input = $false },
@@ -735,7 +735,7 @@ function Stage-Repository {
         $item = Get-Item -LiteralPath $InstallDir -Force
         $empty = $item.PSIsContainer -and -not $item.LinkType -and -not (Get-ChildItem -LiteralPath $InstallDir -Force | Select-Object -First 1)
         if (-not $empty) {
-            Fail "$InstallDir exists and is not a Hermes git checkout. Move it aside, or install elsewhere with -InstallDir <path>."
+            Fail "$InstallDir exists and is not a Kova git checkout. Move it aside, or install elsewhere with -InstallDir <path>."
         }
     }
     if (-not (Ensure-Git)) { Fail "no pinned Git artifact for this Windows architecture" }
@@ -753,9 +753,9 @@ function Stage-Repository {
     }
     if (Test-Path (Join-Path $InstallDir ".git")) {
         Log "Updating $InstallDir ($Branch)"
-        # An explicit HERMES_REPO_URL names the source for reruns too, not
+        # An explicit KOVA_REPO_URL names the source for reruns too, not
         # just the first clone.
-        if ($env:HERMES_REPO_URL) {
+        if ($env:KOVA_REPO_URL) {
             Invoke-Native { git -C $InstallDir remote set-url origin $RepoUrl }
             if ($LASTEXITCODE) { Fail "cannot point origin at $RepoUrl" }
         }
@@ -775,14 +775,14 @@ function Stage-Repository {
                 Invoke-Native { git -C $InstallDir reset -q }
                 if ($LASTEXITCODE) { Fail "cannot clear the unmerged index in $InstallDir" }
             }
-            Invoke-Logged "Stashing local changes" { git -C $InstallDir stash push --include-untracked -m "hermes-install-autostash-$stamp" }
+            Invoke-Logged "Stashing local changes" { git -C $InstallDir stash push --include-untracked -m "kova-install-autostash-$stamp" }
             if ($LASTEXITCODE) { Fail "could not stash local changes in $InstallDir; commit or move them aside, then rerun" }
-            Write-Warn "local changes stashed as hermes-install-autostash-$stamp"
+            Write-Warn "local changes stashed as kova-install-autostash-$stamp"
         }
         Invoke-Logged "Checking out $Branch" { git -C $InstallDir checkout $Branch }
         if ($LASTEXITCODE) { Fail "git checkout failed" }
         # --no-stat: across a large gap (v2026.7.1 -> today is ~27k lines) the
-        # diffstat arrives as one burst. Hermes-Setup.exe forwards every line
+        # diffstat arrives as one burst. Kova-Setup.exe forwards every line
         # to its window as a separate event; the burst overflows the Windows
         # posted-message queue (10k), events drop, and the installer's Launch
         # button can then hang on "Launching" forever.
@@ -791,7 +791,7 @@ function Stage-Repository {
             # A release cut off the main line, a force-pushed remote, or the
             # user's own commits cannot fast-forward. Every stage below reads
             # files only the new tree has (pm/), so an install left on the old
-            # tree cannot finish -- match the remote the way `hermes update`
+            # tree cannot finish -- match the remote the way `kova update`
             # does, after parking the old tip. Mirrors scripts/install.sh.
             # Keep commits absent from origin in the updater's rescue namespace.
             $droppedText = (Invoke-Native { git -C $InstallDir rev-list --count "origin/$Branch..HEAD" 2>$null })
@@ -803,7 +803,7 @@ function Stage-Repository {
                 $rescueKind = if ($LASTEXITCODE -eq 0) { 'diverged' } else { 'orphan' }
                 $prior = (Invoke-Native { git -C $InstallDir rev-parse --short=12 HEAD 2>$null })
                 if ($LASTEXITCODE -or -not $prior) { Fail "cannot identify commits before reset" }
-                $rescue = "refs/hermes-update-backups/$rescueKind-$Branch-$stamp-$prior"
+                $rescue = "refs/kova-update-backups/$rescueKind-$Branch-$stamp-$prior"
                 Invoke-Native { git -C $InstallDir update-ref $rescue HEAD 2>$null }
                 if ($LASTEXITCODE) { Fail "cannot back up $dropped local commit(s); refusing to reset" }
                 Write-Warn "$dropped commit(s) not on origin/$Branch backed up to $rescue"
@@ -824,7 +824,7 @@ function Stage-Repository {
         # Clone into a sibling staging dir and publish only a complete,
         # materialized checkout: a clone that dies half-way must not leave a
         # .git behind that the next rerun would try to update.
-        $staged = Join-Path $parent ".hermes-clone-$PID-$(Get-Random)"
+        $staged = Join-Path $parent ".kova-clone-$PID-$(Get-Random)"
         $tree = Join-Path $staged "tree"
         New-Item -ItemType Directory -Force -Path $staged | Out-Null
         # Phase lines ("Receiving objects: 42%") feed the status line; git
@@ -860,7 +860,7 @@ function Stage-Repository {
             }
             if (-not $cloned) { Fail "git clone failed; no checkout published" }
             Move-Item -LiteralPath $tree -Destination $InstallDir
-            Write-Ok "Hermes Agent cloned"
+            Write-Ok "Kova Agent cloned"
         } finally {
             Remove-Item -LiteralPath $staged -Recurse -Force -ErrorAction SilentlyContinue
         }
@@ -884,7 +884,7 @@ function Stage-Venv {
 
 # Delegate the whole python+venv+tools install to pm: stage the pinned uv,
 # let uv locate Python and exit before PM starts. PM provisions the interpreter,
-# the venv (default extras = [all], matching `hermes update`), and the
+# the venv (default extras = [all], matching `kova update`), and the
 # tool store — all hash-verified against pm/lock.json + uv.lock. install.ps1
 # no longer runs `uv sync` directly; pm is the single install authority
 # (the run_locked_uv_sync contract moved into pm/environment.py).
@@ -941,17 +941,17 @@ function Invoke-SourceCompletion([bool]$Desktop) {
     # arrive through pm as the build asks for them; the bootstrap interpreter
     # itself only re-enters the tree on PM's selected Python.
     $bootPy = Get-BootstrapPython
-    $completionArgs = @('-I', '-B', '-X', 'utf8', 'hermes_cli/source_completion.py', '--source', $InstallDir)
+    $completionArgs = @('-I', '-B', '-X', 'utf8', 'kova_cli/source_completion.py', '--source', $InstallDir)
     if ($Desktop) { $completionArgs += '--desktop' }
     Push-Location $InstallDir
     try {
-        Invoke-Logged "Building the hermes command and apps" { & $bootPy @completionArgs }
+        Invoke-Logged "Building the kova command and apps" { & $bootPy @completionArgs }
         $code = $LASTEXITCODE
     } finally {
         Pop-Location
     }
     if ($code) { Fail "app products or command publication failed (exit $code)" }
-    Write-Ok "app products and hermes command ready"
+    Write-Ok "app products and kova command ready"
 }
 
 function Publish-UserCommand {
@@ -959,18 +959,18 @@ function Publish-UserCommand {
     # "windows-installer-owned" rather than creating the user-facing command,
     # so the install-scoped launchers the completion publishes are not the ones
     # the user's PATH points at.
-    $binDir = Join-Path $HermesHome "bin"
+    $binDir = Join-Path $KovaHome "bin"
     $bootPy = Get-BootstrapPython
     Push-Location $InstallDir
     try {
-        Invoke-Logged "Publishing the hermes command" { & $bootPy -I -X utf8 hermes_cli/_launchers.py $binDir }
+        Invoke-Logged "Publishing the kova command" { & $bootPy -I -X utf8 kova_cli/_launchers.py $binDir }
         $code = $LASTEXITCODE
     } finally {
         Pop-Location
     }
     if ($code) { Fail "launcher staging failed" }
     Set-LauncherUserPath $binDir
-    Write-Ok "hermes command installed at $binDir"
+    Write-Ok "kova command installed at $binDir"
 }
 
 function Test-DesktopProductPresent {
@@ -1003,7 +1003,7 @@ function Set-LauncherUserPath([string]$binDir) {
         Write-Ok "added $binDir to your user PATH (new shells pick it up)"
     }
     # The registry write only reaches shells started later. $env:Path is
-    # process-wide, so prepending it here makes `hermes` resolve in the
+    # process-wide, so prepending it here makes `kova` resolve in the
     # caller's own window whenever this code runs in the caller's process
     # (`irm | iex`, `& .\install.ps1`); a -File child just discards it.
     # Recorded before the first prepend only (the -IncludeDesktop ladder
@@ -1018,24 +1018,24 @@ function Write-PathReloadHint {
     # A script file may be a separate powershell.exe (-File), whose $env:Path
     # dies with it; the parent keeps the PATH it started with until reloaded.
     # iex'd text always runs in the caller's process, where the prepend in
-    # Set-LauncherUserPath already made `hermes` resolvable.
+    # Set-LauncherUserPath already made `kova` resolvable.
     if (-not $script:RunAsFile -or $script:BinDirOnCallerPath -ne $false) { return }
-    Log 'Restart your terminal to use hermes, or run: $env:Path = [Environment]::GetEnvironmentVariable(''Path'',''User'') + '';'' + [Environment]::GetEnvironmentVariable(''Path'',''Machine'')'
+    Log 'Restart your terminal to use kova, or run: $env:Path = [Environment]::GetEnvironmentVariable(''Path'',''User'') + '';'' + [Environment]::GetEnvironmentVariable(''Path'',''Machine'')'
 }
 
 function Stage-Config {
     foreach ($d in @("cron","sessions","logs","pairing","hooks","image_cache","audio_cache","memories","skills")) {
-        New-Item -ItemType Directory -Force -Path (Join-Path $HermesHome $d) | Out-Null
+        New-Item -ItemType Directory -Force -Path (Join-Path $KovaHome $d) | Out-Null
     }
-    $envFile = Join-Path $HermesHome ".env"
+    $envFile = Join-Path $KovaHome ".env"
     if (-not (Test-Path $envFile)) {
         $example = Join-Path $InstallDir ".env.example"
         if (Test-Path $example) { Copy-Item $example $envFile } else { New-Item -ItemType File -Path $envFile | Out-Null }
     }
-    $cfg = Join-Path $HermesHome "config.yaml"
+    $cfg = Join-Path $KovaHome "config.yaml"
     $cfgExample = Join-Path $InstallDir "cli-config.yaml.example"
     if (-not (Test-Path $cfg) -and (Test-Path $cfgExample)) { Copy-Item $cfgExample $cfg }
-    Write-Ok "config prepared in $HermesHome"
+    Write-Ok "config prepared in $KovaHome"
 }
 
 function Invoke-InstalledHermes([string[]]$CommandArgs) {
@@ -1047,10 +1047,10 @@ function Invoke-InstalledHermes([string[]]$CommandArgs) {
     . ([ScriptBlock]::Create([IO.File]::ReadAllText($runtimeHelper)))
     # Not `$command`: Invoke-Native's `$Command` parameter shadows it
     # (names are case-insensitive) and the block would invoke itself.
-    $runtimeCommand = @(Get-HermesRuntimeCommand -InstallRoot $InstallDir)
+    $runtimeCommand = @(Get-KovaRuntimeCommand -InstallRoot $InstallDir)
     $runtimeArgs = @($runtimeCommand | Select-Object -Skip 1) + $CommandArgs
     Invoke-Native { & $runtimeCommand[0] @runtimeArgs }
-    if ($LASTEXITCODE) { Fail "hermes $($CommandArgs -join ' ') failed (exit $LASTEXITCODE)" }
+    if ($LASTEXITCODE) { Fail "kova $($CommandArgs -join ' ') failed (exit $LASTEXITCODE)" }
 }
 
 function Stage-Setup {
@@ -1076,28 +1076,28 @@ function Stage-Desktop {
 
 function Confirm-DesktopArtifact {
     # Probe the packaged artifact the completion just built -- the same
-    # candidates hermes_cli/main_desktop._desktop_packaged_executable resolves.
+    # candidates kova_cli/main_desktop._desktop_packaged_executable resolves.
     Push-Location $InstallDir
     try {
         $desktopDir = Join-Path $InstallDir "apps\desktop"
         $candidates = @(
-            (Join-Path $desktopDir "release\win-unpacked\Hermes.exe"),
-            (Join-Path $desktopDir "release\win-ia32-unpacked\Hermes.exe"),
-            (Join-Path $desktopDir "release\win-arm64-unpacked\Hermes.exe")
+            (Join-Path $desktopDir "release\win-unpacked\Kova.exe"),
+            (Join-Path $desktopDir "release\win-ia32-unpacked\Kova.exe"),
+            (Join-Path $desktopDir "release\win-arm64-unpacked\Kova.exe")
         )
         $desktopExe = $null
         foreach ($cand in $candidates) {
             if (Test-Path $cand) { $desktopExe = $cand; break }
         }
         if (-not $desktopExe) {
-            Fail "desktop build produced no Hermes.exe under $desktopDir\release\*-unpacked"
+            Fail "desktop build produced no Kova.exe under $desktopDir\release\*-unpacked"
         }
         Write-Ok "Desktop ready: $desktopExe"
 
         # Grant ALL APPLICATION PACKAGES (S-1-15-2-2) RX on the unpacked
         # app directory: Chromium's GPU/renderer sandboxes CHECK-fail with
         # 0x80000003 without this ACE beside orphan AppContainer SIDs under
-        # %LOCALAPPDATA% (electron/electron#51761, hermes-agent#38216).
+        # %LOCALAPPDATA% (electron/electron#51761, kova-agent#38216).
         # Best-effort -- never fail an otherwise-good install over ACL.
         try {
             $appDir = Split-Path -Parent $desktopExe
@@ -1129,8 +1129,8 @@ function Stage-Complete {
             pinnedBranch = $Branch
             completedAt = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         }
-        $marker | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $InstallDir ".hermes-bootstrap-complete") -Encoding UTF8
-        Write-Ok "Hermes Agent install complete (pinned $commit). Run: hermes"
+        $marker | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $InstallDir ".kova-bootstrap-complete") -Encoding UTF8
+        Write-Ok "Kova Agent install complete (pinned $commit). Run: kova"
     }
 }
 
@@ -1157,8 +1157,8 @@ function New-DesktopShortcuts {
         }
 
         $targets = @(
-            (Join-Path ([Environment]::GetFolderPath('Programs')) 'Hermes.lnk'),
-            (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Hermes.lnk')
+            (Join-Path ([Environment]::GetFolderPath('Programs')) 'Kova.lnk'),
+            (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Kova.lnk')
         )
 
         foreach ($lnkPath in $targets) {
@@ -1171,7 +1171,7 @@ function New-DesktopShortcuts {
                 $sc.TargetPath = $TargetExe
                 $sc.WorkingDirectory = $workDir
                 $sc.IconLocation = $iconLocation
-                $sc.Description = 'Hermes Agent'
+                $sc.Description = 'Kova Agent'
                 $sc.Save()
                 Write-Ok "Shortcut created: $lnkPath"
             } catch {
@@ -1182,7 +1182,7 @@ function New-DesktopShortcuts {
         # Bust the Windows shell icon cache so the desktop/Start-Menu shortcut
         # repaints with the (possibly newly-stamped) icon instead of a stale
         # cached bitmap. Critical on the --update path: the exe was re-stamped
-        # with the Hermes icon, but without this the shortcut can keep drawing
+        # with the Kova icon, but without this the shortcut can keep drawing
         # the old Electron icon until the user manually refreshes / reboots.
         # Best-effort and silent -- never fail the install over a cosmetic cache.
         try {
@@ -1214,7 +1214,7 @@ function Invoke-StageByName([string]$name) {
 # --- Dot-source guard (part 2: stop before entry) ----------------------------
 # Every function definition above has loaded; now stop before any real work.
 if ($script:IsDotSourced) {
-    Write-Verbose "[hermes] install.ps1 was dot-sourced; definitions only, no execution"
+    Write-Verbose "[kova] install.ps1 was dot-sourced; definitions only, no execution"
     return
 }
 
@@ -1227,7 +1227,7 @@ Initialize-ResolvedPaths
 $env:UV_NO_CONFIG = "1"
 # Children that collapse their own output (windows-build-deps.ps1 under pm,
 # when its stdout is still the console) stream too once -Verbose asked for it.
-if ($VerbosePreference -ne 'SilentlyContinue') { $env:HERMES_INSTALL_VERBOSE = "1" }
+if ($VerbosePreference -ne 'SilentlyContinue') { $env:KOVA_INSTALL_VERBOSE = "1" }
 
 if ($ProtocolVersion) { Write-Output 1; exit 0 }
 

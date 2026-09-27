@@ -12,7 +12,7 @@ const windowControls = {
 }
 
 const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const originalHermesDesktop = desktopWindow.hermesDesktop
+const originalKovaDesktop = desktopWindow.hermesDesktop
 
 function renderControls(isMaximized = false, path = '/', isFullscreen = false) {
   return render(
@@ -26,8 +26,8 @@ afterEach(() => {
   cleanup()
   vi.clearAllMocks()
 
-  if (originalHermesDesktop) {
-    desktopWindow.hermesDesktop = originalHermesDesktop
+  if (originalKovaDesktop) {
+    desktopWindow.hermesDesktop = originalKovaDesktop
   } else {
     delete desktopWindow.hermesDesktop
   }

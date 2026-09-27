@@ -1,7 +1,7 @@
 /**
  * A generic peer window inherits its initial owner, not a permanent New session
  * target. Exercise two real gateways; only inference uses the shared mock.
- * Requires the built desktop and a repo venv (or HERMES_DESKTOP_PYTHON).
+ * Requires the built desktop and a repo venv (or KOVA_DESKTOP_PYTHON).
  */
 import { type ChildProcess, spawn } from 'node:child_process'
 import * as fs from 'node:fs'
@@ -27,15 +27,15 @@ const REMOTE_TOKEN = 'e2e-peer-disposable-token'
 const REMOTE_PROFILE = 'ai-dev'
 
 function pythonBinary(): string {
-  if (process.env.HERMES_DESKTOP_PYTHON) {
-    return process.env.HERMES_DESKTOP_PYTHON
+  if (process.env.KOVA_DESKTOP_PYTHON) {
+    return process.env.KOVA_DESKTOP_PYTHON
   }
 
   const suffix = process.platform === 'win32' ? ['Scripts', 'python.exe'] : ['bin', 'python']
   const candidate = ['.venv', 'venv'].map(dir => path.join(REPO_ROOT, dir, ...suffix)).find(file => fs.existsSync(file))
 
   if (!candidate) {
-    throw new Error('Create the repo Python venv or set HERMES_DESKTOP_PYTHON before running this spec')
+    throw new Error('Create the repo Python venv or set KOVA_DESKTOP_PYTHON before running this spec')
   }
 
   return candidate
@@ -61,7 +61,7 @@ function isolatedEnv(sandbox: Sandbox): Record<string, string> {
     fs.mkdirSync(env[key], { recursive: true, mode: 0o700 })
   }
 
-  for (const key of ['HERMES_DESKTOP_USER_DATA_DIR', 'HERMES_DESKTOP_IGNORE_EXISTING', 'HERMES_DESKTOP_HERMES_ROOT', 'HERMES_DESKTOP_APP_NAME', 'HERMES_DESKTOP_SKIP_QUIT_CONFIRM']) {
+  for (const key of ['KOVA_DESKTOP_USER_DATA_DIR', 'KOVA_DESKTOP_IGNORE_EXISTING', 'KOVA_DESKTOP_KOVA_ROOT', 'KOVA_DESKTOP_APP_NAME', 'KOVA_DESKTOP_SKIP_QUIT_CONFIRM']) {
     env[key] = defaults[key]
   }
 
@@ -69,8 +69,8 @@ function isolatedEnv(sandbox: Sandbox): Record<string, string> {
     ...env,
     HOME: sandbox.root,
     USERPROFILE: sandbox.root,
-    HERMES_HOME: sandbox.hermesHome,
-    HERMES_DESKTOP_PYTHON: pythonBinary(),
+    KOVA_HOME: sandbox.hermesHome,
+    KOVA_DESKTOP_PYTHON: pythonBinary(),
     PYTHONPATH: REPO_ROOT,
     // On Linux CI, DISPLAY belongs to Xvfb rather than the host Wayland seat.
     ...(process.platform === 'linux' ? { XDG_SESSION_TYPE: 'x11', ELECTRON_OZONE_PLATFORM_HINT: 'x11' } : {}),
@@ -171,10 +171,10 @@ const peerTest = test.extend<{ gateways: { app: ElectronApplication; source: Pag
 
       const port = await freePort()
       const remoteUrl = `http://127.0.0.1:${port}`
-      child = spawn(pythonBinary(), ['-m', 'hermes_cli.main', 'serve', '--host', '127.0.0.1', '--port', String(port), '--skip-build'], {
+      child = spawn(pythonBinary(), ['-m', 'kova_cli.main', 'serve', '--host', '127.0.0.1', '--port', String(port), '--skip-build'], {
         cwd: REPO_ROOT,
         detached: process.platform !== 'win32',
-        env: { ...isolatedEnv(remote), HERMES_DASHBOARD_SESSION_TOKEN: REMOTE_TOKEN },
+        env: { ...isolatedEnv(remote), KOVA_DASHBOARD_SESSION_TOKEN: REMOTE_TOKEN },
         stdio: ['ignore', 'pipe', 'pipe'],
       })
       // Fixture setup shares the test budget; a timeout while still awaiting
@@ -197,7 +197,7 @@ const peerTest = test.extend<{ gateways: { app: ElectronApplication; source: Pag
 
         try {
           return (await fetch(`${remoteUrl}/api/status`, {
-            headers: { 'X-Hermes-Session-Token': REMOTE_TOKEN },
+            headers: { 'X-Kova-Session-Token': REMOTE_TOKEN },
             signal: AbortSignal.timeout(2_000),
           })).status
         } catch { return 0 }

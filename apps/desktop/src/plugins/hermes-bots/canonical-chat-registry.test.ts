@@ -7,7 +7,7 @@
  * `session.list { title: 'Bot Chat', include_hidden: true }`.
  *
  * There is NO session-id pin. The previous design stored a pointer in
- * ui_meta['hermes-bots'].chat and spent five hardening waves (#88690, #90732,
+ * ui_meta['kova-bots'].chat and spent five hardening waves (#88690, #90732,
  * #90751, the #91791 revert, #92042) guarding its failure modes: rows[0]
  * steals, last_session adoptions, transient clears, drifted-title welds. Every
  * "lost canonical chat" incident traced to that pointer dangling and a later
@@ -37,7 +37,7 @@ const { hostMock, persistMock, requestForBotMock, saveBotMetaMock } = vi.hoisted
   saveBotMetaMock: vi.fn()
 }))
 
-vi.mock('@hermes/plugin-sdk', () => ({
+vi.mock('@kova/plugin-sdk', () => ({
   BOT_CHAT_SESSION_HYDRATION_TIMEOUT_MS: 15_000,
   host: hostMock
 }))

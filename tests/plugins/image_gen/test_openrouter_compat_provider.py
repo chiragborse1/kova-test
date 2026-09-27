@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-_RUNTIME = "hermes_cli.runtime_provider.resolve_runtime_provider"
+_RUNTIME = "kova_cli.runtime_provider.resolve_runtime_provider"
 _PNG_DATA_URI = "data:image/png;base64,dGVzdC1pbWFnZS1kYXRh"  # "test-image-data"
 
 
@@ -249,11 +249,11 @@ class TestHelpers:
     def test_to_image_url_part_blocks_credential_store(self, tmp_path, monkeypatch):
         from plugins.image_gen.openrouter import _to_image_url_part
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        auth_json = hermes_home / "auth.json"
+        kova_home = tmp_path / ".kova"
+        kova_home.mkdir()
+        auth_json = kova_home / "auth.json"
         auth_json.write_text('{"api_key":"sk-secret"}', encoding="utf-8")
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        monkeypatch.setenv("KOVA_HOME", str(kova_home))
 
         with pytest.raises(ValueError, match="credential store"):
             _to_image_url_part(str(auth_json))
@@ -364,7 +364,7 @@ class TestGenerate:
     def test_posts_to_resolved_base_url(self):
         """Nous routes to its own base URL — proves the same code serves both."""
         nous_runtime = _runtime_ok(
-            provider="nous", base_url="https://inference.nousresearch.com/v1", api_key="nous-tok"
+            provider="nous", base_url="https://inference.openkova.com/v1", api_key="nous-tok"
         )
         with patch(_RUNTIME, return_value=nous_runtime), \
              patch("requests.post", return_value=_mock_chat_response([_PNG_DATA_URI])) as mock_post, \
@@ -377,7 +377,7 @@ class TestGenerate:
         assert result["success"] is True
         assert result["provider"] == "nous"
         url = mock_post.call_args[0][0]
-        assert url == "https://inference.nousresearch.com/v1/chat/completions"
+        assert url == "https://inference.openkova.com/v1/chat/completions"
 
     def test_api_error(self):
         import requests as req_lib
@@ -557,7 +557,7 @@ class TestImageApiSurface:
         from plugins.image_gen.openrouter import _build_providers
 
         nous_runtime = _runtime_ok(
-            provider="nous", base_url="https://inference.nousresearch.com/v1", api_key="nous-tok"
+            provider="nous", base_url="https://inference.openkova.com/v1", api_key="nous-tok"
         )
         with patch(_RUNTIME, return_value=nous_runtime), \
              patch("requests.post", return_value=_mock_chat_response([_PNG_DATA_URI])) as mock_post, \
@@ -566,7 +566,7 @@ class TestImageApiSurface:
             result = nous.generate(prompt="a pet", model="openai/gpt-image-2")
 
         assert result["success"] is True
-        assert mock_post.call_args[0][0] == "https://inference.nousresearch.com/v1/chat/completions"
+        assert mock_post.call_args[0][0] == "https://inference.openkova.com/v1/chat/completions"
 
     # -- per-model parameter filtering ------------------------------------
 

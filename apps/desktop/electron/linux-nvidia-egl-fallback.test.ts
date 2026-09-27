@@ -59,33 +59,33 @@ describe('decideNvidiaEglFallback', () => {
     ).toBe(false)
   })
 
-  it('HERMES_DESKTOP_DISABLE_GPU=0 keeps the GPU (and the fallback) off', () => {
+  it('KOVA_DESKTOP_DISABLE_GPU=0 keeps the GPU (and the fallback) off', () => {
     expect(
       decideNvidiaEglFallback({
         ...LINUX,
         driverMajor: 580,
-        env: { HERMES_DESKTOP_DISABLE_GPU: '0' }
+        env: { KOVA_DESKTOP_DISABLE_GPU: '0' }
       }).enable
     ).toBe(false)
   })
 
-  it('HERMES_DESKTOP_NVIDIA_SWIFTSHADER forces the fallback on without detection', () => {
+  it('KOVA_DESKTOP_NVIDIA_SWIFTSHADER forces the fallback on without detection', () => {
     const decision = decideNvidiaEglFallback({
       ...LINUX,
       driverMajor: null,
-      env: { HERMES_DESKTOP_NVIDIA_SWIFTSHADER: '1' }
+      env: { KOVA_DESKTOP_NVIDIA_SWIFTSHADER: '1' }
     })
 
     expect(decision.enable).toBe(true)
     expect(decision.reason).toContain('override')
   })
 
-  it('HERMES_DESKTOP_NVIDIA_SWIFTSHADER=0 opts out even on affected drivers', () => {
+  it('KOVA_DESKTOP_NVIDIA_SWIFTSHADER=0 opts out even on affected drivers', () => {
     expect(
       decideNvidiaEglFallback({
         ...LINUX,
         driverMajor: 580,
-        env: { HERMES_DESKTOP_NVIDIA_SWIFTSHADER: 'off' }
+        env: { KOVA_DESKTOP_NVIDIA_SWIFTSHADER: 'off' }
       }).enable
     ).toBe(false)
   })

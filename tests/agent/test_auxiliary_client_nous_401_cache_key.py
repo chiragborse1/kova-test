@@ -14,7 +14,7 @@ import pytest
 import agent.auxiliary_client as ac
 
 
-NOUS_BASE_URL = "https://inference-api.nousresearch.com/v1"
+NOUS_BASE_URL = "https://inference-api.openkova.com/v1"
 
 
 @pytest.fixture(autouse=True)
@@ -109,7 +109,7 @@ async def test_async_call_llm_auto_provider_evicts_stale_client_end_to_end(monke
     kwarg at the async acquisition site fails this test.
     """
     task = "session_search"
-    main_runtime = {"provider": "nous", "model": "Hermes-4-405B"}
+    main_runtime = {"provider": "nous", "model": "hermes-4-405b"}
     stale = _nous_mock_client(async_mode=True, raises=_Auth401("stale creds"))
     fresh = _nous_mock_client(async_mode=True, returns={"ok": True})
 

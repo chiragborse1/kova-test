@@ -1,11 +1,11 @@
-import type { GatewayWsUrlResult } from '@hermes/shared'
-import type { HermesSkin } from '@hermes/shared/skin'
-import type { TranslucencyState } from '@hermes/shared/translucency'
+import type { GatewayWsUrlResult } from '@kova/shared'
+import type { KovaSkin } from '@kova/shared/skin'
+import type { TranslucencyState } from '@kova/shared/translucency'
 
 import type { ScreenshotApi } from '../electron/command-screenshot-types'
 import type { HudModifierApi } from '../electron/hud-modifier-types'
 import type { MachineProfile } from '../electron/machine-profile'
-import type { HermesNotification } from '../electron/notification-types'
+import type { KovaNotification } from '../electron/notification-types'
 import type { PoolLimits } from '../electron/pool-limits'
 import type { GrowRequest } from '../electron/window-growth'
 
@@ -31,14 +31,14 @@ declare global {
       getConnection: (
         profile?: string | null,
         opts?: { priority?: 'foreground' | 'background' }
-      ) => Promise<HermesConnection>
+      ) => Promise<KovaConnection>
       // Registry-scoped backend resolution: dial (connectionId, profile). An
       // empty/local connectionId delegates to the legacy getConnection path.
       getConnectionFor?: (payload: {
         connectionId?: null | string
         profile?: null | string
         priority?: 'foreground' | 'background'
-      }) => Promise<HermesConnection>
+      }) => Promise<KovaConnection>
       // Registry-scoped fresh WS URL (same result contract as getGatewayWsUrl).
       getGatewayWsUrlFor?: (payload: {
         connectionId?: null | string
@@ -80,7 +80,7 @@ declare global {
         sessionId: string,
         opts?: { profile?: null | string; watch?: boolean }
       ) => Promise<{ ok: boolean; error?: string }>
-      // Resume this session in the user's own terminal emulator (`hermes --tui
+      // Resume this session in the user's own terminal emulator (`kova --tui
       // --resume <id>`) — the external terminal, not the in-app pane.
       openSessionInTerminal: (
         sessionId: string,
@@ -100,7 +100,7 @@ declare global {
       // peers — so N open windows don't all fire the same cue.
       claimAmbientCue: (key: string) => Promise<boolean>
       // Renderer-drawn min/max/close for WSLg (`custom` true there only), sent
-      // over hermes:window-control; Electron/OS chrome owns them elsewhere.
+      // over kova:window-control; Electron/OS chrome owns them elsewhere.
       windowControls: {
         custom: boolean
         minimize: () => void
@@ -225,7 +225,7 @@ declare global {
         // Drain/update/restore one Desktop-managed SSH install. External URL
         // and cloud sources are refused without touching their processes.
         updateManaged?: (id: string) => Promise<DesktopManagedConnectionUpdateResult>
-        // Fan out `hermes update` to every eligible registered connection;
+        // Fan out `kova update` to every eligible registered connection;
         // cloud entries are skipped (platform-managed), each row independent.
         // excludeIds skips connections the caller updates through another
         // path (the everything-update flow's active backend + local client).
@@ -248,7 +248,7 @@ declare global {
         options?: DesktopOauthLoginOptions
       ) => Promise<DesktopOauthLoginResult>
       oauthLogoutConnectionConfig: (remoteUrl: string) => Promise<DesktopOauthLogoutResult>
-      // Hermes Cloud: one portal login powers discovery + silent per-agent
+      // Kova Cloud: one portal login powers discovery + silent per-agent
       // sign-in (cloud-auto-discovery Phase 3).
       cloud: {
         status: () => Promise<DesktopCloudStatus>
@@ -266,12 +266,12 @@ declare global {
         // replacing an explicit default route.
         remember: (name: string | null) => Promise<DesktopActiveProfile>
         // Persists the desktop's profile choice and relaunches the local
-        // backend under the new HERMES_HOME (reloads the window). Pass null to
+        // backend under the new KOVA_HOME (reloads the window). Pass null to
         // clear the preference.
         set: (name: string | null) => Promise<DesktopActiveProfile>
       }
-      api: <T>(request: HermesApiRequest) => Promise<T>
-      notify: (payload: HermesNotification) => Promise<boolean>
+      api: <T>(request: KovaApiRequest) => Promise<T>
+      notify: (payload: KovaNotification) => Promise<boolean>
       requestMicrophoneAccess: () => Promise<boolean>
       /** read_window_below tool: metadata for the OS window directly underneath this one (never pixels). */
       readWindowBelow?: () => Promise<{
@@ -293,12 +293,12 @@ declare global {
         get: () => Promise<{ defaultMaxMb: number; maxBytes: number; maxMb: number }>
         set: (maxMb: number) => Promise<{ defaultMaxMb: number; maxBytes: number; maxMb: number }>
       }
-      readFileText: (filePath: string) => Promise<HermesReadFileTextResult>
+      readFileText: (filePath: string) => Promise<KovaReadFileTextResult>
       /** Full-source read for runtime desktop plugins (readFileText truncates
        *  at the 512 KiB preview cap). Absent on older shells — callers fall
        *  back to readFileText and must reject a `truncated` result. */
-      readPluginSource?: (filePath: string) => Promise<HermesReadFileTextResult>
-      selectPaths: (options?: HermesSelectPathsOptions) => Promise<string[]>
+      readPluginSource?: (filePath: string) => Promise<KovaReadFileTextResult>
+      selectPaths: (options?: KovaSelectPathsOptions) => Promise<string[]>
       /** Native save dialog; returns the chosen path or null on cancel. */
       selectSavePath?: (options?: {
         defaultPath?: string
@@ -345,15 +345,15 @@ declare global {
       savePastedText: (text: string) => Promise<string>
       saveClipboardImage: () => Promise<string>
       getPathForFile: (file: File) => string
-      normalizePreviewTarget: (target: string, baseDir?: string) => Promise<HermesPreviewTarget | null>
-      watchPreviewFile: (url: string) => Promise<HermesPreviewWatch>
+      normalizePreviewTarget: (target: string, baseDir?: string) => Promise<KovaPreviewTarget | null>
+      watchPreviewFile: (url: string) => Promise<KovaPreviewWatch>
       /** Watch a directory for entry churn (disk-plugin door); same watcher
        *  registry + onPreviewFileChanged channel as watchPreviewFile. Optional:
        *  older Electron shells predate it and fall back to the readdir poll. */
-      watchDirectory?: (dir: string) => Promise<HermesPreviewWatch>
+      watchDirectory?: (dir: string) => Promise<KovaPreviewWatch>
       stopPreviewFileWatch: (id: string) => Promise<boolean>
-      setActiveWork?: (payload: HermesActiveWork) => void
-      setTitleBarTheme?: (payload: HermesTitleBarTheme) => void
+      setActiveWork?: (payload: KovaActiveWork) => void
+      setTitleBarTheme?: (payload: KovaTitleBarTheme) => void
       setNativeTheme?: (mode: 'dark' | 'light' | 'system') => void
       /** Main-process fact: this OS can back glass with a native material. */
       glassSupported?: boolean
@@ -364,9 +364,9 @@ declare global {
       /** Launch flag shared with every backend the app starts. */
       guestOnboardingEnabled?: boolean
       /** Sanitized local `display.skin`, available before any gateway connects. */
-      localSkin?: { profile: string; skin: HermesSkin } | null
-      /** Launch flag: skip the first-run film (HERMES_SKIP_INTRO=1 or
-       *  --skip-intro) so a fresh HERMES_HOME lands on the guided chat. */
+      localSkin?: { profile: string; skin: KovaSkin } | null
+      /** Launch flag: skip the first-run film (KOVA_SKIP_INTRO=1 or
+       *  --skip-intro) so a fresh KOVA_HOME lands on the guided chat. */
       skipIntro?: boolean
       setTranslucency?: (payload: TranslucencyState) => void
       setKeepAwake?: (on: boolean) => void
@@ -432,21 +432,21 @@ declare global {
       }) => void
       /** Append one raw line to desktop.log (fire-and-forget, notifyError path). */
       logLine?: (line: string) => void
-      readDir: (path: string) => Promise<HermesReadDirResult>
+      readDir: (path: string) => Promise<KovaReadDirResult>
       gitRoot?: (path: string) => Promise<string | null>
       // Reveal a path in the OS file manager (Finder / Explorer).
       revealPath?: (path: string) => Promise<boolean>
       // Open a DIRECTORY (created if missing) in the OS file manager.
       openDir?: (path: string) => Promise<{ ok: boolean; error?: string }>
-      // Local Desktop runtime-plugin root (<HERMES_HOME>/desktop-plugins),
+      // Local Desktop runtime-plugin root (<KOVA_HOME>/desktop-plugins),
       // resolved by Electron independently of the connected backend (#66899).
       // Created on demand; returns the normalized absolute path.
       desktopPluginsRoot?: () => Promise<string>
       /** Refresh unified packages' desktop halves and return the touched paths. */
       reconcileDesktopPlugins?: () => Promise<string[]>
-      /** LOCAL `<HERMES_HOME>/logs` (profile-aware) — error card "Open Logs". */
+      /** LOCAL `<KOVA_HOME>/logs` (profile-aware) — error card "Open Logs". */
       logsRoot?: () => Promise<string>
-      // Local AGENT-plugin root (<HERMES_HOME>/plugins), same Electron-local
+      // Local AGENT-plugin root (<KOVA_HOME>/plugins), same Electron-local
       // resolution. The disk door also scans it for `<name>/desktop/plugin.js`
       // so one agent-plugin package can ship a desktop UI half. Optional:
       // older Electron shells predate it — the scanner then skips this root.
@@ -459,7 +459,7 @@ declare global {
       trashPath?: (path: string) => Promise<boolean>
       // Git-driven worktree management for the "Start work" flow.
       git?: {
-        worktreeList: (repoPath: string) => Promise<HermesGitWorktree[]>
+        worktreeList: (repoPath: string) => Promise<KovaGitWorktree[]>
         worktreeAdd: (
           repoPath: string,
           options?: { name?: string; branch?: string; base?: string; existingBranch?: string }
@@ -472,25 +472,25 @@ declare global {
         branchSwitch: (repoPath: string, branch: string) => Promise<{ branch: string }>
         // The local branches, plus the remote-tracking refs that have no local
         // branch, for the "convert a branch into a worktree" picker.
-        branchList: (repoPath: string) => Promise<HermesGitBranch[]>
+        branchList: (repoPath: string) => Promise<KovaGitBranch[]>
         // Local + remote-tracking branches for the "base branch" picker in the
         // new-worktree dialog. The remote default (origin/HEAD) is flagged so
         // the UI can preselect it.
-        baseBranchList: (repoPath: string) => Promise<HermesGitBaseBranch[]>
+        baseBranchList: (repoPath: string) => Promise<KovaGitBaseBranch[]>
         // Compact working-tree status for the composer coding rail. Null on a
         // non-repo / remote backend (where the Electron probe can't run).
-        repoStatus: (repoPath: string) => Promise<HermesRepoStatus | null>
+        repoStatus: (repoPath: string) => Promise<KovaRepoStatus | null>
         // Working-tree-vs-HEAD unified diff for one file (the preview's diff
         // view). Empty string when the file is unchanged or not in a repo.
         fileDiff: (repoPath: string, filePath: string) => Promise<string>
         // Codex-style review pane: changed files per scope, per-file diff, and
         // stage / unstage / revert.
         review: {
-          list: (repoPath: string, scope: HermesReviewScope, baseRef?: null | string) => Promise<HermesReviewList>
+          list: (repoPath: string, scope: KovaReviewScope, baseRef?: null | string) => Promise<KovaReviewList>
           diff: (
             repoPath: string,
             filePath: string,
-            scope: HermesReviewScope,
+            scope: KovaReviewScope,
             baseRef?: null | string,
             staged?: boolean
           ) => Promise<string>
@@ -503,11 +503,11 @@ declare global {
           // commit message. Reads only; empty strings off-repo.
           commitContext: (repoPath: string) => Promise<{ diff: string; recent: string }>
           push: (repoPath: string) => Promise<{ ok: boolean }>
-          shipInfo: (repoPath: string) => Promise<HermesReviewShipInfo>
+          shipInfo: (repoPath: string) => Promise<KovaReviewShipInfo>
           // The PR on each of the given branches — plus any known only by
           // number — for badging a list of sessions in one request instead of
           // one `pr view` per checkout.
-          prList: (repoPath: string, branches: string[], numbers?: number[]) => Promise<HermesRepoPullRequests>
+          prList: (repoPath: string, branches: string[], numbers?: number[]) => Promise<KovaRepoPullRequests>
           createPr: (repoPath: string) => Promise<{ url: string }>
         }
         // Repo-first discovery: scan bounded roots for git repos (depth-capped).
@@ -524,9 +524,9 @@ declare global {
         cwd: (id: string) => Promise<string | null>
         dispose: (id: string) => Promise<boolean>
         onData: (id: string, callback: (payload: string) => void) => () => void
-        onExit: (id: string, callback: (payload: HermesTerminalExit) => void) => () => void
+        onExit: (id: string, callback: (payload: KovaTerminalExit) => void) => () => void
         resize: (id: string, size: { cols: number; rows: number }) => Promise<boolean>
-        start: (options?: { cols?: number; cwd?: string; rows?: number }) => Promise<HermesTerminalSession>
+        start: (options?: { cols?: number; cwd?: string; rows?: number }) => Promise<KovaTerminalSession>
         write: (id: string, data: string) => Promise<boolean>
       }
       reachPreviewUrl?: (url: string) => Promise<string>
@@ -563,14 +563,14 @@ declare global {
       /** Delete a STANDALONE desktop plugin folder (`<desktop-plugins root>/<name>`);
        *  Electron re-checks containment and refuses unified-package halves. */
       removeDesktopPlugin?: (payload: { name: string }) => Promise<{ ok: boolean; path?: string; error?: string }>
-      onWindowStateChanged?: (callback: (payload: HermesWindowState) => void) => () => void
+      onWindowStateChanged?: (callback: (payload: KovaWindowState) => void) => () => void
       onFocusSession?: (callback: (sessionId: string) => void) => () => void
       onNotificationAction?: (callback: (payload: { actionId: string; sessionId?: string }) => void) => () => void
       /** Plugin (and other session-less) notification body/action activation. */
       onNotificationActivate?: (
         callback: (payload: { actionId?: string; activate?: string; notifyId?: string; tag?: string }) => void
       ) => () => void
-      onPreviewFileChanged: (callback: (payload: HermesPreviewFileChanged) => void) => () => void
+      onPreviewFileChanged: (callback: (payload: KovaPreviewFileChanged) => void) => () => void
       onBackendExit: (callback: (payload: BackendExit) => void) => () => void
       // Cooperative pool retirement: main is stopping the pooled backend under
       // `poolKey` for a foreground open. The renderer parks that scope.
@@ -657,13 +657,13 @@ export interface DesktopMarketplaceThemeResult {
   themes: DesktopMarketplaceThemeFile[]
 }
 
-export interface HermesTerminalSession {
+export interface KovaTerminalSession {
   cwd: string
   id: string
   shell: string
 }
 
-export interface HermesTerminalExit {
+export interface KovaTerminalExit {
   code: number | null
   signal: string | null
 }
@@ -730,11 +730,11 @@ export interface DesktopVersionInfo {
    *  a managed checkout; the Distribution label keys on it. */
   payload?: 'bootstrap' | 'bundled' | 'light'
   /** True when the runtime checkout carries the bootstrap installers'
-   *  `.hermes-bootstrap-complete` receipt — install.sh / install.ps1 (or the
+   *  `.kova-bootstrap-complete` receipt — install.sh / install.ps1 (or the
    *  desktop first-launch bootstrap) created it, a manual clone did not. */
   installedByScript?: boolean
   /** sha16 of the canonical install-root path — the per-install channel key and
-   *  the shape `hermes update --install-id` prints. */
+   *  the shape `kova update --install-id` prints. */
   installId?: string
   /** What this build carries (embedded / light / external) and where an
    *  external backend resolved from. Bundled artifacts run their payload; light
@@ -746,22 +746,22 @@ export interface DesktopVersionInfo {
 }
 
 /** Where an external build's backend came from. Mirrors the resolution ladder
- *  in `resolveHermesBackend()`: `git` / `source` / sealed stewards are the
+ *  in `resolveKovaBackend()`: `git` / `source` / sealed stewards are the
  *  Python install methods from `installation.tree.install_method()`; the
- *  Electron-only rungs (`hermes-root`, `path`, `system-python`, `bootstrap`)
+ *  Electron-only rungs (`kova-root`, `path`, `system-python`, `bootstrap`)
  *  are resolution facts the backend cannot see. Each variant carries the
  *  location it resolved from, when there is one. */
 export type RuntimeSource =
-  | { type: 'hermes-root'; root: string } // HERMES_DESKTOP_HERMES_ROOT — explicit developer override
-  | { type: 'git'; root: string } // checkout at a managed install root, $HERMES_HOME/hermes-agent
+  | { type: 'kova-root'; root: string } // KOVA_DESKTOP_KOVA_ROOT — explicit developer override
+  | { type: 'git'; root: string } // checkout at a managed install root, $KOVA_HOME/kova-agent
   | { type: 'source'; root: string } // a git checkout anywhere else
   | { type: 'docker'; root: string | null } // sealed tree stewarded by Docker
   | { type: 'nix'; root: string | null } // sealed tree stewarded by Nix
   | { type: 'desktop-app'; root: string | null } // sealed tree stewarded by the desktop bundle
   | { type: 'desktop-bootstrap'; root: string } // canonical install created by the desktop first-launch bootstrap
   | { type: 'unknown' } // no stamp, no .git — provenance cannot be told
-  | { type: 'path'; command: string } // an existing `hermes` CLI found on PATH
-  | { type: 'system-python'; command: string } // pip-installed hermes_cli on system Python
+  | { type: 'path'; command: string } // an existing `kova` CLI found on PATH
+  | { type: 'system-python'; command: string } // pip-installed kova_cli on system Python
   | { type: 'bootstrap' } // nothing usable yet; the first-launch installer runs
 
 export type DesktopUninstallMode = 'full' | 'gui' | 'lite'
@@ -769,7 +769,7 @@ export type DesktopUninstallMode = 'full' | 'gui' | 'lite'
 export interface DesktopUninstallSummary {
   /** Local package ownership, resolved by Electron before offering removal. */
   code_removal_allowed: boolean
-  hermes_home: string
+  kova_home: string
   agent_installed: boolean
   gui_installed: boolean
   source_built_artifacts: string[]
@@ -848,7 +848,7 @@ export interface DesktopUpdateApplyResult {
   message?: string
 
   /** True when no staged updater exists (CLI install) and the user should run
-   *  `hermes update` themselves. `command` is the exact line to run. */
+   *  `kova update` themselves. `command` is the exact line to run. */
   manual?: boolean
   command?: string
   hermesRoot?: string
@@ -909,7 +909,7 @@ export interface DesktopPluginProfileRoute {
   targetProfile: string
 }
 
-export interface HermesConnection {
+export interface KovaConnection {
   baseUrl: string
   customWindowControls?: boolean
   darwinMajor?: number
@@ -923,7 +923,7 @@ export interface HermesConnection {
   remoteHost?: string
   remoteIdentity?: string
   remoteKind?: 'cloud' | 'ssh' | 'url'
-  remoteHermesVersion?: string
+  remoteKovaVersion?: string
   nativeOverlayWidth: number
   source?: 'env' | 'local' | 'settings'
   token: string
@@ -950,18 +950,18 @@ export interface HermesConnection {
   windowButtonPosition: { x: number; y: number } | null
 }
 
-export interface HermesTitleBarTheme {
+export interface KovaTitleBarTheme {
   background: string
   foreground: string
 }
 
 /** Turns in flight, so the main process can confirm before a quit kills them. */
-export interface HermesActiveWork {
+export interface KovaActiveWork {
   count: number
   titles: string[]
 }
 
-export interface HermesWindowState {
+export interface KovaWindowState {
   customWindowControls?: boolean
   darwinMajor?: number
   isFullscreen: boolean
@@ -985,7 +985,7 @@ export interface DesktopActiveProfile {
 
 export interface DesktopConnectionConfig {
   envOverride: boolean
-  // The saved connection mode. 'cloud' is a Hermes Cloud connection: it carries
+  // The saved connection mode. 'cloud' is a Kova Cloud connection: it carries
   // a remote-shaped block (remoteUrl = the selected agent's dashboardUrl,
   // remoteAuthMode 'oauth') but is remembered as cloud so settings reopens into
   // the cloud picker. Resolution treats cloud exactly as remote
@@ -1008,7 +1008,7 @@ export interface DesktopConnectionConfig {
   // encryption is opted out — plain text is the chosen mode there.
   remoteTokenPlainText: boolean
   remoteUrl: string
-  // For a 'cloud' connection: the persisted Hermes Cloud org (slug or id) the
+  // For a 'cloud' connection: the persisted Kova Cloud org (slug or id) the
   // connected instance was discovered under, so Settings → Gateway can reopen
   // into that org. Empty string for remote/local.
   cloudOrg: string
@@ -1016,7 +1016,7 @@ export interface DesktopConnectionConfig {
   sshUser: string
   sshPort: number | null
   sshKeyPath: string
-  sshRemoteHermesPath: string
+  sshRemoteKovaPath: string
   sshRemoteProfile: string
 }
 
@@ -1032,7 +1032,7 @@ export interface DesktopConnectionConfigInput {
   // user opt-in from the renderer.
   allowPlainTextToken?: boolean
   remoteUrl?: string
-  // For a 'cloud' connection: the selected Hermes Cloud org (slug or id) to
+  // For a 'cloud' connection: the selected Kova Cloud org (slug or id) to
   // persist so Settings can reopen into it. Ignored for remote/local modes.
   cloudOrg?: string
   cloudName?: string
@@ -1040,7 +1040,7 @@ export interface DesktopConnectionConfigInput {
   sshUser?: string
   sshPort?: number | null
   sshKeyPath?: string
-  sshRemoteHermesPath?: string
+  sshRemoteKovaPath?: string
   sshRemoteProfile?: string
 }
 
@@ -1051,7 +1051,7 @@ export interface DesktopConnectionTestResult {
   reachable?: boolean
   sshError?:
     | 'auth-failed'
-    | 'hermes-not-found'
+    | 'kova-not-found'
     | 'host-key-changed'
     | 'timeout'
     | 'unreachable'
@@ -1061,8 +1061,8 @@ export interface DesktopConnectionTestResult {
     | null
   error?: string | null
   host?: string
-  remoteHermesPath?: string
-  remoteHermesVersion?: string
+  remoteKovaPath?: string
+  remoteKovaVersion?: string
   remotePlatform?: string
 }
 
@@ -1084,7 +1084,7 @@ export interface DesktopRegistryConnection {
   user?: string
   port?: number
   keyPath?: string
-  remoteHermesPath?: string
+  remoteKovaPath?: string
   remoteProfile?: string
   tokenSet: boolean
   tokenPreview: null | string
@@ -1135,7 +1135,7 @@ export interface DesktopRegistryConnectionInput {
   user?: string
   port?: null | number
   keyPath?: string
-  remoteHermesPath?: string
+  remoteKovaPath?: string
   remoteProfile?: string
 }
 
@@ -1282,7 +1282,7 @@ export interface DesktopOauthLogoutResult {
   connected: boolean
 }
 
-// --- Hermes Cloud (cloud-auto-discovery Phase 3) ---
+// --- Kova Cloud (cloud-auto-discovery Phase 3) ---
 
 export interface DesktopCloudStatus {
   // The portal base URL the desktop talks to (default or env-overridden).
@@ -1292,7 +1292,7 @@ export interface DesktopCloudStatus {
   signedIn: boolean
 }
 
-// A discovered Hermes Cloud agent — the trimmed DTO from NAS GET /api/agents.
+// A discovered Kova Cloud agent — the trimmed DTO from NAS GET /api/agents.
 export interface DesktopCloudAgent {
   id: string
   name: string
@@ -1432,7 +1432,7 @@ export type DesktopBootstrapEvent =
       docsUrl: string
     }
 
-export interface HermesApiRequest {
+export interface KovaApiRequest {
   path: string
   method?: string
   body?: unknown
@@ -1462,7 +1462,7 @@ export interface HermesApiRequest {
   priority?: 'foreground'
 }
 
-export interface HermesPreviewTarget {
+export interface KovaPreviewTarget {
   binary?: boolean
   byteSize?: number
   kind: 'file' | 'url'
@@ -1477,7 +1477,7 @@ export interface HermesPreviewTarget {
   url: string
 }
 
-export interface HermesReadFileTextResult {
+export interface KovaReadFileTextResult {
   binary?: boolean
   byteSize?: number
   language?: string
@@ -1487,14 +1487,14 @@ export interface HermesReadFileTextResult {
   truncated?: boolean
 }
 
-export interface HermesPreviewWatch {
+export interface KovaPreviewWatch {
   id: string
   path: string
 }
 
 // A real git worktree as reported by `git worktree list` (source of truth for
 // the "Start work" flow), as opposed to the session-cwd-derived grouping above.
-export interface HermesGitWorktree {
+export interface KovaGitWorktree {
   path: string
   branch: null | string
   isMain: boolean
@@ -1508,7 +1508,7 @@ export interface HermesGitWorktree {
 // that a selection switches the main checkout, and does not make
 // `.worktrees/main`. `isRemote` means that a selection first makes a local
 // branch that tracks the remote one.
-export interface HermesGitBranch {
+export interface KovaGitBranch {
   name: string
   checkedOut: boolean
   isDefault: boolean
@@ -1520,7 +1520,7 @@ export interface HermesGitBranch {
 // refs. `isRemote` distinguishes `origin/main` from a local `main` (the UI
 // may show a remote glyph); `isDefault` flags origin/HEAD so the dialog can
 // preselect it.
-export interface HermesGitBaseBranch {
+export interface KovaGitBaseBranch {
   name: string
   isRemote: boolean
   isDefault: boolean
@@ -1528,7 +1528,7 @@ export interface HermesGitBaseBranch {
 
 // A single changed path from `git status --porcelain=v2`, classified by state
 // so the coding rail / switcher can group + open the right diff.
-export interface HermesRepoStatusFile {
+export interface KovaRepoStatusFile {
   path: string
   staged: boolean
   unstaged: boolean
@@ -1538,7 +1538,7 @@ export interface HermesRepoStatusFile {
 
 // Compact working-tree status for the composer coding rail (parsed from
 // `git status --porcelain=v2 --branch`).
-export interface HermesRepoStatus {
+export interface KovaRepoStatus {
   branch: null | string
   // The repo's trunk ("main" / "master" / …), so the UI can offer "branch off
   // the default" from anywhere. Null when no trunk is detected.
@@ -1557,16 +1557,16 @@ export interface HermesRepoStatus {
   added: number
   removed: number
   // Capped changed-file list (REPO_STATUS_FILE_CAP) for the diff/open actions.
-  files: HermesRepoStatusFile[]
+  files: KovaRepoStatusFile[]
 }
 
 // Diff scope for the review pane, mirroring Codex: uncommitted working-tree
 // changes, all changes vs the branch base, or everything since the current
 // turn began.
-export type HermesReviewScope = 'branch' | 'lastTurn' | 'uncommitted'
+export type KovaReviewScope = 'branch' | 'lastTurn' | 'uncommitted'
 
 // One changed file in the review pane (status letter, +/- lines, staged flag).
-export interface HermesReviewFile {
+export interface KovaReviewFile {
   path: string
   added: number
   removed: number
@@ -1575,15 +1575,15 @@ export interface HermesReviewFile {
   staged: boolean
 }
 
-export interface HermesReviewList {
-  files: HermesReviewFile[]
+export interface KovaReviewList {
+  files: KovaReviewFile[]
   // The resolved base ref the scope diffed against (branch merge-base / turn
   // baseline), or null for the uncommitted scope.
   base: null | string
 }
 
 // The branch's PR (if any) as reported by `gh pr view`.
-export interface HermesReviewPr {
+export interface KovaReviewPr {
   url: string
   state: string
   number: number
@@ -1591,7 +1591,7 @@ export interface HermesReviewPr {
 
 // One repo's PRs as reported by `gh pr list`, each tied to the branch it was
 // opened from — how a session row finds its own PR.
-export interface HermesBranchPullRequest {
+export interface KovaBranchPullRequest {
   branch: string
   draft: boolean
   number: number
@@ -1601,36 +1601,36 @@ export interface HermesBranchPullRequest {
   url: string
 }
 
-export interface HermesRepoPullRequests {
+export interface KovaRepoPullRequests {
   ghReady: boolean
-  prs: HermesBranchPullRequest[]
+  prs: KovaBranchPullRequest[]
 }
 
 // gh availability/auth + the current branch's PR — drives the review pane's PR
 // button (disabled when gh isn't ready, "Open PR" vs "Create PR" otherwise).
-export interface HermesReviewShipInfo {
+export interface KovaReviewShipInfo {
   ghReady: boolean
-  pr: HermesReviewPr | null
+  pr: KovaReviewPr | null
 }
 
-export interface HermesReadDirEntry {
+export interface KovaReadDirEntry {
   name: string
   path: string
   isDirectory: boolean
 }
 
-export interface HermesReadDirResult {
-  entries: HermesReadDirEntry[]
+export interface KovaReadDirResult {
+  entries: KovaReadDirEntry[]
   error?: string
 }
 
-export interface HermesPreviewFileChanged {
+export interface KovaPreviewFileChanged {
   id: string
   path: string
   url: string
 }
 
-export interface HermesSelectPathsOptions {
+export interface KovaSelectPathsOptions {
   title?: string
   defaultPath?: string
   directories?: boolean

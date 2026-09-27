@@ -1,5 +1,5 @@
-import type { ModelOptionsResult } from '@hermes/shared'
-import { fuzzyRank, modelSearchText } from '@hermes/shared'
+import type { ModelOptionsResult } from '@kova/shared'
+import { fuzzyRank, modelSearchText } from '@kova/shared'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactElement } from 'react'
@@ -9,7 +9,7 @@ import { I18nProvider } from '@/i18n'
 import { $localModelsEnabled } from '@/store/local-models-flag'
 import { localModelsKey, localModelsOwner } from '@/store/local-runtime-jobs'
 import { stubMenuDomApis, stubResizeObserver } from '@/test/jsdom'
-import type { LocalRuntimeJob } from '@/types/hermes'
+import type { LocalRuntimeJob } from '@/types/kova'
 
 import { ModelPickerDialog } from './model-picker'
 
@@ -17,7 +17,7 @@ import { ModelPickerDialog } from './model-picker'
 // whatever the backend answers; answering with the seeded jobs keeps the two equal.
 const seededJobs: { current: readonly LocalRuntimeJob[] } = vi.hoisted(() => ({ current: [] }))
 
-vi.mock('@/hermes', () => ({
+vi.mock('@/kova', () => ({
   getLocalModelsJobs: vi.fn(async () => ({ jobs: [...seededJobs.current] })),
   getLocalModelsStatus: vi.fn().mockResolvedValue({ loading: {} })
 }))
@@ -45,7 +45,7 @@ const OPTIONS: ModelOptionsResult = {
     {
       slug: 'nous',
       name: 'Nous',
-      models: ['Hermes-4.5'],
+      models: ['Kova-4.5'],
       authenticated: true
     }
   ]
@@ -133,7 +133,7 @@ describe('ModelPickerDialog download rows', () => {
     })
     renderPicker()
 
-    expect(await screen.findByText('Hermes-4.5')).toBeTruthy()
+    expect(await screen.findByText('Kova-4.5')).toBeTruthy()
     expect(screen.getByText('Qwen3.8 Flash Next (UD-Q4_K_XL)')).toBeTruthy()
     expect(screen.getByText('41%')).toBeTruthy()
   })

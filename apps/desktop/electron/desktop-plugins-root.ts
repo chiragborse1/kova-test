@@ -1,4 +1,4 @@
-// The standalone desktop-plugin root (`<HERMES_HOME>/desktop-plugins`) and the
+// The standalone desktop-plugin root (`<KOVA_HOME>/desktop-plugins`) and the
 // one-time migrations that make it the ONLY place desktop code loads from.
 //
 // A desktop plugin extends THIS APP — panes, palette commands, themes — not an
@@ -13,14 +13,14 @@
 //   2. `plugins/<name>/desktop/plugin.js` (default home AND every profile) —
 //      the desktop half of a unified agent+desktop package. The agent half
 //      stays where it is (it runs in that profile's gateway); the desktop half
-//      is COPIED out as `<root>/<name>/` with a `.hermes-package.json` marker
+//      is COPIED out as `<root>/<name>/` with a `.kova-package.json` marker
 //      so the UI can pair it back to the agent row and re-copy on update.
 import fs from 'node:fs'
 import path from 'node:path'
 
 export const DESKTOP_PLUGINS_DIR = 'desktop-plugins'
 /** Marker inside a materialized desktop half: which agent package it came from. */
-export const PACKAGE_MARKER = '.hermes-package.json'
+export const PACKAGE_MARKER = '.kova-package.json'
 
 export interface DesktopHalfMarker {
   /** Agent package folder name (the `plugins/<name>` key). */
@@ -40,7 +40,7 @@ export interface DesktopHalfMarker {
  *  git remote. Undefined for a folder that was copied in by hand. */
 async function packageOrigin(packageDir: string): Promise<Pick<DesktopHalfMarker, 'catalogName' | 'repo' | 'sha'>> {
   try {
-    const sidecar = JSON.parse(await fs.promises.readFile(path.join(packageDir, '.hermes-catalog.json'), 'utf8')) as {
+    const sidecar = JSON.parse(await fs.promises.readFile(path.join(packageDir, '.kova-catalog.json'), 'utf8')) as {
       catalog_name?: string
       repo?: string
       sha?: string
@@ -88,7 +88,7 @@ async function listDirs(dir: string): Promise<string[]> {
   }
 }
 
-/** Every hermes home the app knows about locally: the default plus each profile. */
+/** Every kova home the app knows about locally: the default plus each profile. */
 export async function localHomes(hermesHome: string): Promise<string[]> {
   const profiles = await listDirs(path.join(hermesHome, 'profiles'))
 

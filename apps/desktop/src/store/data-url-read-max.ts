@@ -2,7 +2,7 @@
  * Max size for local files Desktop loads as data URLs (composer attach, image
  * previews, etc.). Main owns the real cap + its JSON under userData — this
  * atom only mirrors it for Settings → Chat. See electron/main.ts
- * (`hermes:data-url-read-max:*`). The default and the clamp are shared with
+ * (`kova:data-url-read-max:*`). The default and the clamp are shared with
  * main via apps/shared so the two ends cannot drift.
  */
 
@@ -11,7 +11,7 @@ import {
   DATA_URL_READ_DEFAULT_MAX_MB,
   DATA_URL_READ_MAX_MAX_MB,
   DATA_URL_READ_MIN_MAX_MB
-} from '@hermes/shared'
+} from '@kova/shared'
 import { atom } from 'nanostores'
 
 import { notifyError } from '@/store/notifications'

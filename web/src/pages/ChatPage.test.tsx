@@ -240,12 +240,12 @@ beforeEach(() => {
     configurable: true,
     value: { addEventListener() {}, removeEventListener() {}, width: 1280 },
   });
-  Object.defineProperty(window, "__HERMES_SESSION_TOKEN__", {
+  Object.defineProperty(window, "__KOVA_SESSION_TOKEN__", {
     configurable: true,
     value: "stale-token",
     writable: true,
   });
-  Object.defineProperty(window, "__HERMES_AUTH_REQUIRED__", {
+  Object.defineProperty(window, "__KOVA_AUTH_REQUIRED__", {
     configurable: true,
     value: false,
     writable: true,
@@ -340,7 +340,7 @@ describe("ChatPage", () => {
 
     // A failed image paste leaves a non-rejection banner behind.
     uploadChatImage.mockRejectedValueOnce(new Error("disk full"));
-    const host = container.querySelector(".hermes-chat-xterm-host");
+    const host = container.querySelector(".kova-chat-xterm-host");
     expect(host).not.toBeNull();
     const paste = new Event("paste", { bubbles: true, cancelable: true });
     const file = new File([new Uint8Array([1, 2, 3])], "shot.png", { type: "image/png" });
@@ -554,7 +554,7 @@ describe("ChatPage side panel collapse", () => {
       );
     });
 
-    expect(localStorage.getItem("hermes-chat-panel-collapsed")).toBe("1");
+    expect(localStorage.getItem("kova-chat-panel-collapsed")).toBe("1");
     expect(
       container.querySelector('[aria-label="Collapse chat side panel"]'),
     ).toBeNull();
@@ -569,7 +569,7 @@ describe("ChatPage side panel collapse", () => {
         .dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
 
-    expect(localStorage.getItem("hermes-chat-panel-collapsed")).toBe("0");
+    expect(localStorage.getItem("kova-chat-panel-collapsed")).toBe("0");
     expect(
       container.querySelector('[aria-label="Collapse chat side panel"]'),
     ).not.toBeNull();

@@ -14,7 +14,7 @@ import { describe, expect, it, vi } from 'vitest'
 /** Names an older SDK is allowed not to export. */
 const OPTIONAL_CAPABILITY_EXPORTS = new Set(['ConnectorsTab', 'CapabilitiesView', 'ToolsetConfigPanel'])
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   // Everything an older SDK DOES export answers as a callable stand-in, so
@@ -61,7 +61,7 @@ describe('an SDK without the optional capability exports', () => {
   it('still links Bot Mode into a registrable plugin', async () => {
     const plugin = (await import('./plugin')).default
 
-    expect(plugin.id).toBe('hermes-bots')
+    expect(plugin.id).toBe('kova-bots')
     expect(typeof plugin.register).toBe('function')
   })
 

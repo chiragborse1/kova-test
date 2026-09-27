@@ -26,7 +26,7 @@ vi.mock('@/store/gateway', () => ({
   ensureGatewayForProfile,
   openGatewayForProfile
 }))
-vi.mock('@/hermes', () => ({
+vi.mock('@/kova', () => ({
   getProfiles: vi.fn(async () => ({ profiles: [] })),
   setApiRequestProfile: vi.fn()
 }))
@@ -218,10 +218,10 @@ describe('selectProfile startup preference (#79886)', () => {
       }
     }
 
-    selectProfile('macmini-hermes')
+    selectProfile('macmini-kova')
 
-    await vi.waitFor(() => expect(ensureGatewayForProfile).toHaveBeenCalledWith('macmini-hermes'))
-    await vi.waitFor(() => expect(getConnection).toHaveBeenCalledWith('macmini-hermes'))
+    await vi.waitFor(() => expect(ensureGatewayForProfile).toHaveBeenCalledWith('macmini-kova'))
+    await vi.waitFor(() => expect(getConnection).toHaveBeenCalledWith('macmini-kova'))
     await new Promise(resolve => setTimeout(resolve, 0))
 
     expect(rememberProfile).not.toHaveBeenCalled()

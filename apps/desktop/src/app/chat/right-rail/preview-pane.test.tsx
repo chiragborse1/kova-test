@@ -727,13 +727,13 @@ describe('PreviewPane console state', () => {
 
 describe('PreviewPane guest external handoff', () => {
   // #112941: a guest page's `_blank` anchor (Streamlit's "Ask Google" button)
-  // reaches the OS browser only through the audited `hermes:openExternal` IPC.
+  // reaches the OS browser only through the audited `kova:openExternal` IPC.
   const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-  const initialHermesDesktop = desktopWindow.hermesDesktop
+  const initialKovaDesktop = desktopWindow.hermesDesktop
 
   afterEach(() => {
-    if (initialHermesDesktop) {
-      desktopWindow.hermesDesktop = initialHermesDesktop
+    if (initialKovaDesktop) {
+      desktopWindow.hermesDesktop = initialKovaDesktop
     } else {
       delete desktopWindow.hermesDesktop
     }

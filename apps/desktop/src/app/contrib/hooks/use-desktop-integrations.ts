@@ -7,9 +7,9 @@ import { commandFocusedPreview } from '@/app/chat/right-rail/preview-nav'
 import { openSession } from '@/app/open-session'
 import { openConnectionDoneLink } from '@/components/assistant-ui/connector-tool'
 import { $diskPluginsScanPending } from '@/contrib/runtime-loader'
-import { getSession } from '@/hermes'
+import { getSession } from '@/kova'
 import { resolveDeepLinkAction } from '@/lib/deeplink-routes'
-import { pathFromHermesDeepLink, resolveHermesOpenPath } from '@/lib/hermes-open-target'
+import { pathFromKovaDeepLink, resolveKovaOpenPath } from '@/lib/kova-open-target'
 import { storedSessionIdForNotification } from '@/lib/session-ids'
 import { announceNewSessionDraftKey } from '@/store/composer'
 import { requestMcpInstallFromDeepLink } from '@/store/mcp-deeplink-install'
@@ -38,7 +38,7 @@ import { onSessionsChanged } from '@/store/session-sync'
 import { requestSkillInstallFromDeepLink } from '@/store/skill-deeplink-install'
 import { openUpdatesWindow, startUpdatePoller, stopUpdatePoller } from '@/store/updates'
 import { isBrowserWindow, isHudWindow, isSecondaryWindow } from '@/store/windows'
-import type { SessionInfo } from '@/types/hermes'
+import type { SessionInfo } from '@/types/kova'
 
 import { requestComposerFocus, requestComposerInsert } from '../../chat/composer/focus'
 import { appViewForPath, isOverlayView, NEW_CHAT_ROUTE, routeSessionId, sessionRoute } from '../../routes'
@@ -91,7 +91,7 @@ export function useDesktopIntegrations({
     // notifies on transitions into needs-auth/error with a Sign in action.
     startMcpHealthChecker()
     // The native "Check for Updates…" menu item lives in the app menu next to
-    // "About Hermes" — it is the OS-standard affordance for updating THIS app,
+    // "About Kova" — it is the OS-standard affordance for updating THIS app,
     // so it always opens the client overlay. Inheriting the connection-mode
     // default pointed a Mac at its remote Linux backend and left the app itself
     // silently stale (#70266).
@@ -335,7 +335,7 @@ export function useDesktopIntegrations({
 
   // Plugin OS notification body/action → optional callback + navigate. Activation
   // is user-driven (click), so this is offer-not-hijack. Paths share the
-  // hermes://index-network/intent/1 vocabulary with deep links.
+  // kova://index-network/intent/1 vocabulary with deep links.
   useEffect(() => {
     const unsubscribe = window.hermesDesktop?.onNotificationActivate?.(payload => {
       if (!payload) {
@@ -352,7 +352,7 @@ export function useDesktopIntegrations({
         // Defense-in-depth: re-resolve at the IPC boundary rather than trusting
         // the pre-IPC validation — any future hermesDesktop.notify caller gets
         // funneled through the same resolver.
-        const path = resolveHermesOpenPath(payload.activate)
+        const path = resolveKovaOpenPath(payload.activate)
 
         if (path) {
           navigate(path)
@@ -365,7 +365,7 @@ export function useDesktopIntegrations({
     return () => unsubscribe?.()
   }, [navigate])
 
-  // hermes:// deep links:
+  // kova:// deep links:
   //  - mcp/install?… → pending MCP install (explicit confirm, never auto-install)
   //  - plugin/install?catalog=<name> → curated-catalog lookup, then the same
   //    reviewed/pinned install modal an in-app catalog pick opens; unknown
@@ -452,9 +452,9 @@ export function useDesktopIntegrations({
       }
 
       // Not a core action — treat as a plugin-scoped or open/ navigation deep
-      // link (hermes://index-network/intent/1, hermes://open/…). The resolver
+      // link (kova://index-network/intent/1, kova://open/…). The resolver
       // rejects reserved kinds and unsafe paths.
-      const path = pathFromHermesDeepLink(payload.kind, payload.name || '', payload.params || {})
+      const path = pathFromKovaDeepLink(payload.kind, payload.name || '', payload.params || {})
 
       if (path) {
         navigate(path)

@@ -1,15 +1,15 @@
 import { hermesApi } from '@/api/client'
 import type {
-  HermesConnection,
-  HermesReadDirResult,
-  HermesReadFileTextResult,
-  HermesSelectPathsOptions
+  KovaConnection,
+  KovaReadDirResult,
+  KovaReadFileTextResult,
+  KovaSelectPathsOptions
 } from '@/global'
 import { translateNow } from '@/i18n'
 import { $connection } from '@/store/session'
 
 export interface DesktopFsRemotePicker {
-  selectPaths: (options?: HermesSelectPathsOptions) => Promise<string[]>
+  selectPaths: (options?: KovaSelectPathsOptions) => Promise<string[]>
 }
 
 let remotePicker: DesktopFsRemotePicker | null = null
@@ -18,7 +18,7 @@ export function setDesktopFsRemotePicker(next: DesktopFsRemotePicker | null) {
   remotePicker = next
 }
 
-function connectionCacheKey(connection: HermesConnection | null) {
+function connectionCacheKey(connection: KovaConnection | null) {
   if (!connection) {
     return 'local:'
   }
@@ -38,7 +38,7 @@ function connectionCacheKey(connection: HermesConnection | null) {
   return `${connection.mode || 'local'}:${connection.remoteKind || ''}:${connection.profile || ''}:${target}`
 }
 
-export function desktopFsCacheKey(connection: HermesConnection | null = $connection.get()) {
+export function desktopFsCacheKey(connection: KovaConnection | null = $connection.get()) {
   return connectionCacheKey(connection)
 }
 
@@ -60,7 +60,7 @@ function bridge() {
   const desktop = window.hermesDesktop
 
   if (!desktop) {
-    throw new Error('Hermes Desktop bridge is unavailable')
+    throw new Error('Kova Desktop bridge is unavailable')
   }
 
   return desktop
@@ -72,20 +72,20 @@ function remoteFsApi<T>(path: string, body?: Record<string, unknown>): Promise<T
   )
 }
 
-export async function readDesktopDir(path: string): Promise<HermesReadDirResult> {
+export async function readDesktopDir(path: string): Promise<KovaReadDirResult> {
   if (!isDesktopFsRemoteMode()) {
     return bridge().readDir(path)
   }
 
-  return remoteFsApi<HermesReadDirResult>(fsPath('list', path))
+  return remoteFsApi<KovaReadDirResult>(fsPath('list', path))
 }
 
-export async function readDesktopFileText(path: string): Promise<HermesReadFileTextResult> {
+export async function readDesktopFileText(path: string): Promise<KovaReadFileTextResult> {
   if (!isDesktopFsRemoteMode()) {
     return bridge().readFileText(path)
   }
 
-  return remoteFsApi<HermesReadFileTextResult>(fsPath('read-text', path))
+  return remoteFsApi<KovaReadFileTextResult>(fsPath('read-text', path))
 }
 
 // Save UTF-8 text back to a file. Local writes go through the hardened Electron
@@ -222,7 +222,7 @@ export async function desktopFileDiff(repoRoot: string, filePath: string): Promi
   return git?.fileDiff ? git.fileDiff(repoRoot, filePath) : ''
 }
 
-export async function selectDesktopPaths(options?: HermesSelectPathsOptions): Promise<string[]> {
+export async function selectDesktopPaths(options?: KovaSelectPathsOptions): Promise<string[]> {
   const desktop = bridge()
   const profile = desktopFsProfile()
   const localOptions = profile ? { ...options, profile } : options

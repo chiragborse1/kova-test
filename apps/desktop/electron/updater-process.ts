@@ -20,19 +20,19 @@ export function resolveVenvDir(updateRoot: string): string {
   return path.join(updateRoot, 'venv')
 }
 
-import { platformDefaultHermesHome } from './data-paths'
+import { platformDefaultKovaHome } from './data-paths'
 import { hiddenWindowsChildOptions } from './windows-child-options'
 
 /** Exact installation identity; PATH may refer to another checkout. */
 export function resolveInstallationLauncher(
   updateRoot: string,
   isWindows: boolean = process.platform === 'win32',
-  hermesHome: string = process.env.HERMES_HOME ?? ''
+  hermesHome: string = process.env.KOVA_HOME ?? ''
 ): string | null {
-  const names: string[] = isWindows ? ['hermes.exe', 'hermes.cmd'] : ['hermes']
+  const names: string[] = isWindows ? ['kova.exe', 'kova.cmd'] : ['kova']
 
   for (const name of names) {
-    const candidate: string = path.join(updateRoot, '.hermes', 'bin', name)
+    const candidate: string = path.join(updateRoot, '.kova', 'bin', name)
 
     if (stagedFileExists(candidate)) {
       return candidate
@@ -41,8 +41,8 @@ export function resolveInstallationLauncher(
 
   // Earlier PM installers published only to user-bin. Trust that historical
   // launcher only after its existing version surface proves exact source identity.
-  if (stagedFileExists(path.join(updateRoot, 'hermes_cli', '_launchers.py'))) {
-    const defaultHome: string = platformDefaultHermesHome(os.homedir(), process.env, isWindows ? 'win32' : 'linux')
+  if (stagedFileExists(path.join(updateRoot, 'kova_cli', '_launchers.py'))) {
+    const defaultHome: string = platformDefaultKovaHome(os.homedir(), process.env, isWindows ? 'win32' : 'linux')
 
     const dirs: string[] = isWindows
       ? [
@@ -100,7 +100,7 @@ export function launcherTargetsInstallation(launcher: string, root: string): boo
       timeout: 15000,
       windowsHide: true,
       windowsVerbatimArguments: viaCmd,
-      env: { ...process.env, HERMES_INSTALL_ROOT: root }
+      env: { ...process.env, KOVA_INSTALL_ROOT: root }
     })
 
     if (probe.error || probe.status !== 0) {
@@ -155,12 +155,12 @@ export interface UpdateScriptHandoff {
 /**
  * Repo-owned Windows update hand-off (frozen-binary escape hatch).
  *
- * The staged Tauri `hermes-setup.exe` has no self-update path, so every
+ * The staged Tauri `kova-setup.exe` has no self-update path, so every
  * updater-side fix only reaches users when a new binary is built, signed and
  * published — which historically lags main by months and strands users on
  * long-fixed bugs (cache resolver #67369, marker self-adopt #74782; the
  * 2026-08-09 incident chain). `scripts/desktop-update/windows.ps1` lives in the repo
- * checkout instead: every `hermes update` refreshes the code that drives the
+ * checkout instead: every `kova update` refreshes the code that drives the
  * NEXT update, and only PowerShell itself is frozen.
  *
  * Returns the spawn recipe when the script exists in the checkout, or null
@@ -204,13 +204,13 @@ export function resolveUpdateScriptHandoff(
  * Repo-owned POSIX update hand-off (the mac/linux twin of the above).
  *
  * Replaces the in-app posix updater: the Desktop spawns the script detached
- * and QUITS, the script waits it out, runs `hermes update`, swaps/relaunches
- * the app, and writes .hermes-update-result.json. With the app gone before
- * the update starts, the HERMES_DESKTOP_CHILD_PID reaper-exclusion dance is
+ * and QUITS, the script waits it out, runs `kova update`, swaps/relaunches
+ * the app, and writes .kova-update-result.json. With the app gone before
+ * the update starts, the KOVA_DESKTOP_CHILD_PID reaper-exclusion dance is
  * unnecessary — there are no live desktop backends to spare.
  *
  * Null when the checkout predates the script (caller surfaces the manual
- * `hermes update` card — old checkouts pull the script on their next update).
+ * `kova update` card — old checkouts pull the script on their next update).
  */
 export function resolvePosixScriptHandoff(
   updateRoot: string,
@@ -369,10 +369,10 @@ function stagedFileMtimeMs(candidate: string): number | null {
 /**
  * Decide which staged installer binary — if any — may be handed an update.
  *
- * The Tauri installer self-copies into HERMES_HOME on *every* platform
- * (`hermes-setup.exe` on Windows, `hermes-setup` elsewhere — see
+ * The Tauri installer self-copies into KOVA_HOME on *every* platform
+ * (`kova-setup.exe` on Windows, `kova-setup` elsewhere — see
  * apps/bootstrap-installer `paths::installer_dest` and
- * `bootstrap::copy_self_to_hermes_home`), so finding that binary on macOS or
+ * `bootstrap::copy_self_to_kova_home`), so finding that binary on macOS or
  * Linux is expected, not leftover junk.
  *
  * Handing an update to it is nonetheless a Windows-only policy. Windows needs
@@ -380,7 +380,7 @@ function stagedFileMtimeMs(candidate: string): number | null {
  * running desktop from rewriting its own bits; macOS and Linux have no such
  * lock and update in place through applyUpdatesPosixInApp(). Off Windows the
  * hand-off therefore buys nothing and costs a great deal: a staged binary older
- * than the hand-off protocol holds the update marker, spawns `hermes update`,
+ * than the hand-off protocol holds the update marker, spawns `kova update`,
  * and that child refuses its own parent — wedging the in-app Update button for
  * good, with no route (update, re-download, reinstall) to a newer binary
  * (#74836). Returning null off Windows is what routes those platforms to the
@@ -400,7 +400,7 @@ export function resolveStagedUpdaterBinary(
   }
 
   const fileExists = deps.fileExists ?? stagedFileExists
-  const candidate = path.join(hermesHome, 'hermes-setup.exe')
+  const candidate = path.join(hermesHome, 'kova-setup.exe')
 
   return fileExists(candidate) ? candidate : null
 }
@@ -408,19 +408,19 @@ export function resolveStagedUpdaterBinary(
 /**
  * True when the staged installer is new enough to survive a pre-written marker.
  *
- * `copy_self_to_hermes_home` deliberately no-ops during `--update`
+ * `copy_self_to_kova_home` deliberately no-ops during `--update`
  * (apps/bootstrap-installer/src-tauri/src/paths.rs), so the binary staged by a
  * user's ORIGINAL install orchestrates every later update — forever. Installers
  * predating #74782 have no self-PID exclusion in `UpdateMarkerGuard::acquire`,
  * so when the desktop pre-writes the marker naming that very updater, the
  * updater reads its own claim as a foreign live owner and aborts with
- * "Another Hermes update is already running (PID <itself>, started 1s ago)" —
+ * "Another Kova update is already running (PID <itself>, started 1s ago)" —
  * the observed infinite "Install didn't finish" loop. Skipping the pre-write
- * for those binaries lets them acquire cleanly and run `hermes update`, which
+ * for those binaries lets them acquire cleanly and run `kova update`, which
  * pulls the permanent fixes. See shouldPrewriteUpdateMarker.
  *
  * We cannot ask the binary its version without executing it, so use its mtime:
- * the installer is written to HERMES_HOME at install/repair time, making mtime
+ * the installer is written to KOVA_HOME at install/repair time, making mtime
  * a faithful stamp of which installer generation produced it.
  *
  * Unreadable mtime counts as UNSUPPORTED — the pre-write is a best-effort
@@ -483,13 +483,13 @@ export interface ObserveUpdaterHandoffDeps {
 
 /**
  * User-facing copy for a hand-off that did not take (spawn error or early exit).
- * The lead sentence is plain: nothing changed and Hermes keeps running. The raw
+ * The lead sentence is plain: nothing changed and Kova keeps running. The raw
  * outcome message (exit code / signal / spawn error) stays on a trailing
  * "Details:" line for logs and support.
  */
 export function describeUpdaterHandoffFailure(outcome: Pick<UpdaterHandoffOutcome, 'message'>): string {
   const lead =
-    "The updater couldn't start, so nothing was changed and Hermes keeps running as before. " +
+    "The updater couldn't start, so nothing was changed and Kova keeps running as before. " +
     'Try again; if it keeps failing, open the logs and send them to support.'
 
   return outcome.message ? `${lead}\n\nDetails: ${outcome.message}` : lead

@@ -23,7 +23,7 @@ def test_resolve_managed_tool_gateway_derives_vendor_origin_from_shared_domain()
     with patch.dict(
         os.environ,
         {
-            "TOOL_GATEWAY_DOMAIN": "nousresearch.com",
+            "TOOL_GATEWAY_DOMAIN": "openkova.com",
         },
         clear=False,
     ), patch.object(managed_tool_gateway, "managed_nous_tools_enabled", return_value=True):
@@ -33,7 +33,7 @@ def test_resolve_managed_tool_gateway_derives_vendor_origin_from_shared_domain()
         )
 
     assert result is not None
-    assert result.gateway_origin == "https://firecrawl-gateway.nousresearch.com"
+    assert result.gateway_origin == "https://firecrawl-gateway.openkova.com"
     assert result.nous_user_token == "nous-token"
     assert result.managed_mode is True
 
@@ -59,7 +59,7 @@ def test_resolve_managed_tool_gateway_is_inactive_without_nous_token():
     with patch.dict(
         os.environ,
         {
-            "TOOL_GATEWAY_DOMAIN": "nousresearch.com",
+            "TOOL_GATEWAY_DOMAIN": "openkova.com",
         },
         clear=False,
     ), patch.object(managed_tool_gateway, "managed_nous_tools_enabled", return_value=True):
@@ -72,7 +72,7 @@ def test_resolve_managed_tool_gateway_is_inactive_without_nous_token():
 
 
 def test_resolve_managed_tool_gateway_is_disabled_without_subscription():
-    with patch.dict(os.environ, {"TOOL_GATEWAY_DOMAIN": "nousresearch.com"}, clear=False), \
+    with patch.dict(os.environ, {"TOOL_GATEWAY_DOMAIN": "openkova.com"}, clear=False), \
          patch.object(managed_tool_gateway, "managed_nous_tools_enabled", return_value=False):
         result = resolve_managed_tool_gateway(
             "firecrawl",
@@ -84,7 +84,7 @@ def test_resolve_managed_tool_gateway_is_disabled_without_subscription():
 
 def test_read_nous_access_token_refreshes_expiring_cached_token(tmp_path, monkeypatch):
     monkeypatch.delenv("TOOL_GATEWAY_USER_TOKEN", raising=False)
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     expires_at = (datetime.now(timezone.utc) + timedelta(seconds=30)).isoformat()
     (tmp_path / "auth.json").write_text(json.dumps({
         "providers": {
@@ -96,7 +96,7 @@ def test_read_nous_access_token_refreshes_expiring_cached_token(tmp_path, monkey
         }
     }))
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_nous_access_token",
+        "kova_cli.auth.resolve_nous_access_token",
         lambda refresh_skew_seconds=120: "fresh-token",
     )
 
@@ -105,7 +105,7 @@ def test_read_nous_access_token_refreshes_expiring_cached_token(tmp_path, monkey
 
 def test_is_managed_tool_gateway_ready_skips_refresh_for_expired_cached_token(tmp_path, monkeypatch):
     monkeypatch.delenv("TOOL_GATEWAY_USER_TOKEN", raising=False)
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     expired_at = (datetime.now(timezone.utc) - timedelta(seconds=30)).isoformat()
     (tmp_path / "auth.json").write_text(json.dumps({
         "providers": {
@@ -123,13 +123,13 @@ def test_is_managed_tool_gateway_ready_skips_refresh_for_expired_cached_token(tm
         return "fresh-token"
 
     monkeypatch.setattr(
-        "hermes_cli.auth.resolve_nous_access_token",
+        "kova_cli.auth.resolve_nous_access_token",
         _record_refresh,
     )
 
     with patch.dict(
         os.environ,
-        {"TOOL_GATEWAY_DOMAIN": "nousresearch.com"},
+        {"TOOL_GATEWAY_DOMAIN": "openkova.com"},
         clear=False,
     ), patch.object(managed_tool_gateway, "managed_nous_tools_enabled", return_value=True):
         assert is_managed_tool_gateway_ready("modal") is True
@@ -142,12 +142,12 @@ def test_connector_gateway_origin_pins_the_deployed_connectors_host():
     # the default resolution must not land on the media/vendor origin.
     with patch.dict(
         os.environ,
-        {"TOOL_GATEWAY_DOMAIN": "nousresearch.com", "TOOL_GATEWAY_SCHEME": "https"},
+        {"TOOL_GATEWAY_DOMAIN": "openkova.com", "TOOL_GATEWAY_SCHEME": "https"},
         clear=False,
     ):
         os.environ.pop("CONNECTOR_GATEWAY_URL", None)
         assert managed_gateway_auth.connector_gateway_origin() == (
-            "https://connector-gateway.nousresearch.com"
+            "https://connector-gateway.openkova.com"
         )
 
 def test_managed_gateway_origin_honors_the_harness_override():
@@ -160,7 +160,7 @@ def test_managed_gateway_origin_honors_the_harness_override():
             "http://127.0.0.1:3009/api/vendorx/generations"
         )
         assert not managed_gateway_auth.is_managed_nous_gateway_url(
-            "https://tools.nousresearch.com/api/vendorx/generations"
+            "https://tools.openkova.com/api/vendorx/generations"
         )
 
 def test_connector_gateway_origin_honors_its_own_override():
@@ -171,14 +171,14 @@ def test_connector_gateway_origin_honors_its_own_override():
         os.environ,
         {
             "CONNECTOR_GATEWAY_URL": "http://127.0.0.1:3009/",
-            "TOOL_GATEWAY_DOMAIN": "nousresearch.com",
+            "TOOL_GATEWAY_DOMAIN": "openkova.com",
         },
         clear=False,
     ):
         os.environ.pop("TOOL_GATEWAY_URL", None)
         assert managed_gateway_auth.connector_gateway_origin() == "http://127.0.0.1:3009"
         assert managed_gateway_auth.managed_gateway_origin() == (
-            "https://tool-gateway.nousresearch.com"
+            "https://tool-gateway.openkova.com"
         )
         assert managed_gateway_auth.is_managed_nous_gateway_url(
             "http://127.0.0.1:3009/v1/connectors/search"
@@ -190,22 +190,22 @@ def test_default_bearer_gate_accepts_both_deployed_hosts_only():
     # and scheme downgrades are all out.
     with patch.dict(
         os.environ,
-        {"TOOL_GATEWAY_DOMAIN": "nousresearch.com", "TOOL_GATEWAY_SCHEME": "https"},
+        {"TOOL_GATEWAY_DOMAIN": "openkova.com", "TOOL_GATEWAY_SCHEME": "https"},
         clear=False,
     ):
         os.environ.pop("TOOL_GATEWAY_URL", None)
         os.environ.pop("CONNECTOR_GATEWAY_URL", None)
         for trusted in (
-            "https://connector-gateway.nousresearch.com/v1/connectors/execute",
-            "https://tool-gateway.nousresearch.com/api/vendorx/generations",
+            "https://connector-gateway.openkova.com/v1/connectors/execute",
+            "https://tool-gateway.openkova.com/api/vendorx/generations",
         ):
             assert managed_gateway_auth.is_managed_nous_gateway_url(trusted)
         for untrusted in (
-            "https://tools.nousresearch.com/v1/connectors/execute",
-            "https://evil-connector-gateway.nousresearch.com.attacker.dev/v1/connectors",
-            "https://connector-gateway.nousresearch.com.attacker.dev/v1/connectors",
-            "http://connector-gateway.nousresearch.com/v1/connectors",
-            "http://tool-gateway.nousresearch.com/api/vendorx/generations",
+            "https://tools.openkova.com/v1/connectors/execute",
+            "https://evil-connector-gateway.openkova.com.attacker.dev/v1/connectors",
+            "https://connector-gateway.openkova.com.attacker.dev/v1/connectors",
+            "http://connector-gateway.openkova.com/v1/connectors",
+            "http://tool-gateway.openkova.com/api/vendorx/generations",
         ):
             assert not managed_gateway_auth.is_managed_nous_gateway_url(untrusted)
 
@@ -214,22 +214,22 @@ def test_read_nous_provider_state_falls_back_to_global_root_for_share_auth_profi
     # A profile created with ``share_auth`` has no auth.json of its own; it signs in with the
     # root identity. The connector gate must see that identity, or manage_connections vanishes
     # from the profile's tool list while every other credential reader still works.
-    root = tmp_path / ".hermes"
-    profile = root / "profiles" / "hermes-setup"
+    root = tmp_path / ".kova"
+    profile = root / "profiles" / "kova-setup"
     profile.mkdir(parents=True)
     (root / "auth.json").write_text(json.dumps({
         "version": 1,
         "providers": {"nous": {"auth_method": "anonymous", "access_token": "tok"}},
     }))
-    monkeypatch.setenv("HERMES_HOME", str(profile))
-    monkeypatch.setenv("HERMES_GUEST_ONBOARDING", "1")
+    monkeypatch.setenv("KOVA_HOME", str(profile))
+    monkeypatch.setenv("KOVA_GUEST_ONBOARDING", "1")
     monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
 
-    import hermes_constants
-    from hermes_cli import auth as auth_mod
+    import kova_constants
+    from kova_cli import auth as auth_mod
 
-    monkeypatch.setattr(hermes_constants, "get_default_hermes_root", lambda: root)
-    monkeypatch.setattr(auth_mod, "get_hermes_home", lambda: profile)
+    monkeypatch.setattr(kova_constants, "get_default_kova_root", lambda: root)
+    monkeypatch.setattr(auth_mod, "get_kova_home", lambda: profile)
     monkeypatch.setattr(auth_mod, "_global_auth_store_cache", None)
     monkeypatch.setattr(auth_mod, "_auth_file_path", lambda: profile / "auth.json")
 

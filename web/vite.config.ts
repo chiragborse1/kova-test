@@ -17,11 +17,11 @@ import { fileURLToPath } from "node:url";
 
 const configDir: string = fileURLToPath(new URL(".", import.meta.url));
 
-const BACKEND = process.env.HERMES_DASHBOARD_URL ?? "http://127.0.0.1:9119";
+const BACKEND = process.env.KOVA_DASHBOARD_URL ?? "http://127.0.0.1:9119";
 
 /**
- * In production the Python `hermes dashboard` server injects a one-shot
- * session token into `index.html` (see `hermes_cli/web_server.py`). The
+ * In production the Python `kova dashboard` server injects a one-shot
+ * session token into `index.html` (see `kova_cli/web_server.py`). The
  * Vite dev server serves its own `index.html`, so unless we forward that
  * token, every protected `/api/*` call 401s.
  *
@@ -30,14 +30,14 @@ const BACKEND = process.env.HERMES_DASHBOARD_URL ?? "http://127.0.0.1:9119";
  * production builds.
  */
 function hermesDevToken(): Plugin {
-  const TOKEN_RE = /window\.__HERMES_SESSION_TOKEN__\s*=\s*"([^"]+)"/;
+  const TOKEN_RE = /window\.__KOVA_SESSION_TOKEN__\s*=\s*"([^"]+)"/;
   const EMBEDDED_RE =
-    /window\.__HERMES_DASHBOARD_EMBEDDED_CHAT__\s*=\s*(true|false)/;
+    /window\.__KOVA_DASHBOARD_EMBEDDED_CHAT__\s*=\s*(true|false)/;
   const INITIAL_PROFILE_RE =
-    /window\.__HERMES_INITIAL_PROFILE__\s*=\s*("(?:\\.|[^"\\])*")/;
+    /window\.__KOVA_INITIAL_PROFILE__\s*=\s*("(?:\\.|[^"\\])*")/;
 
   return {
-    name: "hermes:dev-session-token",
+    name: "kova:dev-session-token",
     apply: "serve",
     async transformIndexHtml() {
       try {
@@ -46,8 +46,8 @@ function hermesDevToken(): Plugin {
         const match = html.match(TOKEN_RE);
         if (!match) {
           console.warn(
-            `[hermes] Could not find session token in ${BACKEND} — ` +
-              `is \`hermes dashboard\` running? /api calls will 401.`,
+            `[kova] Could not find session token in ${BACKEND} — ` +
+              `is \`kova dashboard\` running? /api calls will 401.`,
           );
           return;
         }
@@ -60,15 +60,15 @@ function hermesDevToken(): Plugin {
             tag: "script",
             injectTo: "head",
             children:
-              `window.__HERMES_SESSION_TOKEN__="${match[1]}";` +
-              `window.__HERMES_DASHBOARD_EMBEDDED_CHAT__=${embeddedJs};` +
-              `window.__HERMES_INITIAL_PROFILE__=${initialProfileJs};`,
+              `window.__KOVA_SESSION_TOKEN__="${match[1]}";` +
+              `window.__KOVA_DASHBOARD_EMBEDDED_CHAT__=${embeddedJs};` +
+              `window.__KOVA_INITIAL_PROFILE__=${initialProfileJs};`,
           },
         ];
       } catch (err) {
         console.warn(
-          `[hermes] Dashboard at ${BACKEND} unreachable — ` +
-            `start it with \`hermes dashboard\` or set HERMES_DASHBOARD_URL. ` +
+          `[kova] Dashboard at ${BACKEND} unreachable — ` +
+            `start it with \`kova dashboard\` or set KOVA_DASHBOARD_URL. ` +
             `(${(err as Error).message})`,
         );
       }
@@ -86,7 +86,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(configDir, "./src"),
-      "@hermes/shared": path.resolve(configDir, "../apps/shared/src"),
+      "@kova/shared": path.resolve(configDir, "../apps/shared/src"),
     },
     // When @nous-research/ui is symlinked via `file:../../design-language`,
     // Node's module resolution would pick up shared deps from
@@ -108,7 +108,7 @@ export default defineConfig({
     ],
   },
   build: {
-    outDir: "../hermes_cli/web_dist",
+    outDir: "../kova_cli/web_dist",
     emptyOutDir: true,
     // Shell stays a bit over Vite's 500 kB default after vendor splits;
     // page/xterm chunks load on demand. Keep a modest ceiling so a true
@@ -162,7 +162,7 @@ export default defineConfig({
         target: BACKEND,
         ws: true,
       },
-      // Same host as `hermes dashboard` must serve these; Vite has no
+      // Same host as `kova dashboard` must serve these; Vite has no
       // dashboard-plugins/* files, so without this, plugin scripts 404
       // or receive index.html in dev.
       "/dashboard-plugins": BACKEND,

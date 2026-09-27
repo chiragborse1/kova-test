@@ -1,9 +1,9 @@
-# nix/desktop.nix — Hermes Desktop (Electron) app build + wrapper
+# nix/desktop.nix — Kova Desktop (Electron) app build + wrapper
 #
 # `hermesAgent` is the fully-built `.#default` package — it ships the
-# `hermes` binary with the venv, runtime PATH, bundled skills/plugins, etc.
+# `kova` binary with the venv, runtime PATH, bundled skills/plugins, etc.
 # already wired up.  We point the desktop at it via the existing
-# `HERMES_DESKTOP_HERMES` override env var, so the desktop's resolver
+# `KOVA_DESKTOP_HERMES` override env var, so the desktop's resolver
 # uses our fully wrapped binary before the mutable managed install.
 # No reimplementation of the agent resolution in this wrapper.
 {
@@ -20,7 +20,7 @@
   # Environment to bake into the launcher. A GUI launcher reads none of the
   # shell profile, so a variable that an interactive shell exports does not
   # reach an app that the desktop menu starts. The Home Manager module passes
-  # HERMES_HOME and HERMES_MANAGED here, which gives the app the same state
+  # KOVA_HOME and KOVA_MANAGED here, which gives the app the same state
   # directory as the services.
   extraEnv ? { },
   # Shell lines to run before the app starts. A secret belongs here and never
@@ -50,7 +50,7 @@ let
     else if stdenv.hostPlatform.isLinux then
       "linux"
     else
-      throw "hermes-desktop: unsupported host platform for node-pty staging";
+      throw "kova-desktop: unsupported host platform for node-pty staging";
 
   targetArch =
     if stdenv.hostPlatform.isAarch64 then
@@ -58,7 +58,7 @@ let
     else if stdenv.hostPlatform.isx86_64 then
       "x64"
     else
-      throw "hermes-desktop: unsupported host arch for node-pty staging";
+      throw "kova-desktop: unsupported host arch for node-pty staging";
 
   # Build the renderer (dist/ + electron/ + package.json).
   renderer = hermesNpmLib.buildNpmPackage {
@@ -73,7 +73,7 @@ let
       "scripts/msix-shared.mjs"
       "scripts/release-content-types.json"
     ];
-    pname = "hermes-desktop-renderer";
+    pname = "kova-desktop-renderer";
 
     doCheck = true;
 
@@ -149,7 +149,7 @@ in
 
 # Electron wrapper: nixpkgs' electron binary pointed at the renderer dir.
 stdenv.mkDerivation {
-  pname = "hermes-desktop";
+  pname = "kova-desktop";
   inherit (renderer) version;
 
   dontUnpack = true;
@@ -163,35 +163,35 @@ stdenv.mkDerivation {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/share/hermes-desktop $out/bin
-    cp -r ${renderer}/* $out/share/hermes-desktop/
+    mkdir -p $out/share/kova-desktop $out/bin
+    cp -r ${renderer}/* $out/share/kova-desktop/
 
     # Standard nixpkgs pattern for electron-builder apps: patch process.resourcesPath
     # to point to the app's directory. In Nix, unpackaged electron defaults this
     # to the electron distribution's resources path, breaking extraResources lookups.
-    substituteInPlace $out/share/hermes-desktop/dist/electron-main.mjs \
-      --replace-fail "process.resourcesPath" "'$out/share/hermes-desktop'"
+    substituteInPlace $out/share/kova-desktop/dist/electron-main.mjs \
+      --replace-fail "process.resourcesPath" "'$out/share/kova-desktop'"
 
     # Wrap the nixpkgs electron binary to launch our app.  Set
-    # HERMES_DESKTOP_HERMES to the absolute path of the nix-built `hermes`
+    # KOVA_DESKTOP_HERMES to the absolute path of the nix-built `kova`
     # binary so the deployment override selects our fully wrapped binary
     # before any mutable managed install — venv with all deps,
     # bundled skills/plugins, runtime PATH (ripgrep/git/ffmpeg/etc).
     # No reimplementation of the agent resolver in the wrapper.
-    makeWrapper ${lib.getExe electron} $out/bin/hermes-desktop \
-      --add-flags "$out/share/hermes-desktop" \
-      --set HERMES_DESKTOP_HERMES "${lib.getExe hermesAgent}" \
+    makeWrapper ${lib.getExe electron} $out/bin/kova-desktop \
+      --add-flags "$out/share/kova-desktop" \
+      --set KOVA_DESKTOP_HERMES "${lib.getExe hermesAgent}" \
       --set ELECTRON_IS_DEV 0${extraEnvFlags}${extraRunFlags}
 
     # XDG launcher entry
     mkdir -p $out/share/applications $out/share/icons/hicolor/1024x1024/apps
     install -m 0644 ${generatedIcons}/apps/desktop/assets/icon.png \
-      $out/share/icons/hicolor/1024x1024/apps/hermes.png
+      $out/share/icons/hicolor/1024x1024/apps/kova.png
     export PYTHONPATH=$(mktemp -d)
-    cp ${../hermes_cli/linux_desktop_entry.py} "$PYTHONPATH/linux_desktop_entry.py"
-    export DESKTOP_EXEC="$out/bin/hermes-desktop"
-    export DESKTOP_ICON="$out/share/icons/hicolor/1024x1024/apps/hermes.png"
-    python3 -c 'import os; from linux_desktop_entry import render_desktop_entry; print(render_desktop_entry(os.environ["DESKTOP_EXEC"], os.environ["DESKTOP_ICON"]))' > $out/share/applications/hermes.desktop
+    cp ${../kova_cli/linux_desktop_entry.py} "$PYTHONPATH/linux_desktop_entry.py"
+    export DESKTOP_EXEC="$out/bin/kova-desktop"
+    export DESKTOP_ICON="$out/share/icons/hicolor/1024x1024/apps/kova.png"
+    python3 -c 'import os; from linux_desktop_entry import render_desktop_entry; print(render_desktop_entry(os.environ["DESKTOP_EXEC"], os.environ["DESKTOP_ICON"]))' > $out/share/applications/kova.desktop
     runHook postInstall
   '';
 
@@ -200,10 +200,10 @@ stdenv.mkDerivation {
   };
 
   meta = with lib; {
-    description = "Native Electron desktop shell for Hermes Agent";
-    homepage = "https://github.com/NousResearch/hermes-agent";
+    description = "Native Electron desktop shell for Kova Agent";
+    homepage = "https://github.com/kova-agent";
     license = licenses.mit;
     platforms = platforms.unix;
-    mainProgram = "hermes-desktop";
+    mainProgram = "kova-desktop";
   };
 }

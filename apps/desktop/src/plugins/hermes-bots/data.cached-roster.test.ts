@@ -18,7 +18,7 @@ const { cache, connection } = vi.hoisted(() => ({
   connection: { id: 'local' }
 }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
   const keyOf = (key: unknown[]) => JSON.stringify(key)
 
@@ -39,7 +39,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 const seed = (key: unknown[], value: unknown) => cache.set(JSON.stringify(key), { key, value })
 
@@ -52,18 +52,18 @@ describe('cachedUnionRoster', () => {
   it('reads the entry useRoster wrote under the connection-suffixed key', async () => {
     const { cachedUnionRoster } = await import('./data')
 
-    seed(['hermes-bots', 'roster', 'local'], { profiles: [{ name: 'default' }] })
+    seed(['kova-bots', 'roster', 'local'], { profiles: [{ name: 'default' }] })
 
     expect(cachedUnionRoster()?.profiles).toHaveLength(1)
     // The bare key is what the broken read used — it must still miss, or this
     // test would pass for the wrong reason.
-    expect(cache.has(JSON.stringify(['hermes-bots', 'roster']))).toBe(false)
+    expect(cache.has(JSON.stringify(['kova-bots', 'roster']))).toBe(false)
   })
 
   it('falls back to another connection’s entry when the window has moved', async () => {
     const { cachedUnionRoster } = await import('./data')
 
-    seed(['hermes-bots', 'roster', 'vera'], { profiles: [{ connectionId: 'vera', name: 'default' }] })
+    seed(['kova-bots', 'roster', 'vera'], { profiles: [{ connectionId: 'vera', name: 'default' }] })
     connection.id = 'local'
 
     expect(cachedUnionRoster()?.profiles?.[0]).toMatchObject({ connectionId: 'vera' })
@@ -72,8 +72,8 @@ describe('cachedUnionRoster', () => {
   it('prefers the freshest snapshot among several cached connections', async () => {
     const { cachedUnionRoster } = await import('./data')
 
-    seed(['hermes-bots', 'roster', 'old'], { fetchedAt: 1_000, profiles: [{ name: 'stale' }] })
-    seed(['hermes-bots', 'roster', 'new'], { fetchedAt: 9_000, profiles: [{ name: 'fresh' }] })
+    seed(['kova-bots', 'roster', 'old'], { fetchedAt: 1_000, profiles: [{ name: 'stale' }] })
+    seed(['kova-bots', 'roster', 'new'], { fetchedAt: 9_000, profiles: [{ name: 'fresh' }] })
     connection.id = 'neither'
 
     expect(cachedUnionRoster()?.profiles?.[0]).toMatchObject({ name: 'fresh' })

@@ -22,7 +22,7 @@ if not _MCP_AVAILABLE:
         _mcp_mod.ClientSession = MagicMock
 
 
-def test_resolve_stdio_command_falls_back_to_hermes_node_bin(tmp_path):
+def test_resolve_stdio_command_falls_back_to_kova_node_bin(tmp_path):
     node_bin = tmp_path / "node" / "bin"
     node_bin.mkdir(parents=True)
     npx_path = node_bin / "npx"
@@ -30,7 +30,7 @@ def test_resolve_stdio_command_falls_back_to_hermes_node_bin(tmp_path):
     npx_path.chmod(0o755)
 
     with patch("tools.mcp_tool_config.shutil.which", return_value=None), \
-         patch.dict("os.environ", {"HERMES_HOME": str(tmp_path)}, clear=False):
+         patch.dict("os.environ", {"KOVA_HOME": str(tmp_path)}, clear=False):
         command, env = _resolve_stdio_command("npx", {"PATH": "/usr/bin"})
 
     assert command == str(npx_path)
@@ -38,7 +38,7 @@ def test_resolve_stdio_command_falls_back_to_hermes_node_bin(tmp_path):
 
 
 def test_windows_managed_node_root_prefers_cmd_launchers(tmp_path):
-    """Managed Windows Node lives directly in ``<HERMES_HOME>/node`` (no ``bin``) as ``npx.cmd`` /
+    """Managed Windows Node lives directly in ``<KOVA_HOME>/node`` (no ``bin``) as ``npx.cmd`` /
     ``npm.cmd`` / ``node.exe``; a bare ``command: npx`` must resolve to those launchers (#111937).
     The extensionless POSIX sibling is a shell script Windows cannot spawn, so it must never win."""
     node_root = tmp_path / "node"
@@ -48,40 +48,40 @@ def test_windows_managed_node_root_prefers_cmd_launchers(tmp_path):
         launcher.write_text("@echo off\r\n", encoding="utf-8")
         launcher.chmod(0o755)
 
-    with patch.dict("os.environ", {"HERMES_HOME": str(tmp_path)}, clear=False):
+    with patch.dict("os.environ", {"KOVA_HOME": str(tmp_path)}, clear=False):
         assert _node_fallback("npx", windows=True) == str(node_root / "npx.cmd")
         assert _node_fallback("npm", windows=True) == str(node_root / "npm.cmd")
         assert _node_fallback("node", windows=True) == str(node_root / "node.exe")
 
 
 def test_node_fallback_uses_active_profile_home(tmp_path, monkeypatch):
-    """The managed-Node lookup follows ``get_hermes_home()`` (context override), not raw ``HERMES_HOME``:
+    """The managed-Node lookup follows ``get_kova_home()`` (context override), not raw ``KOVA_HOME``:
     a multiplexed profile whose home differs from the launch env must find ITS managed Node."""
-    from hermes_constants import reset_hermes_home_override, set_hermes_home_override
+    from kova_constants import reset_kova_home_override, set_kova_home_override
 
     profile_home = tmp_path / "profile"
     npx_path = profile_home / "node" / "bin" / "npx"
     npx_path.parent.mkdir(parents=True)
     npx_path.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     npx_path.chmod(0o755)
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "launch-home"))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path / "launch-home"))
     monkeypatch.setenv("HOME", str(tmp_path / "user"))  # keep a real ~/.local/bin/npx out of the picture
 
-    token = set_hermes_home_override(profile_home)
+    token = set_kova_home_override(profile_home)
     try:
         with patch("tools.mcp_tool_config.shutil.which", return_value=None):
             command, _env = _resolve_stdio_command("npx", {"PATH": "/usr/bin"})
     finally:
-        reset_hermes_home_override(token)
+        reset_kova_home_override(token)
     assert command == str(npx_path)
 
 
 def test_resolve_stdio_command_falls_back_to_usr_local_bin():
-    """When ``npx`` isn't on the filtered PATH and isn't under ``$HERMES_HOME/node/bin``
+    """When ``npx`` isn't on the filtered PATH and isn't under ``$KOVA_HOME/node/bin``
     or ``~/.local/bin``, the resolver should still locate it at ``/usr/local/bin/npx``.
 
     This is the canonical install location for Node on Linux from-source builds,
-    the upstream ``node:bookworm-slim`` image (which the Hermes Docker image
+    the upstream ``node:bookworm-slim`` image (which the Kova Docker image
     copies ``node + npm + corepack`` from since #4977), and macOS Homebrew on
     Intel. Without this candidate, MCP servers run with an ``env.PATH`` that
     omits ``/usr/local/bin`` (common when users hand-author PATH for sandboxing)
@@ -90,7 +90,7 @@ def test_resolve_stdio_command_falls_back_to_usr_local_bin():
     target = os.path.join(os.sep, "usr", "local", "bin", "npx")
 
     # Pretend ONLY the /usr/local/bin/npx candidate exists and is executable —
-    # the other candidates ($HERMES_HOME/node/bin/npx and ~/.local/bin/npx)
+    # the other candidates ($KOVA_HOME/node/bin/npx and ~/.local/bin/npx)
     # should fail isfile() and the resolver must fall through to /usr/local/bin.
     def _fake_isfile(path):
         return path == target
@@ -126,7 +126,7 @@ def test_resolve_stdio_command_finds_uvx_in_user_local_bin(tmp_path, monkeypatch
     uvx_path = local_bin / "uvx"
     uvx_path.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     uvx_path.chmod(0o755)
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path / "kova"))
     monkeypatch.setenv("HOME", str(tmp_path))
 
     with patch("tools.mcp_tool_config.shutil.which", return_value=None):
@@ -140,14 +140,14 @@ def test_resolve_stdio_command_finds_uvx_in_user_local_bin(tmp_path, monkeypatch
 
 def test_resolve_stdio_command_uv_fallback_order(tmp_path, monkeypatch):
     """Bare uv/uvx probe the well-known install dirs in uv's install order:
-    managed ``<HERMES_HOME>/bin`` first, then ``~/.local/bin``, then Homebrew
+    managed ``<KOVA_HOME>/bin`` first, then ``~/.local/bin``, then Homebrew
     (Apple Silicon, then Intel/from-source)."""
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path / "hermes"))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path / "kova"))
     monkeypatch.setenv("HOME", str(tmp_path / "user"))
     monkeypatch.setattr("tools.mcp_tool_config.os.path.expanduser", lambda p: p.replace("~", str(tmp_path / "user")) if p.startswith("~") else p)
 
     candidates = [
-        os.path.join(str(tmp_path / "hermes"), "bin", "uvx"),
+        os.path.join(str(tmp_path / "kova"), "bin", "uvx"),
         os.path.join(str(tmp_path / "user"), ".local", "bin", "uvx"),
         os.path.join(os.sep, "opt", "homebrew", "bin", "uvx"),
         os.path.join(os.sep, "usr", "local", "bin", "uvx"),
@@ -203,7 +203,7 @@ def test_resolve_stdio_command_absent_path_is_a_miss(tmp_path, monkeypatch):
     node_tool.parent.mkdir(parents=True)
     node_tool.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
     node_tool.chmod(0o755)
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     # the parent PATH contains BOTH names: an ambient hit would resolve either
     monkeypatch.setenv("PATH", str(parent_bin))
 
@@ -344,11 +344,11 @@ def test_run_stdio_malware_check_times_out_fail_open():
 
 
 # ---------------------------------------------------------------------------
-# #82309: a managed dir that is ALREADY on the child's PATH (the Hermes
+# #82309: a managed dir that is ALREADY on the child's PATH (the Kova
 # installer appends its managed Node dir) must still end up FIRST. "Prepend
 # only when absent" left the older system Node ahead of it, so npm lifecycle
 # children (`node install.js`) resolved the system Node and died with
-# ERR_REQUIRE_ESM even though Hermes had provisioned a compatible runtime.
+# ERR_REQUIRE_ESM even though Kova had provisioned a compatible runtime.
 # ---------------------------------------------------------------------------
 
 
@@ -376,8 +376,8 @@ def test_prepend_path_collapses_windows_case_and_separator_variants(monkeypatch)
     of the managed dir has to be removed for the canonical entry to win."""
     monkeypatch.setattr(os, "pathsep", ";")
     monkeypatch.setattr(sys, "platform", "win32")
-    managed = r"C:\Users\x\AppData\Local\hermes\node"
-    variant = "c:\\users\\x\\appdata\\local\\hermes\\node" + "\\"
+    managed = r"C:\Users\x\AppData\Local\kova\node"
+    variant = "c:\\users\\x\\appdata\\local\\kova\\node" + "\\"
     env = _prepend_path(
         {"PATH": ";".join([r"C:\Program Files\nodejs", variant, r"C:\tools"])}, managed
     )
@@ -396,7 +396,7 @@ def test_resolve_stdio_command_displaces_a_system_node_already_on_path(tmp_path,
     npx_path.chmod(0o755)
     system_bin = tmp_path / "system-node"
     system_bin.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(tmp_path))
+    monkeypatch.setenv("KOVA_HOME", str(tmp_path))
     inherited = os.pathsep.join([str(system_bin), "/usr/bin", str(node_bin)])
 
     with patch("tools.mcp_tool_config.shutil.which", return_value=None):

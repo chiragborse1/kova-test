@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-import hermes_yaml as yaml
+import kova_yaml as yaml
 
 from gateway.config import GatewayConfig, Platform
 from gateway.platforms.base import (
@@ -16,7 +16,7 @@ from gateway.platforms.base import (
 from gateway.platforms.event import MessageEvent, MessageType
 from gateway.run import GatewayRunner
 from gateway.session import SessionEntry, SessionSource, SessionStore, build_session_key
-from hermes_cli.plugins import PluginContext, PluginManager, PluginManifest
+from kova_cli.plugins import PluginContext, PluginManager, PluginManifest
 
 
 def _entry(*, origin=True) -> SessionEntry:
@@ -77,14 +77,14 @@ async def test_plugin_context_routes_through_live_gateway_to_existing_session(
     tmp_path,
     monkeypatch,
 ):
-    hermes_home = tmp_path / "hermes"
-    hermes_home.mkdir()
-    (hermes_home / "config.yaml").write_text(
+    kova_home = tmp_path / "kova"
+    kova_home.mkdir()
+    (kova_home / "config.yaml").write_text(
         yaml.safe_dump({
             "plugins": {"entries": {"notify-plugin": {"allow_gateway_injection": True}}}
         })
     )
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("KOVA_HOME", str(kova_home))
 
     store = SessionStore(sessions_dir=tmp_path / "sessions", config=GatewayConfig())
     source = _entry().origin
@@ -119,7 +119,7 @@ async def test_plugin_context_routes_through_live_gateway_to_existing_session(
         manager,
     )
 
-    with patch("hermes_cli.plugins.get_plugin_manager", return_value=manager):
+    with patch("kova_cli.plugins.get_plugin_manager", return_value=manager):
         runner._install_plugin_message_injector()
         assert (
             context.inject_message(
@@ -172,8 +172,8 @@ async def test_dispatch_uses_stored_origin_and_adapter_message_path():
         allow_adapter_delegation=False,
     )
     assert event.metadata == {
-        "hermes_plugin_id": "notify-plugin",
-        "hermes_plugin_injection": True,
+        "kova_plugin_id": "notify-plugin",
+        "kova_plugin_injection": True,
         "gateway_session_key": entry.session_key,
         "gateway_session_id": entry.session_id,
         "gateway_session_strict": True,
@@ -435,7 +435,7 @@ def test_install_and_clear_gateway_injector_preserves_newer_owner():
     runner = _runner(_entry())
     manager = PluginManager()
 
-    with patch("hermes_cli.plugins.get_plugin_manager", return_value=manager):
+    with patch("kova_cli.plugins.get_plugin_manager", return_value=manager):
         runner._install_plugin_message_injector()
         assert manager.has_gateway_message_injector is True
 

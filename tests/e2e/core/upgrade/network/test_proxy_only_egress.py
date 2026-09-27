@@ -1,10 +1,10 @@
-"""Proxy-only egress: ``hermes update`` on a network whose ONLY way out is an HTTP(S) proxy.
+"""Proxy-only egress: ``kova update`` on a network whose ONLY way out is an HTTP(S) proxy.
 
 Every command runs in its own network namespace (no route, no DNS; proven per module by
 ``_seed.assert_isolated``). The proxy is what a corporate network runs: it tunnels ``CONNECT``,
 inspects TLS with the company's own root, may demand credentials, and refuses every host it has no
 route for, logging it. The installed checkout was cloned from the official GitHub URL, so the
-update's channel read (``hermes-assets.nousresearch.com``), its git fetch and every lazy blob
+update's channel read (``kova-assets.openkova.com``), its git fetch and every lazy blob
 fetch of the partial clone (``github.com``) have to cross the proxy, and the cell reads the
 proxy's log to show they did.
 
@@ -27,7 +27,7 @@ from tests.e2e.core.upgrade.network import _seed as S
 
 pytestmark = [
     pytest.mark.platforms("linux"),
-    # Every `hermes update` here targets a throwaway sandboxed install, never the real checkout.
+    # Every `kova update` here targets a throwaway sandboxed install, never the real checkout.
     pytest.mark.live_system_guard_bypass,
     pytest.mark.skipif(H.sandbox_required_reason() is not None, reason=str(H.sandbox_required_reason())),
     pytest.mark.skipif(N.netns_required_reason() is not None, reason=str(N.netns_required_reason())),
@@ -35,7 +35,7 @@ pytestmark = [
     pytest.mark.skipif(I.real_uv() is None, reason="uv required"),
 ]
 
-GIT_PATH = "/NousResearch/hermes-agent.git/"
+GIT_PATH = "/kova-agent.git/"
 
 
 @pytest.fixture(scope="module")
@@ -55,7 +55,7 @@ def _assert_updated_through_proxy(inst: S.Installed, r: S.Result, new: str) -> N
     stray = sorted(edge.proxy.hosts("refused") | edge.proxy.hosts("tls-rejected"))
     assert not stray, f"the update tried to reach hosts the proxy does not route: {stray}\n" + r.report(inst)
     v = inst.version_works()
-    assert v.rc == 0 and I.TRACEBACK not in v.out, "`hermes --version` broken after the update\n" + I.describe(v.cp)
+    assert v.rc == 0 and I.TRACEBACK not in v.out, "`kova --version` broken after the update\n" + I.describe(v.cp)
 
 
 def test_update_through_tls_inspecting_proxy_lands_on_the_new_commit(inst):
@@ -63,7 +63,7 @@ def test_update_through_tls_inspecting_proxy_lands_on_the_new_commit(inst):
     new = inst.publish("tls-inspecting")
     edge = inst.edge()
     try:
-        r = inst.hermes("update", "--yes", edge=edge)
+        r = inst.kova("update", "--yes", edge=edge)
     finally:
         edge.close()
     _assert_updated_through_proxy(inst, r, new)
@@ -75,7 +75,7 @@ def test_update_through_authenticating_proxy_and_credentials_stay_private(inst):
     new = inst.publish("auth-proxy")
     edge = inst.edge(auth=("corp-user", "pr0xy-s3cret-e2e"))
     try:
-        r = inst.hermes("update", "--yes", edge=edge)
+        r = inst.kova("update", "--yes", edge=edge)
     finally:
         edge.close()
     _assert_updated_through_proxy(inst, r, new)
@@ -91,11 +91,11 @@ def test_update_with_corporate_root_only_in_ssl_cert_file(inst):
     bundle.write_bytes(N.SYSTEM_CA_BUNDLE.read_bytes() + b"\n" + inst.ca.pem)
     edge = inst.edge()
     try:
-        r = inst.hermes("update", "--yes", edge=edge, corporate_root=False, env={"SSL_CERT_FILE": str(bundle)})
+        r = inst.kova("update", "--yes", edge=edge, corporate_root=False, env={"SSL_CERT_FILE": str(bundle)})
     finally:
         edge.close()
     with known_failure(
-        r"unable to access 'https://github\.com/NousResearch/hermes-agent\.git/': "
+        r"unable to access 'https://github\.com/kova-agent\.git/': "
         r"(SSL certificate|server certificate verification failed|SSL certificate problem)",
         "gated on #124654: the updater's git fetch ignores SSL_CERT_FILE, so a corporate root "
         "supplied that way passes the channel read and then fails at `Fetching updates`",
@@ -111,7 +111,7 @@ def test_tunnel_cut_to_channel_host_fails_fast_and_changes_nothing(inst):
     before = inst.state()
     edge = inst.edge(eof_hosts=[S.ASSETS])
     try:
-        r = inst.hermes("update", "--yes", edge=edge, timeout=300)
+        r = inst.kova("update", "--yes", edge=edge, timeout=300)
     finally:
         edge.close()
     assert r.secs < 60, f"a cut tunnel took {r.secs:.0f}s to fail\n" + r.report(inst)

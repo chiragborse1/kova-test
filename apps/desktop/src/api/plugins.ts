@@ -1,6 +1,6 @@
-import { reconnectBackoffDelayMs } from '@hermes/shared'
+import { reconnectBackoffDelayMs } from '@kova/shared'
 
-import type { HermesConnection } from '@/global'
+import type { KovaConnection } from '@/global'
 import { RECONNECT_ATTEMPT_TIMEOUT_MS, withTimeout } from '@/lib/with-timeout'
 
 import { getApiRequestConnection, getApiRequestProfile, hermesApi, profileScoped } from './client'
@@ -19,7 +19,7 @@ import { getApiRequestConnection, getApiRequestProfile, hermesApi, profileScoped
  *  openSecondary bounds the same *For/plain pair.
  *
  *  Exported for tests. */
-export async function activeConnection(): Promise<HermesConnection> {
+export async function activeConnection(): Promise<KovaConnection> {
   const getConnectionFor = window.hermesDesktop.getConnectionFor
   const connectionId = getApiRequestConnection()
   const profile = getApiRequestProfile()
@@ -44,7 +44,7 @@ export async function activeConnection(): Promise<HermesConnection> {
 export interface PluginRestOptions {
   method?: string
   body?: unknown
-  /** Single-file multipart upload (see HermesApiRequest.upload). */
+  /** Single-file multipart upload (see KovaApiRequest.upload). */
   upload?: { filename: string; contentType?: string; bytes: ArrayBuffer }
   timeoutMs?: number
 }
@@ -71,7 +71,7 @@ function pluginPathSuffix(caller: string, path: string): string {
  *  declared-capability seam; today the namespace IS the boundary. */
 export async function pluginRest<T>(pluginId: string, path: string, opts: PluginRestOptions = {}): Promise<T> {
   if (!window.hermesDesktop?.api) {
-    throw new Error('Hermes desktop bridge unavailable')
+    throw new Error('Kova desktop bridge unavailable')
   }
 
   const suffix = pluginPathSuffix('pluginRest', path)

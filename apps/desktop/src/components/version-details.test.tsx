@@ -16,7 +16,7 @@ afterEach((): void => {
 const baseVersion: DesktopVersionInfo = {
   appVersion: '0.19.0',
   electronVersion: '37.0.0',
-  hermesRoot: '/tmp/hermes',
+  hermesRoot: '/tmp/kova',
   nodeVersion: '22.0.0',
   platform: 'linux'
 }
@@ -38,8 +38,8 @@ describe('VersionDetails', () => {
       visible: ['Runtime', 'Embedded runtime']
     },
     {
-      version: { hermesRuntime: { type: 'external', source: { type: 'git', root: '/home/u/.hermes/hermes-agent' } } },
-      visible: ['Runtime', 'git (/home/u/.hermes/hermes-agent)'],
+      version: { hermesRuntime: { type: 'external', source: { type: 'git', root: '/home/u/.kova/kova-agent' } } },
+      visible: ['Runtime', 'git (/home/u/.kova/kova-agent)'],
       absent: ['External (uses the machine runtime)']
     },
     { version: { hermesRuntime: { type: 'external' } }, visible: ['Runtime', 'External (uses the machine runtime)'] },
@@ -65,7 +65,7 @@ describe('VersionDetails', () => {
       visible: ['Desktop app (installer)'],
       absent: ['Desktop app (MSIX)', 'Microsoft Store']
     },
-    // `hermes desktop` packs the same bootstrap payload from a source checkout;
+    // `kova desktop` packs the same bootstrap payload from a source checkout;
     // a locally built stamp names the source install, never the installer.
     {
       version: {
@@ -75,12 +75,12 @@ describe('VersionDetails', () => {
         source: 'local',
         installedByScript: true
       },
-      visible: ['Source (install script) + hermes desktop'],
+      visible: ['Source (install script) + kova desktop'],
       absent: ['Desktop app (installer)']
     },
     {
       version: { distribution: 'desktop-app', updateMechanism: 'self', payload: 'bootstrap', source: 'local' },
-      visible: ['Source + hermes desktop'],
+      visible: ['Source + kova desktop'],
       absent: ['Desktop app (installer)']
     },
     // install.sh / install.ps1 checkout (receipt present) vs a manual git
@@ -127,7 +127,7 @@ describe('VersionDetails', () => {
 
     await waitFor(() => {
       expect(openExternal).toHaveBeenCalledWith(
-        'https://github.com/NousResearch/hermes-agent/commit/d233b6d7a9c5b79288e48dfb3b29e2ead106ac73'
+        'https://github.com/kova-agent/commit/d233b6d7a9c5b79288e48dfb3b29e2ead106ac73'
       )
     })
     expect($previewTabs.get()).toHaveLength(0)

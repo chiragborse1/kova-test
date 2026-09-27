@@ -23,9 +23,9 @@
     {
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
-          (pkgs.runCommand "hermes" { } ''
+          (pkgs.runCommand "kova" { } ''
             mkdir -p $out/bin
-            install -Dm755 ${../hermes} $out/bin/hermes
+            install -Dm755 ${../kova} $out/bin/kova
           '')
           self'.packages.sandbox
           uv
@@ -50,14 +50,14 @@
           export PATH="${pkgs.playwright-test}/bin:$PATH"
 
           # for the devshell to pick up the src
-          export HERMES_PYTHON_SRC_ROOT=$(git rev-parse --show-toplevel)
+          export KOVA_PYTHON_SRC_ROOT=$(git rev-parse --show-toplevel)
 
           # Let `uv run --active --no-sync` reuse Nix's provisioned Python
           # environment instead of creating an empty project .venv.
           export VIRTUAL_ENV="$(dirname "$(dirname "$(readlink -f "$(command -v python)")")")"
 
-          echo "Hermes Agent dev shell in $HERMES_PYTHON_SRC_ROOT"
-          echo "Ready. Run 'hermes' or 'sandbox hermes' to start."
+          echo "Kova Agent dev shell in $KOVA_PYTHON_SRC_ROOT"
+          echo "Ready. Run 'kova' or 'sandbox kova' to start."
         '';
       };
     };

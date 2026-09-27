@@ -135,11 +135,11 @@ describe('TreeGroup', () => {
           act(() => setTabStripDefault('never'))
         }
 
-        const savedDefault = localStorage.getItem('hermes.desktop.tabStripDefault')
+        const savedDefault = localStorage.getItem('kova.desktop.tabStripDefault')
         render(<TreeGroup leftEdge node={node} rightEdge topEdge />)
         expect(container!.querySelector('[data-zone-tabstrip]')).toBeNull()
         expect(node.tabStrip).toBe(source === 'zone' ? 'never' : undefined)
-        expect(localStorage.getItem('hermes.desktop.tabStripDefault')).toBe(savedDefault)
+        expect(localStorage.getItem('kova.desktop.tabStripDefault')).toBe(savedDefault)
       } finally {
         act(() => setTabStripDefault(originalDefault))
       }
@@ -307,7 +307,7 @@ describe('TreeGroup', () => {
         data: {},
         id: 'workspace',
         render: () => <div>Chat</div>,
-        title: 'Hermes'
+        title: 'Kova'
       })
       vi.stubGlobal('CSS', { escape: (value: string) => value })
 

@@ -84,7 +84,7 @@ describe('themePrelude', () => {
 
 describe('frameSizeFromMessage', () => {
   const msg = (over: Record<string, unknown> = {}) => ({
-    type: 'hermes-inline-preview-size',
+    type: 'kova-inline-preview-size',
     token: 'tok',
     height: 500,
     width: 300,
@@ -118,7 +118,7 @@ describe('frameSizeFromMessage', () => {
 
 describe('intentFromMessage', () => {
   const msg = (over: Record<string, unknown> = {}) => ({
-    type: 'hermes-inline-preview-intent',
+    type: 'kova-inline-preview-intent',
     token: 'tok',
     prompt: 'get-price eth',
     ...over
@@ -135,7 +135,7 @@ describe('intentFromMessage', () => {
 
   it('rejects wrong token, wrong type, empty, and hostile shapes', () => {
     expect(intentFromMessage(msg({ token: 'stolen' }), 'tok')).toBeNull()
-    expect(intentFromMessage(msg({ type: 'hermes-inline-preview-size' }), 'tok')).toBeNull()
+    expect(intentFromMessage(msg({ type: 'kova-inline-preview-size' }), 'tok')).toBeNull()
     expect(intentFromMessage(msg({ prompt: '   ' }), 'tok')).toBeNull()
     expect(intentFromMessage(msg({ prompt: 42 }), 'tok')).toBeNull()
     expect(intentFromMessage(null, 'tok')).toBeNull()

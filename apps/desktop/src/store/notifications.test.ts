@@ -58,7 +58,7 @@ test('structured storage_* error codes route to Maintenance', () => {
   expect($routeRequest.get()?.path).toBe('/command-center?section=maintenance')
 })
 
-test('405 method-not-allowed toasts a restart in plain words with a Restart Hermes action', () => {
+test('405 method-not-allowed toasts a restart in plain words with a Restart Kova action', () => {
   const before = $backendRestartRequest.get()
   notifyError(new Error('405 Method Not Allowed'), 'Request failed')
 
@@ -130,12 +130,12 @@ test.each(['missing', 'closed'] as const)(
 test('code-skew 503 unwraps to a restart-required summary, not raw IPC JSON', () => {
   notifyError(
     new Error(
-      'Error invoking remote method \'hermes:api\': Error: 503: {"detail":"Restart required: This process is running code from 08b4875f4a but the checkout on disk is now 48d2528066."}'
+      'Error invoking remote method \'kova:api\': Error: 503: {"detail":"Restart required: This process is running code from 08b4875f4a but the checkout on disk is now 48d2528066."}'
     ),
     'Could not load models'
   )
 
-  expect(lastMessage()).not.toMatch(/hermes:api|systemctl|backend/i)
+  expect(lastMessage()).not.toMatch(/kova:api|systemctl|backend/i)
   const before = $backendRestartRequest.get()
   expect($notifications.get()[0]?.action?.label).toBe(en.notifications.actions.restartHermes)
   $notifications.get()[0]?.action?.onClick()

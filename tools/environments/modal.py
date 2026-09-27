@@ -12,7 +12,7 @@ import threading
 from pathlib import Path
 from typing import Any, Optional
 
-from hermes_constants import get_hermes_home
+from kova_constants import get_kova_home
 from tools.environments.base import BaseEnvironment, _load_json_store, _save_json_store
 from tools.environments.base_output import _ThreadedProcessHandle
 from tools.environments.file_sync import (
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def _snapshot_store() -> Path:
     # Resolved per call: the multiplexed gateway serves every profile from one process, so an
     # import-time path would keep every profile's snapshots in the launch profile's home.
-    return get_hermes_home() / "modal_snapshots.json"
+    return get_kova_home() / "modal_snapshots.json"
 
 
 def _load_snapshots() -> dict:
@@ -166,7 +166,7 @@ class ModalEnvironment(BaseEnvironment):
 
         def _create(image_spec: Any) -> None:
             async def _create_sandbox():
-                app = await _modal.App.lookup.aio("hermes-agent", create_if_missing=True)
+                app = await _modal.App.lookup.aio("kova-agent", create_if_missing=True)
                 create_kwargs = dict(modal_sandbox_kwargs or {})
                 if cred_mounts:
                     create_kwargs["mounts"] = list(create_kwargs.pop("mounts", [])) + cred_mounts
@@ -193,7 +193,7 @@ class ModalEnvironment(BaseEnvironment):
             raise
         logger.info("Modal: sandbox created (task=%s)", self._task_id)
         self._sync_manager = FileSyncManager(
-            get_files_fn=lambda: iter_sync_files("/root/.hermes"),
+            get_files_fn=lambda: iter_sync_files("/root/.kova"),
             upload_fn=self._modal_upload, delete_fn=self._modal_delete,
             bulk_upload_fn=self._modal_bulk_upload, bulk_download_fn=self._modal_bulk_download)
         self._sync_manager.sync(force=True)
@@ -234,9 +234,9 @@ class ModalEnvironment(BaseEnvironment):
         self._exec(cmd, stdin=payload, timeout=120, fail_label="bulk upload")
 
     def _modal_bulk_download(self, dest: Path) -> None:
-        """Download remote .hermes/ as a tar archive (sandboxes run as root, so /root/.hermes)."""
+        """Download remote .kova/ as a tar archive (sandboxes run as root, so /root/.kova)."""
         # --exclude: live sockets cannot be archived ("socket ignored") and must not fail the download.
-        data = self._exec("tar cf - --exclude='*.sock' -C / root/.hermes", timeout=120, fail_label="bulk download", capture=True)
+        data = self._exec("tar cf - --exclude='*.sock' -C / root/.kova", timeout=120, fail_label="bulk download", capture=True)
         dest.write_bytes(data.encode() if isinstance(data, str) else data)
 
     def _modal_delete(self, remote_paths: list[str]) -> None:

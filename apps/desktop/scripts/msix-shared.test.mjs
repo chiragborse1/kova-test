@@ -21,9 +21,9 @@ function makeFakeDesktop(version) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'msix-ident-'))
   fs.writeFileSync(
     path.join(dir, 'product-identity.cjs'),
-    "module.exports = { store: false, light: false, displayName: 'Hermes', appId: 'com.nousresearch.hermes-bundled', channel: 'latest', artifactNamePascal: 'HermesBundled', msixAppIdWithOrg: 'NousResearch.HermesBundled' }\n"
+    "module.exports = { store: false, light: false, displayName: 'Kova', appId: 'com.openkova.kova-bundled', channel: 'latest', artifactNamePascal: 'KovaBundled', msixAppIdWithOrg: 'OpenKova.KovaBundled' }\n"
   )
-  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'hermes-desktop', version }))
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'kova-desktop', version }))
   return dir
 }
 

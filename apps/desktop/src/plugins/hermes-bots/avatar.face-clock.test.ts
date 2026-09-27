@@ -17,7 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { budgetedLoopMock } = vi.hoisted(() => ({ budgetedLoopMock: { impl: undefined as unknown } }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return {
@@ -37,7 +37,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 interface ObserverEntry {
   isIntersecting: boolean

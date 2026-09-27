@@ -40,9 +40,9 @@ function marker(app: Pick<App, 'getPath'>): string {
 
 beforeEach((): void => {
   root = fs.mkdtempSync(path.join(os.tmpdir(), 'relaunch-isolation-'))
-  hermesHome = path.join(root, 'hermes-home')
+  hermesHome = path.join(root, 'kova-home')
   fs.mkdirSync(hermesHome)
-  vi.stubEnv('HERMES_HOME', hermesHome)
+  vi.stubEnv('KOVA_HOME', hermesHome)
   stable = installation('stable')
   canary = installation('canary')
   commit = installation('commit')
@@ -53,7 +53,7 @@ afterEach((): void => {
   fs.rmSync(root, { recursive: true, force: true })
 })
 
-test('writes and startup consumption stay in each installation despite a shared Hermes home', async (): Promise<void> => {
+test('writes and startup consumption stay in each installation despite a shared Kova home', async (): Promise<void> => {
   const globalMarker: string = path.join(hermesHome, PENDING_RELAUNCH_FILENAME)
   const legacyContents: string = JSON.stringify({ schemaVersion: 1, fromVersion: 'legacy', startedAt: 1 })
   fs.writeFileSync(globalMarker, legacyContents)

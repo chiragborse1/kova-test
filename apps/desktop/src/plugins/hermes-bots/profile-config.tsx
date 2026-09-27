@@ -8,7 +8,7 @@
  * detection.
  */
 
-import * as sdk from '@hermes/plugin-sdk'
+import * as sdk from '@kova/plugin-sdk'
 import {
   Checkbox,
   GlyphSpinner,
@@ -17,7 +17,7 @@ import {
   queryClient,
   surfaceModelSwitchConfirm,
   Textarea
-} from '@hermes/plugin-sdk'
+} from '@kova/plugin-sdk'
 import { useState } from 'react'
 
 import { $lastRoster, ROSTER_KEY } from './data'
@@ -245,7 +245,7 @@ export function AdvancedProfileConfig({ bot, state, setState }: AdvancedProfileC
   const mcpList = state.mcp || []
 
   // Newer desktop builds export the WHOLE core Capabilities surface
-  // (hermes-agent#87317): Skills (installed list + one-click hub installs +
+  // (kova-agent#87317): Skills (installed list + one-click hub installs +
   // full-skill detail), Tools (per-toolset config), and MCP — pinned to this
   // bot via fixedProfile, tab state kept out of the page router via embedded.
   // Render THAT instead of the checkbox stand-ins; writes go straight to the

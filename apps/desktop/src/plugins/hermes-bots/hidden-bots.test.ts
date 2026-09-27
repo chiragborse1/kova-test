@@ -15,7 +15,7 @@
  * under `vm`.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
+import type * as KovaSdk from '@kova/plugin-sdk'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { RosterRow } from './types'
@@ -26,8 +26,8 @@ const { markSessionUnreadFinished, notify, request } = vi.hoisted(() => ({
   request: vi.fn()
 }))
 
-vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const sdk = await importOriginal<typeof HermesSdk>()
+vi.mock('@kova/plugin-sdk', async importOriginal => {
+  const sdk = await importOriginal<typeof KovaSdk>()
 
   return {
     ...sdk,
@@ -96,7 +96,7 @@ describe('hiding persists locally and cross-machine', () => {
 
     const configure = request.mock.calls.find(([method]) => method === 'profiles.configure')
 
-    expect(configure?.[1].ui_meta['hermes-bots'].hidden).toBe(true)
+    expect(configure?.[1].ui_meta['kova-bots'].hidden).toBe(true)
   })
 
   it('clears the flag on unhide, and the server false beats a stale local true', async () => {
@@ -110,13 +110,13 @@ describe('hiding persists locally and cross-machine', () => {
     const configure = request.mock.calls.find(([method]) => method === 'profiles.configure')
 
     // The server copy carries the literal false, not an omission.
-    expect(configure?.[1].ui_meta['hermes-bots'].hidden).toBe(false)
+    expect(configure?.[1].ui_meta['kova-bots'].hidden).toBe(false)
 
     // Machine B: its stale local copy still says hidden:true; the server
     // overlay (which merges OVER local) must win with the false.
     data.$botMeta.set({ ghost: { hidden: true, title: 'Ghost' } })
     profileOps.mergeServerMeta([
-      { name: 'ghost', ui_meta: { 'hermes-bots': { hidden: false, title: 'Ghost' } } }
+      { name: 'ghost', ui_meta: { 'kova-bots': { hidden: false, title: 'Ghost' } } }
     ] as unknown as RosterRow[])
 
     expect(data.$botMeta.get().ghost.hidden).toBe(false)
@@ -127,7 +127,7 @@ describe('hiding persists locally and cross-machine', () => {
 
     data.$botMeta.set({ ghost: { title: 'Ghost' } })
     profileOps.mergeServerMeta([
-      { name: 'ghost', ui_meta: { 'hermes-bots': { hidden: true, title: 'Ghost' } } }
+      { name: 'ghost', ui_meta: { 'kova-bots': { hidden: true, title: 'Ghost' } } }
     ] as unknown as RosterRow[])
 
     expect(data.$botMeta.get().ghost.hidden).toBe(true)

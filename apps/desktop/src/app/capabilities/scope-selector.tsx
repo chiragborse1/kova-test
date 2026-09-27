@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { DesktopRosterAgent } from '@/global'
-import { getProfiles, type ProfileScope, profileScopeKey } from '@/hermes'
+import { getProfiles, type ProfileScope, profileScopeKey } from '@/kova'
 import { useI18n } from '@/i18n'
 import { cn } from '@/lib/utils'
 import { activeGatewayConnectionId } from '@/store/gateway'
@@ -126,7 +126,7 @@ export function useCapabilityScope({
 
     return (profilesData?.profiles ?? []).map(p => ({
       key: p.name,
-      label: p.is_default ? 'Hermes (default)' : p.name,
+      label: p.is_default ? 'Kova (default)' : p.name,
       value: p.name
     }))
   }, [multiConnection, profilesData, rosterData])

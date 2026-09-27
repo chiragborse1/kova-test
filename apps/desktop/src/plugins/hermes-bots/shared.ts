@@ -8,9 +8,9 @@
  * `setPluginCtx`, and every reader goes through `getPluginCtx()`.
  */
 
-import { atom, type PluginContext } from '@hermes/plugin-sdk'
+import { atom, type PluginContext } from '@kova/plugin-sdk'
 
-export const ID = 'hermes-bots'
+export const ID = 'kova-bots'
 
 /** Captured in register() so components can reach plugin storage. */
 let pluginCtx: PluginContext | null = null

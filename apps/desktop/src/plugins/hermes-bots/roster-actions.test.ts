@@ -28,7 +28,7 @@ const { hostMock, markUnreadMock, storageMock } = vi.hoisted(() => ({
   storageMock: { get: vi.fn(), set: vi.fn() }
 }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return {
@@ -47,7 +47,7 @@ vi.mock('./shared', () => ({
   bumpBotOpenGeneration: vi.fn(),
   getBotOpenGeneration: vi.fn(),
   getPluginCtx: () => ({ storage: storageMock }),
-  ID: 'hermes-bots'
+  ID: 'kova-bots'
 }))
 
 // The open path drags the whole group-chat surface in; the poll under test

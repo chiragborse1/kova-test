@@ -81,7 +81,7 @@ _IDLE_UNLOAD_CHECK_INTERVAL = 30  # seconds between idle checks
 def _load_stt_config() -> dict:
     """Load the ``stt`` section from user config, falling back to defaults."""
     try:
-        from hermes_cli.config import load_config
+        from kova_cli.config import load_config
         return load_config().get("stt") or {}
     except Exception:
         return {}
@@ -96,7 +96,7 @@ def _resolve_stt_language(
     provider_key: str, stt_config: Optional[Dict[str, Any]] = None, *, extra_keys: tuple = ()
 ) -> Optional[str]:
     """Language hint for an STT provider, first non-empty wins (never ""): ``stt.<provider>.language``
-    (plus *extra_keys* aliases, e.g. ``language_code``) > ``stt.language`` > ``HERMES_LOCAL_STT_LANGUAGE``
+    (plus *extra_keys* aliases, e.g. ``language_code``) > ``stt.language`` > ``KOVA_LOCAL_STT_LANGUAGE``
     env > None (provider auto-detects)."""
     if stt_config is None:
         stt_config = _load_stt_config()
@@ -125,7 +125,7 @@ def _has_openai_audio_backend() -> bool:
 
 
 def _is_local_stt_provider(provider: str, stt_config: Dict[str, Any]) -> bool:
-    """Whether *provider* is exempt from Hermes's remote upload cap."""
+    """Whether *provider* is exempt from Kova's remote upload cap."""
     return (provider or "").lower().strip() in {"local", "local_command"}
 
 
@@ -174,7 +174,7 @@ def _resolve_explicit_local() -> str:
     backend = _detect_local_backend()
     if not backend:
         logger.warning("STT provider 'local' configured but unavailable "
-                       "(install faster-whisper or set HERMES_LOCAL_STT_COMMAND)")
+                       "(install faster-whisper or set KOVA_LOCAL_STT_COMMAND)")
     return backend or "none"
 
 
@@ -304,7 +304,7 @@ def _start_idle_unload_watcher(timeout_seconds: int) -> None:
                     _unload_local_model()
                     break
         _idle_unload_stop.clear()
-        _idle_unload_thread = threading.Thread(target=_watch, name="hermes-stt-idle-unload", daemon=True)
+        _idle_unload_thread = threading.Thread(target=_watch, name="kova-stt-idle-unload", daemon=True)
         _idle_unload_thread.start()
 
 
@@ -424,7 +424,7 @@ def _transcribe_prepared_audio(
             # Never overwrite a neighboring WAV or leave converted voice notes behind.
             if Path(file_path).suffix.lower() == ".caf":
                 work_dir = cleanup.enter_context(
-                    TemporaryDirectory(prefix="hermes-caf-", ignore_cleanup_errors=True)
+                    TemporaryDirectory(prefix="kova-caf-", ignore_cleanup_errors=True)
                 )
                 file_path = _convert_caf_to_wav(file_path, work_dir)
                 if not file_path:
@@ -501,7 +501,7 @@ def _no_provider_error(provider: str, stt_config: Dict[str, Any]) -> Dict[str, A
     if "provider" in stt_config and provider_key and provider_key not in BUILTIN_STT_PROVIDERS and provider_key != "none":
         return _unregistered_stt_provider_error(provider_key)
     # An explicit openai selection flattened to "none" has a specific reason (e.g. managed gateway down).
-    # Surface it — with its `hermes tools` remediation — instead of the all-provider setup hint (#93045).
+    # Surface it — with its `kova tools` remediation — instead of the all-provider setup hint (#93045).
     if provider_key == "none" and str(stt_config.get("provider") or "") == "openai" and _HAS_OPENAI:
         reason = _openai_audio_unavailable_reason()
         if reason is not None:
@@ -587,7 +587,7 @@ _PLUGIN_COMPAT_LAZY = {
     'nous_tool_gateway_unavailable_message': ('tools.tool_backend_helpers', 'nous_tool_gateway_unavailable_message'),
     'resolve_managed_tool_gateway': ('tools.managed_tool_gateway', 'resolve_managed_tool_gateway'),
     'resolve_openai_audio_api_key': ('tools.tool_backend_helpers', 'resolve_openai_audio_api_key'),
-    'windows_hide_flags': ('hermes_cli._subprocess_compat', 'windows_hide_flags'),
+    'windows_hide_flags': ('kova_cli._subprocess_compat', 'windows_hide_flags'),
 }
 
 
@@ -596,7 +596,7 @@ def __getattr__(name):  # PEP 562 — lazy so no import cycles
     if target is None:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
     import importlib
-    from hermes_cli.plugin_compat import warn_once
+    from kova_cli.plugin_compat import warn_once
     warn_once(__name__, name, *target)
     return getattr(importlib.import_module(target[0]), target[1])
 # ---- END PLUGIN-COMPAT ----

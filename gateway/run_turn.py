@@ -36,7 +36,7 @@ from gateway.session import (
 from gateway.session_transcript import TranscriptReadError
 from gateway.turn_context import TurnContext
 from gateway.turn_lease import DEFAULT_LEASE_WAIT, TurnLeaseTimeoutError
-from hermes_constants import get_hermes_home_override
+from kova_constants import get_kova_home_override
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Tuple
 from utils import base_url_hostname
@@ -52,18 +52,18 @@ _tool_call_logger_lock = threading.Lock()
 
 
 def _tool_call_logger() -> logging.Logger:
-    """Process-wide ``hermes.tool_calls`` Logger + one RotatingFileHandler on logs/tool_calls.log.
+    """Process-wide ``kova.tool_calls`` Logger + one RotatingFileHandler on logs/tool_calls.log.
     Named Loggers live in ``logging.Logger.manager.loggerDict`` forever, so the former per-turn name
-    (``hermes.tool_calls.<id(log_queue)>``) leaked one Logger per logged turn (#62950); a single
+    (``kova.tool_calls.<id(log_queue)>``) leaked one Logger per logged turn (#62950); a single
     shared handler also keeps concurrent turns from double-writing lines."""
-    tool_logger = logging.getLogger("hermes.tool_calls")
+    tool_logger = logging.getLogger("kova.tool_calls")
     with _tool_call_logger_lock:
         if not tool_logger.handlers:
             from logging.handlers import RotatingFileHandler
             from agent.redact import RedactingFormatter
-            from gateway.run import _hermes_home
+            from gateway.run import _kova_home
 
-            log_dir = _hermes_home / "logs"
+            log_dir = _kova_home / "logs"
             log_dir.mkdir(parents=True, exist_ok=True)
             handler = RotatingFileHandler(
                 log_dir / "tool_calls.log", maxBytes=5 * 1024 * 1024, backupCount=3, encoding="utf-8",
@@ -247,7 +247,7 @@ class GatewayTurnMixin:
             logger.info("Runtime provider supplied explicit model override: %s -> %s", model, runtime_model)
             model = runtime_model
         if unavailable_override and not self._pre_agent_fallback_notice:
-            from hermes_cli.fallback_config import pre_agent_fallback_notice
+            from kova_cli.fallback_config import pre_agent_fallback_notice
             self._pre_agent_fallback_notice = pre_agent_fallback_notice(
                 unavailable_override["provider"], unavailable_override.get("model"), runtime_kwargs.get("provider"), model)
 
@@ -271,11 +271,11 @@ class GatewayTurnMixin:
         if override and skey:
             model, runtime_kwargs = self._apply_session_model_override(skey, model, runtime_kwargs)
 
-        # Provider resolved but no model.default (`hermes auth add` without `hermes model`): use the
+        # Provider resolved but no model.default (`kova auth add` without `kova model`): use the
         # provider's first catalog model.
         if not model and runtime_kwargs.get("provider"):
             with suppress(Exception):
-                from hermes_cli.models import get_default_model_for_provider
+                from kova_cli.models import get_default_model_for_provider
                 model = get_default_model_for_provider(runtime_kwargs["provider"])
                 if model:
                     logger.info(
@@ -310,7 +310,7 @@ class GatewayTurnMixin:
         """Effective model/runtime config for one turn. With `/fast` priority on, fast-mode
         ``request_overrides`` are deep-merged OVER the per-provider ones so both reach the model."""
         from gateway.run import _deep_merge_request_overrides
-        from hermes_cli.models import resolve_fast_mode_overrides
+        from kova_cli.models import resolve_fast_mode_overrides
         # Tests bind this method onto bare namespaces, so no class-level tables here.
         runtime = {
             k: runtime_kwargs.get(k) for k in (
@@ -617,7 +617,7 @@ class GatewayTurnMixin:
         try:
             _lease_token = await _lease_registry.acquire(
                 session_entry.session_id, owner_key=_quick_key, generation=run_generation,
-                timeout=_float_env("HERMES_TURN_LEASE_TIMEOUT", DEFAULT_LEASE_WAIT),
+                timeout=_float_env("KOVA_TURN_LEASE_TIMEOUT", DEFAULT_LEASE_WAIT),
             )
         except TurnLeaseTimeoutError:
             # The cleanup finally starts later; restore the tokens here or this exit leaks identity.
@@ -707,7 +707,7 @@ class GatewayTurnMixin:
 
             if hs.config_context_length is not None:
                 try:
-                    from hermes_cli.route_identity import should_clear_context_pin_async
+                    from kova_cli.route_identity import should_clear_context_pin_async
 
                     if await should_clear_context_pin_async(
                         configured_model, hs.model, configured_base_url, hs.base_url,
@@ -721,7 +721,7 @@ class GatewayTurnMixin:
             if hs.config_context_length is None and hs.base_url:
                 with suppress(TypeError, ValueError):
                     try:
-                        from hermes_cli.config import (
+                        from kova_cli.config import (
                             get_compatible_custom_providers as _gw_gcp,
                             get_custom_provider_context_length as _gw_gccl,
                         )
@@ -1214,7 +1214,7 @@ class GatewayTurnMixin:
                     source, attempt.meta,
                     "⚠️ Shortening the conversation history failed, so I kept everything as-is. "
                     "Run /compress to try again or /new to start fresh. If this keeps happening, "
-                    "run `hermes doctor` on the host.",
+                    "run `kova doctor` on the host.",
                     "compression-failure warning",
                 )
         # Configured aux model failed, recovered on the main model: only the user can fix that config.
@@ -1268,7 +1268,7 @@ class GatewayTurnMixin:
         _hyg_session_db = getattr(self._session_db, "_db", self._session_db)
         # With compression.checkpoint_required on, load the memory provider so the checkpoint exists
         # before any mutation; otherwise keep the fast path (no provider init).
-        from hermes_cli.config import load_config as _load_cfg
+        from kova_cli.config import load_config as _load_cfg
         from utils import is_truthy_value as _is_truthy
 
         _hyg_checkpoint_required = _is_truthy(
@@ -1315,7 +1315,7 @@ class GatewayTurnMixin:
             attempt.future = loop.run_in_executor(
                 None,
                 # But it MUST run inside the caller's contextvars: under multiplex_profiles the profile
-                # secret scope / HERMES_HOME override live in ContextVars, and a bare run_in_executor worker
+                # secret scope / KOVA_HOME override live in ContextVars, and a bare run_in_executor worker
                 # starts with an empty Context — the summary model's get_secret(<PROVIDER>_API_KEY) then
                 # fails closed (UnscopedSecretError) and every hygiene compaction silently degrades to a
                 # lossy truncation (#100849 bundle).
@@ -1420,7 +1420,7 @@ class GatewayTurnMixin:
         """First-ever-message onboarding note + one-time 'no home channel' prompt (both only when
         the session has no history). Delivered on the user message (sidecar), NOT the ephemeral
         system prompt: present-on-turn-1/absent-on-turn-2 was a guaranteed prompt diff + rebuild."""
-        from gateway.run import _hermes_home, _home_target_env_var, _load_gateway_config
+        from gateway.run import _kova_home, _home_target_env_var, _load_gateway_config
         if history:
             return
         if not await self.async_session_store.has_any_sessions():
@@ -1428,7 +1428,7 @@ class GatewayTurnMixin:
             # first_contact_turn_note already falls back to the plain intro on error.
             from agent.onboarding import first_contact_turn_note
             note = first_contact_turn_note(
-                _load_gateway_config(), _hermes_home / "config.yaml",
+                _load_gateway_config(), _kova_home / "config.yaml",
                 session_history_empty=True, install_has_prior_sessions=False,
             )
             if note:
@@ -1458,11 +1458,11 @@ class GatewayTurnMixin:
                 if prof and prof != "default" and _lgc().get_home_channel(source.platform):
                     home_env = "set"
         if not home_env:
-            # Slack routes every command through the parent `/hermes`; bare `/sethome` would fail.
-            sethome_cmd = "/hermes sethome" if source.platform == Platform.SLACK else "/sethome"
+            # Slack routes every command through the parent `/kova`; bare `/sethome` would fail.
+            sethome_cmd = "/kova sethome" if source.platform == Platform.SLACK else "/sethome"
             await self._deliver_platform_notice(
                 source, f"📬 No home channel is set for {platform_name.title()}. "
-                f"A home channel is where Hermes delivers cron job results and cross-platform "
+                f"A home channel is where Kova delivers cron job results and cross-platform "
                 f"messages.\n\nType {sethome_cmd} to make this chat your home channel, or ignore "
                 f"to skip.",
             )
@@ -1477,7 +1477,7 @@ class GatewayTurnMixin:
         persist_user_message = None
         persist_user_timestamp = None
         try:
-            from hermes_time import get_timezone as _get_evt_tz
+            from kova_time import get_timezone as _get_evt_tz
             from gateway.message_timestamps import (
                 coerce_message_timestamp as _coerce_msg_ts,
                 render_user_content_with_timestamp as _render_msg_ts,
@@ -1969,7 +1969,7 @@ class GatewayTurnMixin:
 
         return response
 
-    # Chat-side next steps keyed by HTTP status; Hermes commands only (/login is the gateway's own
+    # Chat-side next steps keyed by HTTP status; Kova commands only (/login is the gateway's own
     # sign-in, `{relogin}` the profile-aware host equivalent, filled from the turn's agent provider).
     _STATUS_HINTS = {
         401: (" Your sign-in to the AI model service has expired or the API key is wrong. "
@@ -2031,7 +2031,7 @@ class GatewayTurnMixin:
         return self._hmwa_add_failed_turn_notice(
             f"⚠️ Something went wrong and I couldn't finish this reply.{status_hint}\n"
             "Use /retry to try again, or /new to start a fresh conversation. "
-            "Technical details are in the gateway log (`hermes logs`).",
+            "Technical details are in the gateway log (`kova logs`).",
             PARTIAL_FAILED_TURN_NOTICE,
         )
 
@@ -2367,8 +2367,8 @@ class GatewayTurnMixin:
         ]
         if (resolved.provider or "") == "moa":
             # The preset name hides who pays: the aggregator runs every tool-loop step (#112359).
-            from hermes_cli.config import load_config
-            from hermes_cli.moa_config import normalize_moa_config
+            from kova_cli.config import load_config
+            from kova_cli.moa_config import normalize_moa_config
             agg = normalize_moa_config(load_config().get("moa"))["presets"].get(resolved.model, {}).get("aggregator") or {}
             if agg:
                 lines.append(f"◆ Acting model (billed for the run): {agg.get('provider')}:{agg.get('model')}")
@@ -2394,7 +2394,7 @@ class GatewayTurnMixin:
         """Enabled toolsets for an agent run, honoring an adapter ``toolsets_for_source()`` override
         validated through the SAME ``_get_platform_tools`` path (unknown / platform-restricted
         toolsets dropped, not trusted)."""
-        from hermes_cli.tools_config import _get_platform_tools
+        from kova_cli.tools_config import _get_platform_tools
         try:
             adapter = self._delivery_adapter_for(source)
             override = adapter.toolsets_for_source(source) if adapter is not None else None
@@ -2439,7 +2439,7 @@ class GatewayTurnMixin:
                 await adapter.send(
                     source.chat_id,
                     "❌ The background task couldn't start because no AI model sign-in is "
-                    "configured. Use /login, or run `hermes setup` on the host.",
+                    "configured. Use /login, or run `kova setup` on the host.",
                     metadata=_thread_metadata,
                 )
                 return
@@ -2589,7 +2589,7 @@ class GatewayTurnMixin:
         """
         from gateway.run import _profile_runtime_scope
         multiplex = bool(getattr(self.config, "multiplex_profiles", False))
-        if multiplex and not get_hermes_home_override():
+        if multiplex and not get_kova_home_override():
             profile_home = self._resolve_profile_home_for_source(event.source)
             with _profile_runtime_scope(Path(profile_home)):
                 return await self._execute_mcp_reload(event)
@@ -2615,7 +2615,7 @@ class GatewayTurnMixin:
             # Explicit reload also re-probes tool availability (check_fn).
             reprobe_tool_availability()
             # Reconnect by discovering tools (reads config.yaml fresh). A chat command cannot finish
-            # a browser OAuth flow either: an expired token parks with a `hermes mcp login` hint.
+            # a browser OAuth flow either: an expired token parks with a `kova mcp login` hint.
             from tools.mcp_oauth import suppress_interactive_oauth
             with suppress_interactive_oauth():
                 new_tools = await self._run_in_executor_with_context(discover_mcp_tools)
@@ -2766,7 +2766,7 @@ class GatewayTurnMixin:
         run_generation: Optional[int] = None, event_message_id: Optional[str] = None,
         scheduled_heartbeat: bool = False,
     ) -> Dict[str, Any]:
-        """Forward the message to a remote Hermes API server instead of running a local AIAgent.
+        """Forward the message to a remote Kova API server instead of running a local AIAgent.
 
         Lets a Docker container handle Matrix E2EE while the agent runs on the host with full
         access to local files, memory, skills, and a unified session store."""
@@ -2804,7 +2804,7 @@ class GatewayTurnMixin:
                 "history_offset": len(history), "session_id": session_id, "response_previewed": False,
             }
 
-        # OpenAI chat format. The remote keeps continuity via X-Hermes-Session-Id; send the current
+        # OpenAI chat format. The remote keeps continuity via X-Kova-Session-Id; send the current
         # message plus a compact text-only history for a remote that has none yet.
         api_messages: List[Dict[str, str]] = [{"role": "system", "content": context_prompt}] if context_prompt else []
         api_messages += [
@@ -2817,8 +2817,8 @@ class GatewayTurnMixin:
         if proxy_key:
             headers["Authorization"] = f"Bearer {proxy_key}"
         if session_id:
-            headers["X-Hermes-Session-Id"] = session_id
-        body = {"model": "hermes-agent", "messages": api_messages, "stream": True}
+            headers["X-Kova-Session-Id"] = session_id
+        body = {"model": "kova-agent", "messages": api_messages, "stream": True}
 
         _thread_metadata: Optional[Dict[str, Any]] = self._thread_metadata_for_source(source, event_message_id)
         _stream_consumer = (
@@ -2973,7 +2973,7 @@ class GatewayTurnMixin:
         # A raw os.getenv here reads whichever profile's env loaded last under multiplexing
         # (#116898); get_secret resolves through the active profile's scope instead.
         progress_mode, _tool_progress_explicit = resolve_tool_progress(
-            user_config, platform_key, get_secret("HERMES_TOOL_PROGRESS_MODE"),
+            user_config, platform_key, get_secret("KOVA_TOOL_PROGRESS_MODE"),
         )
         # "accumulate" (edit one bubble) or "separate" (one msg per tool)
         progress_grouping = resolve_display_setting(user_config, platform_key, "tool_progress_grouping") or "accumulate"
@@ -3016,7 +3016,7 @@ class GatewayTurnMixin:
         _live_status_adapter = (
             adapter if getattr(adapter, "supports_status_text", False) and _live_status_mode != "off" else None
         )
-        # "log" mode: tool calls go to ~/.hermes/logs/tool_calls.log instead of the chat. Gateway-only.
+        # "log" mode: tool calls go to ~/.kova/logs/tool_calls.log instead of the chat. Gateway-only.
         log_mode_enabled = progress_mode == "log" and not is_webhook
         # Interim assistant messages and thinking_progress are independent of tool progress (same
         # queue). Mattermost requires a per-platform opt-in: scratch text leaks into public threads.
@@ -3426,7 +3426,7 @@ class GatewayTurnMixin:
     def _run_agent_start_turn_worker(self, turn_ctx: TurnContext, run_sync: Callable[[], Any]) -> "GatewayRunner._RunAgentWorker":
         """Schedule ``run_sync`` on the executor plus the inactivity watchdog thread.
 
-        *Inactivity* timeout (agent.gateway_timeout / HERMES_AGENT_TIMEOUT, env wins; 0 = unlimited),
+        *Inactivity* timeout (agent.gateway_timeout / KOVA_AGENT_TIMEOUT, env wins; 0 = unlimited),
         not wall-clock. The daemon watchdog is independent of asyncio: cgroup memory reclaim can
         starve the loop that runs the normal timeout poll."""
         from gateway.run import _float_env, _watch_gateway_turn_inactivity
@@ -3434,7 +3434,7 @@ class GatewayTurnMixin:
         agent_holder, session_key, run_generation = turn_ctx.agent_holder, turn_ctx.session_key, turn_ctx.run_generation
         _agent_timeout, _agent_warning = (
             v if v > 0 else None
-            for v in (_float_env("HERMES_AGENT_TIMEOUT", 1800), _float_env("HERMES_AGENT_TIMEOUT_WARNING", 900))
+            for v in (_float_env("KOVA_AGENT_TIMEOUT", 1800), _float_env("KOVA_AGENT_TIMEOUT_WARNING", 900))
         )
 
         # background=true processes survive a turn: reap only children created by THIS turn on timeout.
@@ -3620,7 +3620,7 @@ class GatewayTurnMixin:
         # Normalize as AIAgent.__init__ does (vendor prefix stripped on native providers), else the
         # cached agent is evicted every turn, destroying prompt caching.
         with suppress(Exception):
-            from hermes_cli.model_normalize import _AGGREGATOR_PROVIDERS, normalize_model_for_provider
+            from kova_cli.model_normalize import _AGGREGATOR_PROVIDERS, normalize_model_for_provider
             _agent_provider = getattr(_agent, 'provider', '') or ''
             if _agent_provider and _agent_provider not in _AGGREGATOR_PROVIDERS:
                 _cfg_model = normalize_model_for_provider(_cfg_model, _agent_provider)
@@ -3696,7 +3696,7 @@ class GatewayTurnMixin:
             _pending_cmd_word = pending.strip().split(None, 1)[0][1:].lower()
             if _pending_cmd_word:
                 with suppress(Exception):
-                    from hermes_cli.commands import resolve_command as _rc_pending
+                    from kova_cli.commands import resolve_command as _rc_pending
                     if _rc_pending(_pending_cmd_word):
                         logger.info(
                             "Discarding command '/%s' from pending queue — "
@@ -4168,11 +4168,11 @@ class GatewayTurnMixin:
         no longer owns the session slot or the executor finished. ``_executor_task_holder[0]`` is
         bound just after this task is scheduled (reads as None until then).
 
-        Interval: agent.gateway_notify_interval / HERMES_AGENT_NOTIFY_INTERVAL (default 180s; 0 or
+        Interval: agent.gateway_notify_interval / KOVA_AGENT_NOTIFY_INTERVAL (default 180s; 0 or
         long_running_notifications=off disables)."""
         from gateway.run import _float_env, _interim_metadata, _non_conversational_metadata
         _notify_start = time.time()
-        _NOTIFY_INTERVAL = _float_env("HERMES_AGENT_NOTIFY_INTERVAL", 180)
+        _NOTIFY_INTERVAL = _float_env("KOVA_AGENT_NOTIFY_INTERVAL", 180)
         _long_running_mode = disp._display_surface_mode("long_running_notifications", default=True, allow_generic=True)
         if _NOTIFY_INTERVAL <= 0 or _long_running_mode == "off":
             return

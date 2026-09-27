@@ -20,8 +20,8 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from hermes_cli import kanban_db as kb
-from hermes_cli import kanban_db_connect as kbc
+from kova_cli import kanban_db as kb
+from kova_cli import kanban_db_connect as kbc
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -34,7 +34,7 @@ def _load_plugin_router():
     assert plugin_file.exists(), f"plugin file missing: {plugin_file}"
 
     spec = importlib.util.spec_from_file_location(
-        "hermes_dashboard_plugin_kanban_test", plugin_file,
+        "kova_dashboard_plugin_kanban_test", plugin_file,
     )
     assert spec is not None and spec.loader is not None
     mod = importlib.util.module_from_spec(spec)
@@ -44,10 +44,10 @@ def _load_plugin_router():
 
 @pytest.fixture
 def kanban_home(tmp_path, monkeypatch):
-    """Isolated HERMES_HOME with an empty kanban DB."""
-    home = tmp_path / ".hermes"
+    """Isolated KOVA_HOME with an empty kanban DB."""
+    home = tmp_path / ".kova"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("KOVA_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     kb.init_db()
     return home
@@ -501,15 +501,15 @@ def test_ws_events_rejects_when_token_required(tmp_path, monkeypatch):
     delegates to web_server_chat._ws_auth_ok, so we stub that with the real
     loopback-token semantics (auth_required False → constant-time token
     compare)."""
-    home = tmp_path / ".hermes"
+    home = tmp_path / ".kova"
     home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(home))
+    monkeypatch.setenv("KOVA_HOME", str(home))
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
     kb.init_db()
 
     # Stub web_server_chat with a loopback-mode _ws_auth_ok (auth_required False →
     # accept only the correct ?token=). Mirrors the real gate's loopback path.
-    import hermes_cli
+    import kova_cli
     import types
 
     def _fake_ws_auth_ok(ws):
@@ -519,8 +519,8 @@ def test_ws_events_rejects_when_token_required(tmp_path, monkeypatch):
         _SESSION_TOKEN="secret-xyz",
         _ws_auth_ok=_fake_ws_auth_ok,
     )
-    monkeypatch.setitem(sys.modules, "hermes_cli.web_server_chat", stub)
-    monkeypatch.setattr(hermes_cli, "web_server_chat", stub, raising=False)
+    monkeypatch.setitem(sys.modules, "kova_cli.web_server_chat", stub)
+    monkeypatch.setattr(kova_cli, "web_server_chat", stub, raising=False)
 
     app = FastAPI()
     app.include_router(_load_plugin_router(), prefix="/api/plugins/kanban")
@@ -778,7 +778,7 @@ def test_bulk_empty_ids_400(client):
 # ---------------------------------------------------------------------------
 
 def test_config_reads_dashboard_kanban_section(tmp_path, monkeypatch, client):
-    home = Path(os.environ["HERMES_HOME"])
+    home = Path(os.environ["KOVA_HOME"])
     (home / "config.yaml").write_text(
         "dashboard:\n"
         "  kanban:\n"
@@ -803,8 +803,8 @@ def test_event_dict_includes_run_id(client):
     """GET /tasks/:id returns events with run_id populated."""
     r = client.post("/api/plugins/kanban/tasks", json={"title": "e", "assignee": "worker"})
     tid = r.json()["task"]["id"]
-    from hermes_cli import kanban_db as kb
-    from hermes_cli import kanban_db_connect as kbc
+    from kova_cli import kanban_db as kb
+    from kova_cli import kanban_db_connect as kbc
     conn = kbc.connect()
     try:
         kb.claim_task(conn, tid)
@@ -841,7 +841,7 @@ def test_event_dict_includes_run_id(client):
 # instead of 500'ing GET /board for the entire org.
 #
 # kanban_db._safe_int / task_age corruption paths are covered in
-# tests/hermes_cli/test_kanban_db.py. The OUTER fallback here is not, which
+# tests/kova_cli/test_kanban_db.py. The OUTER fallback here is not, which
 # means a refactor that drops the try/except would not be caught by CI. The
 # tests below pin that contract.
 # ---------------------------------------------------------------------------

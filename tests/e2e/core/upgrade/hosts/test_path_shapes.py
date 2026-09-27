@@ -7,7 +7,7 @@ Failure class: PATH shapes. Two things users report once the install "works":
   ``.profile``), so a login shell carries it more than once (gated on #123424); a re-run of the
   installer must not edit the startup files again;
 * a node/npm the user already has, earlier on PATH, either shadows the managed toolchain where
-  Hermes needs the managed one (the TUI/web builds), or the managed node is forced onto an MCP
+  Kova needs the managed one (the TUI/web builds), or the managed node is forced onto an MCP
   server the user configured with their own ``node`` (gated on #124264).
 
 One real install through HEAD's ``scripts/install.sh`` into a HOME carrying Fedora's stock
@@ -112,7 +112,7 @@ def _user_toolchain(root: Path) -> dict[str, Path]:
             f"  --version|-v) echo {ver}; exit 0 ;;\n"
             f"{serve}"
             "esac\n"
-            f'echo "user {name} {ver}: refusing to run \'$*\' (Hermes must use its managed toolchain here)" >&2\n'
+            f'echo "user {name} {ver}: refusing to run \'$*\' (Kova must use its managed toolchain here)" >&2\n'
             "exit 1\n", encoding="utf-8")
         p.chmod(0o755)
     return {"bin": sysbin, "calls": calls, "server_js": server_js, "marker": marker}
@@ -191,7 +191,7 @@ def test_mcp_server_configured_with_the_users_node_runs_on_the_users_node(world,
     sb, user = world["sb"], world["user"]
     assert world["install"].returncode == 0, I.describe(world["install"])
     X.configure(sb, provider)
-    cfg = sb.hermes_home / "config.yaml"
+    cfg = sb.kova_home / "config.yaml"
     cfg.write_text(cfg.read_text(encoding="utf-8")
                    + f"mcp_servers:\n  usernode:\n    command: node\n    args: [\"{user['server_js']}\"]\n",
                    encoding="utf-8")
@@ -206,4 +206,4 @@ def test_mcp_server_configured_with_the_users_node_runs_on_the_users_node(world,
         assert not managed and ran_js, (
             f"MCP server configured with `command: node` ran on {managed!r}, not the user's node "
             f"({user['bin'] / 'node'}, {USER_NODE_VERSION}):\n" + I.describe(probe))
-    assert probe.returncode == 0, "`hermes mcp test` failed although the user's node served the MCP server:\n" + I.describe(probe)
+    assert probe.returncode == 0, "`kova mcp test` failed although the user's node served the MCP server:\n" + I.describe(probe)

@@ -1,4 +1,4 @@
-"""Tests for CodexEventProjector — codex item/* events → Hermes messages list.
+"""Tests for CodexEventProjector — codex item/* events → Kova messages list.
 
 Drives projection against fixture notifications captured from codex 0.130.0
 plus synthetic ones for item types we couldn't auth-test live."""
@@ -109,7 +109,7 @@ def test_successful_marker_ending_output_survives_persisted_replay(tmp_path):
     from agent.codex_runtime import _persist_projected_messages
     from agent.replay_cleanup import canonicalize_replay_history
     from agent.session_persistence import SessionPersistenceMixin
-    from hermes_state import SessionDB
+    from kova_state import SessionDB
 
     output = "Documentation example:\n[Command interrupted]\n"
     item = {"type": "commandExecution", "id": "child", "command": "cat doc", "cwd": str(tmp_path),
@@ -222,7 +222,7 @@ class TestMcpToolCallProjection:
             "server": "obsidian",
             "tool": "search_notes",
             "status": "completed",
-            "arguments": {"query": "hermes"},
+            "arguments": {"query": "kova"},
             "result": {"content": [{"text": "found"}]},
             "error": None,
         }
@@ -293,7 +293,7 @@ class TestHelpers:
 
 class TestRoleAlternationInvariant:
     """The project must never emit two assistant messages back-to-back from
-    one item — that breaks Hermes' message alternation invariant."""
+    one item — that breaks Kova' message alternation invariant."""
 
     @pytest.mark.parametrize(
         "item",

@@ -99,20 +99,20 @@ def _is_deepseek_anthropic_endpoint(base_url: str | None) -> bool:
 
     Per DeepSeek's published compatibility matrix the blocks are unsigned (no Anthropic-proprietary
     signature, no ``redacted_thinking`` support), so this endpoint is handled with the same strip-signed /
-    keep-unsigned policy used for Kimi's ``/coding`` endpoint. See hermes-agent#16748.
+    keep-unsigned policy used for Kimi's ``/coding`` endpoint. See kova-agent#16748.
     """
     return base_url_host_matches(base_url or "", "api.deepseek.com") and "/anthropic" in _normalized_lower(base_url)
 
 
 def _is_nous_portal_endpoint(base_url: str | None) -> bool:
     """Nous Portal's Anthropic Messages route (Bearer JWT, verbatim catalog ids, native
-    thinking-signature replay). Trusted hosts only: prod ``inference-api.nousresearch.com`` or the
+    thinking-signature replay). Trusted hosts only: prod ``inference-api.openkova.com`` or the
     operator-set ``NOUS_INFERENCE_BASE_URL`` host (exact hostname equality, so neither lookalike
     domains nor sibling hosts of the override match)."""
-    if base_url_host_matches(base_url or "", "inference-api.nousresearch.com"):
+    if base_url_host_matches(base_url or "", "inference-api.openkova.com"):
         return True
     try:
-        from hermes_cli.auth import _nous_inference_env_override
+        from kova_cli.auth import _nous_inference_env_override
         override = _nous_inference_env_override()
     except Exception:
         return False

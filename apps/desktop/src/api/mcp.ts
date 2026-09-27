@@ -1,4 +1,4 @@
-import type { McpCatalogResponse, McpServerSummary } from '@/types/hermes'
+import type { McpCatalogResponse, McpServerSummary } from '@/types/kova'
 
 import { capabilityScoped, hermesApi, type ProfileScope, profileScoped } from './client'
 
@@ -34,7 +34,7 @@ export function testMcpServer(name: string, profile?: ProfileScope): Promise<Mcp
 }
 
 /** Replace the whole `mcp_servers` map (the mcp.json editor's save). Unlike
- *  `saveHermesConfig`, this REPLACES rather than deep-merges, so deletes,
+ *  `saveKovaConfig`, this REPLACES rather than deep-merges, so deletes,
  *  re-enables (dropping `enabled: false`), and removed nested fields persist. */
 export function saveMcpServers(
   servers: Record<string, Record<string, unknown>>,
@@ -63,8 +63,8 @@ export function mcpOAuthRpc(scope?: ProfileScope) {
 
 // ---------------------------------------------------------------------------
 // MCP servers — structured list / test / enable toggle / catalog (parity with
-// `hermes mcp` and the dashboard MCP page). Raw JSON editing stays in
-// config.yaml via saveHermesConfig.
+// `kova mcp` and the dashboard MCP page). Raw JSON editing stays in
+// config.yaml via saveKovaConfig.
 // ---------------------------------------------------------------------------
 
 export function listMcpServers(): Promise<{ servers: McpServerSummary[] }> {

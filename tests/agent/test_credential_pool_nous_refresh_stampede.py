@@ -19,19 +19,19 @@ Two invariants pinned here:
 import json
 import logging
 
-import hermes_cli.auth as auth_mod
-import hermes_cli.auth_nous as auth_nous
+import kova_cli.auth as auth_mod
+import kova_cli.auth_nous as auth_nous
 from agent.credential_pool import CredentialPool, PooledCredential
 
-from tests.hermes_cli.test_auth_nous_provider import _invoke_jwt, _setup_nous_auth
+from tests.kova_cli.test_auth_nous_provider import _invoke_jwt, _setup_nous_auth
 
 
 def test_forced_refresh_adopts_peer_rotation_instead_of_reposting(tmp_path, monkeypatch):
-    hermes_home = tmp_path / "hermes"
+    kova_home = tmp_path / "kova"
     peer_token = _invoke_jwt(seconds=3600)
     failed_token = _invoke_jwt(seconds=3000)  # what THIS process still holds
     _setup_nous_auth(
-        hermes_home,
+        kova_home,
         access_token=peer_token,
         refresh_token="rt-after-peer-rotation",
         scope=auth_mod.DEFAULT_NOUS_SCOPE,
@@ -40,7 +40,7 @@ def test_forced_refresh_adopts_peer_rotation_instead_of_reposting(tmp_path, monk
         ).isoformat(),
         expires_in=3600,
     )
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+    monkeypatch.setenv("KOVA_HOME", str(kova_home))
 
     posts = []
 
@@ -116,7 +116,7 @@ def test_agent_401_refresh_passes_failed_bearer_as_stale_hint(monkeypatch):
     agent.provider = "nous"
     agent.api_mode = "chat_completions"
     agent.api_key = "jwt-that-just-401d"
-    agent.base_url = "https://inference-api.nousresearch.com/v1"
+    agent.base_url = "https://inference-api.openkova.com/v1"
     agent._client_kwargs = {}
     monkeypatch.setattr(agent, "_replace_primary_openai_client", lambda **k: True)
 

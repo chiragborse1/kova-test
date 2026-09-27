@@ -22,14 +22,14 @@ test('windows git spawn uses a CREATE_NO_WINDOW host and does not rewrite git ar
     gitBin,
     args: gitArgs,
     isWindows: true,
-    pythonBin: 'C:\\hermes\\venv\\Scripts\\python.exe',
-    scriptPath: 'C:\\hermes\\no-console-git.py',
+    pythonBin: 'C:\\kova\\venv\\Scripts\\python.exe',
+    scriptPath: 'C:\\kova\\no-console-git.py',
     env: { GIT_TERMINAL_PROMPT: '0', PATH: 'C:\\Windows' }
   })
 
-  assert.equal(plan.command, 'C:\\hermes\\venv\\Scripts\\python.exe')
-  assert.deepEqual(plan.args, ['C:\\hermes\\no-console-git.py', ...gitArgs])
-  assert.equal(plan.env.HERMES_GIT_ARGV0, JSON.stringify(gitBin))
+  assert.equal(plan.command, 'C:\\kova\\venv\\Scripts\\python.exe')
+  assert.deepEqual(plan.args, ['C:\\kova\\no-console-git.py', ...gitArgs])
+  assert.equal(plan.env.KOVA_GIT_ARGV0, JSON.stringify(gitBin))
   assert.equal(plan.env.GIT_TERMINAL_PROMPT, '0')
   assert.equal(plan.windowsHide, true)
   assert.deepEqual(plan.stdio, ['ignore', 'pipe', 'pipe'])
@@ -57,7 +57,7 @@ test('missing python does not rewrite git argv', () => {
     args: gitArgs,
     isWindows: true,
     pythonBin: null,
-    scriptPath: 'C:\\hermes\\no-console-git.py'
+    scriptPath: 'C:\\kova\\no-console-git.py'
   })
 
   assert.equal(plan.command, 'git.exe')
@@ -68,10 +68,10 @@ test('simple-git binary is the python host tuple on windows', () => {
   assert.deepEqual(
     simpleGitBinary('git.exe', {
       isWindows: true,
-      pythonBin: 'C:\\hermes\\venv\\Scripts\\python.exe',
-      scriptPath: 'C:\\hermes\\no-console-git.py'
+      pythonBin: 'C:\\kova\\venv\\Scripts\\python.exe',
+      scriptPath: 'C:\\kova\\no-console-git.py'
     }),
-    ['C:\\hermes\\venv\\Scripts\\python.exe', 'C:\\hermes\\no-console-git.py']
+    ['C:\\kova\\venv\\Scripts\\python.exe', 'C:\\kova\\no-console-git.py']
   )
 })
 
@@ -79,18 +79,18 @@ test('python resolver skips pythonw and the WindowsApps stub', () => {
   const python = resolveNoConsolePython({
     isWindows: true,
     env: {
-      HERMES_DESKTOP_PYTHON: 'C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe',
-      HERMES_DESKTOP_HERMES_ROOT: 'D:\\hermes'
+      KOVA_DESKTOP_PYTHON: 'C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe',
+      KOVA_DESKTOP_KOVA_ROOT: 'D:\\kova'
     },
     roots: ['E:\\src'],
     fileExists: () => true
   })
 
-  assert.equal(python, path.win32.join('D:\\hermes', '.venv', 'Scripts', 'python.exe'))
+  assert.equal(python, path.win32.join('D:\\kova', '.venv', 'Scripts', 'python.exe'))
   assert.equal(
     resolveNoConsolePython({
       isWindows: true,
-      env: { HERMES_DESKTOP_PYTHON: 'C:\\hermes\\venv\\Scripts\\pythonw.exe' },
+      env: { KOVA_DESKTOP_PYTHON: 'C:\\kova\\venv\\Scripts\\pythonw.exe' },
       roots: [],
       fileExists: () => true
     }),
@@ -99,7 +99,7 @@ test('python resolver skips pythonw and the WindowsApps stub', () => {
   assert.equal(
     resolveNoConsolePython({
       isWindows: true,
-      env: { HERMES_DESKTOP_PYTHON: 'C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe' },
+      env: { KOVA_DESKTOP_PYTHON: 'C:\\Users\\me\\AppData\\Local\\Microsoft\\WindowsApps\\python.exe' },
       roots: [],
       fileExists: () => true
     }),
@@ -108,7 +108,7 @@ test('python resolver skips pythonw and the WindowsApps stub', () => {
 })
 
 test('host script forwards git argv unchanged and sets CREATE_NO_WINDOW', () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'hermes-no-console-git-'))
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'kova-no-console-git-'))
 
   try {
     const script = path.join(dir, 'host.py')
@@ -119,9 +119,9 @@ test('host script forwards git argv unchanged and sets CREATE_NO_WINDOW', () => 
       encoding: 'utf8',
       env: {
         ...process.env,
-        HERMES_GIT_ARGV0: JSON.stringify(gitBin),
-        HERMES_GIT_DRY_RUN: '1',
-        HERMES_GIT_NO_CONSOLE: '1'
+        KOVA_GIT_ARGV0: JSON.stringify(gitBin),
+        KOVA_GIT_DRY_RUN: '1',
+        KOVA_GIT_NO_CONSOLE: '1'
       }
     })
 

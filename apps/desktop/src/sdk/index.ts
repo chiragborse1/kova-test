@@ -1,12 +1,12 @@
 /**
- * @hermes/plugin-sdk — THE plugin language. The vscode-module model: plugin
+ * @kova/plugin-sdk — THE plugin language. The vscode-module model: plugin
  * authors import exactly one module and get everything — they never touch
  * `@/…` internals (lint-fenced) and never need codebase access.
  *
  * Two delivery modes, one surface:
  *  - bundled (`src/plugins/<name>/`): the import resolves here via alias;
  *  - runtime-fetched (plugin host, next phase): the loader injects this same
- *    object as `window.__HERMES_PLUGIN_SDK__` and maps the import to it, so a
+ *    object as `window.__KOVA_PLUGIN_SDK__` and maps the import to it, so a
  *    published plugin builds against the types with the SDK marked external.
  *
  * Capability tiers (WoW-style):
@@ -46,7 +46,7 @@ import {
 import { onGatewayEvent } from '@/contrib/events'
 import { registry } from '@/contrib/registry'
 import type { WorkspaceMode } from '@/contrib/types'
-import { deleteProfile, getLogs, getStatus, hermesApi, type HermesGateway } from '@/hermes'
+import { deleteProfile, getLogs, getStatus, hermesApi, type KovaGateway } from '@/kova'
 import { completeMcpDesktopOAuth } from '@/lib/mcp-dashboard-oauth'
 import {
   $gateway,
@@ -104,7 +104,7 @@ import {
   sessionTileDelegate
 } from '@/store/session-states'
 import { runGatewayRestart } from '@/store/system-actions'
-import type { PaginatedSessions, UsageStats } from '@/types/hermes'
+import type { PaginatedSessions, UsageStats } from '@/types/kova'
 
 import { pluginDecisions, profiles, skills, toolsets } from './bridge'
 import { composerHost } from './composer'
@@ -211,7 +211,7 @@ export interface PluginProfileRoute {
   mode: 'local' | 'remote'
   /** Desktop profile used to select the connection route. */
   profile: string
-  /** Backend Hermes profile served by that route. */
+  /** Backend Kova profile served by that route. */
   targetProfile: string
 }
 
@@ -606,7 +606,7 @@ function waitForFocusedSessionHydration({
 
 // Wait for a profile switch, but never longer than the wake budget.
 //
-// ensureGatewayProfile awaits the store's dial, and HermesGateway.connect() has
+// ensureGatewayProfile awaits the store's dial, and KovaGateway.connect() has
 // no dial timeout of its own: a backend that accepts the socket and then never
 // completes the handshake leaves this promise pending for the life of the
 // window. That is not merely a slow open. waitForFocusedSessionHydration arms
@@ -854,7 +854,7 @@ export const host = {
     )
 
     // The profile is gone. Drop its persisted tiles now — a leftover tile
-    // restores on relaunch and re-creates the deleted profile (hermes-agent#94235).
+    // restores on relaunch and re-creates the deleted profile (kova-agent#94235).
     dropTilesForProfile(
       route ? route.profile : name,
       route
@@ -891,7 +891,7 @@ export const host = {
     const bridge = window.hermesDesktop?.connections
 
     if (!bridge) {
-      throw new Error('This Desktop build has no connection registry. Update Hermes Desktop.')
+      throw new Error('This Desktop build has no connection registry. Update Kova Desktop.')
     }
 
     const registryPayload = await bridge.list()
@@ -908,7 +908,7 @@ export const host = {
     const roster = window.hermesDesktop?.getAgentRoster
 
     if (!roster) {
-      throw new Error('This Desktop build cannot enumerate multi-source agents. Update Hermes Desktop.')
+      throw new Error('This Desktop build cannot enumerate multi-source agents. Update Kova Desktop.')
     }
 
     return roster()
@@ -1378,7 +1378,7 @@ export const host = {
       const openTab = $newSessionTabAction.get()
 
       if (!openTab) {
-        notify({ kind: 'error', message: 'Update Hermes Desktop to open another Bot chat.' })
+        notify({ kind: 'error', message: 'Update Kova Desktop to open another Bot chat.' })
 
         return
       }
@@ -1404,7 +1404,7 @@ export const host = {
    *  they closed) are respected. Presentation only: no gateway activation,
    *  no session create. Feature-detect on older desktops.
    *
-   *  `isStaleTile` (hermes-agent#90102): the caller's reconciliation probe
+   *  `isStaleTile` (kova-agent#90102): the caller's reconciliation probe
    *  against backend truth. The tile bucket is a Local Storage cache — a
    *  persisted bot tile can name a session the backend has since superseded,
    *  and fronting it pinned the roster click to a stale finished session
@@ -1475,7 +1475,7 @@ export const host = {
     const getProfileRoutes = desktop?.getProfileRoutes
 
     if (!getProfileRoutes) {
-      throw new Error('Hermes Desktop connection routing unavailable')
+      throw new Error('Kova Desktop connection routing unavailable')
     }
 
     let profiles = $profiles.get()
@@ -1619,7 +1619,7 @@ export const host = {
     const gateway = $gateway.get()
 
     if (!gateway) {
-      throw new Error('Hermes gateway unavailable')
+      throw new Error('Kova gateway unavailable')
     }
 
     return timeoutMs === undefined ? gateway.request<T>(method, params) : gateway.request<T>(method, params, timeoutMs)
@@ -1627,10 +1627,10 @@ export const host = {
 
   /** The LIVE gateway instance for the active profile (null before the first
    *  socket opens). Most plugins want `host.request`; this exists for SDK
-   *  components that take a `HermesGateway` prop directly (e.g. `ConnectorsTab`),
+   *  components that take a `KovaGateway` prop directly (e.g. `ConnectorsTab`),
    *  which need the instance, not just a JSON-RPC door. Re-read per use — the
    *  active instance changes on a profile swap. */
-  getGateway: (): HermesGateway | null => $gateway.get(),
+  getGateway: (): KovaGateway | null => $gateway.get(),
 
   composer: composerHost
 }
@@ -1764,7 +1764,7 @@ export type { TitlebarTool } from '@/app/shell/titlebar-controls'
  * core chat. Prefer this over raw Streamdown for transcript-style messages. */
 export { MessageTextContent } from '@/components/assistant-ui/markdown-text'
 /** The oversized Collapse lettering an empty chat is titled with — core writes
- *  "HERMES AGENT" with it, a `chat.empty` contribution writes its own name. */
+ *  "KOVA AGENT" with it, a `chat.empty` contribution writes its own name. */
 export { Wordmark } from '@/components/chat/wordmark'
 /** Pane placement roles. `'floating'` is the one NON-tiling value: the pane is
  *  excluded from the layout tree and rendered as a fixed, draggable card above
@@ -1849,7 +1849,7 @@ export { Textarea } from '@/components/ui/textarea'
 export { Tip, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 export type { GatewayEventListener } from '@/contrib/events'
 export type {
-  HermesPlugin,
+  KovaPlugin,
   PluginContext,
   PluginContribution,
   PluginNativeNotificationInput,
@@ -1870,7 +1870,7 @@ export { Contribute, type ContributeProps } from '@/contrib/react/contribute'
 export type { Contribution } from '@/contrib/types'
 /** The live gateway instance type — for typing the `gateway` prop `ConnectorsTab`
  *  takes; obtain the instance from `host.getGateway()`. */
-export type { HermesGateway } from '@/hermes'
+export type { KovaGateway } from '@/kova'
 /** Grab-to-pan for overflow containers (boards, timelines, wide tables) —
  *  the shared scrub primitive; don't hand-roll drag-to-scroll. */
 export { type GrabScroll, useGrabScroll } from '@/hooks/use-grab-scroll'
@@ -1915,7 +1915,7 @@ export {
   type SurfaceModelSwitchConfirmOptions
 } from '@/lib/guarded-model-switch'
 export { triggerHaptic as haptic } from '@/lib/haptics'
-export type { HermesOpenTarget } from '@/lib/hermes-open-target'
+export type { KovaOpenTarget } from '@/lib/kova-open-target'
 /** The app's lucide icon set (RefreshCw, LayoutDashboard, Activity, …). */
 export * as icons from '@/lib/icons'
 /** IME-aware Enter: true only for a real submit Enter, never a CJK composition
@@ -1941,7 +1941,7 @@ export { PROFILE_SWATCHES, profileColor, profileColorSoft } from '@/lib/profile-
  *  `ctx.socket` frame invalidating a query). Inside components keep using
  *  `useQueryClient`. */
 export { queryClient } from '@/lib/query-client'
-/** Compact labels for the reasoning levels exported from @hermes/shared, so a
+/** Compact labels for the reasoning levels exported from @kova/shared, so a
  *  plugin surfacing a thinking depth uses the same spelling as the app. */
 export { reasoningEffortLabel } from '@/lib/reasoning-effort'
 
@@ -2029,29 +2029,29 @@ export { requestTheme } from '@/themes/request'
 export { retintTheme, themeHue } from '@/themes/retint'
 export type { DesktopTheme, DesktopThemeColors } from '@/themes/types'
 export { THEMES_AREA } from '@/themes/user-themes'
-export type { StatusResponse } from '@/types/hermes'
+export type { StatusResponse } from '@/types/kova'
 /** Public SDK name for the shared gateway wire event; kept stable for plugins. */
-export type { GatewayEvent as RpcEvent } from '@hermes/shared'
+export type { GatewayEvent as RpcEvent } from '@kova/shared'
 /** Bot Screen wire shapes, generated from `tui_gateway/contracts/display.py`. */
-export type { DisplayLease, DisplayObserveResult, DisplayStatus, DisplayThumbnailResult } from '@hermes/shared'
+export type { DisplayLease, DisplayObserveResult, DisplayStatus, DisplayThumbnailResult } from '@kova/shared'
 /** THE compact-number formatter — every user-facing count/token figure goes
  *  through here (1230 → "1.2k", 1_500_000 → "1.5M"). Don't hand-roll `/1000`. */
-export { compactNumber } from '@hermes/shared'
+export { compactNumber } from '@kova/shared'
 /** Client deadline for `approval.respond`: matches the backend's
  *  `approvals.timeout` (300s) so a plugin answering an approval never rejects
  *  its own RPC while the backend still applies the decision (#60654). */
-export { APPROVAL_RESPOND_TIMEOUT_MS } from '@hermes/shared'
-/** Hermes' reasoning levels, so a plugin surfacing a thinking depth uses the
+export { APPROVAL_RESPOND_TIMEOUT_MS } from '@kova/shared'
+/** Kova' reasoning levels, so a plugin surfacing a thinking depth uses the
  *  same scale as the rest of the app (labels: `reasoningEffortLabel`). */
 export {
   DEFAULT_REASONING_EFFORT,
   REASONING_EFFORT_VALUES,
   REASONING_EFFORTS,
   type ReasoningEffort
-} from '@hermes/shared'
+} from '@kova/shared'
 /** WCAG contrast, from the sRGB primitives shared with the TUI (`null` for
  *  an unparseable colour, never a fake 0). */
-export { contrastRatio } from '@hermes/shared/color'
+export { contrastRatio } from '@kova/shared/color'
 /** Subscribe a component to a `host.state` atom. */
 export { useStore as useValue } from '@nanostores/react'
 /** The app's data-fetching layer. Plugins share the ONE QueryClient mounted at

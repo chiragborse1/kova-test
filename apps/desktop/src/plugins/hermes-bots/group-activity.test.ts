@@ -16,7 +16,7 @@ import type { GroupMember } from './types'
 
 const { host } = vi.hoisted(() => ({ host: {} as Record<string, unknown> }))
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { pluginSdkMock } = await import('./group-test-utils')
 
   return pluginSdkMock(host)
@@ -195,7 +195,7 @@ describe('turn arc', () => {
       turn: ({ profile }) => {
         if (profile === 'builder') {
           throw new Error(
-            'Error invoking remote method \'hermes:api\': Local backend start for "builder" timed out while waiting for a free slot.'
+            'Error invoking remote method \'kova:api\': Local backend start for "builder" timed out while waiting for a free slot.'
           )
         }
 

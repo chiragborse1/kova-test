@@ -1,7 +1,7 @@
 """Nous Portal ``anthropic/*`` models route on the native Messages wire.
 
 Portal serves its ``anthropic/*`` catalog at
-``https://inference-api.nousresearch.com/v1/messages`` alongside the
+``https://inference-api.openkova.com/v1/messages`` alongside the
 OpenAI-compatible ``/v1/chat/completions`` used by everything else it proxies.
 These tests pin the contracts that make that routing correct:
 
@@ -20,9 +20,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from hermes_cli import runtime_provider as rp
-from hermes_cli import providers as _providers
-from hermes_cli.providers import nous_api_mode
+from kova_cli import runtime_provider as rp
+from kova_cli import providers as _providers
+from kova_cli.providers import nous_api_mode
 
 
 @pytest.fixture(autouse=True)
@@ -33,7 +33,7 @@ def _native_wire_selected(monkeypatch):
     ``test_nous_anthropic_wire_default.py``."""
     monkeypatch.setattr(_providers, "_nous_anthropic_wire", lambda: "native")
 
-PORTAL_URL = "https://inference-api.nousresearch.com/v1"
+PORTAL_URL = "https://inference-api.openkova.com/v1"
 # Staging / preview hosts used via NOUS_INFERENCE_BASE_URL — not the prod
 # hostname, so Portal behaviour must key off provider=nous.
 STAGING_URL = "https://ai.wildebeest-newton.ts.net/v1"
@@ -65,9 +65,9 @@ class TestApiModeRouting:
 
     def test_determine_api_mode_honors_the_model_for_nous(self):
         """Callers that skip resolve_runtime_provider (fallback, switch_model
-        empty-mode path) must still land Claude on Messages — the Hermes
+        empty-mode path) must still land Claude on Messages — the Kova
         overlay alone advertises openai_chat for every Nous model."""
-        from hermes_cli.providers import determine_api_mode
+        from kova_cli.providers import determine_api_mode
 
         assert (
             determine_api_mode(
@@ -184,7 +184,7 @@ class TestClientShape:
         Bearer token. Hostname matching must reject it."""
         from agent.anthropic_endpoints import _is_nous_portal_endpoint, _requires_bearer_auth
 
-        spoofed = "https://inference-api.nousresearch.com.attacker.test/v1"
+        spoofed = "https://inference-api.openkova.com.attacker.test/v1"
         assert not _is_nous_portal_endpoint(spoofed)
         assert not _requires_bearer_auth(spoofed)
 
@@ -204,7 +204,7 @@ class TestClientShape:
         self, monkeypatch
     ):
         """The Anthropic SDK fills api_key from ANTHROPIC_API_KEY when the
-        constructor omits it. Hermes loads that env from ~/.hermes/.env, so
+        constructor omits it. Kova loads that env from ~/.kova/.env, so
         without an explicit clear every Portal request would dual-auth as
         X-Api-Key: sk-ant-… + Authorization: Bearer portal.jwt."""
         from agent.anthropic_adapter import build_anthropic_client
@@ -299,12 +299,12 @@ class TestPortalBodyFields:
         return build_api_kwargs(agent, [{"role": "user", "content": "hi"}])
 
     def test_portal_tags_reach_the_messages_request(self):
-        from agent.portal_tags import hermes_client_tag
+        from agent.portal_tags import kova_client_tag
 
         tags = self._build()["extra_body"]["tags"]
 
-        assert "product=hermes-agent" in tags
-        assert hermes_client_tag() in tags
+        assert "product=kova-agent" in tags
+        assert kova_client_tag() in tags
         assert all(isinstance(tag, str) for tag in tags), (
             "Portal skips non-string tag entries unpredictably"
         )

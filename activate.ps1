@@ -1,5 +1,5 @@
 # Source this file to sync and apply the PM environment; deactivate restores it.
-# Trusts the recorded tool digest. `hermes pm install` re-checks the bytes.
+# Trusts the recorded tool digest. `kova pm install` re-checks the bytes.
 # -TestExtras a,b selects runtime extras in the test environment (default: [all]).
 param([string]$TestExtras = '')
 $ErrorActionPreference = 'Stop'
@@ -18,7 +18,7 @@ try {
     $shell = (Get-Process -Id $PID).Path
     $testArgs = @()
     if ($TestExtras) { $testArgs = @('-TestExtras', $TestExtras) }
-    & $shell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$repo\setup-hermes.ps1" -RuntimeOnly @testArgs | Out-Host
+    & $shell -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$repo\setup-kova.ps1" -RuntimeOnly @testArgs | Out-Host
     if ($LASTEXITCODE -ne 0) { throw 'activate: setup failed; shell environment unchanged' }
 } finally {
     foreach ($key in $bootstrapSaved.Keys) {
@@ -32,8 +32,8 @@ foreach ($candidate in @("$repo\.venv\Scripts\python.exe", "$repo\venv\Scripts\p
     if (Test-Path -LiteralPath $candidate) { $py = $candidate; break }
 }
 if (-not $py) {
-    $roots = @($env:HERMES_RUNTIME_DIR, "$repo\..\tools")
-    $homeRoot = if ($env:HERMES_HOME) { $env:HERMES_HOME } else { "$env:LOCALAPPDATA\hermes" }
+    $roots = @($env:KOVA_RUNTIME_DIR, "$repo\..\tools")
+    $homeRoot = if ($env:KOVA_HOME) { $env:KOVA_HOME } else { "$env:LOCALAPPDATA\kova" }
     $roots += (Join-Path $homeRoot 'tools')
     foreach ($root in $roots) {
         if (-not $root) { continue }
@@ -44,7 +44,7 @@ if (-not $py) {
         if ($py) { break }
     }
 }
-if (-not $py) { throw 'activate: no bootstrap Python found; run setup-hermes.ps1' }
+if (-not $py) { throw 'activate: no bootstrap Python found; run setup-kova.ps1' }
 $priorPath = $env:PYTHONPATH
 $priorHome = $env:PYTHONHOME
 try {
@@ -57,7 +57,7 @@ try {
     if ($null -eq $priorPath) { Remove-Item env:PYTHONPATH -ErrorAction SilentlyContinue } else { $env:PYTHONPATH = $priorPath }
     if ($null -eq $priorHome) { Remove-Item env:PYTHONHOME -ErrorAction SilentlyContinue } else { $env:PYTHONHOME = $priorHome }
 }
-# __HERMES_ACTIVATED (the sentinel repo scripts and the shebang prologue read)
+# __KOVA_ACTIVATED (the sentinel repo scripts and the shebang prologue read)
 # is part of the composed env, so it is saved and restored with the rest.
 $global:_hermesKeys = @($composed.PSObject.Properties.Name)
 $global:_hermesSaved = @{}
@@ -70,7 +70,7 @@ foreach ($key in $global:_hermesKeys) {
 foreach ($property in $composed.PSObject.Properties) {
     Set-Item -Path "env:$($property.Name)" -Value ([string]$property.Value)
 }
-# This checkout, not whichever `hermes` PATH finds. A function beats PATH,
+# This checkout, not whichever `kova` PATH finds. A function beats PATH,
 # an alias, and the MSIX execution alias. It runs only while the shell is
 # inside this worktree.
 $global:_hermesWorktree = $repo
@@ -102,10 +102,10 @@ function global:_hermesWorktreeHere {
     return $here.Equals($root, [System.StringComparison]::OrdinalIgnoreCase)
 }
 
-function global:hermes {
+function global:kova {
     if (-not (_hermesWorktreeHere)) {
         $here = (Get-Location).Path
-        Write-Error "hermes: $here is outside $($global:_hermesWorktree); refusing (the installed command is hidden while this checkout is active)" -ErrorAction Continue
+        Write-Error "kova: $here is outside $($global:_hermesWorktree); refusing (the installed command is hidden while this checkout is active)" -ErrorAction Continue
         $global:LASTEXITCODE = 1
         return
     }
@@ -121,7 +121,7 @@ function global:hermes {
             }
         }
         if (-not $py) { $py = 'python' }
-        & $py hermes @args
+        & $py kova @args
     } finally {
         Pop-Location
     }
@@ -152,5 +152,5 @@ function global:deactivate {
     $global:_hermesWorktree = $null
     $global:_hermesWorktreeName = $null
     $global:_hermesSavedPrompt = $null
-    Remove-Item function:deactivate, function:hermes, function:_hermesWorktreeHere -ErrorAction SilentlyContinue
+    Remove-Item function:deactivate, function:kova, function:_hermesWorktreeHere -ErrorAction SilentlyContinue
 }

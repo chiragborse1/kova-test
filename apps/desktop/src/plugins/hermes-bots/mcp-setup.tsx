@@ -6,14 +6,14 @@
  * the button, so it lives below both.
  */
 
-import { Button, host, Input, useI18n } from '@hermes/plugin-sdk'
+import { Button, host, Input, useI18n } from '@kova/plugin-sdk'
 import { useEffect, useRef, useState } from 'react'
 
 import { useBots } from './i18n'
 
 // -- inline MCP setup (per-profile), driven by the mcp.servers.* gateway RPCs --
 // Feature-detected: if the gateway predates those RPCs the setup button hides
-// and the row falls back to the "run hermes mcp / Settings" hint. profile is
+// and the row falls back to the "run kova mcp / Settings" hint. profile is
 // the target bot's profile name (its config is what we write).
 
 /** Body of an `mcp.servers.*` reply. Some gateway builds wrap it in a second

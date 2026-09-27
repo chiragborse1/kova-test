@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import type { ProfileInfo } from '@/types/hermes'
+import type { ProfileInfo } from '@/types/kova'
 
 vi.mock('@/app/chat/session-view', async () => {
   const { atom } = await import('nanostores')
@@ -14,7 +14,7 @@ vi.mock('@/components/pane-shell/tree/store', async () => {
   return { $narrowViewport: atom(false) }
 })
 vi.mock('@/contrib/events', () => ({ onGatewayEvent: vi.fn() }))
-vi.mock('@/hermes', () => ({ deleteProfile: vi.fn(), getLogs: vi.fn(), getStatus: vi.fn(), hermesApi: vi.fn() }))
+vi.mock('@/kova', () => ({ deleteProfile: vi.fn(), getLogs: vi.fn(), getStatus: vi.fn(), hermesApi: vi.fn() }))
 vi.mock('@/store/notifications', () => ({ notify: vi.fn(), notifyError: vi.fn() }))
 vi.mock('@/store/system-actions', () => ({ runGatewayRestart: vi.fn() }))
 vi.mock('@/store/session', async () => {
@@ -126,7 +126,7 @@ vi.mock('@/store/gateway', async () => {
 const { HYDRATION_SYNC_BADGE_TIMEOUT_MS, host } = await import('./index')
 
 const { openSession: openSessionCore } = await import('@/app/open-session')
-const { deleteProfile, hermesApi } = await import('@/hermes')
+const { deleteProfile, hermesApi } = await import('@/kova')
 
 const {
   activeGatewayConnectionId,
@@ -224,7 +224,7 @@ describe('connection-aware plugin host APIs', () => {
     // badge whose click hot-loops against the deletion guard (#88769).
     expect(refreshProfiles).toHaveBeenCalled()
     // A leftover Bot Mode tile would restore on relaunch and dial the deleted
-    // profile's backend, re-creating its HERMES_HOME (#94235).
+    // profile's backend, re-creating its KOVA_HOME (#94235).
     expect(dropTilesForProfile).toHaveBeenCalledWith('worker', undefined)
   })
 

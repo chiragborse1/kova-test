@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import type { HermesConfigRecord } from '@/hermes'
+import type { KovaConfigRecord } from '@/kova'
 
 import { TRANSLATIONS } from './catalog'
 import { type I18nConfigClient, I18nProvider, useI18n } from './context'
@@ -143,7 +143,7 @@ describe('I18nProvider', () => {
   it('reads latest config before saving language and preserves unrelated values', async () => {
     const saveConfig = vi.fn().mockResolvedValue({ ok: true })
 
-    const latestConfig: HermesConfigRecord = {
+    const latestConfig: KovaConfigRecord = {
       display: { language: 'en', skin: 'slate' },
       terminal: { cwd: '/new' }
     }

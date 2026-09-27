@@ -1,7 +1,7 @@
 /**
  * PREVIEW TOUR — runs tour actions inside the preview pane's guest page, so a
  * tour can walk through ANY web app open in the in-app browser, not just
- * Hermes itself.
+ * Kova itself.
  *
  * The guest page is out-of-process; nothing here can touch its DOM directly.
  * Instead the first action injects a self-contained bundle over
@@ -33,9 +33,9 @@ function buildTourScript(action: TourAction): string {
     w.__hermesTourCollect = (${collectTourTargets.toString()});
     w.__hermesTourEngine = (${runTourEngine.toString()});
   }
-  if (!document.getElementById('__hermes-tour-style')) {
+  if (!document.getElementById('__kova-tour-style')) {
     var style = document.createElement('style');
-    style.id = '__hermes-tour-style';
+    style.id = '__kova-tour-style';
     style.textContent = ${JSON.stringify(driverCss)};
     (document.head || document.documentElement).appendChild(style);
   }

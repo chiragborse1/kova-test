@@ -7,7 +7,7 @@
  * competing answers in each surface.
  */
 
-import { atom, host, useValue } from '@hermes/plugin-sdk'
+import { atom, host, useValue } from '@kova/plugin-sdk'
 
 import { botActivitySession, botHandle, botRosterKey, isActiveRosterBot } from './data'
 import type { RosterActivityFilter, RosterRow } from './types'
@@ -39,7 +39,7 @@ export function previewKind(preview: null | string | undefined): { fromBot: null
   if (match) {
     // The captured name is whatever the delivery prefix carried — a raw
     // profile name. Map it the way every other surface does so the primary
-    // profile reads @hermes, never @default (#89484).
+    // profile reads @kova, never @default (#89484).
     const sender = (match[1] || match[2] || '').trim().toLowerCase()
 
     return {
@@ -78,7 +78,7 @@ const WORKER_ACTIVE_WINDOW_S = 150
 /** True while this bot's freshest kanban/tool worker looks alive. Workers
  *  never surface in conversation lists, so without this a profile grinding
  *  through a 30-minute kanban task reads idle ("3 hr ago") the whole time
- *  (hermes-agent#90268). Older gateways omit worker_session — always false. */
+ *  (kova-agent#90268). Older gateways omit worker_session — always false. */
 export function workerActiveAt(bot: null | RosterRow | undefined, now = Date.now()): boolean {
   const ts = bot?.worker_session?.last_active || 0
 

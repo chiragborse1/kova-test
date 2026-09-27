@@ -17,7 +17,7 @@ describe('build stamp → update ownership', () => {
     toolsDir: 'tools',
     storePython: 'tools/python/python',
     sitePackages: 'deps',
-    commands: { hermes: 'bin/hermes' }
+    commands: { kova: 'bin/kova' }
   }
 
   it.each([
@@ -35,7 +35,7 @@ describe('build stamp → update ownership', () => {
   ] as const)('%s %s dispatches its declared owner without a Store flag', (platform, variant, declared, strategy) => {
     const stamp: ReturnType<typeof buildStampPayload> = buildStampPayload(
       provenance,
-      { HERMES_DESKTOP_VARIANT: variant, HERMES_PAYLOAD_TAG: 'v1.2.3' },
+      { KOVA_DESKTOP_VARIANT: variant, KOVA_PAYLOAD_TAG: 'v1.2.3' },
       platform,
       { runtime }
     )
@@ -57,12 +57,12 @@ describe('build stamp → update ownership', () => {
 
 describe('buildManualUpdateCommand', () => {
   it('bare command on main and detached HEAD', () => {
-    expect(buildManualUpdateCommand('main')).toBe('hermes update')
-    expect(buildManualUpdateCommand('HEAD')).toBe('hermes update')
-    expect(buildManualUpdateCommand(null)).toBe('hermes update')
+    expect(buildManualUpdateCommand('main')).toBe('kova update')
+    expect(buildManualUpdateCommand('HEAD')).toBe('kova update')
+    expect(buildManualUpdateCommand(null)).toBe('kova update')
   })
 
   it('branch-pinned for non-main checkouts', () => {
-    expect(buildManualUpdateCommand('ethie/pm')).toBe('hermes update --branch ethie/pm')
+    expect(buildManualUpdateCommand('ethie/pm')).toBe('kova update --branch ethie/pm')
   })
 })

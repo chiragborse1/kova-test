@@ -14,7 +14,7 @@ import './kanban.css'
 import {
   cn,
   Codicon,
-  type HermesPlugin,
+  type KovaPlugin,
   host,
   type KeybindContribution,
   KEYBINDS_AREA,
@@ -28,7 +28,7 @@ import {
   Tip,
   useQuery,
   useValue
-} from '@hermes/plugin-sdk'
+} from '@kova/plugin-sdk'
 
 import { $boardSlug, bindApi, boardKey, fetchBoard, useKanbanScope } from './api'
 import { KanbanBoardPage } from './board'
@@ -78,7 +78,7 @@ function KanbanCount() {
   )
 }
 
-const plugin: HermesPlugin = {
+const plugin: KovaPlugin = {
   id: 'kanban',
   name: 'Kanban',
   description: 'Multi-agent task board — board page, sidebar entry, and a live in-flight count in the status bar.',

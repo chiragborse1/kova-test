@@ -1,4 +1,4 @@
-# nix/packages.nix — Hermes Agent package built with uv2nix
+# nix/packages.nix — Kova Agent package built with uv2nix
 { inputs, ... }:
 {
   perSystem =
@@ -34,7 +34,7 @@
       branch = if rawRef != null then builtins.replaceStrings [ "refs/heads/" ] [ "" ] rawRef else null;
       dirty = dirtyRevision != null;
       lastModified = inputs.self.lastModified or null;
-      minimal = pkgs.callPackage ./hermes-agent.nix {
+      minimal = pkgs.callPackage ./kova-agent.nix {
         inherit (inputs) uv2nix pyproject-nix pyproject-build-systems;
         npm-lockfile-fix = inputs'.npm-lockfile-fix.packages.default;
         inherit

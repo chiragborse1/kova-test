@@ -7,7 +7,7 @@ import {
   timelineIndexKey
 } from '@/components/assistant-ui/thread/timeline-index'
 import { type ChatMessage, toChatMessages } from '@/lib/chat-messages'
-import type { SessionMessagesResponse } from '@/types/hermes'
+import type { SessionMessagesResponse } from '@/types/kova'
 
 import { mergeOlderTranscriptPage } from './transcript-backfill'
 

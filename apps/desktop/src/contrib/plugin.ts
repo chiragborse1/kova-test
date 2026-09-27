@@ -1,6 +1,6 @@
 /**
  * The plugin authoring contract. A plugin is a file that default-exports a
- * `HermesPlugin`; it never touches the registry directly — it receives a
+ * `KovaPlugin`; it never touches the registry directly — it receives a
  * scoped `PluginContext` whose `register` auto-tags provenance
  * (`source: 'plugin:<id>'`) and namespaces the contribution id
  * (`<id>:<localId>`), so authors write plain contributions and collisions
@@ -12,7 +12,7 @@
  * through the plugin host loader (next phase); this is that seam.
  */
 
-import { pluginRest, type PluginRestOptions, pluginSocket } from '@/hermes'
+import { pluginRest, type PluginRestOptions, pluginSocket } from '@/kova'
 import { createPluginI18n, type PluginI18n } from '@/i18n'
 import { readKey, writeKey } from '@/lib/storage'
 import { dispatchPluginNativeNotification, type PluginNativeNotificationInput } from '@/store/native-notifications'
@@ -21,8 +21,8 @@ import { type GatewayEventListener, onGatewayEvent } from './events'
 import { registry } from './registry'
 import type { Contribution } from './types'
 
-export type { PluginRestOptions } from '@/hermes'
-export type { HermesOpenTarget } from '@/lib/hermes-open-target'
+export type { PluginRestOptions } from '@/kova'
+export type { KovaOpenTarget } from '@/lib/kova-open-target'
 export type { PluginNativeNotificationInput, PluginNotificationAction } from '@/store/native-notifications'
 
 /** A contribution as a plugin author writes it — provenance + id scoping are
@@ -30,7 +30,7 @@ export type { PluginNativeNotificationInput, PluginNotificationAction } from '@/
 export type PluginContribution = Omit<Contribution, 'source' | 'id'> & { id: string }
 
 /** Namespaced JSON persistence (the VS Code `globalState` analog). Keys live
- *  under `hermes.plugin.<id>.` — plugins can't read or clobber each other. */
+ *  under `kova.plugin.<id>.` — plugins can't read or clobber each other. */
 export interface PluginStorage {
   get<T>(key: string, fallback: T): T
   set(key: string, value: unknown): void
@@ -45,9 +45,9 @@ export interface PluginStorage {
 export interface PluginOs {
   /** Native OS notification (Electron), attributed to this plugin. Gated by
    *  Settings ▸ Notifications ▸ "Plugin notifications" and fires only while
-   *  the user is away from Hermes — use `host.notify` for the in-app toast.
+   *  the user is away from Kova — use `host.notify` for the in-app toast.
    *  Throttled per plugin; reserve it for genuinely notable events.
-   *  Supports `icon`, `activate` (e.g. `hermes://index-network/intent/1`),
+   *  Supports `icon`, `activate` (e.g. `kova://index-network/intent/1`),
    *  action buttons, and renderer `onActivate` / `onAction` callbacks. */
   notify: (input: PluginNativeNotificationInput) => void
   /** Open a URL with the OS default handler (browser, mail client, custom
@@ -125,7 +125,7 @@ export interface PluginContext {
   i18n: PluginI18n
 }
 
-export interface HermesPlugin {
+export interface KovaPlugin {
   /** Stable slug — becomes the `plugin:<id>` source and the id namespace. */
   id: string
   /** Human name for settings / about UI. */
@@ -141,7 +141,7 @@ export interface HermesPlugin {
 }
 
 function createPluginStorage(pluginId: string): PluginStorage {
-  const scoped = (key: string) => `hermes.plugin.${pluginId}.${key}`
+  const scoped = (key: string) => `kova.plugin.${pluginId}.${key}`
 
   return {
     get(key, fallback) {

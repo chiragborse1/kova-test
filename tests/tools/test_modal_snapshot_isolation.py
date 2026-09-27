@@ -29,25 +29,25 @@ def _reset_modules(prefixes: tuple[str, ...]):
 
 @pytest.fixture(autouse=True)
 def _restore_tool_modules():
-    original_hermes_home = os.environ.get("HERMES_HOME")
+    original_kova_home = os.environ.get("KOVA_HOME")
     original_modules = {
         name: module
         for name, module in sys.modules.items()
         if name == "tools"
         or name.startswith("tools.")
-        or name == "hermes_cli"
-        or name.startswith("hermes_cli.")
+        or name == "kova_cli"
+        or name.startswith("kova_cli.")
         or name == "modal"
         or name.startswith("modal.")
     }
     try:
         yield
     finally:
-        if original_hermes_home is None:
-            os.environ.pop("HERMES_HOME", None)
+        if original_kova_home is None:
+            os.environ.pop("KOVA_HOME", None)
         else:
-            os.environ["HERMES_HOME"] = original_hermes_home
-        _reset_modules(("tools", "hermes_cli", "modal"))
+            os.environ["KOVA_HOME"] = original_kova_home
+        _reset_modules(("tools", "kova_cli", "modal"))
         sys.modules.update(original_modules)
 
 
@@ -57,15 +57,15 @@ def _install_modal_test_modules(
     fail_on_snapshot_ids: set[str] | None = None,
     snapshot_id: str = "im-fresh",
 ):
-    _reset_modules(("tools", "hermes_cli", "modal"))
+    _reset_modules(("tools", "kova_cli", "modal"))
 
-    hermes_cli = types.ModuleType("hermes_cli")
-    hermes_cli.__path__ = [str(REPO_ROOT / "hermes_cli")]  # type: ignore[attr-defined]
-    sys.modules["hermes_cli"] = hermes_cli
-    hermes_home = tmp_path / "hermes-home"
-    os.environ["HERMES_HOME"] = str(hermes_home)
-    sys.modules["hermes_cli.config"] = types.SimpleNamespace(
-        get_hermes_home=lambda: hermes_home,
+    kova_cli = types.ModuleType("kova_cli")
+    kova_cli.__path__ = [str(REPO_ROOT / "kova_cli")]  # type: ignore[attr-defined]
+    sys.modules["kova_cli"] = kova_cli
+    kova_home = tmp_path / "kova-home"
+    os.environ["KOVA_HOME"] = str(kova_home)
+    sys.modules["kova_cli.config"] = types.SimpleNamespace(
+        get_kova_home=lambda: kova_home,
     )
 
     tools_package = types.ModuleType("tools")
@@ -151,7 +151,7 @@ def _install_modal_test_modules(
             return {"kind": "registry", "image": image}
 
     async def _lookup_aio(_name: str, create_if_missing: bool = False):
-        return types.SimpleNamespace(name="hermes-agent", create_if_missing=create_if_missing)
+        return types.SimpleNamespace(name="kova-agent", create_if_missing=create_if_missing)
 
     class _FakeSandboxInstance:
         def __init__(self, image):
@@ -197,7 +197,7 @@ def _install_modal_test_modules(
     )
 
     return {
-        "snapshot_store": hermes_home / "modal_snapshots.json",
+        "snapshot_store": kova_home / "modal_snapshots.json",
         "create_calls": create_calls,
         "from_id_calls": from_id_calls,
         "registry_calls": registry_calls,

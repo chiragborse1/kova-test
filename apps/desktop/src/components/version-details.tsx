@@ -16,7 +16,7 @@ function runtimeSourceLabel(source: RuntimeSource): string {
 
 /**
  * Shared build-provenance display. Reads from `$desktopVersion`
- * (populated from the build stamp / `hermes:version` IPC), so every
+ * (populated from the build stamp / `kova:version` IPC), so every
  * surface — the About settings page, the updates overlay — shows the
  * same version, branch, commit, distribution, runtime, and install id
  * from one source of truth.
@@ -66,7 +66,7 @@ export function VersionDetails({ version }: { version: DesktopVersionInfo }) {
           <dd className="break-all text-right">
             <ExternalLink
               className="break-all font-mono text-xs"
-              href={`https://github.com/NousResearch/hermes-agent/commit/${version.commit}`}
+              href={`https://github.com/kova-agent/commit/${version.commit}`}
               native
             >
               {version.commit.slice(0, 14)}

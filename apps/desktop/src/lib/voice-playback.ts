@@ -1,7 +1,7 @@
-import { resolveGatewayWsUrl } from '@hermes/shared'
+import { resolveGatewayWsUrl } from '@kova/shared'
 
 import type { OwnerScope } from '@/api/client'
-import { getApiRequestConnection, getApiRequestProfile, speakText } from '@/hermes'
+import { getApiRequestConnection, getApiRequestProfile, speakText } from '@/kova'
 import { directTtsConfig, type DirectTtsConfig, synthesizeSpeechClientDirect } from '@/lib/voice-client-direct'
 import { RECONNECT_ATTEMPT_TIMEOUT_MS, withTimeout } from '@/lib/with-timeout'
 import {

@@ -20,14 +20,14 @@ import time
 from typing import Dict, Any, Optional, Union
 from pathlib import Path
 from agent.redact import redact_cdp_url
-from hermes_constants import get_hermes_home, hermes_home_key
+from kova_constants import get_kova_home, kova_home_key
 from utils import env_int
-from hermes_cli.config import DEFAULT_CONFIG, cfg_get
+from kova_cli.config import DEFAULT_CONFIG, cfg_get
 
 
 # Env keys re-added to the agent-browser subprocess AFTER credential stripping.
 # agent-browser is a Node process loading npm deps: a compromised transitive
-# dependency could read every Hermes secret from process.env.
+# dependency could read every Kova secret from process.env.
 # Strip by default, then re-add only the browser-backend keys the worker legitimately needs. See #29157.
 _BROWSER_PASSTHROUGH_KEYS: tuple[str, ...] = (
     "BROWSERBASE_API_KEY", "BROWSERBASE_PROJECT_ID", "BROWSER_USE_API_KEY",
@@ -36,7 +36,7 @@ _BROWSER_PASSTHROUGH_KEYS: tuple[str, ...] = (
 
 
 def warm_agent_browser_npx_cache(timeout: float = 60.0) -> bool:
-    """Frozen old-updater surface (tests/compat/old_updater_surface.json): a pre-PM ``hermes update``
+    """Frozen old-updater surface (tests/compat/old_updater_surface.json): a pre-PM ``kova update``
     still running mid-swap imports this from the NEW tree. Nothing is warmed — PM owns the browser
     runtime — and the permanent definition must live here, not behind the revert-scheduled compat
     pointer."""
@@ -156,7 +156,7 @@ _EMPTY_OK_COMMANDS: frozenset = frozenset({"close", "record"})  # legitimately e
 
 # Process caches (``_cached_X`` + ``_X_resolved`` pairs) for config-derived lookups;
 # reset by ``cleanup_all_browsers``. Written/read by the sibling modules via ``browser_tool_origin``.
-# The config-derived ones are keyed by profile home (``hermes_home_key()``): the multiplexed
+# The config-derived ones are keyed by profile home (``kova_home_key()``): the multiplexed
 # gateway serves every profile from one process, so a single slot would hand the launch
 # profile's browser settings to every other profile.
 _cached_command_timeout: Optional[Dict[str, int]] = None
@@ -188,7 +188,7 @@ def _browser_cfg(key: str, default, parse, log_label: str):
     """``parse(browser.<key>)`` from the RAW profile config (loader warnings must not
     leak into tool JSON); ``default`` when absent, not a mapping, or on any error."""
     try:
-        from hermes_cli.config import read_raw_config
+        from kova_cli.config import read_raw_config
         browser_cfg = read_raw_config().get("browser", {})
         if isinstance(browser_cfg, dict) and key in browser_cfg:
             return parse(browser_cfg[key])
@@ -202,7 +202,7 @@ def _cached_browser_cfg(cache_name: str, flag_name: str, key: str, default, pars
     ``cleanup_all_browsers``). The value is stored BEFORE the resolved flag flips so a
     concurrent reader never sees ``resolved=True`` with an empty cache."""
     g = globals()
-    home = hermes_home_key()
+    home = kova_home_key()
     cache = g[cache_name]
     if cache is None:
         cache = g[cache_name] = {}
@@ -263,7 +263,7 @@ from tools import browser_tool_lightpanda_fallback as _lp
 
 # Single shared real-profile copy-browser session: concurrent tasks reuse it
 # instead of each launching a rival Chromium on the same copied user-data-dir.
-_REAL_PROFILE_SESSION = "hermes-real-profile"
+_REAL_PROFILE_SESSION = "kova-real-profile"
 _real_profile_cdp_lock = threading.Lock()
 _real_profile_cdp_cache: dict = {}
 _real_profile_chrome_procs: list = []  # Popen handles of directly-launched real browsers
@@ -364,8 +364,8 @@ def _last_session_key(task_id: str) -> str:
 
 def _socket_safe_tmpdir() -> str:
     """Temp root short enough for the agent-browser socket dir and Chrome's SingletonSocket
-    (``hermes_constants.socket_safe_tmpdir``)."""
-    from hermes_constants import socket_safe_tmpdir
+    (``kova_constants.socket_safe_tmpdir``)."""
+    from kova_constants import socket_safe_tmpdir
     return socket_safe_tmpdir()
 
 
@@ -404,7 +404,7 @@ BROWSER_ORPHAN_REAP_INTERVAL = 300  # seconds
 BROWSER_ORPHAN_GRACE_SECONDS = max(3600, BROWSER_SESSION_INACTIVITY_TIMEOUT * 20)
 
 _session_last_activity: Dict[str, float] = {}
-# Owner Hermes home per session: the janitor is one process-global thread, so each
+# Owner Kova home per session: the janitor is one process-global thread, so each
 # teardown must re-enter the OWNING profile's scope (copy_context at spawn would
 # pin the first profile's secrets onto every other profile's teardown).
 # See #86402.
@@ -571,7 +571,7 @@ BROWSER_TOOL_SCHEMAS = [
     },
     {
         "name": "browser_vision",
-        "description": "Take a screenshot of the current page so you can inspect it visually. Use this when you need to understand what the page looks like - especially for CAPTCHAs, visual verification challenges, complex layouts, or cases where the text snapshot misses important visual information. When your active model has native vision, the screenshot is attached to your context directly and you inspect it on the next turn; otherwise Hermes falls back to an auxiliary vision model and returns a text analysis. Includes a screenshot_path that you can share with the user by including MEDIA:<screenshot_path> in your response. Requires browser_navigate to be called first.",
+        "description": "Take a screenshot of the current page so you can inspect it visually. Use this when you need to understand what the page looks like - especially for CAPTCHAs, visual verification challenges, complex layouts, or cases where the text snapshot misses important visual information. When your active model has native vision, the screenshot is attached to your context directly and you inspect it on the next turn; otherwise Kova falls back to an auxiliary vision model and returns a text analysis. Includes a screenshot_path that you can share with the user by including MEDIA:<screenshot_path> in your response. Requires browser_navigate to be called first.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -643,7 +643,7 @@ def _url_policy_error(url: str, *, auto_local: bool = False) -> Optional[dict]:
     Credential-NAMED query params (``?token=``, ``?signature=``) are deliberately NOT a floor:
     magic links, OAuth callbacks and signed CDN assets are how the agent signs in and browses, and
     a cloud browser already sees every cookie and typed password of the session — refusing the
-    URL protects nothing. Hermes' own secrets leaking into a URL are caught by ``_secret_url_error``."""
+    URL protects nothing. Kova' own secrets leaking into a URL are caught by ``_secret_url_error``."""
     local = _cloud._is_local_backend()
     # Always-blocked floor: cloud metadata / IMDS endpoints are denied regardless of backend, hybrid
     # routing, or allow_private_urls. There's no legitimate agent use case for navigating to 169.254.169.254
@@ -1143,11 +1143,11 @@ def _maybe_start_recording(task_id: str):
         if task_id in _recording_sessions:
             return
     try:
-        from hermes_cli.config import read_raw_config
-        hermes_home = get_hermes_home()
+        from kova_cli.config import read_raw_config
+        kova_home = get_kova_home()
         if not cfg_get(read_raw_config(), "browser", "record_sessions", default=False):
             return
-        recordings_dir = hermes_home / "browser_recordings"
+        recordings_dir = kova_home / "browser_recordings"
         recordings_dir.mkdir(parents=True, exist_ok=True)
         _lifecycle._cleanup_old_recordings(max_age_hours=72)
         recording_path = recordings_dir / f"session_{time.strftime('%Y%m%d_%H%M%S')}_{task_id[:16]}.webm"
@@ -1244,8 +1244,8 @@ def browser_vision(question: str, annotate: bool = False, task_id: Optional[str]
         return _camofox("camofox_vision", question, annotate, task_id)
 
     import uuid as uuid_mod
-    from hermes_constants import get_hermes_dir
-    screenshots_dir = get_hermes_dir("cache/screenshots", "browser_screenshots")
+    from kova_constants import get_kova_dir
+    screenshots_dir = get_kova_dir("cache/screenshots", "browser_screenshots")
     screenshot_path = screenshots_dir / f"browser_screenshot_{uuid_mod.uuid4().hex}.png"
     effective_task_id = _last_session_key(task_id or "default")
     blocked = _blocked_private_page_content(effective_task_id)
@@ -1375,20 +1375,20 @@ _PLUGIN_COMPAT_LAZY = {
     'BrowserbaseProvider': ('plugins.browser.browserbase.provider', 'BrowserbaseBrowserProvider'),
     'CloudBrowserProvider': ('agent.browser_provider', 'BrowserProvider'),
     'FirecrawlProvider': ('plugins.browser.firecrawl.provider', 'FirecrawlBrowserProvider'),
-    'agent_browser_runnable': ('hermes_constants', 'agent_browser_runnable'),
+    'agent_browser_runnable': ('kova_constants', 'agent_browser_runnable'),
     'check_browser_requirements': ('tools.browser_tool_install', 'check_browser_requirements'),
     'check_browser_vision_requirements': ('tools.browser_tool_install', 'check_browser_vision_requirements'),
     'cleanup_all_browsers': ('tools.browser_tool_lifecycle', 'cleanup_all_browsers'),
     'cleanup_browser': ('tools.browser_tool_lifecycle', 'cleanup_browser'),
-    'get_hermes_home_override': ('hermes_constants', 'get_hermes_home_override'),
-    'hermes_home_key': ('hermes_constants', 'hermes_home_key'),
+    'get_kova_home_override': ('kova_constants', 'get_kova_home_override'),
+    'kova_home_key': ('kova_constants', 'kova_home_key'),
     'is_truthy_value': ('utils', 'is_truthy_value'),
     'lightpanda_engine_status': ('tools.browser_tool_lightpanda_fallback', 'lightpanda_engine_status'),
-    'node_tool_runnable': ('hermes_constants', 'node_tool_runnable'),
+    'node_tool_runnable': ('kova_constants', 'node_tool_runnable'),
     'normalize_browser_cloud_provider': ('tools.tool_backend_helpers', 'normalize_browser_cloud_provider'),
-    'reset_hermes_home_override': ('hermes_constants', 'reset_hermes_home_override'),
-    'set_hermes_home_override': ('hermes_constants', 'set_hermes_home_override'),
-    'windows_hide_flags': ('hermes_cli._subprocess_compat', 'windows_hide_flags'),
+    'reset_kova_home_override': ('kova_constants', 'reset_kova_home_override'),
+    'set_kova_home_override': ('kova_constants', 'set_kova_home_override'),
+    'windows_hide_flags': ('kova_cli._subprocess_compat', 'windows_hide_flags'),
 }
 
 
@@ -1397,7 +1397,7 @@ def __getattr__(name):  # PEP 562 — lazy so no import cycles
     if target is None:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
     import importlib
-    from hermes_cli.plugin_compat import warn_once
+    from kova_cli.plugin_compat import warn_once
     warn_once(__name__, name, *target)
     return getattr(importlib.import_module(target[0]), target[1])
 # ---- END PLUGIN-COMPAT ----

@@ -1,12 +1,12 @@
 /**
  * Harness for the Desktop install/update suite: a REAL local install (made by
- * scripts/install.sh + `hermes desktop --build-only` in the upgrade suite's
+ * scripts/install.sh + `kova desktop --build-only` in the upgrade suite's
  * sandbox, see seed.py), a local bare origin standing in for GitHub, the
  * packaged app that install built, and the core suite's scripted provider.
  *
  * The one fake per external edge: the git server (a local bare repo behind a
  * url.insteadOf rewrite) and the LLM provider (e2e/core/provider.ts). Nothing
- * inside Hermes is mocked.
+ * inside Kova is mocked.
  *
  * Synchronisation rule (same as e2e/core): wait on an observable fact — a log
  * line, a pid, a file, a DOM state — with a deadline, never a fixed sleep.
@@ -30,21 +30,21 @@ export const REPO_ROOT = path.resolve(DESKTOP_ROOT, '..', '..')
 const SEED = path.join(import.meta.dirname, 'seed.py')
 
 /** Where the seeded install lives. Short on purpose: the install bakes it into AF_UNIX socket paths. */
-export const UPDATE_ROOT = process.env.HERMES_E2E_UPDATE_ROOT || path.join(os.tmpdir(), 'hdu-e2e')
+export const UPDATE_ROOT = process.env.KOVA_E2E_UPDATE_ROOT || path.join(os.tmpdir(), 'hdu-e2e')
 
 export interface InstallFacts {
   sandboxRoot: string
   home: string
   hermesHome: string
   checkout: string
-  hermes: string
+  kova: string
   origin: string
   env: Record<string, string>
   headSha: string
 }
 
 function python(): string {
-  return process.env.HERMES_E2E_PYTHON || 'python3'
+  return process.env.KOVA_E2E_PYTHON || 'python3'
 }
 
 function seed(args: string[], timeoutMs = 60_000): string {
@@ -144,13 +144,13 @@ export function releaseDir(facts: InstallFacts): string {
   return path.join(facts.checkout, 'apps', 'desktop', 'release', 'linux-unpacked')
 }
 
-/** The packaged executable `hermes desktop` built into the install (electron-builder names it after productName). */
+/** The packaged executable `kova desktop` built into the install (electron-builder names it after productName). */
 export function packagedExe(facts: InstallFacts): string {
   const dir = releaseDir(facts)
-  const name = fs.readdirSync(dir).find(entry => /^hermes$/i.test(entry))
+  const name = fs.readdirSync(dir).find(entry => /^kova$/i.test(entry))
 
   if (!name) {
-    throw new Error(`no packaged Hermes executable in ${dir}: ${fs.readdirSync(dir).join(', ')}`)
+    throw new Error(`no packaged Kova executable in ${dir}: ${fs.readdirSync(dir).join(', ')}`)
   }
 
   return path.join(dir, name)
@@ -184,8 +184,8 @@ function displayEnv(): Record<string, string> {
 
 /**
  * The environment a user's desktop session hands the app: the install's HOME /
- * HERMES_HOME / PATH (with the git URL rewrite that points "GitHub" at the
- * local origin) plus the display. No HERMES_DESKTOP_HERMES_ROOT: the app must
+ * KOVA_HOME / PATH (with the git URL rewrite that points "GitHub" at the
+ * local origin) plus the display. No KOVA_DESKTOP_KOVA_ROOT: the app must
  * find the install the way it does for a real user.
  */
 export function appEnv(facts: InstallFacts, extra: Record<string, string> = {}): Record<string, string> {
@@ -199,9 +199,9 @@ export function appEnv(facts: InstallFacts, extra: Record<string, string> = {}):
   return {
     ...facts.env,
     ...displayEnv(),
-    HERMES_DESKTOP_USER_DATA_DIR: userDataDir(facts),
-    HERMES_DESKTOP_SKIP_QUIT_CONFIRM: '1',
-    HERMES_DESKTOP_CDP_PORT: 'off',
+    KOVA_DESKTOP_USER_DATA_DIR: userDataDir(facts),
+    KOVA_DESKTOP_SKIP_QUIT_CONFIRM: '1',
+    KOVA_DESKTOP_CDP_PORT: 'off',
     ...extra
   }
 }
@@ -270,7 +270,7 @@ export function desktopMainProcesses(facts: InstallFacts): ProcInfo[] {
   )
 }
 
-/** The `hermes serve` backend(s) of this install (children of the backend excluded). */
+/** The `kova serve` backend(s) of this install (children of the backend excluded). */
 export function backendServeProcesses(facts: InstallFacts): ProcInfo[] {
   const serve = installProcesses(facts).filter(
     proc =>
@@ -337,7 +337,7 @@ export function diagnostics(facts: InstallFacts, extra = ''): string {
   return parts.filter(Boolean).join('\n')
 }
 
-/** SIGKILL every process that carries this install's HERMES_HOME (end of every spec). */
+/** SIGKILL every process that carries this install's KOVA_HOME (end of every spec). */
 export function killInstallProcesses(facts: InstallFacts | null): void {
   if (!facts) {
     return
@@ -378,11 +378,11 @@ export async function waitFor<T>(
 
 /** Copy of the first-run chooser / bootstrap installer overlay (the screens a healthy install must never show). */
 export const FIRST_RUN_SCREENS = [
-  'Set up Hermes Desktop',
-  'Hermes needs a one-time install',
-  'Setting up Hermes Agent',
-  'Install Hermes locally',
-  'Use Hermes on this computer'
+  'Set up Kova Desktop',
+  'Kova needs a one-time install',
+  'Setting up Kova Agent',
+  'Install Kova locally',
+  'Use Kova on this computer'
 ]
 
 /**

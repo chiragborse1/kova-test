@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { HermesRepoStatus } from '@/global'
+import type { KovaRepoStatus } from '@/global'
 
 import {
   $repoStatus,
@@ -15,7 +15,7 @@ import {
 } from './coding-status'
 import { $currentCwd, $selectedStoredSessionId } from './session'
 
-const sampleStatus: HermesRepoStatus = {
+const sampleStatus: KovaRepoStatus = {
   branch: 'feature/login',
   defaultBranch: 'main',
   detached: false,
@@ -31,7 +31,7 @@ const sampleStatus: HermesRepoStatus = {
   files: []
 }
 
-const otherStatus: HermesRepoStatus = {
+const otherStatus: KovaRepoStatus = {
   ...sampleStatus,
   branch: 'bb/other-worktree',
   added: 3,
@@ -41,7 +41,7 @@ const otherStatus: HermesRepoStatus = {
   unstaged: 1
 }
 
-function stubProbe(impl: (cwd: string) => Promise<HermesRepoStatus | null>) {
+function stubProbe(impl: (cwd: string) => Promise<KovaRepoStatus | null>) {
   ;(window as unknown as { hermesDesktop?: unknown }).hermesDesktop = { git: { repoStatus: impl } }
 }
 
@@ -119,7 +119,7 @@ describe('refreshRepoStatus', () => {
   })
 
   it('never publishes an old worktree status onto the primary after the active cwd moves', async () => {
-    let resolveOld!: (status: HermesRepoStatus | null) => void
+    let resolveOld!: (status: KovaRepoStatus | null) => void
     stubProbe(
       () =>
         new Promise(resolve => {
@@ -161,7 +161,7 @@ describe('refreshRepoStatus', () => {
   })
 
   it('runs one probe at a time and coalesces overlap into one trailing refresh per drain', async () => {
-    const resolvers: Array<(status: HermesRepoStatus | null) => void> = []
+    const resolvers: Array<(status: KovaRepoStatus | null) => void> = []
     const calls: string[] = []
     let active = 0
     let maxActive = 0
@@ -268,7 +268,7 @@ describe('repoChangeKindForPath', () => {
     $repoStatusByCwd.set({
       '/repo': {
         ...sampleStatus,
-        files: [{ path: 'b.ts', untracked: true } as HermesRepoStatus['files'][number]]
+        files: [{ path: 'b.ts', untracked: true } as KovaRepoStatus['files'][number]]
       }
     })
     expect(listener).toHaveBeenCalledTimes(1)
@@ -276,7 +276,7 @@ describe('repoChangeKindForPath', () => {
     $repoStatusByCwd.set({
       '/repo': {
         ...sampleStatus,
-        files: [{ path: 'a.ts', untracked: true } as HermesRepoStatus['files'][number]]
+        files: [{ path: 'a.ts', untracked: true } as KovaRepoStatus['files'][number]]
       }
     })
     expect(listener).toHaveBeenCalledTimes(2)

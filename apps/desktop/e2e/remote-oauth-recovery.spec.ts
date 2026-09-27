@@ -32,7 +32,7 @@ for (const status of [401, 403]) {
           res.end(JSON.stringify({ providers: [{ name: 'portal', supports_password: false }] }))
         } else if (pathname === '/login') {
           signedIn = true
-          res.setHeader('Set-Cookie', 'hermes_session_at=fixture-session; Path=/; HttpOnly; SameSite=Lax')
+          res.setHeader('Set-Cookie', 'kova_session_at=fixture-session; Path=/; HttpOnly; SameSite=Lax')
           res.end('{}')
         } else if (signedIn && pathname === '/api/auth/ws-ticket') {
           mints += 1
@@ -64,7 +64,7 @@ for (const status of [401, 403]) {
     let app: Awaited<ReturnType<typeof launchDesktop>>['app'] | undefined
     try {
       const launched = await launchDesktop(buildAppEnv(sandbox, {
-        HERMES_DESKTOP_DEV_SERVER: ''
+        KOVA_DESKTOP_DEV_SERVER: ''
       }))
       app = launched.app
       const page = launched.page
@@ -77,7 +77,7 @@ for (const status of [401, 403]) {
       await page.getByRole('button', { name: /gateway settings/i }).click()
       const back = page.getByRole('button', { name: /^back$/i })
       await expect(back).toBeVisible()
-      const gatewayUrl = page.getByPlaceholder('https://gateway.example.com/hermes')
+      const gatewayUrl = page.getByPlaceholder('https://gateway.example.com/kova')
       await expect(gatewayUrl).toHaveValue(url)
       // Concurrent IPC readers must reuse the terminal failure, not republish
       // startup progress and unmount the settings form.

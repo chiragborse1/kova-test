@@ -16,16 +16,16 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def _isolate(tmp_path, monkeypatch):
-    """Redirect HERMES_HOME so load_config() reads our test config.yaml."""
-    hermes_home = tmp_path / ".hermes"
-    hermes_home.mkdir()
-    monkeypatch.setenv("HERMES_HOME", str(hermes_home))
-    (hermes_home / "config.yaml").write_text("model:\n  default: test-model\n")
+    """Redirect KOVA_HOME so load_config() reads our test config.yaml."""
+    kova_home = tmp_path / ".kova"
+    kova_home.mkdir()
+    monkeypatch.setenv("KOVA_HOME", str(kova_home))
+    (kova_home / "config.yaml").write_text("model:\n  default: test-model\n")
 
 
 def _write_config(tmp_path, config_dict):
-    import hermes_yaml as yaml
-    (tmp_path / ".hermes" / "config.yaml").write_text(yaml.safe_dump(config_dict))
+    import kova_yaml as yaml
+    (tmp_path / ".kova" / "config.yaml").write_text(yaml.safe_dump(config_dict))
 
 
 class TestApplyUserDefaultHeadersHelper:

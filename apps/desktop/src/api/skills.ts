@@ -6,8 +6,8 @@ import type {
   SkillHubSourcesResponse,
   SkillInfo,
   StarmapGraph
-} from '@/types/hermes'
-import type { ActionResponse } from '@/types/hermes'
+} from '@/types/kova'
+import type { ActionResponse } from '@/types/kova'
 
 import { capabilityScoped, hermesApi, type ProfileScope, profileScoped } from './client'
 
@@ -89,7 +89,7 @@ export function editLearningNode(
 }
 
 // ---------------------------------------------------------------------------
-// Skills hub — search / preview / scan / install (parity with `hermes skills`
+// Skills hub — search / preview / scan / install (parity with `kova skills`
 // and the dashboard's Browse-hub tab). Installs spawn background actions whose
 // logs are tailed via getActionStatus().
 // ---------------------------------------------------------------------------

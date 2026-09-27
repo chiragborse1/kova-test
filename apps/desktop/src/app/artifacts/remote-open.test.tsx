@@ -7,7 +7,7 @@ import { $connection } from '@/store/session'
 import { ArtifactsView } from './index'
 
 const paths = vi.hoisted(() => [
-  '~/.hermes/memories/USER.md',
+  '~/.kova/memories/USER.md',
   './report.md',
   '../parent.md',
   String.raw`~\home.txt`,
@@ -18,8 +18,8 @@ const paths = vi.hoisted(() => [
   '/srv/absolute.txt'
 ])
 
-vi.mock('@/hermes', async () => ({
-  ...(await vi.importActual('@/hermes')),
+vi.mock('@/kova', async () => ({
+  ...(await vi.importActual('@/kova')),
   listAllProfileSessions: async () => ({
     sessions: [{ id: 'artifact-session', title: 'Fixture', profile: 'origin-profile' }]
   }),

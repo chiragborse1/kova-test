@@ -16,8 +16,8 @@
  *    bot-scoped, so the tile must not sit beside a group chat.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
-import type { PluginContext } from '@hermes/plugin-sdk'
+import type * as KovaSdk from '@kova/plugin-sdk'
+import type { PluginContext } from '@kova/plugin-sdk'
 import { atom } from 'nanostores'
 import type { ReactNode } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
@@ -38,8 +38,8 @@ const mocks = vi.hoisted(() => ({
   undismissPane: vi.fn()
 }))
 
-vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const original = await importOriginal<typeof HermesSdk>()
+vi.mock('@kova/plugin-sdk', async importOriginal => {
+  const original = await importOriginal<typeof KovaSdk>()
 
   return {
     ...original,
@@ -205,7 +205,7 @@ describe('the Scheduled jobs pane', () => {
     expect(harness.find('routines')).toBeUndefined()
 
     mocks.botChatOwnsWorkspace.mockReturnValue(true)
-    store(`hermes-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(true)
 
     expect(harness.find('routines')).toBeTruthy()
 
@@ -223,8 +223,8 @@ describe('the Scheduled jobs pane', () => {
     expect(harness.find('routines')).toBeTruthy()
 
     mocks.botChatOwnsWorkspace.mockReturnValue(false)
-    store(`hermes-bots:pane`).set(true)
-    store(`hermes-bots:pane`).set(false)
+    store(`kova-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(false)
 
     expect(harness.unregisters.get('routines')).toHaveBeenCalled()
     expect(harness.find('routines')).toBeUndefined()
@@ -242,9 +242,9 @@ describe('the Scheduled jobs pane', () => {
 
     // Clicking the tile drops bot-chat workspace ownership for a beat. A pane
     // must never unregister itself out from under its own click.
-    store(`hermes-bots:routines`).set(true)
+    store(`kova-bots:routines`).set(true)
     mocks.botChatOwnsWorkspace.mockReturnValue(false)
-    store(`hermes-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(true)
 
     expect(harness.unregisters.get('routines')).not.toHaveBeenCalled()
     expect(harness.find('routines')).toBeTruthy()
@@ -257,14 +257,14 @@ describe('the Scheduled jobs pane', () => {
     const harness = recordingContext()
 
     mocks.botChatOwnsWorkspace.mockReturnValue(true)
-    store(`hermes-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(true)
     plugin.register(harness.ctx)
     await settle()
 
     // Boot straight into a bot chat: the pane arrives and a Close from a past
     // launch is dropped once (#102224).
     expect(mocks.undismissPane).toHaveBeenCalledTimes(1)
-    expect(mocks.undismissPane).toHaveBeenCalledWith('hermes-bots:routines')
+    expect(mocks.undismissPane).toHaveBeenCalledWith('kova-bots:routines')
 
     // The user ✕-es the pane, opens a group room (the tile must not sit
     // beside a group chat) and comes back to the bot chat — all inside one
@@ -281,9 +281,9 @@ describe('the Scheduled jobs pane', () => {
 
     // Leaving Bot Mode and coming back is the ask for the bot's chrome again.
     mocks.botChatOwnsWorkspace.mockReturnValue(false)
-    store(`hermes-bots:pane`).set(false)
+    store(`kova-bots:pane`).set(false)
     mocks.botChatOwnsWorkspace.mockReturnValue(true)
-    store(`hermes-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(true)
     expect(mocks.undismissPane).toHaveBeenCalledTimes(2)
 
     harness.dispose()
@@ -299,7 +299,7 @@ describe('the Scheduled jobs pane', () => {
 
     // A disable → re-enable cycle used to stack a duplicate listener per cycle.
     mocks.botChatOwnsWorkspace.mockReturnValue(true)
-    store(`hermes-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(true)
 
     expect(harness.find('routines')).toBeUndefined()
   })
@@ -313,10 +313,10 @@ describe('returning to Sessions', () => {
 
     plugin.register(harness.ctx)
     await settle()
-    store(`hermes-bots:pane`).set(true)
+    store(`kova-bots:pane`).set(true)
     $pendingBotOpen.set({ generation: 1, key: 'local::bravo' })
 
-    store(`hermes-bots:pane`).set(false)
+    store(`kova-bots:pane`).set(false)
 
     expect($pendingBotOpen.get()).toBeNull()
     expect(mocks.setWorkspaceScope).toHaveBeenCalledWith('sessions')
@@ -327,7 +327,7 @@ describe('returning to Sessions', () => {
 
 describe('a desktop without host.paneVisibility', () => {
   it('keeps the always-registered pane', async () => {
-    const { host } = await import('@hermes/plugin-sdk')
+    const { host } = await import('@kova/plugin-sdk')
     const restore = host.paneVisibility
 
     // @ts-expect-error modelling an older SDK that lacks the export entirely

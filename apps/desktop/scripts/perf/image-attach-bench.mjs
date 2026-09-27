@@ -19,7 +19,7 @@ const flag = (name, fallback) => {
 const ROUNDS = flag('rounds', 7)
 const SIZES_KB = args.includes('--kb') ? [flag('kb', 900)] : [120, 900, 3200]
 
-const dir = mkdtempSync(join(tmpdir(), 'hermes-img-bench-'))
+const dir = mkdtempSync(join(tmpdir(), 'kova-img-bench-'))
 
 /** A PNG-shaped byte blob of a given size. The pipeline treats it as opaque
  *  bytes everywhere we measure, so the pixels don't matter — the length does. */

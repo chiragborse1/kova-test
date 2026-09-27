@@ -28,7 +28,7 @@ const { hostMock, UnboundedCache, useQueryMock } = vi.hoisted(() => ({
   useQueryMock: vi.fn()
 }))
 
-vi.mock('@hermes/plugin-sdk', () => ({
+vi.mock('@kova/plugin-sdk', () => ({
   Button: (props: React.ComponentProps<'button'>) => <button {...props} />,
   cn: (...parts: unknown[]) => parts.filter(Boolean).join(' '),
   GlyphSpinner: () => <span />,
@@ -45,7 +45,7 @@ vi.mock('./i18n', () => ({
   })
 }))
 
-vi.mock('./shared', () => ({ ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ ID: 'kova-bots' }))
 
 const SHEET = 'https://pets.example/a.webp'
 const ICON = 'data:image/png;base64,ok'

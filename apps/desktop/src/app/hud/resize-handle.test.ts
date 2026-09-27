@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { hudResizeBounds, hudResizeDirections, useHudResizeHandle } from './resize-handle'
 
 const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialHermesDesktop = desktopWindow.hermesDesktop
+const initialKovaDesktop = desktopWindow.hermesDesktop
 const setBounds = vi.fn()
 
 function setWindowBounds(x: number, y: number, width: number, height: number): void {
@@ -33,8 +33,8 @@ beforeEach(() => {
 afterEach(() => {
   document.body.innerHTML = ''
 
-  if (initialHermesDesktop) {
-    desktopWindow.hermesDesktop = initialHermesDesktop
+  if (initialKovaDesktop) {
+    desktopWindow.hermesDesktop = initialKovaDesktop
   } else {
     delete desktopWindow.hermesDesktop
   }

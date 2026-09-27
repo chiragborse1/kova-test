@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 _UNSET: Any = object()
 
-_SESSION_CWD: ContextVar = ContextVar("HERMES_SESSION_CWD", default=_UNSET)
+_SESSION_CWD: ContextVar = ContextVar("KOVA_SESSION_CWD", default=_UNSET)
 
 # The package/source root (<root>/agent/runtime_cwd.py). A backend launched from or
 # self-spawned into this tree (desktop default) must never let an os.getcwd() fallback
@@ -47,7 +47,7 @@ def clear_session_cwd() -> None:
 def scoped_session_cwd() -> str:
     """Return the current session's declared cwd without local path validation.
 
-    Remote and container paths may not exist on the Hermes host. Callers that only need
+    Remote and container paths may not exist on the Kova host. Callers that only need
     logical workspace identity should preserve the declared value instead of resolving it.
     """
     value = _SESSION_CWD.get()
@@ -104,6 +104,6 @@ def resolve_agent_cwd() -> Path:
 
 def resolve_context_cwd() -> Path | None:
     """Configured cwd for context-file discovery, or None (build_context_files_prompt then falls back to the
-    launch dir). An existing configured path is honored verbatim — including the Hermes source tree, a
-    legitimate workspace when developing Hermes; fallback-directory policy lives in the caller."""
+    launch dir). An existing configured path is honored verbatim — including the Kova source tree, a
+    legitimate workspace when developing Kova; fallback-directory policy lives in the caller."""
     return _resolve_configured_cwd(override_is_final=True)

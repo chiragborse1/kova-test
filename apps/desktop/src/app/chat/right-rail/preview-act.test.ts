@@ -144,7 +144,7 @@ describe('actOnActivePreview (drive_preview tool)', () => {
 
     cleanups.push(
       registerPreviewScriptRunner(tabId, async code => {
-        if (code.includes('hermes-focus-probe')) {
+        if (code.includes('kova-focus-probe')) {
           return JSON.stringify({ focused: true, success: true, tag: 'INPUT' })
         }
 
@@ -190,7 +190,7 @@ describe('actOnActivePreview (drive_preview tool)', () => {
 
     cleanups.push(
       registerPreviewScriptRunner(tabId, async code => {
-        if (code.includes('hermes-focus-probe')) {
+        if (code.includes('kova-focus-probe')) {
           return JSON.stringify({ focused: focus.focused, success: true, tag: focus.tag ?? 'BODY' })
         }
 
@@ -393,7 +393,7 @@ describe('actOnActivePreview (drive_preview tool)', () => {
       registerPreviewScriptRunner(tabId, async code =>
         code.includes('"kind":"locate"')
           ? JSON.stringify({ acted: 'looking at button "Save"', point: { x: 12, y: 8 }, success: true })
-          : JSON.stringify({ elements: [], hit: { tag: 'HERMES-WATCH', trusted: true }, success: true })
+          : JSON.stringify({ elements: [], hit: { tag: 'KOVA-WATCH', trusted: true }, success: true })
       )
     )
     cleanups.push(registerPreviewInput(tabId, { focus: vi.fn(), send: vi.fn() }))

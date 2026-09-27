@@ -1,7 +1,7 @@
-import type { PromptSubmitResult } from '@hermes/shared'
+import type { PromptSubmitResult } from '@kova/shared'
 import { type MutableRefObject, useCallback } from 'react'
 
-import { PROMPT_SUBMIT_REQUEST_TIMEOUT_MS } from '@/hermes'
+import { PROMPT_SUBMIT_REQUEST_TIMEOUT_MS } from '@/kova'
 import type { Translations } from '@/i18n'
 import { type ChatMessage, textPart } from '@/lib/chat-messages'
 import { optimisticAttachmentRef } from '@/lib/chat-runtime'
@@ -36,7 +36,7 @@ import {
   touchSessionActivity
 } from '@/store/session'
 import { $sessionStates } from '@/store/session-states'
-import type { SessionInfo } from '@/types/hermes'
+import type { SessionInfo } from '@/types/kova'
 
 import {
   profileScopeForTranscriptSession,
@@ -880,7 +880,7 @@ export function useSubmitPrompt(deps: SubmitPromptDeps) {
           // row display_kind=hidden so no client renders it as a bubble.
           ...(options?.displayKind === 'hidden' && { display_kind: 'hidden' }),
           // Typed into the floating HUD, so the user is looking at another app
-          // rather than at Hermes. The gateway turns this into a per-turn hint
+          // rather than at Kova. The gateway turns this into a per-turn hint
           // to read the window underneath and work in it.
           ...($hudMode.get() && { surface: 'hud' }),
           // A GPT-Live delegation: the text is a voice transcript and the reply

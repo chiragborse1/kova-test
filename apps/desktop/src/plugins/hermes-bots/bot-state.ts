@@ -8,7 +8,7 @@
  * surface has to import a sibling surface to know what is selected.
  */
 
-import { atom, host } from '@hermes/plugin-sdk'
+import { atom, host } from '@kova/plugin-sdk'
 
 import { botRosterKey, botSelectionKey } from './data'
 import { getPluginCtx } from './shared'
@@ -44,7 +44,7 @@ export const $selectedBot = atom('default')
 export const $selectedRosterKey = atom('')
 export const $selectedRosterHydrated = atom(false)
 export const $rosterHydrated = atom(false)
-/** Mirrors host.paneVisibility('hermes-bots:pane') — wired in register(). */
+/** Mirrors host.paneVisibility('kova-bots:pane') — wired in register(). */
 export const $botsPaneVisible = atom(false)
 /** An explicit open landed: {key, openedRegistryId, openedSessionId}. The
  *  registry id is empty for the legacy newChat draft fallback and for a click

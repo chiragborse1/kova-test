@@ -41,14 +41,14 @@ describe('deleteSession profile scoping', () => {
     // never deleted and came back on refresh. The URL must carry ?profile=.
     hermesApi.mockResolvedValue({ ok: true } as never)
     // Mirrors the real capabilityScoped for an object owner (remote-stamped row).
-    vi.mocked(client.capabilityScoped).mockReturnValue({ profile: 'tommy', connectionId: 'hermes-pi' })
+    vi.mocked(client.capabilityScoped).mockReturnValue({ profile: 'tommy', connectionId: 'kova-pi' })
 
-    await deleteSession('sess-1', { connectionId: 'hermes-pi', profile: 'tommy' })
+    await deleteSession('sess-1', { connectionId: 'kova-pi', profile: 'tommy' })
 
     expect(hermesApi.mock.calls[0][0]).toMatchObject({
       method: 'DELETE',
       path: '/api/sessions/sess-1?profile=tommy',
-      connectionId: 'hermes-pi',
+      connectionId: 'kova-pi',
       profile: 'tommy'
     })
   })
@@ -130,7 +130,7 @@ describe('setSessionArchived profile scoping', () => {
 
   it('falls back to the ACTIVE profile in the body when no owner is given', async () => {
     // Multiplex-only: the PATCH handler resolves its state.db from
-    // `body.profile` and there is no per-profile backend whose HERMES_HOME
+    // `body.profile` and there is no per-profile backend whose KOVA_HOME
     // could stand in. An unnamed owner therefore has to mean "the profile I am
     // looking at" — otherwise the archive lands on the shared backend's own
     // state.db and silently no-ops.

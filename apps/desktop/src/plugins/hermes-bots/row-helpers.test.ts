@@ -4,11 +4,11 @@
  *
  * Two bug classes are pinned:
  *  - #89484 — the bot-to-bot badge rendered the raw captured profile name, so
- *    the primary profile surfaced as @default instead of @hermes;
+ *    the primary profile surfaced as @default instead of @kova;
  *  - the "6d ago" class — canonical Bot Chats are hidden from session lists,
  *    so a bot DM'd all day read as a week idle because its newest VISIBLE
  *    session was a week old. Liveness keys off `botActivitySession`, and
- *    kanban/tool workers count too (hermes-agent#90268): a profile grinding
+ *    kanban/tool workers count too (kova-agent#90268): a profile grinding
  *    through a 30-minute task must not read "3 hr ago" the whole time.
  */
 
@@ -26,7 +26,7 @@ import {
 } from './row-helpers'
 import type { RosterRow } from './types'
 
-vi.mock('@hermes/plugin-sdk', async () => {
+vi.mock('@kova/plugin-sdk', async () => {
   const { atom } = await import('nanostores')
 
   return {
@@ -38,7 +38,7 @@ vi.mock('@hermes/plugin-sdk', async () => {
   }
 })
 
-vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'hermes-bots' }))
+vi.mock('./shared', () => ({ getPluginCtx: () => null, ID: 'kova-bots' }))
 
 /** Gateway rows carry a session id on `last_session` / `worker_session` that
  *  the plugin's `SessionPreview` type deliberately does not model. Fixtures
@@ -67,8 +67,8 @@ describe('previewKind classifies a roster preview', () => {
     expect(fromBot("Message from agent 'researcher': here is the paper")).toBe('researcher')
   })
 
-  it('surfaces the primary profile as @hermes, never @default (#89484)', () => {
-    expect(fromBot("Message from agent 'default': deploy is green")).toBe('hermes')
+  it('surfaces the primary profile as @kova, never @default (#89484)', () => {
+    expect(fromBot("Message from agent 'default': deploy is green")).toBe('kova')
     expect(fromBot("Message from agent 'ops': deploy is green")).toBe('ops')
   })
 
