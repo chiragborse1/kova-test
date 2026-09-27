@@ -36,8 +36,8 @@
     "category": "DeveloperTool",
     "shortDescription": "Kova",
     "longDescription": "Installs Kova Agent on your machine. Drives scripts/install.ps1 (Windows) and scripts/install.sh (macOS/Linux).",
-    "publisher": "Nous Research",
-    "copyright": "Copyright © 2026 Nous Research",
+    "publisher": "Neural Studios",
+    "copyright": "Copyright © 2026 Neural Studios",
     "targets": [
       "app",
       "dmg",
