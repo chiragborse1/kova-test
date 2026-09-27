@@ -197,11 +197,11 @@ const config: Config = {
           items: [
             { label: 'Desktop Download', href: 'https://kova-agent.neuralstudio.in/' },
             { label: 'GitHub', href: 'https://github.com/chiragborse1/kova-test' },
-            { label: 'Nous Research', href: 'https://nousresearch.com' },
+            { label: 'Neural Studios', href: 'https://neuralstudio.in' },
           ],
         },
       ],
-      copyright: `Built by <a href="https://neuralstudio.in">Nous Research</a> · MIT License · ${new Date().getFullYear()}`,
+      copyright: `Built by <a href="https://neuralstudio.in">Neural Studios</a> · MIT License · ${new Date().getFullYear()}`,
     },
     prism: {
       theme: prismThemes.github,
