@@ -239,3 +239,81 @@ VERIFICATION
   resvg-py IS available and is what generate_icons.py uses, so the
   pipeline itself renders for real - it was the composition step, not
   rasterisation, that was broken.
+
+=====================================================================
+REGRESSION HUNT (running the suite, not reading the diff)
+=====================================================================
+
+The rebrand was verified by grep. Running the suite against a pristine
+2a977be9 worktree found three real defects that grep could not.
+
+1. tests/test_packaging_metadata.py  ->  StopIteration
+   pyproject's project name became kova-agent; uv.lock still said
+   hermes-agent. Could not simply re-lock: `uv lock` failed with
+   "Repository not found" because the rebrand had ALSO rewritten
+
+     misaki[en] @ git+https://github.com/OpenKova/misaki.git@f03fd2b
+
+   That is not our repo. Upstream maintains a fork of the misaki TTS
+   package in their own org to raise its Python cap. Restored to
+   NousResearch/misaki, then `uv lock` succeeded. scripts/kova/
+   check_lock.py asserts the refresh moved nothing: 330 -> 330
+   packages, zero version changes, only hermes-agent -> kova-agent.
+
+2. 240 files with dead repository URLs
+   The rebrand collapsed NousResearch/Hermes-Agent to the bare string
+   "github.com/kova-agent", which names a GitHub USER, not an
+   owner/repo pair. ~300 links were dead. scripts/kova/fix_repo_urls.py
+   rewrites them to chiragborse1/kova-test, preserving each path.
+
+3. agent/transports/codex.py::_RESERVED_TOOL_ALIAS_PREFIX = "hermes_"
+   The rebrand's pattern needed a character AFTER "hermes", and this
+   constant ENDS with the underscore, so it was missed. Its neighbours
+   had moved (the xAI alias is already kova_web_search) and the tests
+   already expected kova_<name>, so the wire alias map disagreed with
+   itself.
+     pristine: test_auxiliary_client.py 219 passed
+     branch:   test_auxiliary_client.py 215 passed, 4 failed
+   Now 219 passed, matching upstream exactly.
+
+4. cron/lifecycle_guard.py - SECURITY RELEVANT
+   The guard blocks the agent from killing/restarting its own gateway.
+   Its patterns still matched \bhermes while its own comments already
+   said "kova-gateway", so after the rename the block stopped matching
+   the process it protects. A control that fails open is worse than one
+   that is absent, because it still looks present in review.
+   Fixed, plus the Windows scheduled-task name (Hermes_Gateway ->
+   Kova_Gateway), which also names the .cmd/.vbs files written into the
+   user's Startup folder.
+
+5. ~900 dead links from an INVENTED DOMAIN
+   The rebrand mapped nousresearch.com -> openkova.com host-wide.
+   Nobody owns that domain: 347 files pointed docs, install scripts,
+   badges and the Nous Portal OAuth endpoints at nothing. There is no
+   Kova-hosted site, so scripts/kova/fix_hostnames.py maps them back to
+   the host that actually serves the content. PREPARED, NOT APPLIED -
+   held for review rather than landed unreviewed.
+
+METHOD THAT FOUND THESE
+  Run the failing test against a pristine worktree of the base commit.
+  Same counts on both sides = pre-existing. Different counts = ours.
+  Every "is this my fault?" question in this project was answered that
+  way rather than by reasoning about the diff.
+
+  Confirmed pre-existing (identical on pristine 2a977be9):
+    test_hermes_home_profile_warning  1 failed, 2 passed, 3 skipped
+    test_hermes_logging               4 failed, 30 passed, 2 skipped
+    test_scratch_dir                  1 failed, 4 passed, 12 skipped
+    test_live_system_guard             3 failed, 5 passed
+    test_compression_budget_rearm      3 failed
+    test_auth_provider_failover        1 failed, 2 passed
+    test_api_max_retries_config        1 failed
+    test_account_policy_block          1 failed, 2 passed
+    lifecycle_guard heredoc-walk       2 failed  (Windows path handling)
+    gateway_windows schtasks live      1 failed  (access denied)
+
+COLLECTION
+  53 collection errors before the rebrand, 53 after - identical causes
+  (pwd/termios/fcntl are Unix-only and cannot exist on Windows; CI runs
+  the suite on Linux). The rebrand introduced ZERO new collection
+  failures.
