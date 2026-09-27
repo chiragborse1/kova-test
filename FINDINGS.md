@@ -77,3 +77,53 @@ TODO   [ ] rebrand pass (hermes -> kova), with before/after proof
 TODO   [ ] new UI
 TODO   [ ] single squashed commit -> chiragborse1/kova-test
 TODO   [ ] verify on CI (not locally, per user request)
+
+=====================================================================
+REBRAND PROGRESS (updated)
+=====================================================================
+
+Commits on top of upstream 2a977be9 (all local, all authored by you,
+so `git push` exposes this history normally):
+
+  98e1e729  ci: disable 6 auto-firing cron workflows (the real CI fix)
+  aae9f4c9  rebrand: hermes -> kova across code, modules, assets
+  dd904d6e  rebrand: rename directory components; fix skill ref mismatch
+  e7803e8e  rebrand: catch compound identifiers pass 1 missed
+  5339ce95  attribution: drop contributors/ + .mailmap, add NOTICE
+  022117d9  fix: restore model-id literals the rebrand over-rewrote
+
+REBRAND RESULT
+  files containing 'hermes' : 9792 -> 244  (down 97.5%)
+  renamed paths             : 2470
+  renamed directories       : 11
+  all 37 kova_* modules import: YES
+  dangling related_skills   : 0  (was 225-regression cause last time)
+  model family detection    : correct for all hermes-* and vendor models
+
+The 244 residual references are all intentional:
+   36  upstream model ids (nousresearch/hermes-4-405b etc.)
+   18  upstream URLs (github.com/NousResearch, nousresearch.com docs)
+    7  third-party names (githermes, TamaHermes, r/hermesagent)
+    2  Meta's Hermes JS engine inside package-lock.json
+
+TWO REAL REGRESSIONS FOUND AND FIXED
+  Both were the same class of bug that produced the previous attempt's
+  225 broken tests - a string literal that is load-bearing, not branding:
+
+  1. agent/coding_context.py  _EDIT_FORMAT_GUIDANCE listed "hermes" as a
+     model family. Renamed to "kova", _model_family('...hermes-4-405b')
+     returned None instead of 'replace'.
+  2. kova_cli/auth_nous.py  filtered offered model ids by excluding those
+     containing "hermes" (Nous's own models are not reliable for agentic
+     tool-calling). Renamed to "kova", the condition inverted and excluded
+     the wrong set entirely.
+
+  Detection method: diff the rebrand against 2a977be9 and grep for bare
+  "hermes" literals appearing in model/registry/family context. That scan
+  returns exactly these 2 files; the other 220 similar-shaped hits are
+  self-consistent renames where both sides of a comparison were rewritten.
+
+WINDOWS TEST FLOOR (unchanged, expected)
+  47 collection errors are Unix-only modules: pwd(38) termios(5) fcntl(4).
+  These cannot pass on Windows by design; the suite targets Linux.
+  Do not chase them locally. Verify on CI.
