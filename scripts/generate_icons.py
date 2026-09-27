@@ -123,9 +123,14 @@ BORDER_FRACTION = 0.0407747197
 #: mark, which is a centred glyph that must keep its exact proportions.
 JOIN_BOTTOM = False
 
-#: How the artwork sits inside its box. Portraits are bottom-anchored so a
-#: figure stands on the plate; a centred glyph is centred in both axes.
-ART_ALIGN = "xMidYMid"
+#: How the artwork sits inside its box. `xMidYMax` is upstream's default and
+#: stays the module default: artwork is centred horizontally and bottom-anchored,
+#: so a portrait subject stands on the plate. The Kova mark is a centred glyph
+#: with no bottom edge to stand on, so it asks for `xMidYMid` explicitly (see
+#: ART_ALIGN_BY_GIRL) - bottom-anchoring it drops the face toward the plate and
+#: clips it. JOIN_BOTTOM is what disables the portrait stretch.
+ART_ALIGN = "xMidYMax"
+ART_ALIGN_BY_GIRL = {"color": "xMidYMid", "favicon": "xMidYMid"}
 
 # The mark is a centred geometric glyph, so it is framed on a centred box
 # rather than the old portrait framing (which was fitted to a character
@@ -209,12 +214,12 @@ TARGETS: list[tuple[str, str, object]] = [
     ("website/static/img/logo-dark.png", "logo_dark", None),
     ("website/static/img/kova-logo.png", "png_white", 150),
     ("website/static/img/kova-logo-dark.png", "png_dark_white", 150),
-    ("website/static/img/favicon-16x16.png", "png", 16),
-    ("website/static/img/favicon-32x32.png", "png", 32),
+    ("website/static/img/favicon-16x16.png", "favicon_png", 16),
+    ("website/static/img/favicon-32x32.png", "favicon_png", 32),
     ("website/static/img/apple-touch-icon.png", "png", 180),
-    ("website/static/img/favicon.ico", "ico", [16, 32, 48]),
-    ("website/static/img/favicon.svg", "svg_copy", None),
-    ("web/public/favicon.ico", "ico", [16, 32, 48]),
+    ("website/static/img/favicon.ico", "favicon_ico", [16, 32, 48]),
+    ("website/static/img/favicon.svg", "svg_favicon", None),
+    ("web/public/favicon.ico", "favicon_ico", [16, 32, 48]),
 ]
 
 # ─── girl art extraction ────────────────────────────────────────────────────
@@ -226,27 +231,83 @@ class IconArt:
         assets = source / "assets"
         self.colors = colors
         self.commit = commit
-        self.girls = {color: assets / "kova" / f"kova-mark-{color}.svg" for color in ("black", "white")}
+        # "black"/"white" are the mono silhouettes (single self-closing <path>,
+        # the shape generate_icons.py's regex can lift); "color" is the artwork
+        # in its own palette, for surfaces that show the mark as-is.
+        self.girls = {
+            color: assets / "kova" / f"kova-mark-{color}.svg"
+            for color in ("black", "white", "color")
+        }
         self.backgrounds = assets / "backgrounds"
         self.paths: dict[str, str] = {}
         self.bboxes: dict[str, tuple[float, float, float, float]] = {}
         self.master = compose_svg(self, "black", "squircle-light.svg")
         self.master_dark = compose_svg(self, "white", "squircle-dark.svg")
+        # The supplied artwork is a lit illustration: a lavender shell, a blue
+        # antenna and ear, green eyes. Flattening it to one colour throws that
+        # away and leaves a generic robot, so the shipped app icons keep the
+        # real palette. The mono variants stay for single-colour contexts
+        # (favicons on a monochrome surface, the TUI's one-colour rendering).
+        self.master_colour = compose_svg(self, "color", "squircle-light.svg")
+        self.master_colour_dark = compose_svg(self, "color", "squircle-dark.svg")
         # macOS icons sit on Apple's 824-on-1024 grid, not the full-bleed
         # squircle: same art, mac-grid backgrounds, icns targets only.
         self.master_mac = compose_svg(self, "black", "squircle-mac-light.svg")
         self.master_mac_dark = compose_svg(self, "white", "squircle-mac-dark.svg")
+        # Favicons get the small-size variant: the colour mark's black screen
+        # is ~45% of its ink, which at 16px is a smudge rather than a face.
+        self.girls["favicon"] = assets / "kova" / "kova-mark-favicon.svg"
+        self.master_favicon = compose_svg(self, "favicon", "squircle-light.svg")
+        self.master_mac_colour = compose_svg(self, "color", "squircle-mac-light.svg")
+        self.master_mac_colour_dark = compose_svg(self, "color", "squircle-mac-dark.svg")
+
+
+#: Top-level elements an SVG may use to draw the mark.
+_SHAPE_TAGS = frozenset({"path", "circle", "ellipse", "rect", "polygon", "g"})
+
+#: Art variants that are more than one shape, so the single-<path> regex
+#: must not be used on them.
+_MULTI_PATH_ART = frozenset({"color", "favicon"})
 
 
 def girl_path(art: IconArt, girl: str) -> str:
-    """The girl `<path>` element with editor metadata stripped (resvg rejects
-    undeclared inkscape/sodipodi prefixes)."""
+    """The mark art with editor metadata stripped (resvg rejects undeclared
+    inkscape/sodipodi prefixes).
+
+    The mono variants are a single self-closing <path>, so one regex match is
+    the whole glyph. The colour variant is several <path> elements, so every
+    top-level shape in the document is taken; taking only the first would
+    silently drop the screen and the eyes.
+    """
     if girl not in art.paths:
         src = art.girls[girl].read_text(encoding="utf-8-sig")
-        m = re.search(r"<path\b.*?/>", src, re.S)
-        assert m, f"no <path> found in {art.girls[girl].name}"
-        path = re.sub(r'\s+(inkscape|sodipodi):[a-zA-Z-]+="[^"]*"', "", m.group(0))
-        art.paths[girl] = path
+        # The mono variants are one self-closing <path>, so a single regex
+        # match is the whole glyph - and it is returned verbatim, because
+        # re-serialising through ElementTree would rewrite the element
+        # (`ns0:` prefixes, a space before `/>`) and the committed art would
+        # no longer be byte-identical to its source.
+        # Only the mono variants are a single self-closing <path>. Matching
+        # the regex on a multi-path document would lift just the FIRST path and
+        # silently drop the screen and the eyes, so the colour variants are
+        # routed by filename instead.
+        m = None if girl in _MULTI_PATH_ART else re.search(r"<path\b.*?/>", src, re.S)
+        if m:
+            art.paths[girl] = re.sub(r'\s+(inkscape|sodipodi):[a-zA-Z-]+="[^"]*"', "", m.group(0))
+            return art.paths[girl]
+        # The colour variants are several <path> elements. Take every
+        # top-level shape, and emit them under the default namespace so the
+        # result is directly embeddable (an ElementTree round-trip would
+        # otherwise prefix each element with ns0:).
+        root = ET.fromstring(src)
+        shapes = [c for c in root if c.tag.rsplit("}", 1)[-1] in _SHAPE_TAGS]
+        # The message is part of the contract callers match on.
+        assert shapes, f"no <path> found in {art.girls[girl].name}"
+        art.paths[girl] = "".join(
+            ET.tostring(c, encoding="unicode").replace(
+                'xmlns:ns0="http://www.w3.org/2000/svg"', ""
+            ).replace("ns0:", "").replace(" />", "/>")
+            for c in shapes
+        )
     return art.paths[girl]
 
 
@@ -383,12 +444,17 @@ def compose_svg(art: IconArt, girl: str, bg: str) -> str:
     silhouette = ET.Element("rect", {key: str(value) for key, value in geometry.items()})
     for key, value in geometry.items():
         tile.set(key, str(value + inset[key] * thickness / 2))
-    tile.set("stroke", "#000000" if girl == "black" else "#ffffff")
+    # The colour mark carries its own palette, so it takes the light squircle's
+    # dark hairline on both appearances; only the mono variants invert with the
+    # tile they sit on.
+    tile.set("stroke", "#ffffff" if girl == "white" else "#000000")
     tile.set("stroke-width", str(thickness))
     inner = "".join(ET.tostring(child, encoding="unicode") for child in background)
     clip = ET.tostring(silhouette, encoding="unicode")
     box = GIRL_BOXES[bg]
-    portrait = ET.fromstring(girl_layer(art, girl, box, align=ART_ALIGN))
+    portrait = ET.fromstring(
+        girl_layer(art, girl, box, align=ART_ALIGN_BY_GIRL.get(girl, ART_ALIGN))
+    )
     _, y, portrait_width, portrait_height = box
     _, by, bw, bh = girl_bbox(art, girl)
     scale = min(portrait_width / bw, portrait_height / bh)
@@ -485,40 +551,47 @@ def target_bytes(art: IconArt, kind: str, arg: object) -> bytes:
 
     buf = io.BytesIO()
     if kind == "png":
-        save_png(render(art.master, arg), buf)
+        save_png(render(art.master_colour, arg), buf)
     elif kind == "png_mac":
         save_png(render(art.master_mac, arg), buf)
     elif kind == "png_dark":
-        save_png(render(art.master_dark, arg), buf)
+        save_png(render(art.master_colour_dark, arg), buf)
     elif kind == "png_white":
-        render(art.master, arg, background="#ffffff").convert("RGB").save(buf, "PNG", optimize=True)
+        render(art.master_colour, arg, background="#ffffff").convert("RGB").save(buf, "PNG", optimize=True)
     elif kind == "png_dark_white":
-        render(art.master_dark, arg, background=DARK_HEX).convert("RGB").save(buf, "PNG", optimize=True)
+        render(art.master_colour_dark, arg, background=DARK_HEX).convert("RGB").save(buf, "PNG", optimize=True)
     elif kind in ("girl_light", "girl_dark"):
         save_png(girl_mark(art, kind, arg), buf)
+    elif kind == "favicon_png":
+        save_png(render(art.master_favicon, arg), buf)
+    elif kind == "favicon_ico":
+        img = render(art.master_favicon, max(arg))
+        img.save(buf, format="ICO", sizes=[(s, s) for s in arg])
+    elif kind == "svg_favicon":
+        return art.master_favicon.encode("utf-8")
     elif kind == "ico":
-        img = render(art.master, max(arg))
+        img = render(art.master_colour, max(arg))
         img.save(buf, format="ICO", sizes=[(s, s) for s in arg])
     elif kind == "ico_dark":
-        img = render(art.master_dark, max(arg))
+        img = render(art.master_colour_dark, max(arg))
         img.save(buf, format="ICO", sizes=[(s, s) for s in arg])
     elif kind == "icns":
-        img = render(art.master_mac, 1024)
+        img = render(art.master_mac_colour, 1024)
         frames = [img.resize((s, s), Image.LANCZOS) for s in (16, 32, 64, 128, 256, 512, 1024)]
         img.save(buf, format="ICNS", append_images=frames[1:])
     elif kind == "icns_dark":
-        img = render(art.master_mac_dark, 1024)
+        img = render(art.master_mac_colour_dark, 1024)
         frames = [img.resize((s, s), Image.LANCZOS) for s in (16, 32, 64, 128, 256, 512, 1024)]
         img.save(buf, format="ICNS", append_images=frames[1:])
     elif kind == "wide":
         w, h = arg
         canvas = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        paste_centered(canvas, render(art.master, 100))
+        paste_centered(canvas, render(art.master_colour, 100))
         canvas.save(buf, "PNG")
     elif kind == "wide_dark":
         w, h = arg
         canvas = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-        paste_centered(canvas, render(art.master_dark, 100))
+        paste_centered(canvas, render(art.master_colour_dark, 100))
         canvas.save(buf, "PNG")
     elif kind == "logo":
         build_logo_image(art, dark=False).save(buf, "PNG")
@@ -566,11 +639,11 @@ def cmd_write(source: Path, out: Path) -> int:
     for rel, kind, arg in TARGETS:
         path = out / rel
         try:
-            if kind in ("svg", "svg_dark", "svg_copy"):
+            if kind in ("svg", "svg_dark", "svg_copy", "svg_favicon"):
                 print(f"  {rel}: {path.stat().st_size} bytes SVG")
                 continue
             im = Image.open(path)
-            if kind in ("ico", "ico_dark"):
+            if kind in ("ico", "ico_dark", "favicon_ico"):
                 sizes = []
                 try:
                     for i in range(im.n_frames):

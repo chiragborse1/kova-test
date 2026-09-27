@@ -94,11 +94,17 @@ def frames(path):
 def tile_color(image):
     # The flavor background is the tile fill. Tiles carry an inward contrasting
     # border (black or white) and the artwork sits above the centre, both of
-    # which LANCZOS smears across tiny frames — so read the most chromatic pixel
-    # of the tile's lower half instead of one fixed coordinate: on a flavored
-    # tile that is the fill colour, on a stable tile every candidate is grey.
+    # which LANCZOS smears across tiny frames.
+    #
+    # The fill is sampled from a band well below the artwork rather than as the
+    # most chromatic pixel: the Kova mark is a COLOURED illustration (lavender
+    # shell, blue antenna and ear, green eyes), so "most chromatic" now returns
+    # the mark's own blue instead of the tile. The mark is centred in the tile,
+    # so the lower quarter of the opaque box is background on every flavor.
     x0, y0, x1, y1 = image.getchannel("A").point(lambda a: 255 if a >= 128 else 0).getbbox()
-    pixels = [rgba[:3] for rgba in image.crop((x0, (y0 + y1) // 2, x1, y1)).getdata() if rgba[3] >= 128]
+    band_top = y0 + int((y1 - y0) * 0.80)
+    pixels = [rgba[:3] for rgba in image.crop((x0, band_top, x1, y1)).getdata() if rgba[3] >= 128]
+    assert pixels, "no opaque pixel in the lower band of the tile"
     # Saturation weighted by chroma: a near-black anti-aliased edge pixel has high HSV
     # saturation but almost no colour, the fill has both.
     return max(pixels, key=lambda rgb: max(rgb) - min(rgb))
