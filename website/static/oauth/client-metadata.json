@@ -1,8 +1,8 @@
 {
-  "client_id": "https://nousresearch.github.io/hermes-agent/docs/oauth/client-metadata.json",
+  "client_id": "https://docs.neuralstudio.in/oauth/client-metadata.json",
   "client_name": "Kova Agent",
   "client_uri": "https://kova-agent.neuralstudio.in",
-  "logo_uri": "https://nousresearch.github.io/hermes-agent/docs/img/logo.png",
+  "logo_uri": "https://docs.neuralstudio.in/img/logo.png",
   "application_type": "native",
   "grant_types": [
     "authorization_code",

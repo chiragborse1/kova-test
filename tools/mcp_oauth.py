@@ -923,8 +923,10 @@ def remove_oauth_tokens(server_name: str, *, kova_home: str | Path | None = None
 # CIMD (OAuth Client ID Metadata Documents): the client_id IS an HTTPS URL the server fetches for our
 # name/logo/redirect URIs, replacing per-install DCR. The SDK does the protocol; Kova only decides
 # eligibility. Published from ``website/static/oauth/client-metadata.json``; the github.io origin is
-# deliberate — servers MUST NOT follow redirects when fetching it, and hermes-agent.nousresearch.com/docs/* 301s here.
-_CIMD_CLIENT_METADATA_URL = "https://openkova.github.io/kova-agent/docs/oauth/client-metadata.json"
+# deliberate — servers MUST NOT follow redirects when fetching it. The docs origin
+# answers 200 with no redirect for both the document and the logo; the marketing
+# host rewrites /docs/* to it but 404s at /oauth/*, so it cannot serve this.
+_CIMD_CLIENT_METADATA_URL = "https://docs.neuralstudio.in/oauth/client-metadata.json"
 # Loopback ports/hosts declared in that document (exact match, so no ephemeral port under CIMD);
 # below Linux's 32768 ephemeral floor. tests/tools/test_mcp_cimd.py keeps them in sync.
 _CIMD_PORTS = (27890, 27891, 27892, 27893, 27894)
