@@ -50,11 +50,11 @@ function releasePointer(state: PressState): void {
 }
 
 function setWorkspaceTransfer(transferring: boolean): void {
-  window.hermesDesktop?.hud?.setWorkspaceTransfer?.(transferring)
+  window.kovaDesktop?.hud?.setWorkspaceTransfer?.(transferring)
 }
 
 function moveHud(state: PressState): void {
-  window.hermesDesktop?.hud?.moveBy?.({
+  window.kovaDesktop?.hud?.moveBy?.({
     width: state.originW,
     height: state.originH
   })
@@ -68,7 +68,7 @@ function armGrab(state: PressState, workspaceTransfer: boolean): void {
     setWorkspaceTransfer(true)
   }
 
-  window.hermesDesktop?.hud?.beginMove?.()
+  window.kovaDesktop?.hud?.beginMove?.()
 }
 
 /**
@@ -112,7 +112,7 @@ export function useHudComposerDrag(
 
     if (state) {
       if (state.armed) {
-        window.hermesDesktop?.hud?.endMove?.()
+        window.kovaDesktop?.hud?.endMove?.()
       }
 
       if (state.workspaceTransfer) {

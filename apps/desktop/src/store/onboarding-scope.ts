@@ -29,7 +29,7 @@ export async function requestOnboardingGateway<T>(
 ): Promise<T> {
   // `default` is only the Desktop routing key for the launch home here.
   const profile = scope.profile || 'default'
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   if (scope.connectionId && !desktop.getConnectionFor) {
     throw new Error('This Desktop build cannot dial registry connections. Update Kova Desktop.')

@@ -11,7 +11,7 @@ description: "Kanban worker health in the Desktop status bar — live activity p
 maintainer: mr-3mm3 (Kova Monitor contributors; independent of Nous Research)
 tier: community
 category: desktop
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 platforms: [linux, macos]
 docs_url: https://github.com/mr-3mm3/kova-monitor
 screenshots:

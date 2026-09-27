@@ -6,7 +6,7 @@ maintainer: PriceDotWin
 tier: community
 category: desktop
 version: "0.1.1"
-requires_hermes: ">=0.20.4"
+requires_kova: ">=0.20.4"
 docs_url: https://github.com/PriceDotWin/pricewin-kova-plugin#readme
 screenshots:
   - https://raw.githubusercontent.com/PriceDotWin/pricewin-kova-plugin/24dfbc8e06ad8e08ebbfa8b735a5b1a60ed894a8/docs/hotel-cards.png

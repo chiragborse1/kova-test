@@ -143,7 +143,7 @@ const ROOT_LAUNCHED_ENV = {
 test('a named profile backend does not inherit secrets the root .env/.op.env loaded into Desktop', () => {
   withKovaRoot(ROOT_SCOPE_FILES, root => {
     const env = profileBackendParentEnv({
-      hermesHome: root,
+      kovaHome: root,
       profile: 'urbot',
       currentEnv: ROOT_LAUNCHED_ENV,
       platform: 'linux'
@@ -158,7 +158,7 @@ test('the launch profile backend inherits the Desktop env unchanged', () => {
   withKovaRoot(ROOT_SCOPE_FILES, root => {
     for (const profile of ['default', null, undefined]) {
       assert.deepEqual(
-        profileBackendParentEnv({ hermesHome: root, profile, currentEnv: ROOT_LAUNCHED_ENV, platform: 'linux' }),
+        profileBackendParentEnv({ kovaHome: root, profile, currentEnv: ROOT_LAUNCHED_ENV, platform: 'linux' }),
         ROOT_LAUNCHED_ENV
       )
     }
@@ -167,7 +167,7 @@ test('the launch profile backend inherits the Desktop env unchanged', () => {
 
 test('a primary backend without an explicit profile follows the sticky active_profile', () => {
   withKovaRoot({ ...ROOT_SCOPE_FILES, active_profile: 'urbot\n' }, root => {
-    const env = profileBackendParentEnv({ hermesHome: root, profile: null, currentEnv: ROOT_LAUNCHED_ENV })
+    const env = profileBackendParentEnv({ kovaHome: root, profile: null, currentEnv: ROOT_LAUNCHED_ENV })
 
     assert.equal(env.TLON_SHIP_CODE, undefined)
     assert.equal(env.OP_SERVICE_ACCOUNT_TOKEN, undefined)
@@ -189,11 +189,11 @@ test('Desktop launched from a named profile keeps that profile out of the defaul
         OPENAI_API_KEY: 'shell-key'
       }
 
-      assert.deepEqual(profileBackendParentEnv({ hermesHome: root, profile: 'default', currentEnv }), {
+      assert.deepEqual(profileBackendParentEnv({ kovaHome: root, profile: 'default', currentEnv }), {
         KOVA_HOME: currentEnv.KOVA_HOME,
         OPENAI_API_KEY: 'shell-key'
       })
-      assert.deepEqual(profileBackendParentEnv({ hermesHome: root, profile: 'work', currentEnv }), currentEnv)
+      assert.deepEqual(profileBackendParentEnv({ kovaHome: root, profile: 'work', currentEnv }), currentEnv)
     }
   )
 })
@@ -219,7 +219,7 @@ test('Windows matches profile homes and dotenv names case-insensitively', () => 
   }
 
   const scoped = (profile: string) =>
-    profileBackendParentEnv({ hermesHome: root, profile, currentEnv, platform: 'win32', fsModule })
+    profileBackendParentEnv({ kovaHome: root, profile, currentEnv, platform: 'win32', fsModule })
 
   assert.deepEqual(scoped('default'), currentEnv)
   assert.deepEqual(scoped('urbot'), { KOVA_HOME: currentEnv.KOVA_HOME, Path: 'C:\\Windows' })

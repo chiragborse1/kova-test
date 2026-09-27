@@ -157,7 +157,7 @@ class TestCmdMigrate:
         openclaw_dir = tmp_path / ".openclaw"
         openclaw_dir.mkdir()
 
-        fake_mod = ModuleType("openclaw_to_hermes")
+        fake_mod = ModuleType("openclaw_to_kova")
         fake_mod.resolve_selected_options = MagicMock(return_value=set())
         fake_migrator = MagicMock()
         fake_migrator.migrate.return_value = {
@@ -194,7 +194,7 @@ class TestCmdMigrate:
         openclaw_dir = tmp_path / ".openclaw"
         openclaw_dir.mkdir()
 
-        fake_mod = ModuleType("openclaw_to_hermes")
+        fake_mod = ModuleType("openclaw_to_kova")
         fake_mod.resolve_selected_options = MagicMock(return_value=set())
         fake_migrator = MagicMock()
         fake_migrator.migrate.return_value = {

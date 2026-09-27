@@ -555,7 +555,7 @@ interface DiskRoot {
  *  backend's kova_home — #66899). Resolving it also runs Electron's
  *  reconcile, so unified packages' desktop halves are current before we scan. */
 async function diskRoots(): Promise<DiskRoot[]> {
-  const root = await window.hermesDesktop?.desktopPluginsRoot?.()
+  const root = await window.kovaDesktop?.desktopPluginsRoot?.()
 
   return root ? [{ dir: root, entrySegments: ['plugin.js'] }] : []
 }
@@ -572,7 +572,7 @@ interface PackageMarker {
   package: string
 }
 
-async function readPackageMarker(desktop: Window['hermesDesktop'], folder: string): Promise<null | PackageMarker> {
+async function readPackageMarker(desktop: Window['kovaDesktop'], folder: string): Promise<null | PackageMarker> {
   try {
     const { entries } = await desktop.readDir(folder)
     const marker = entries.find(entry => entry.name === PACKAGE_MARKER && !entry.isDirectory)
@@ -643,7 +643,7 @@ class PluginSourceOversizeError extends Error {}
  *  the preview read, which silently truncates at 512 KiB — there the read
  *  fails loudly instead of handing a partial file to the evaluator. */
 async function readPluginSourceText(file: string): Promise<string> {
-  const desktop = window.hermesDesktop!
+  const desktop = window.kovaDesktop!
 
   if (desktop.readPluginSource) {
     return (await desktop.readPluginSource(file)).text
@@ -722,7 +722,7 @@ async function loadDiskPlugin(entry: DiskPlugin): Promise<boolean> {
 }
 
 async function resolveDiskPluginEntry(
-  desktop: Window['hermesDesktop'],
+  desktop: Window['kovaDesktop'],
   folderPath: string,
   segments: readonly string[]
 ): Promise<string | null> {
@@ -755,7 +755,7 @@ async function resolveDiskPluginEntry(
 /** Bind (or, on a manual reload, re-bind) the hot-reload watch for one entry.
  *  An atomic directory replacement leaves the old watch attached to the
  *  unlinked inode, so a forced reload must drop it and watch the current file. */
-async function watchDiskPluginFile(desktop: NonNullable<Window['hermesDesktop']>, record: DiskPlugin): Promise<void> {
+async function watchDiskPluginFile(desktop: NonNullable<Window['kovaDesktop']>, record: DiskPlugin): Promise<void> {
   if (record.watchId) {
     void desktop.stopPreviewFileWatch(record.watchId)
     record.watchId = null
@@ -775,7 +775,7 @@ async function watchDiskPluginFile(desktop: NonNullable<Window['hermesDesktop']>
  *  same path, so the fs watch on the old inode never fires and the stale
  *  module would otherwise stay live until restart (#91503). */
 async function scanDiskPlugins(reloadKnown = false): Promise<void> {
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   // Re-entrancy guard: the 5s poll must not overlap a slow in-flight scan
   // (reads/loads can exceed the interval).
@@ -883,7 +883,7 @@ function retireDiskPlugin(file: string, record: DiskPlugin): void {
   dropOriginRecord(record.origin, record)
 
   if (record.watchId) {
-    void window.hermesDesktop?.stopPreviewFileWatch(record.watchId)
+    void window.kovaDesktop?.stopPreviewFileWatch(record.watchId)
   }
 
   disk.delete(file)
@@ -902,7 +902,7 @@ export async function uninstallDiskPlugin(pluginId: string): Promise<{ ok: boole
   }
 
   const [file, record] = found
-  const remove = window.hermesDesktop?.removeDesktopPlugin
+  const remove = window.kovaDesktop?.removeDesktopPlugin
 
   if (!remove) {
     return { ok: false, error: 'this Kova Desktop build cannot remove desktop plugins — delete the folder by hand' }
@@ -931,7 +931,7 @@ export const $diskPluginsScanPending = atom(false)
 /** Start the self-maintaining disk door: initial scan, per-file hot reload,
  *  fs-watched folder reconciliation (poll fallback on older shells). Idempotent. */
 export function watchRuntimePlugins(): void {
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   if (watching || !desktop) {
     return

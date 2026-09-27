@@ -148,9 +148,9 @@ async function main() {
   // also accept a genuine app close. Any one is success — the PowerShell
   // driver owns asserting the update's OUTCOME (sha, marker cleanup,
   // relaunch) after we return.
-  const hermesHome = process.env.KOVA_HOME
-  const markerPath = hermesHome ? path.join(hermesHome, '.kova-update-in-progress') : null
-  const resultPath = hermesHome ? path.join(hermesHome, '.kova-update-result.json') : null
+  const kovaHome = process.env.KOVA_HOME
+  const markerPath = kovaHome ? path.join(kovaHome, '.kova-update-in-progress') : null
+  const resultPath = kovaHome ? path.join(kovaHome, '.kova-update-result.json') : null
 
   const handoffDeadline = Date.now() + 150_000
   let handoffStarted = false

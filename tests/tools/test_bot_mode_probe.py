@@ -305,7 +305,7 @@ def test_legacy_bot_chat_upgrade(tmp_path):
 
     # unmanaged install → probe silent → never upgrades
     bot_mode_probe._reset_cache_for_tests()
-    home2 = tmp_path / ".hermes2"
+    home2 = tmp_path / ".kova2"
     home2.mkdir()
     assert not bot_mode_probe.stored_bot_chat_prompt_needs_upgrade(legacy, home2)
 

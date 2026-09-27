@@ -7,7 +7,7 @@ description: Screens user turns and blocks downstream tools on a BLOCK verdict; 
 maintainer: roli-lpci (Kova Labs; independent of Nous Research)
 tier: community
 category: general
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/kova-labs-ai/little-canary/blob/6abccc1aa9f325305dc7f3767bc9dda71fbac56a/integrations/kova-agent/README.md
 capabilities:
   provides_tools: []

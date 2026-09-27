@@ -10,7 +10,7 @@ description: Experimental model provider that runs Kova turns on a Claude Pro/Ma
 maintainer: OpenKova
 tier: official
 category: models
-requires_hermes: ">=0.21.4"
+requires_kova: ">=0.21.4"
 docs_url: https://github.com/OpenKova/kova-plugin-claude-subscription-directsdk#readme
 version: "0.3.0"
 platforms: []

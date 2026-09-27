@@ -35,7 +35,7 @@ export const UPDATE_ROOT = process.env.KOVA_E2E_UPDATE_ROOT || path.join(os.tmpd
 export interface InstallFacts {
   sandboxRoot: string
   home: string
-  hermesHome: string
+  kovaHome: string
   checkout: string
   kova: string
   origin: string
@@ -208,8 +208,8 @@ export function appEnv(facts: InstallFacts, extra: Record<string, string> = {}):
 
 /** A user who configured a custom OpenAI-compatible endpoint (the scripted provider). */
 export function configureProvider(facts: InstallFacts, providerUrl: string): void {
-  fs.writeFileSync(path.join(facts.hermesHome, 'config.yaml'), providerConfigYaml(providerUrl))
-  fs.writeFileSync(path.join(facts.hermesHome, '.env'), 'MOCK_API_KEY=update-e2e-key\n')
+  fs.writeFileSync(path.join(facts.kovaHome, 'config.yaml'), providerConfigYaml(providerUrl))
+  fs.writeFileSync(path.join(facts.kovaHome, '.env'), 'MOCK_API_KEY=update-e2e-key\n')
 }
 
 export interface LaunchedApp {
@@ -250,7 +250,7 @@ export async function launchInstalledApp(facts: InstallFacts, env: Record<string
 // ─── Observation ───────────────────────────────────────────────────────
 
 export function installProcesses(facts: InstallFacts): ProcInfo[] {
-  return sandboxProcesses({ hermesHome: facts.hermesHome } as CoreSandbox)
+  return sandboxProcesses({ kovaHome: facts.kovaHome } as CoreSandbox)
 }
 
 function exeOf(pid: number): string {
@@ -291,11 +291,11 @@ export function readText(file: string): string {
 }
 
 export function desktopLog(facts: InstallFacts): string {
-  return readText(path.join(facts.hermesHome, 'logs', 'desktop.log'))
+  return readText(path.join(facts.kovaHome, 'logs', 'desktop.log'))
 }
 
 export function handoffLog(facts: InstallFacts): string {
-  return readText(path.join(facts.hermesHome, 'logs', 'desktop-update-handoff.log'))
+  return readText(path.join(facts.kovaHome, 'logs', 'desktop-update-handoff.log'))
 }
 
 function tail(text: string, n: number): string {
@@ -304,7 +304,7 @@ function tail(text: string, n: number): string {
 
 /** Everything a red cell needs to explain itself. */
 export function diagnostics(facts: InstallFacts, extra = ''): string {
-  const logsDir = path.join(facts.hermesHome, 'logs')
+  const logsDir = path.join(facts.kovaHome, 'logs')
   const parts: string[] = [extra]
 
   try {
@@ -320,7 +320,7 @@ export function diagnostics(facts: InstallFacts, extra = ''): string {
     }
   }
 
-  const receipts = path.join(facts.hermesHome, 'update-receipts')
+  const receipts = path.join(facts.kovaHome, 'update-receipts')
 
   if (fs.existsSync(receipts)) {
     for (const name of fs.readdirSync(receipts).slice(-3)) {
@@ -498,8 +498,8 @@ export interface UpdateStatus {
 export async function checkForUpdates(page: Page): Promise<null | UpdateStatus> {
   return page.evaluate(() => {
     const bridge = (
-      window as unknown as { hermesDesktop: { updates: { check(o: { force: boolean }): Promise<unknown> } } }
-    ).hermesDesktop
+      window as unknown as { kovaDesktop: { updates: { check(o: { force: boolean }): Promise<unknown> } } }
+    ).kovaDesktop
 
     return bridge.updates.check({ force: true }) as Promise<null | UpdateStatus>
   })

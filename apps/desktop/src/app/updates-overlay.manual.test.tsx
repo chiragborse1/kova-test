@@ -20,17 +20,17 @@ afterEach((): void => {
   $updateOverlayOpen.set(false)
   $updateStatus.set(null)
   resetUpdateApplyState()
-  Reflect.deleteProperty(window, 'hermesDesktop')
+  Reflect.deleteProperty(window, 'kovaDesktop')
   vi.restoreAllMocks()
 })
 
 it('shows manual recovery guidance without claiming the help command installs an update', async (): Promise<void> => {
   const message: string = 'Choose the intended branch or channel before updating this older checkout.'
-  window.hermesDesktop = {
+  window.kovaDesktop = {
     updates: {
       apply: async (): Promise<unknown> => ({ ok: true, manual: true, command: 'kova update --help', message })
     }
-  } as unknown as Window['hermesDesktop']
+  } as unknown as Window['kovaDesktop']
   $updateOverlayTarget.set('client')
   $updateOverlayOpen.set(true)
   $updateStatus.set({ supported: false, reason: 'source-probe-unavailable', message })

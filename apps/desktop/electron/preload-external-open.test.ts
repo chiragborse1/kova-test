@@ -29,7 +29,7 @@ vi.mock('electron', () => ({
 
 it('exposes onExternalOpenFailed and forwards the failure payload', async (): Promise<void> => {
   await import('./preload')
-  const registration = host.exposeInMainWorld.mock.calls.find(([name]): boolean => name === 'hermesDesktop')
+  const registration = host.exposeInMainWorld.mock.calls.find(([name]): boolean => name === 'kovaDesktop')
 
   expect(registration).toBeDefined()
   const bridge = registration![1] as Record<string, (callback: (payload: unknown) => void) => () => void>

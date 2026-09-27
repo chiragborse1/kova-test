@@ -645,7 +645,7 @@ def _collect_authed_provider_slugs(
         if _any_env(env_vars, _scoped_key_env) or _raw_pool_usable(kova_id):
             _emit(kova_id, kova_id)
 
-    mdev_to_hermes = {v: k for k, v in PROVIDER_TO_MODELS_DEV.items()}
+    mdev_to_kova = {v: k for k, v in PROVIDER_TO_MODELS_DEV.items()}
     for pid, overlay in KOVA_OVERLAYS.items():
         kova_slug = mdev_to_kova.get(pid, pid)
         if _skip(seen, excluded_set, pid, kova_slug) or overlay.auth_type == "aws_sdk":
@@ -885,7 +885,7 @@ def _lap_overlay_rows(b: _PickerBuild, data: dict, user_providers: dict) -> None
 
     # KOVA_OVERLAYS keys may be models.dev IDs ("github-copilot") while config.yaml uses
     # Kova IDs ("copilot").
-    mdev_to_hermes = {v: k for k, v in PROVIDER_TO_MODELS_DEV.items()}
+    mdev_to_kova = {v: k for k, v in PROVIDER_TO_MODELS_DEV.items()}
     for pid, overlay in KOVA_OVERLAYS.items():
         kova_slug = mdev_to_kova.get(pid, pid)
         if _skip(b.seen_slugs, b.excluded, pid, kova_slug):

@@ -354,7 +354,7 @@ export function useKeybinds(deps: KeybindRuntimeDeps): void {
   useEffect(() => {
     const updateF12Ownership = () => {
       const hasF12Binding = [...$comboIndex.get().keys()].some(combo => combo === 'f12' || combo.endsWith('+f12'))
-      window.hermesDesktop?.setF12ShortcutActive?.(hasF12Binding || $capture.get() !== null)
+      window.kovaDesktop?.setF12ShortcutActive?.(hasF12Binding || $capture.get() !== null)
     }
 
     const stopBindings = $comboIndex.subscribe(updateF12Ownership)
@@ -363,12 +363,12 @@ export function useKeybinds(deps: KeybindRuntimeDeps): void {
     return () => {
       stopBindings()
       stopCapture()
-      window.hermesDesktop?.setF12ShortcutActive?.(false)
+      window.kovaDesktop?.setF12ShortcutActive?.(false)
     }
   }, [])
 
   useEffect(() => {
-    const stopF12Shortcut = window.hermesDesktop?.onF12Shortcut?.(input => {
+    const stopF12Shortcut = window.kovaDesktop?.onF12Shortcut?.(input => {
       const target = document.activeElement ?? document.body ?? document.documentElement
       target.dispatchEvent(
         new KeyboardEvent('keydown', {

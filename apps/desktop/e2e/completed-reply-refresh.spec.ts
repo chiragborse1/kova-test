@@ -87,7 +87,7 @@ test('a delayed history read cannot remove the latest completed reply', async ()
 
     // An actual backend metadata write produces the production change tick.
     await page.evaluate(async sessionId => {
-      await (window as any).hermesDesktop.api({
+      await (window as any).kovaDesktop.api({
         path: `/api/sessions/${sessionId}`,
         method: 'PATCH',
         body: { title: 'Completed reply regression' }

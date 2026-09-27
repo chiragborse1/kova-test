@@ -22,7 +22,7 @@ from tests.docker.conftest import (
 
 
 @pytest.mark.parametrize("uid", [10000, 23456])
-def test_install_tree_not_writable_by_hermes(
+def test_install_tree_not_writable_by_kova(
     built_image: str, container_name: str, uid: int,
 ) -> None:
     """The kova user must not be able to modify /opt/kova.

@@ -10,7 +10,7 @@ with the rest. Only a core that cannot build on its own still fails.
 Disabling needs evidence about the plugin itself: its requires-python against the pinned
 interpreter, its manifest contract, a resolver proof, or its build failing. A fetch or
 tooling failure could be the moment, so the plugin gets one retry before it is disabled.
-requires_hermes is judged against a version identity that can lag (a checkout without its
+requires_kova is judged against a version identity that can lag (a checkout without its
 release tags), so a misfit there only sits out: config is untouched, boot skips it the same
 way, and it rejoins when the verdict flips. A secondary profile whose config cannot be read
 sits out until its config is fixed.

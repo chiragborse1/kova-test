@@ -20,7 +20,7 @@ from typing import Any, Callable, Mapping
 import pytest
 
 from tests.e2e.core.delivery._fake_platform import GatewayProcess, read_jsonl, wait_until
-from tests.e2e.core.security._helpers import REPO_ROOT, BoundaryBreach, db_blob, files_containing, run_hermes
+from tests.e2e.core.security._helpers import REPO_ROOT, BoundaryBreach, db_blob, files_containing, run_kova
 from tests.fakes.fake_llm_provider import Error, Response, Text, ToolCall
 
 
@@ -217,7 +217,7 @@ def collect(home: Path, requests: list[dict], platform_journal: Path | None = No
     out.mkdir(exist_ok=True)
     exports = {}
     for flag, name in (([], "plain.jsonl"), (["--redact"], "redacted.jsonl")):
-        r = run_hermes(["sessions", "export", str(out / name), *flag], home, timeout=90)
+        r = run_kova(["sessions", "export", str(out / name), *flag], home, timeout=90)
         assert r.returncode == 0 and (out / name).exists(), f"sessions export failed: {r.stdout}\n{r.stderr}"
         exports[name] = (out / name).read_text(encoding="utf-8")
     wire = {f"request #{i} ({r['kind']})": json.dumps(r["body"]) for i, r in enumerate(requests)

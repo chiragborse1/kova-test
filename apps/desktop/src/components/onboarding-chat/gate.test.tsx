@@ -10,7 +10,7 @@ afterEach(() => {
 
 it('starts the skipped-film splash before the backend connects and removes it only after adoption', async () => {
   vi.resetModules()
-  vi.stubGlobal('hermesDesktop', { guestOnboardingEnabled: true, skipIntro: true })
+  vi.stubGlobal('kovaDesktop', { guestOnboardingEnabled: true, skipIntro: true })
   const { IntroRevealGate } = await import('@/components/intro-reveal')
   const { OnboardingChatGate } = await import('./gate')
   const { $onboardingGate } = await import('@/store/onboarding-gate')
@@ -53,7 +53,7 @@ it('starts the skipped-film splash before the backend connects and removes it on
 
 it.each(['refused', 'rejected'])('restores the ordinary app after %s startup', async outcome => {
   vi.resetModules()
-  vi.stubGlobal('hermesDesktop', { guestOnboardingEnabled: true, skipIntro: true })
+  vi.stubGlobal('kovaDesktop', { guestOnboardingEnabled: true, skipIntro: true })
   const { OnboardingChatGate } = await import('./gate')
   const { $onboardingGate } = await import('@/store/onboarding-gate')
   const { $chatOnboardingSolo } = await import('./assembly')

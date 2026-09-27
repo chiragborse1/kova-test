@@ -5,7 +5,7 @@ description: Bounded tools to list, read, create, and control local T3 coding th
 maintainer: thetasigmaio
 tier: community
 category: tools
-requires_hermes: ">=0.20.4"
+requires_kova: ">=0.20.4"
 docs_url: https://github.com/thetasigmaio/kova-t3-control/blob/aeb5493e30e744b414cbfe88a70adb1acd59a1c8/docs/compatibility.md
 platforms: [linux]
 # Stock Kova: t3_thread_send requires completion_policy: "none".

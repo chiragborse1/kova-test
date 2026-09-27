@@ -3135,7 +3135,7 @@ export const deOverrides = {
     noSessions: 'Noch keine Sessions.',
     gatewayRunning: 'Messaging-Gateway läuft',
     gatewayStopped: 'Messaging-Gateway gestoppt',
-    hermesActiveSessions: (version, count) => `Kova ${version} · Aktive Sessions ${count}`,
+    kovaActiveSessions: (version, count) => `Kova ${version} · Aktive Sessions ${count}`,
     restartGateway: 'Gateway neu starten',
     openBrowser: 'Browser öffnen',
     gatewayRestartFailed: 'Gateway-Neustart fehlgeschlagen.',

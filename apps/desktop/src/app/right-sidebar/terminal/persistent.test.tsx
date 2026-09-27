@@ -141,7 +141,7 @@ describe('PersistentTerminal rect tracking', () => {
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
     setDocumentHidden(false)
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
   })
 
   it('settles after rect changes instead of polling forever', () => {

@@ -28,7 +28,7 @@ describe('desktop connection scope', () => {
     return {
       getGatewayWsUrl: vi.fn(async () => 'wss://legacy.invalid/api/ws?token=fresh'),
       ...(withScopedMint ? { getGatewayWsUrlFor: vi.fn(async () => 'wss://remote.invalid/api/ws?ticket=fresh') } : {})
-    } as unknown as Window['hermesDesktop']
+    } as unknown as Window['kovaDesktop']
   }
 
   it.each(authModes)('an inferred connectionId keeps the legacy profile-alias mint (%s)', async authMode => {

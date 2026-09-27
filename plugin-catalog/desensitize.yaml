@@ -23,7 +23,7 @@ description: "Chinese-context desensitization for Kova chats. Replaces PII and b
 maintainer: yubingz
 tier: community
 category: tools
-requires_hermes: ">=0.19"
+requires_kova: ">=0.19"
 docs_url: https://github.com/yubingz/kova-desensitize#readme
 version: "1.0.0"
 readme: true

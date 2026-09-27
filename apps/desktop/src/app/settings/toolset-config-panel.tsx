@@ -336,7 +336,7 @@ function PostSetupRunner({ toolset, postSetupKey, installed = false, onComplete,
                 message: copy.postSetupErrorMessage(prettyName(postSetupKey)),
                 action: {
                   label: copy.postSetupOpenLogs,
-                  onClick: () => void window.hermesDesktop?.revealLogs?.().catch(() => undefined)
+                  onClick: () => void window.kovaDesktop?.revealLogs?.().catch(() => undefined)
                 },
                 secondaryAction: { label: copy.postSetupRunAgain, onClick: () => void run() }
               }
@@ -663,9 +663,9 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
 
       const url = start.verification_url
 
-      if (window.hermesDesktop?.openExternal) {
+      if (window.kovaDesktop?.openExternal) {
         try {
-          await window.hermesDesktop.openExternal(url)
+          await window.kovaDesktop.openExternal(url)
         } catch {
           window.open(url, '_blank', 'noopener,noreferrer')
         }

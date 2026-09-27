@@ -52,7 +52,7 @@ function installDesktop(): { getConnection: ReturnType<typeof vi.fn>; getConnect
     getConnectionFor: vi.fn(async () => conn)
   }
 
-  ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = stub
+  ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = stub
 
   return stub
 }
@@ -69,7 +69,7 @@ beforeEach(() => {
 afterEach(() => {
   closeSecondaryGateways()
   vi.clearAllMocks()
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 describe('user opens dial main as foreground from the first IPC (#102281)', () => {

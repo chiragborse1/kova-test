@@ -6,7 +6,7 @@ description: "Jev-powered Kova plugin for skill/model routing, typed assess, DOM
 maintainer: bgrablin
 tier: community
 category: tools
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/bgrablin/kova-switchyard/blob/22cd6bcc04bc7eb0db61abe1bb86ce45037190dd/docs/SETUP.md
 version: "0.5.3"
 image: https://raw.githubusercontent.com/bgrablin/kova-switchyard/22cd6bcc04bc7eb0db61abe1bb86ce45037190dd/docs/assets/kova-switchyard-overview.png

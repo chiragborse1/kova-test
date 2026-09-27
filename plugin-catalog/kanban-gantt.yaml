@@ -7,7 +7,7 @@ description: 'Gantt timeline view for the Kova kanban boards: a full /kanban-gan
 maintainer: e-is
 tier: community
 category: desktop
-requires_hermes: '>=0.19'
+requires_kova: '>=0.19'
 docs_url: https://github.com/e-is/kova-kanban-gantt
 platforms: []
 capabilities:

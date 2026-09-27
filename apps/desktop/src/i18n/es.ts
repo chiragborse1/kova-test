@@ -3127,7 +3127,7 @@ export const esOverrides = {
     noSessions: 'Aún no hay sesiones.',
     gatewayRunning: 'Gateway de mensajería en ejecución',
     gatewayStopped: 'Gateway de mensajería detenido',
-    hermesActiveSessions: (version, count) => `Kova ${version} · Sesiones activas ${count}`,
+    kovaActiveSessions: (version, count) => `Kova ${version} · Sesiones activas ${count}`,
     restartGateway: 'Reiniciar gateway',
     openBrowser: 'Abrir navegador',
     gatewayRestartFailed: 'No se pudo reiniciar el gateway.',

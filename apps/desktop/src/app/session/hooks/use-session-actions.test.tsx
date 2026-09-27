@@ -3049,7 +3049,7 @@ describe('resumeSession warm-cache mapping integrity', () => {
   )
 
   it('pins an untagged row to the active registry connection instead of the same-named local profile', async () => {
-    setConnection({ connectionId: 'hermes01', mode: 'remote' } as never)
+    setConnection({ connectionId: 'kova01', mode: 'remote' } as never)
     setSessions([storedSession({ id: 'remote-stored', profile: 'default' })])
     vi.mocked(getLatestSessionMessages).mockResolvedValue({ messages: [], session_id: 'remote-stored' } as never)
     vi.mocked(requestGatewayForAgent).mockResolvedValue({
@@ -3073,7 +3073,7 @@ describe('resumeSession warm-cache mapping integrity', () => {
     await resume!('remote-stored', true)
 
     expect(requestGatewayForAgent).toHaveBeenCalledWith(
-      'hermes01',
+      'kova01',
       'default',
       'session.resume',
       expect.objectContaining({ session_id: 'remote-stored' })

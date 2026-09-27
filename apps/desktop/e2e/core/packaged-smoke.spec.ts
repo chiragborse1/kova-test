@@ -487,7 +487,7 @@ test('packaged binary boots against a scripted provider and completes a first ch
   const build = packagedBuildOrSkip()
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('packaged')
-  writeProviderHome(sandbox.hermesHome, provider.url)
+  writeProviderHome(sandbox.kovaHome, provider.url)
   let app: ElectronApplication | undefined
 
   try {

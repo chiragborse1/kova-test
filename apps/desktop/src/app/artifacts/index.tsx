@@ -286,8 +286,8 @@ export function ArtifactsView({ setStatusbarItemGroup: _setStatusbarItemGroup, .
           return
         }
 
-        if (window.hermesDesktop?.openExternal) {
-          await window.hermesDesktop.openExternal(href)
+        if (window.kovaDesktop?.openExternal) {
+          await window.kovaDesktop.openExternal(href)
         } else {
           window.open(href, '_blank', 'noopener,noreferrer')
         }

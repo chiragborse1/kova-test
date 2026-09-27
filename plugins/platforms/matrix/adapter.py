@@ -621,9 +621,9 @@ def _scoped_recovery_key() -> str:
 # markup after sanitization. Tokens are plain printable text with no special
 # HTML/Markdown meaning, so both the Markdown converter and the sanitizer
 # pass them through verbatim.
-_TEX_TOKEN_RE = re.compile(r"HERMESTEX(?:DISPLAY|INLINE)(\d+)HERMESTEXEND")
-_TEX_DISPLAY_TOKEN = "HERMESTEXDISPLAY%dHERMESTEXEND"
-_TEX_INLINE_TOKEN = "HERMESTEXINLINE%dHERMESTEXEND"
+_TEX_TOKEN_RE = re.compile(r"KOVATEX(?:DISPLAY|INLINE)(\d+)KOVATEXEND")
+_TEX_DISPLAY_TOKEN = "KOVATEXDISPLAY%dKOVATEXEND"
+_TEX_INLINE_TOKEN = "KOVATEXINLINE%dKOVATEXEND"
 
 
 def _latex_to_tokens(text: str) -> tuple[str, list[tuple[str, str]]]:

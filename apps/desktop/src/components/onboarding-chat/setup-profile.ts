@@ -283,7 +283,7 @@ export async function buildFirstTaskSeedMessages(
   plan: HandoffPlan = 'build',
   scope?: ProfileScope
 ): Promise<{ content: string; display_kind?: 'hidden'; role: 'assistant' | 'user' }[]> {
-  const root = plan === 'plugin' ? await window.hermesDesktop?.desktopPluginsRoot?.() : undefined
+  const root = plan === 'plugin' ? await window.kovaDesktop?.desktopPluginsRoot?.() : undefined
 
   const capabilities =
     plan === 'machine-setup'

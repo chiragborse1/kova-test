@@ -80,7 +80,7 @@ class PluginCatalogEntry:
     maintainer: str
     tier: str = "community"
     category: str = "desktop"
-    requires_hermes: str = ""
+    requires_kova: str = ""
     subdir: str = ""
     docs_url: str = ""
     version: str = ""            # human label for the pinned sha ("1.4.0"); cosmetic, never parsed
@@ -102,7 +102,7 @@ class PluginCatalogEntry:
         return {
             "name": self.name, "repo": self.repo, "sha": self.sha, "description": self.description,
             "maintainer": self.maintainer, "tier": self.tier, "category": self.category,
-            "requires_hermes": self.requires_hermes,
+            "requires_kova": self.requires_kova,
             "subdir": self.subdir, "docs_url": self.docs_url, "version": self.version, "image": self.image,
             "screenshots": list(self.screenshots), "readme": self.readme,
             "platforms": list(self.platforms), "title": self.title, "onboarding": self.onboarding,
@@ -162,7 +162,7 @@ def entry_from_mapping(data: Any, label: str) -> Optional[PluginCatalogEntry]:
         name=name, repo=repo, sha=sha,
         description=str(data.get("description") or "").strip(),
         maintainer=str(data.get("maintainer") or "").strip(), tier=tier, category=category,
-        requires_hermes=str(data.get("requires_hermes") or "").strip(),
+        requires_kova=str(data.get("requires_kova") or "").strip(),
         subdir=str(data.get("subdir") or "").strip(), docs_url=str(data.get("docs_url") or "").strip(),
         version=version, image=image, screenshots=screenshots, readme=data.get("readme") is not False,
         platforms=_str_list(data.get("platforms")),
@@ -496,6 +496,6 @@ def entry_capability_summary(entry: PluginCatalogEntry) -> str:
     bits.append(f"This plugin {'; '.join(parts) if parts else 'declares no tools, hooks, middleware, or env vars'}.")
     if entry.platforms:
         bits.append(f"Platforms: {', '.join(entry.platforms)}.")
-    if entry.requires_hermes:
-        bits.append(f"Requires Kova {entry.requires_hermes}.")
+    if entry.requires_kova:
+        bits.append(f"Requires Kova {entry.requires_kova}.")
     return " ".join(bits)

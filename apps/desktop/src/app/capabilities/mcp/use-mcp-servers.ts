@@ -22,7 +22,7 @@ import { $activeGatewayProfile, normalizeProfileKey } from '@/store/profile'
 import { $activeSessionId } from '@/store/session'
 import type { KovaConfigRecord } from '@/types/kova'
 
-import { hermesConfigCacheWriter, useKovaConfigRecord } from '../../hooks/use-config-record'
+import { kovaConfigCacheWriter, useKovaConfigRecord } from '../../hooks/use-config-record'
 import { useOnProfileSwitch } from '../../hooks/use-on-profile-switch'
 import { useProfileSwitchLatch } from '../../hooks/use-profile-switch-latch'
 import { seedOptions } from '../connectors/data/persist'
@@ -83,7 +83,7 @@ export function useMcpServers({ gateway, profile }: UseMcpServersOptions): McpSe
     errorUpdatedAt: configErroredAt
   } = useKovaConfigRecord(profile)
 
-  const setConfig = hermesConfigCacheWriter(profile)
+  const setConfig = kovaConfigCacheWriter(profile)
 
   const { arm: armProfileLatch, pending: profilePending } = useProfileSwitchLatch({
     dataUpdatedAt: configUpdatedAt,

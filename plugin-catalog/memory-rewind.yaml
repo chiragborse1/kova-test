@@ -13,7 +13,7 @@ description: >-
 maintainer: AhmetArif0
 tier: community
 category: general
-requires_hermes: ">=0.21.5"
+requires_kova: ">=0.21.5"
 docs_url: https://github.com/AhmetArif0/kova-memory-rewind
 version: "1.0.0"
 platforms: []

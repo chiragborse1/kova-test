@@ -286,7 +286,7 @@ class RunResult:
     seconds: float
 
 
-def run_hermes(argv: list[str], home: Path, *, kova_home: Path | None = None, proxy: str | None = None,
+def run_kova(argv: list[str], home: Path, *, kova_home: Path | None = None, proxy: str | None = None,
                timeout: float = 240.0) -> RunResult:
     """Run the real ``kova`` entry point in its own process group; kill only that group."""
     start = time.monotonic()

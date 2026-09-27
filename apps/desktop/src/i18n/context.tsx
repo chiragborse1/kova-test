@@ -23,7 +23,7 @@ export interface I18nConfigClient {
 
 const defaultConfigClient: I18nConfigClient = {
   getConfig: () => {
-    if (typeof window === 'undefined' || !window.hermesDesktop?.api) {
+    if (typeof window === 'undefined' || !window.kovaDesktop?.api) {
       return Promise.resolve({})
     }
 
@@ -32,7 +32,7 @@ const defaultConfigClient: I18nConfigClient = {
     return getKovaConfigRecord(undefined, { includeDefaults: false })
   },
   saveConfig: config => {
-    if (typeof window === 'undefined' || !window.hermesDesktop?.api) {
+    if (typeof window === 'undefined' || !window.kovaDesktop?.api) {
       return Promise.resolve({ ok: true })
     }
 
@@ -163,7 +163,7 @@ export function I18nProvider({
 
           // Keep inference unsaved so OS language changes apply on the next boot
           // until the user explicitly picks a language.
-          const machineProfile = await window.hermesDesktop?.getMachineProfile?.().catch(() => null)
+          const machineProfile = await window.kovaDesktop?.getMachineProfile?.().catch(() => null)
 
           if (!cancelled && !userLocaleRef.current) {
             setLocaleState(resolveInitialLocale(undefined, machineProfile?.locale))

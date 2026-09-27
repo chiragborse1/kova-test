@@ -6,7 +6,7 @@ description: "A live board the agent builds for you: a Board tab in the Kova das
 maintainer: 100yenadmin
 tier: community
 category: desktop
-requires_hermes: '>=0.21.2'
+requires_kova: '>=0.21.2'
 docs_url: https://github.com/100yenadmin/boardstate-kova-plugin#readme
 version: "1.5.1"
 screenshots:

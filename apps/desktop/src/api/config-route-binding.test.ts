@@ -15,7 +15,7 @@ describe('config read/write route binding', () => {
     api = vi.fn(async (request: { method?: string }) =>
       request.method === 'PUT' ? { ok: true } : { model: 'from-read' }
     )
-    Object.defineProperty(window, 'hermesDesktop', {
+    Object.defineProperty(window, 'kovaDesktop', {
       configurable: true,
       value: { api }
     })
@@ -27,7 +27,7 @@ describe('config read/write route binding', () => {
     setApiRequestConnection(null)
     setApiRequestProfile(null)
     vi.restoreAllMocks()
-    Reflect.deleteProperty(window, 'hermesDesktop')
+    Reflect.deleteProperty(window, 'kovaDesktop')
   })
 
   it('config record read from A cannot be written to B after primary changes', async () => {

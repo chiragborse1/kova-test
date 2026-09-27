@@ -5,7 +5,7 @@ description: "Unofficial OpenCode Zen free-model transport for Kova. Discovers l
 maintainer: anpicasso
 tier: community
 category: models
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/anpicasso/kova-oc-free-provider#readme
 version: "3.0.0"
 platforms: []

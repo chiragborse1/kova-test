@@ -10,8 +10,8 @@ import {
   openSessionInNewWindow
 } from './windows'
 
-const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-const initialKovaDesktop = desktopWindow.hermesDesktop
+const desktopWindow = window as unknown as { kovaDesktop?: Window['kovaDesktop'] }
+const initialKovaDesktop = desktopWindow.kovaDesktop
 
 const notifyError = vi.fn()
 
@@ -20,15 +20,15 @@ vi.mock('./notifications', () => ({
 }))
 
 function installBridge(
-  openSessionWindow?: Window['hermesDesktop']['openSessionWindow'],
-  openWindow?: Window['hermesDesktop']['openWindow'],
-  openBrowserWindow?: Window['hermesDesktop']['openBrowserWindow']
+  openSessionWindow?: Window['kovaDesktop']['openSessionWindow'],
+  openWindow?: Window['kovaDesktop']['openWindow'],
+  openBrowserWindow?: Window['kovaDesktop']['openBrowserWindow']
 ) {
-  desktopWindow.hermesDesktop = {
+  desktopWindow.kovaDesktop = {
     ...(openSessionWindow ? { openSessionWindow } : {}),
     ...(openWindow ? { openWindow } : {}),
     ...(openBrowserWindow ? { openBrowserWindow } : {})
-  } as unknown as Window['hermesDesktop']
+  } as unknown as Window['kovaDesktop']
 }
 
 beforeEach(() => {
@@ -37,9 +37,9 @@ beforeEach(() => {
 
 afterEach(() => {
   if (initialKovaDesktop) {
-    desktopWindow.hermesDesktop = initialKovaDesktop
+    desktopWindow.kovaDesktop = initialKovaDesktop
   } else {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.kovaDesktop
   }
 })
 
@@ -73,7 +73,7 @@ describe('openSessionInNewWindow', () => {
   })
 
   it('no-ops gracefully when the bridge is absent (web fallback)', async () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.kovaDesktop
 
     await openSessionInNewWindow('s1')
 
@@ -113,7 +113,7 @@ describe('openSessionInNewWindow', () => {
 
 describe('openNewWindow', () => {
   it('no-ops gracefully when the bridge is absent (web fallback)', async () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.kovaDesktop
 
     await openNewWindow()
 
@@ -140,7 +140,7 @@ describe('openBrowserInNewWindow', () => {
   })
 
   it('returns false when the bridge is absent', async () => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.kovaDesktop
 
     expect(await openBrowserInNewWindow('tab-1')).toBe(false)
     expect(notifyError).not.toHaveBeenCalled()

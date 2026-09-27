@@ -361,7 +361,7 @@ urllib.request.build_opener = local_build
     )
 
     const deps: CheckoutStrategyDeps = {
-      hermesHome: home,
+      kovaHome: home,
       isWindows: process.platform === 'win32',
       isMac: process.platform === 'darwin',
       defaultUpdateBranch: 'main',
@@ -372,7 +372,7 @@ urllib.request.build_opener = local_build
           python,
           git: 'git',
           updateRoot: install,
-          hermesHome: home,
+          kovaHome: home,
           force: opts.force
         }),
       resolveUpdaterBinary: (): null => null,
@@ -452,7 +452,7 @@ urllib.request.build_opener = local_build
     expect(deps.stopBackendsForUpdate).not.toHaveBeenCalled()
     expect(spawned).toHaveLength(0)
     await setChannel('main')
-    expect(await readSourceUpdate({ python, git: 'git', updateRoot: root, hermesHome: home })).toMatchObject({
+    expect(await readSourceUpdate({ python, git: 'git', updateRoot: root, kovaHome: home })).toMatchObject({
       supported: true,
       branch: 'feature/gui',
       targetSha: commits[3],

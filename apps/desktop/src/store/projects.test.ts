@@ -66,7 +66,7 @@ vi.mock('@/lib/desktop-git', async importOriginal => ({
 vi.mock('@/kova', () => ({
   getKovaConfig: vi.fn(),
   getProfiles: vi.fn(),
-  hermesApi: vi.fn(),
+  kovaApi: vi.fn(),
   setApiRequestProfile: vi.fn(),
   STARTUP_REQUEST_TIMEOUT_MS: 1000
 }))
@@ -443,7 +443,7 @@ describe('createProject', () => {
     const tree = { id: created.id, label: created.name, path: created.primary_path, repos: [], sessionCount: 0 }
     const request = vi.fn().mockResolvedValue({ project: created })
     activeGateway.mockReturnValue({ connectionState: 'open', request } as never)
-    vi.mocked(kova.hermesApi).mockResolvedValue({ projects: [tree], active_id: created.id })
+    vi.mocked(kova.kovaApi).mockResolvedValue({ projects: [tree], active_id: created.id })
     $activeGatewayProfile.set(profile)
     setShowAllProfiles(true)
 
@@ -454,7 +454,7 @@ describe('createProject', () => {
     expect($projects.get()).toContainEqual(created)
     expect($projectTree.get()).toEqual(expect.arrayContaining([expect.objectContaining({ id: created.id })]))
     expect($activeProjectId.get()).toBe(created.id)
-    expect(kova.hermesApi).toHaveBeenCalledWith(
+    expect(kova.kovaApi).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/api/profiles/projects/tree?preview_limit=3' })
     )
   })

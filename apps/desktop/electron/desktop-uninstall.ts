@@ -306,7 +306,7 @@ function shouldRemoveAppBundle(isPackaged, appPath) {
  * resolves from the agent source. `q()` single-quote-escapes for the shell
  * (closes-escapes-reopens any embedded apostrophe), defending against spaces.
  */
-function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot, uninstallArgs, appPath, hermesHome }) {
+function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot, uninstallArgs, appPath, kovaHome }) {
   const q = s => `'${String(s).replace(/'/g, `'\\''`)}'`
 
   const lines = [
@@ -321,7 +321,7 @@ function buildPosixCleanupScript({ desktopPid, pythonExe, pythonPath, agentRoot,
     '    sleep 0.5',
     '  done',
     'fi',
-    `export KOVA_HOME=${q(hermesHome)}`
+    `export KOVA_HOME=${q(kovaHome)}`
   ]
 
   if (pythonPath) {
@@ -366,7 +366,7 @@ function buildWindowsCleanupScript({
   agentRoot,
   uninstallArgs,
   appPath,
-  hermesHome
+  kovaHome
 }) {
   const pid = Number(desktopPid) || 0
   // cmd.exe has no string escaping inside quotes; strip embedded quotes (paths
@@ -377,7 +377,7 @@ function buildWindowsCleanupScript({
   const lines = [
     '@echo off',
     'setlocal enableextensions',
-    `set "KOVA_HOME=${String(hermesHome).replace(/"/g, '')}"`,
+    `set "KOVA_HOME=${String(kovaHome).replace(/"/g, '')}"`,
     `set "PID=${pid}"`
   ]
 

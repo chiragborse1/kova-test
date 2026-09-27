@@ -179,7 +179,7 @@ export function formatRefValue(value: string): string {
   return value
 }
 
-export const hermesDirectiveFormatter: Unstable_DirectiveFormatter = {
+export const kovaDirectiveFormatter: Unstable_DirectiveFormatter = {
   serialize(item: Unstable_TriggerItem): string {
     const metadata = item.metadata as { rawText?: unknown; insertId?: unknown } | undefined
     const rawText = typeof metadata?.rawText === 'string' ? metadata.rawText : null
@@ -332,7 +332,7 @@ function safeEmbeddedImages(text: string) {
 
 function safeDirectiveSegments(text: string): Unstable_DirectiveSegment[] {
   try {
-    return [...hermesDirectiveFormatter.parse(text)]
+    return [...kovaDirectiveFormatter.parse(text)]
   } catch {
     return [{ kind: 'text', text }]
   }
@@ -420,7 +420,7 @@ const DirectiveImage: FC<{ id: string; label: string }> = ({ id, label }) => {
     // Remote gateway: the image lives on the gateway's disk, not ours — fetch
     // it over the authenticated API. Local: read it straight off this disk.
     const load =
-      window.hermesDesktop && isRemoteGateway() ? gatewayMediaDataUrl(id) : window.hermesDesktop?.readFileDataUrl(id)
+      window.kovaDesktop && isRemoteGateway() ? gatewayMediaDataUrl(id) : window.kovaDesktop?.readFileDataUrl(id)
 
     void Promise.resolve(load)
       .then(async url => {

@@ -208,7 +208,7 @@ def _find_migration_script() -> Path | None:
 
 def _load_migration_module(script_path: Path):
     """Dynamically load the migration script as a module."""
-    spec = importlib.util.spec_from_file_location("openclaw_to_hermes", script_path)
+    spec = importlib.util.spec_from_file_location("openclaw_to_kova", script_path)
     if spec is None or spec.loader is None:
         return None
     # Register in sys.modules so @dataclass can resolve the module (Python 3.11+ requires this).

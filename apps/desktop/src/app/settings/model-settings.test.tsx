@@ -725,7 +725,7 @@ describe('ModelSettings code-skew 503', () => {
   )
 
   afterEach(() => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
   })
 
   it('unwraps the stale-backend 503 instead of dumping IPC JSON', async () => {
@@ -744,7 +744,7 @@ describe('ModelSettings code-skew 503', () => {
   it('recycles the Desktop-owned backend and reloads the catalog', async () => {
     const recycleBackend = vi.fn().mockResolvedValue({ ok: true })
 
-    ;(window as unknown as { hermesDesktop: { recycleBackend: typeof recycleBackend } }).hermesDesktop = {
+    ;(window as unknown as { kovaDesktop: { recycleBackend: typeof recycleBackend } }).kovaDesktop = {
       recycleBackend
     }
 

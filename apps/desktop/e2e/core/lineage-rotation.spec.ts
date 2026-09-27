@@ -144,7 +144,7 @@ test('lineage: a real compression rotation is one sidebar row per conversation (
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('rotation')
   writeProviderHome(
-    sandbox.hermesHome,
+    sandbox.kovaHome,
     provider.url,
     'compression:\n  in_place: false\n  protect_first_n: 1\n  protect_last_n: 1\n  threshold_tokens: 24000\n'
   )

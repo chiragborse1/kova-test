@@ -3,7 +3,7 @@ import { resolveGatewayWsUrl } from '@kova/shared'
 import type { KovaConnection } from '@/global'
 
 export function resolveDesktopGatewayWsUrl(
-  desktop: Window['hermesDesktop'],
+  desktop: Window['kovaDesktop'],
   connection: KovaConnection
 ): Promise<string> {
   // Only a registry-scoped descriptor may use the *For bridge (see

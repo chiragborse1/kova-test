@@ -140,7 +140,7 @@ function baseDeps(overrides: Record<string, unknown> = {}) {
 
   return {
     legacyActivePath: '/home/u/.kova/active_profile',
-    hermesHome: '/home/u/.kova',
+    kovaHome: '/home/u/.kova',
     profilesRoot: '/home/u/.kova/profiles',
     existsSync: fs.existsSync,
     readFileSync: fs.readFileSync,
@@ -527,7 +527,7 @@ test('migrateActiveProfileIfMissing prefers a single running gateway over heuris
 // Production layout: default is ~/.kova, not ~/.kova/profiles/default
 // ---------------------------------------------------------------------------
 
-test('profileStateDbPath puts default at hermesHome, named under profilesRoot', () => {
+test('profileStateDbPath puts default at kovaHome, named under profilesRoot', () => {
   assert.equal(profileStateDbPath('default', '/home/u/.kova', '/home/u/.kova/profiles'), '/home/u/.kova/state.db')
   assert.equal(
     profileStateDbPath('conduit', '/home/u/.kova', '/home/u/.kova/profiles'),
@@ -535,7 +535,7 @@ test('profileStateDbPath puts default at hermesHome, named under profilesRoot', 
   )
 })
 
-test('profileGatewayPidPath puts default at hermesHome', () => {
+test('profileGatewayPidPath puts default at kovaHome', () => {
   assert.equal(
     profileGatewayPidPath('default', '/home/u/.kova', '/home/u/.kova/profiles'),
     '/home/u/.kova/gateway.pid'
@@ -552,7 +552,7 @@ test('withDefaultCandidate always leads with default and dedupes', () => {
   assert.deepEqual(withDefaultCandidate(['default', 'conduit']), ['default', 'conduit'])
 })
 
-test('findRunningGatewayProfiles sees default gateway.pid at hermesHome', () => {
+test('findRunningGatewayProfiles sees default gateway.pid at kovaHome', () => {
   const fs = makeFs({
     '/home/u/.kova/gateway.pid': { content: '{"pid":99}' },
     '/home/u/.kova/profiles/coder/gateway.pid': { content: '{"pid":11}' }
@@ -561,7 +561,7 @@ test('findRunningGatewayProfiles sees default gateway.pid at hermesHome', () => 
   assert.deepEqual(
     findRunningGatewayProfiles('/home/u/.kova/profiles', ['default', 'coder'], {
       ...fs,
-      hermesHome: '/home/u/.kova',
+      kovaHome: '/home/u/.kova',
       isKovaProcess: pid => pid === 99
     }),
     ['default']

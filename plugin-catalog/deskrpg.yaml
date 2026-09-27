@@ -5,7 +5,7 @@ description: "Kova gateway integration for DeskRPG virtual offices, with profile
 maintainer: dandacompany
 tier: community
 category: automation
-requires_hermes: ">=0.21.1"
+requires_kova: ">=0.21.1"
 docs_url: https://github.com/dandacompany/deskrpg-kova-plugin/tree/1e9914a614f17186b6749916031da69ed6b61aa0
 version: "0.16.0"
 readme: true

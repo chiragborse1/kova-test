@@ -11,7 +11,7 @@ import { notifyError } from '@/store/notifications'
  * Missing bridge fails closed: a click must not reach runBootstrap unseen.
  */
 async function probeLocalBackend(): Promise<boolean> {
-  const probe = window.hermesDesktop?.probeLocalBackend
+  const probe = window.kovaDesktop?.probeLocalBackend
 
   if (!probe) {
     return true

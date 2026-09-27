@@ -375,7 +375,7 @@ def _resolve_direct_command(kova_path: str) -> list[str]:
 def spawn_backend(payload: dict[str, Any]) -> dict[str, Any]:
     ownership_id = _ownership(str(payload["ownershipId"]))
     spawn_nonce = _nonce(str(payload["spawnNonce"]))
-    configured_path = str(payload["hermesPath"])
+    configured_path = str(payload["kovaPath"])
     if not os.path.isabs(configured_path):
         raise ValueError("Kova path must be absolute")
     kova_path = os.path.abspath(configured_path)
@@ -408,7 +408,7 @@ def spawn_backend(payload: dict[str, Any]) -> dict[str, Any]:
             "logPath": str(log_path), "tokenPath": token_path}
 
 
-def inspect_hermes(kova_path: str) -> dict[str, Any]:
+def inspect_kova(kova_path: str) -> dict[str, Any]:
     path = os.path.abspath(kova_path)
     if not os.path.isabs(kova_path) or not os.path.isfile(path):
         raise ValueError("Kova path is not an executable file")
@@ -423,7 +423,7 @@ def inspect_hermes(kova_path: str) -> dict[str, Any]:
 
 def _probe(*_: str) -> dict[str, Any]:
     import platform
-    return {"os": "Windows", "arch": platform.machine(), "hermesHome": str(get_default_kova_root()), "python": sys.executable}
+    return {"os": "Windows", "arch": platform.machine(), "kovaHome": str(get_default_kova_root()), "python": sys.executable}
 
 
 def _read_log(ownership_id: str, spawn_nonce: str) -> dict[str, Any]:
@@ -449,7 +449,7 @@ _OPERATIONS: dict[str, tuple[int | None, Any]] = {
     "read-log": (2, _read_log),
     "remove-log": (2, lambda o, n: {"removed": remove_artifact(_log_path(o, n))}),
     "spawn": (None, lambda *_: spawn_backend(_read_json_stdin())),
-    "inspect": (1, inspect_hermes),
+    "inspect": (1, inspect_kova),
     "process-state": (4, lambda p, c, h, n: process_state(int(p), int(c), h, n)),
     "terminate": (4, lambda p, c, h, n: {"terminated": terminate_owned(int(p), int(c), h, n)})}
 

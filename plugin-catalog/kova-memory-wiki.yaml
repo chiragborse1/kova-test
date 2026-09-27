@@ -5,7 +5,7 @@ description: 'Memory Wiki dashboard tab: browsable subject pages and daily logs 
   history, plus a read-only Persistent Memory (MEMORY.md / USER.md) audit panel.'
 maintainer: OpenKova
 tier: official
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/OpenKova/kova-memory-wiki#readme
 platforms: []
 capabilities:

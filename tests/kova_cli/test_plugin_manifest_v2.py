@@ -418,13 +418,13 @@ class TestRequiresHermes:
         assert version_satisfies(spec, current) is expected
 
     def test_unsatisfied_requires_kova_skips_without_importing(self, kova_home, monkeypatch):
-        """A too-new ``requires_hermes`` records an error and never runs register(); a satisfied one loads."""
+        """A too-new ``requires_kova`` records an error and never runs register(); a satisfied one loads."""
         import sys
         from kova_cli import plugins_manifest
         monkeypatch.setattr(plugins_manifest, "running_kova_version", lambda: "1.2.3")
-        _write_plugin(kova_home / "plugins", "future", manifest_extra={"requires_hermes": ">=99.0"},
+        _write_plugin(kova_home / "plugins", "future", manifest_extra={"requires_kova": ">=99.0"},
                       register_body="import sys; sys._rh_future = True")
-        _write_plugin(kova_home / "plugins", "current", manifest_extra={"requires_hermes": ">=1.2,<2"},
+        _write_plugin(kova_home / "plugins", "current", manifest_extra={"requires_kova": ">=1.2,<2"},
                       register_body="import sys; sys._rh_current = True")
         _enable(kova_home, ["future", "current"])
         try:

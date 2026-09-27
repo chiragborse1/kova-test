@@ -37,14 +37,14 @@ interface RpcReceipt {
   error?: unknown
 }
 
-function isolatedEnv(home: string, hermesHome: string): Record<string, string> {
+function isolatedEnv(home: string, kovaHome: string): Record<string, string> {
   // Allowlist rather than inheriting real provider keys, profile selection,
   // browser account state, live desktop overrides, or the host session bus.
   const env: Record<string, string> = {
     PATH: process.env.PATH ?? '',
     HOME: home,
     USERPROFILE: home,
-    KOVA_HOME: hermesHome,
+    KOVA_HOME: kovaHome,
     PYTHONPATH: REPO_ROOT,
     PYTHONNOUSERSITE: '1',
     PYTHONDONTWRITEBYTECODE: '1',
@@ -267,11 +267,11 @@ test('Settings provider setup stays on its gateway/profile across A → B → A'
   const original = createSandbox('provider-owner')
   const localHome = path.join(original.root, 'local')
   const remoteHome = path.join(original.root, 'remote')
-  const sandbox: Sandbox = { ...original, hermesHome: path.join(localHome, '.kova') }
+  const sandbox: Sandbox = { ...original, kovaHome: path.join(localHome, '.kova') }
   const remoteKovaHome = path.join(remoteHome, '.kova')
   const remoteProfileHome = path.join(remoteKovaHome, 'profiles', PROFILE)
   const python = pythonBinary()
-  const localEnv = isolatedEnv(localHome, sandbox.hermesHome)
+  const localEnv = isolatedEnv(localHome, sandbox.kovaHome)
   const remoteEnv = isolatedEnv(remoteHome, remoteKovaHome)
   const receipts: RpcReceipt[] = []
   const discoveryRequests: string[] = []
@@ -296,7 +296,7 @@ test('Settings provider setup stays on its gateway/profile across A → B → A'
 
   try {
     const endpointUrl = `http://127.0.0.1:${await listen(endpoint)}`
-    seedConfig(sandbox.hermesHome, endpointUrl, 'local-sentinel')
+    seedConfig(sandbox.kovaHome, endpointUrl, 'local-sentinel')
     seedConfig(remoteKovaHome, endpointUrl, 'remote-default-sentinel')
     seedConfig(remoteProfileHome, endpointUrl, 'remote-before-setup')
     await test
@@ -350,12 +350,12 @@ test('Settings provider setup stays on its gateway/profile across A → B → A'
     await expect(page.locator('[data-slot="statusbar"]').getByText('ready', { exact: true })).toBeVisible({
       timeout: 60_000
     })
-    const localConfig = fs.readFileSync(path.join(sandbox.hermesHome, 'config.yaml'), 'utf8')
+    const localConfig = fs.readFileSync(path.join(sandbox.kovaHome, 'config.yaml'), 'utf8')
     const remoteDefault = fs.readFileSync(path.join(remoteKovaHome, 'config.yaml'), 'utf8')
 
     const localProfiles = () =>
-      fs.existsSync(path.join(sandbox.hermesHome, 'profiles'))
-        ? fs.readdirSync(path.join(sandbox.hermesHome, 'profiles')).sort()
+      fs.existsSync(path.join(sandbox.kovaHome, 'profiles'))
+        ? fs.readdirSync(path.join(sandbox.kovaHome, 'profiles')).sort()
         : []
 
     expect(localProfiles()).toEqual([])
@@ -410,14 +410,14 @@ test('Settings provider setup stays on its gateway/profile across A → B → A'
           'readiness must resolve the model just saved in the owning profile'
         )
         .toMatchObject({ ok: true, model, profile: PROFILE })
-      expect(fs.readFileSync(path.join(sandbox.hermesHome, 'config.yaml'), 'utf8')).toBe(localConfig)
+      expect(fs.readFileSync(path.join(sandbox.kovaHome, 'config.yaml'), 'utf8')).toBe(localConfig)
       expect(localProfiles()).toEqual([])
       expect(fs.readFileSync(path.join(remoteKovaHome, 'config.yaml'), 'utf8')).toBe(remoteDefault)
       await page.screenshot({ path: test.info().outputPath(`${model}-saved.png`) })
       await page.getByRole('button', { name: 'Close settings', exact: true }).click()
       await selectGateway(page, 'local', 'This device', 'default')
       await openProviderKeys(page)
-      expect(configModel(python, localEnv, sandbox.hermesHome)).toMatchObject({ default: 'local-sentinel' })
+      expect(configModel(python, localEnv, sandbox.kovaHome)).toMatchObject({ default: 'local-sentinel' })
       await page.screenshot({ path: test.info().outputPath(`${model}-back-on-local.png`) })
       await page.getByRole('button', { name: 'Close settings', exact: true }).click()
 

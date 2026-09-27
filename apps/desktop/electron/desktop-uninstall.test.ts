@@ -191,7 +191,7 @@ test.skipIf(process.platform === 'win32').each(['gui', 'lite', 'full'] as const)
           agentRoot: root,
           uninstallArgs: [recorder, ...uninstallArgsForMode(mode)],
           appPath: mode === 'lite' ? null : app,
-          hermesHome: root
+          kovaHome: root
         })
       )
       child = spawn('bash', [script], {
@@ -228,7 +228,7 @@ test('buildPosixCleanupScript waits for the PID, runs the uninstall module, remo
     agentRoot: '/home/x/.kova/kova-agent',
     uninstallArgs: ['-m', 'kova_cli.uninstall', '--mode', 'gui'],
     appPath: '/opt/kova/linux-unpacked',
-    hermesHome: '/home/x/.kova'
+    kovaHome: '/home/x/.kova'
   })
 
   assert.match(script, /^#!\/usr\/bin\/env bash\n/)
@@ -249,7 +249,7 @@ test('buildWindowsCleanupScript waits (bounded) for PID, runs uninstall, rmdir b
     agentRoot: 'C:\\kova',
     uninstallArgs: ['-m', 'kova_cli.uninstall', '--mode', 'full'],
     appPath: 'C:\\Users\\x\\AppData\\Local\\Programs\\Kova',
-    hermesHome: 'C:\\Users\\x\\AppData\\Local\\kova'
+    kovaHome: 'C:\\Users\\x\\AppData\\Local\\kova'
   })
 
   assert.match(script, /@echo off/)
@@ -275,7 +275,7 @@ test('buildWindowsCleanupScript omits PYTHONPATH + rmdir when not needed (gui, n
     agentRoot: 'C:\\h',
     uninstallArgs: ['-m', 'kova_cli.uninstall', '--mode', 'gui'],
     appPath: null,
-    hermesHome: 'C:\\h'
+    kovaHome: 'C:\\h'
   })
 
   assert.doesNotMatch(script, /rmdir/)

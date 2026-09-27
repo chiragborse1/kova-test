@@ -11,11 +11,11 @@ import path from 'node:path'
 
 /** A KOVA_HOME rooted inside a `profiles/` directory names the profile's
  * parent (the home), not the profile directory itself. */
-function normalizeKovaHomeRoot(hermesHome, pathModule) {
-  if (!hermesHome) {
-    return hermesHome
+function normalizeKovaHomeRoot(kovaHome, pathModule) {
+  if (!kovaHome) {
+    return kovaHome
   }
-  const resolved = pathModule.resolve(String(hermesHome))
+  const resolved = pathModule.resolve(String(kovaHome))
   const parent = pathModule.dirname(resolved)
   if (pathModule.basename(parent).toLowerCase() === 'profiles') {
     return pathModule.dirname(parent)

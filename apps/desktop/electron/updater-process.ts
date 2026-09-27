@@ -27,7 +27,7 @@ import { hiddenWindowsChildOptions } from './windows-child-options'
 export function resolveInstallationLauncher(
   updateRoot: string,
   isWindows: boolean = process.platform === 'win32',
-  hermesHome: string = process.env.KOVA_HOME ?? ''
+  kovaHome: string = process.env.KOVA_HOME ?? ''
 ): string | null {
   const names: string[] = isWindows ? ['kova.exe', 'kova.cmd'] : ['kova']
 
@@ -46,11 +46,11 @@ export function resolveInstallationLauncher(
 
     const dirs: string[] = isWindows
       ? [
-          path.join(hermesHome || defaultHome, 'bin'),
+          path.join(kovaHome || defaultHome, 'bin'),
           path.join(defaultHome, 'bin'),
           path.join(path.dirname(updateRoot), 'bin')
         ]
-      : [path.join(os.homedir(), '.local', 'bin'), path.join(hermesHome || defaultHome, 'bin')]
+      : [path.join(os.homedir(), '.local', 'bin'), path.join(kovaHome || defaultHome, 'bin')]
 
     for (const dir of new Set(dirs)) {
       for (const name of names) {
@@ -116,8 +116,8 @@ export function launcherTargetsInstallation(launcher: string, root: string): boo
 }
 
 /** File prerequisites only: dependency recovery remains reachable through update. */
-export function windowsUpdatePrerequisiteError(updateRoot: string, hermesHome?: string): string | null {
-  if (!resolveInstallationLauncher(updateRoot, true, hermesHome)) {
+export function windowsUpdatePrerequisiteError(updateRoot: string, kovaHome?: string): string | null {
+  if (!resolveInstallationLauncher(updateRoot, true, kovaHome)) {
     return `Update aborted: the installation launcher under ${updateRoot} is missing. Repair this installation before retrying.`
   }
 
@@ -390,7 +390,7 @@ function stagedFileMtimeMs(candidate: string): number | null {
  * install that never went through the installer); callers degrade gracefully.
  */
 export function resolveStagedUpdaterBinary(
-  hermesHome: string,
+  kovaHome: string,
   deps: ResolveStagedUpdaterBinaryDeps = {}
 ): string | null {
   const isWindows = deps.isWindows ?? process.platform === 'win32'
@@ -400,7 +400,7 @@ export function resolveStagedUpdaterBinary(
   }
 
   const fileExists = deps.fileExists ?? stagedFileExists
-  const candidate = path.join(hermesHome, 'kova-setup.exe')
+  const candidate = path.join(kovaHome, 'kova-setup.exe')
 
   return fileExists(candidate) ? candidate : null
 }

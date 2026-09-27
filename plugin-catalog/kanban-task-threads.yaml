@@ -5,7 +5,7 @@ description: "Give every Kova kanban task a live Discord forum thread with a rew
 maintainer: diegomarino
 tier: community
 category: automation
-requires_hermes: ">=0.20"
+requires_kova: ">=0.20"
 docs_url: https://github.com/diegomarino/kanban-task-threads#readme
 version: "0.4.1"
 image: https://raw.githubusercontent.com/diegomarino/kanban-task-threads/467284665eb18360e9c32cd8fe4ff76690a66231/docs/assets/catalog-banner.png

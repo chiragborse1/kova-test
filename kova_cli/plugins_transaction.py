@@ -119,8 +119,8 @@ def update_plugin(
                 feed_revision = proposed.lower()
             elif proposed not in (source, source.split("#", 1)[0]):
                 raise pc.PluginOperationError("Update feed must select a commit or the recorded Git source.")
-            if feed.get("min_hermes"):
-                pc._check_manifest_version({"requires_hermes": feed["min_hermes"]}, target.name)
+            if feed.get("min_kova"):
+                pc._check_manifest_version({"requires_kova": feed["min_kova"]}, target.name)
     refuse_if_installed_removed(target.name, target)
     before = tree_digest(target)
     with tempfile.TemporaryDirectory(prefix=".update-", dir=target.parent) as directory:

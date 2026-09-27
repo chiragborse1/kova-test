@@ -1256,9 +1256,9 @@ DEFAULT_CONFIG = {
         # sherpa only: listen for every wake-enabled profile's phrase and route to it
         "profile_routing": True,
         "openwakeword": {
-            # "hey_hermes" | built-in openWakeWord name ("hey_jarvis", "alexa", ...) | path to a
+            # "hey_kova" | built-in openWakeWord name ("hey_jarvis", "alexa", ...) | path to a
             # custom .tflite model
-            "model": "hey_hermes",
+            "model": "hey_kova",
         },
         "sherpa": {
             # sherpa-onnx KWS model dir; empty = auto-download the small English zipformer

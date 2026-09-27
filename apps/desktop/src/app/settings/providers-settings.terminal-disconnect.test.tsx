@@ -55,7 +55,7 @@ function connectedExternal(patch: Partial<OAuthProvider> = {}): OAuthProvider {
 beforeEach(() => {
   listOAuthProviders.mockResolvedValue({ providers: [connectedExternal()] })
   disconnectOAuthProvider.mockResolvedValue({ ok: false, provider: 'nous' })
-  Object.defineProperty(window, 'hermesDesktop', {
+  Object.defineProperty(window, 'kovaDesktop', {
     configurable: true,
     value: { terminal: {} }
   })

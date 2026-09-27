@@ -322,7 +322,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
       return
     }
 
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
 
     if (!desktop || typeof desktop.onBootstrapEvent !== 'function') {
       return
@@ -477,7 +477,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
                 setLocalStart({ root: activeRoot, starting: true, error: null })
 
                 try {
-                  const desktop = window.hermesDesktop
+                  const desktop = window.kovaDesktop
 
                   if (!desktop || typeof desktop.continueBootstrapLocal !== 'function') {
                     throw new Error(copy.localStartUnavailable)
@@ -551,7 +551,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
               </Button>
               <Button
                 onClick={() => {
-                  window.hermesDesktop?.openExternal?.(ups.docsUrl)
+                  window.kovaDesktop?.openExternal?.(ups.docsUrl)
                 }}
                 size="sm"
                 variant="ghost"
@@ -708,7 +708,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
                   setCancelling(true)
 
                   try {
-                    await window.hermesDesktop?.cancelBootstrap?.()
+                    await window.kovaDesktop?.cancelBootstrap?.()
                   } catch {
                     // ignore -- the failed/cancelled event will surface the result
                   }
@@ -736,7 +736,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
                   {t.common.close}
                 </Button>
                 <Button
-                  onClick={() => void window.hermesDesktop?.revealLogs?.().catch(() => undefined)}
+                  onClick={() => void window.kovaDesktop?.revealLogs?.().catch(() => undefined)}
                   size="sm"
                   variant="ghost"
                 >
@@ -770,7 +770,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
                     // and main short-circuits to the latched error without
                     // re-running install.ps1.
                     try {
-                      await window.hermesDesktop?.resetBootstrap?.()
+                      await window.kovaDesktop?.resetBootstrap?.()
                     } catch {
                       // best-effort -- continue with reload regardless
                     }

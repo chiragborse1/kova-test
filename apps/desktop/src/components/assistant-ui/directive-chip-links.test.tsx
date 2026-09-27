@@ -6,17 +6,17 @@ import { $previewTabs, closeRightRail } from '@/store/preview'
 
 import { DirectiveContent } from './directive-text'
 
-const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
+const desktopWindow = window as unknown as { kovaDesktop?: Window['kovaDesktop'] }
 
 const PR_URL = 'https://github.com/kova-agent/pull/107950'
 
 function installDesktopBridge() {
   const openExternal = vi.fn().mockResolvedValue(undefined)
 
-  desktopWindow.hermesDesktop = {
+  desktopWindow.kovaDesktop = {
     fetchLinkTitle: vi.fn().mockResolvedValue(''),
     openExternal
-  } as unknown as Window['hermesDesktop']
+  } as unknown as Window['kovaDesktop']
 
   return openExternal
 }
@@ -25,7 +25,7 @@ afterEach(() => {
   closeRightRail()
   vi.restoreAllMocks()
   cleanup()
-  delete desktopWindow.hermesDesktop
+  delete desktopWindow.kovaDesktop
   document.body.replaceChildren()
 })
 

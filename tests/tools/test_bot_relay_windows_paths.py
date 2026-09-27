@@ -44,7 +44,7 @@ def test_waiter_argv_uses_forward_slashes_on_windows():
 
 
 @pytest.mark.platforms("linux")
-def test_local_delivery_resolves_sibling_hermes(tmp_path, monkeypatch):
+def test_local_delivery_resolves_sibling_kova(tmp_path, monkeypatch):
     bin_dir = tmp_path / "venv" / "bin"
     bin_dir.mkdir(parents=True)
     sibling = bin_dir / "kova"

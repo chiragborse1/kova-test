@@ -208,7 +208,7 @@ function createPlayer(ctx) {
     bus.postMessage({ type: 'play', sender: windowId })
     const element = new Audio()
     audio = element
-    element.dataset.hermesRadioAudio = 'true'
+    element.dataset.kovaRadioAudio = 'true'
     element.hidden = true
     element.preload = 'none'
     // Try real analysis for every station, not a host allowlist. If CORS or

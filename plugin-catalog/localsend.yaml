@@ -12,7 +12,7 @@ docs_url: https://github.com/tylerbrevard/kova-localsend#readme
 version: "1.18.0"
 image: https://raw.githubusercontent.com/tylerbrevard/kova-localsend/28dfd30ccdca6ca5baf30ca13326ea7f0d4c755d/docs/banner.png
 platforms: []
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 capabilities:
   provides_tools:
   - localsend_discover

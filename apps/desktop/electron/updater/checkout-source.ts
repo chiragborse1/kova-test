@@ -15,7 +15,7 @@ export interface SourceUpdateProbe {
   python: string | null
   git: string
   updateRoot: string
-  hermesHome: string
+  kovaHome: string
   branch?: string
   channel?: 'main' | 'stable' | 'canary'
   force?: boolean
@@ -25,11 +25,11 @@ export interface SourceUpdateProbe {
 
 const execute: typeof execFile.__promisify__ = promisify(execFile)
 
-export function sourceUpdateEnvironment(updateRoot: string, hermesHome: string): NodeJS.ProcessEnv {
+export function sourceUpdateEnvironment(updateRoot: string, kovaHome: string): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {
     ...process.env,
     ...buildDesktopBackendEnv(),
-    KOVA_HOME: hermesHome,
+    KOVA_HOME: kovaHome,
     KOVA_INSTALL_ROOT: updateRoot
   }
 
@@ -45,7 +45,7 @@ export async function readSourceUpdate(probe: SourceUpdateProbe): Promise<Source
   const managed = existsSync(path.join(probe.updateRoot, 'pm'))
 
   const launcher = managed
-    ? resolveInstallationLauncher(probe.updateRoot, process.platform === 'win32', probe.hermesHome)
+    ? resolveInstallationLauncher(probe.updateRoot, process.platform === 'win32', probe.kovaHome)
     : null
 
   if (managed && !launcher) {
@@ -68,7 +68,7 @@ export async function readSourceUpdate(probe: SourceUpdateProbe): Promise<Source
     '--install-root',
     probe.updateRoot,
     '--home',
-    probe.hermesHome,
+    probe.kovaHome,
     '--git',
     probe.git,
     ...(probe.branch ? ['--branch', probe.branch] : []),
@@ -94,7 +94,7 @@ export async function readSourceUpdate(probe: SourceUpdateProbe): Promise<Source
       : args,
     hiddenWindowsChildOptions({
       cwd: probe.updateRoot,
-      env: sourceUpdateEnvironment(probe.updateRoot, probe.hermesHome),
+      env: sourceUpdateEnvironment(probe.updateRoot, probe.kovaHome),
       encoding: 'utf8',
       timeout: 360000,
       maxBuffer: 1024 * 1024,

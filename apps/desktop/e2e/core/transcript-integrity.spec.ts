@@ -69,8 +69,8 @@ async function openSession(page: Page, sessionId: string, mustShow: string) {
 test('transcript oracle holds across every transition', async () => {
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('transcript')
-  writeProviderHome(sandbox.hermesHome, provider.url)
-  writeProviderHome(path.join(sandbox.hermesHome, 'profiles', 'p2'), provider.url)
+  writeProviderHome(sandbox.kovaHome, provider.url)
+  writeProviderHome(path.join(sandbox.kovaHome, 'profiles', 'p2'), provider.url)
   const { app, page } = await launchCoreApp(coreAppEnv(sandbox))
   const ws = recordWebSockets(page)
   const proxies: { close: () => Promise<void> }[] = []

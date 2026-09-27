@@ -128,7 +128,7 @@ describe('window translucency lever', () => {
   it('mirrors every tick to the desktop bridge so the clear-mode fade tracks the drag', () => {
     vi.useFakeTimers()
     const calls: unknown[] = []
-    window.hermesDesktop = { setTranslucency: (payload: unknown) => calls.push(payload) } as never
+    window.kovaDesktop = { setTranslucency: (payload: unknown) => calls.push(payload) } as never
 
     try {
       for (let intensity = 36; intensity <= 40; intensity += 1) {

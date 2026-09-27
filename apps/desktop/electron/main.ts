@@ -1023,7 +1023,7 @@ const DESKTOP_MANAGED_SSH_RECOVERY_PATH = path.join(app.getPath('userData'), 'ma
 const PROFILE_NAME_RE = DESKTOP_PROFILE_NAME_RE
 // Branch we track for self-update. The GUI work has merged to main, so this
 // tracks main. User can also override at runtime via
-// hermesDesktop.updates.setBranch().
+// kovaDesktop.updates.setBranch().
 const DEFAULT_UPDATE_BRANCH = 'main'
 // desktop.log lives under KOVA_HOME/logs/ so it sits next to agent.log,
 // errors.log, gateway.log produced by kova_logging.setup_logging — one log
@@ -1676,7 +1676,7 @@ function persistPoolLimits(limits) {
 // readPersistedPoolLimits() call below, because that call logs during module
 // evaluation; declaring these later crashed launch with `undefined.push` in
 // the packaged build (esbuild lowers the TDZ to undefined instead of throwing).
-const hermesLog: string[] = []
+const kovaLog: string[] = []
 let desktopLogBuffer = ''
 let desktopLogFlushTimer = null
 let desktopLogFlushPromise = Promise.resolve()
@@ -2017,10 +2017,10 @@ function rememberLog(chunk) {
   // at the same moment.  ISO-8601 UTC, matching agent.log/gateway.log.
   const stamp = new Date().toISOString()
   const lines = text.split(/\r?\n/).map(line => formatDesktopLogLine(line, stamp))
-  hermesLog.push(...lines)
+  kovaLog.push(...lines)
 
-  if (hermesLog.length > 300) {
-    hermesLog.splice(0, hermesLog.length - 300)
+  if (kovaLog.length > 300) {
+    kovaLog.splice(0, kovaLog.length - 300)
   }
 
   desktopLogBuffer += `${lines.join('\n')}\n`
@@ -2544,7 +2544,7 @@ function directoryExists(filePath) {
 // relaunches the desktop mid-update — because the window vanished with no
 // progress and looks crashed — a fresh instance must NOT spawn its own local
 // backend: that backend re-locks the venv shim, the updater's straggler cleanup
-// (`force_kill_other_hermes`, taskkill /IM kova.exe) kills it, the launch
+// (`force_kill_other_kova`, taskkill /IM kova.exe) kills it, the launch
 // fails with the 45s "backend didn't come up" error, and the relaunch/kill
 // cycle loops. Instead the fresh instance parks until the update finishes, then
 // brings the backend up itself (it is the surviving instance — the updater's
@@ -3175,7 +3175,7 @@ function resolveGhBinary() {
 }
 
 function recentKovaLog() {
-  return hermesLog.slice(-20).join('\n')
+  return kovaLog.slice(-20).join('\n')
 }
 
 // ─── Self-update (git-pull against the running backend's kova root) ──────
@@ -3543,7 +3543,7 @@ function requireBundledPayload(mechanism: UpdaterStrategy['mechanism']): Payload
  */
 function resolveCheckoutUpdateStrategy(): UpdaterStrategy {
   return createCheckoutStrategy({
-    hermesHome: KOVA_HOME,
+    kovaHome: KOVA_HOME,
     isWindows: IS_WINDOWS,
     isMac: IS_MAC,
     defaultUpdateBranch: DEFAULT_UPDATE_BRANCH,
@@ -3553,7 +3553,7 @@ function resolveCheckoutUpdateStrategy(): UpdaterStrategy {
         python: await findPythonForRoot(updateRoot),
         git: resolveGitBinary(),
         updateRoot,
-        hermesHome: KOVA_HOME,
+        kovaHome: KOVA_HOME,
         branchConfigPath: DESKTOP_UPDATE_CONFIG_PATH,
         force: opts.force
       }),
@@ -4187,7 +4187,7 @@ const desktopParentStartMarker = createParentStartMarkerResolver({
 })
 
 async function claimBackendChild(
-  child: ChildProcess & { hermesBackendIdentity?: BackendOwnershipEntry },
+  child: ChildProcess & { kovaBackendIdentity?: BackendOwnershipEntry },
   command: string,
   profile: string,
   nonce: string,
@@ -4234,7 +4234,7 @@ async function claimBackendChild(
       parentStartMarker: await desktopParentStartMarker()
     })
 
-    child.hermesBackendIdentity = identity
+    child.kovaBackendIdentity = identity
 
     return identity
   } catch (error) {
@@ -4246,7 +4246,7 @@ async function claimBackendChild(
 }
 
 function releaseBackendChild(child) {
-  const identity = child?.hermesBackendIdentity
+  const identity = child?.kovaBackendIdentity
 
   if (!identity) {
     return
@@ -4293,7 +4293,7 @@ async function releaseBackendLock(updateRoot: string, tag: string): Promise<{ un
     return { unlocked: true }
   }
 
-  const hermesProcess = backendConnectionState.getProcess()
+  const kovaProcess = backendConnectionState.getProcess()
 
   // Seed the release gate with every PID we are about to signal: the
   // supervised primary backend and all pool backends. The gate waits for
@@ -4303,8 +4303,8 @@ async function releaseBackendLock(updateRoot: string, tag: string): Promise<{ un
   // the shim at all (#74805 first-attempt race).
   const initialPids = []
 
-  if (hermesProcess && Number.isInteger(hermesProcess.pid)) {
-    initialPids.push(hermesProcess.pid)
+  if (kovaProcess && Number.isInteger(kovaProcess.pid)) {
+    initialPids.push(kovaProcess.pid)
   }
 
   for (const entry of backendPool.values()) {
@@ -4577,7 +4577,7 @@ function readBootstrapMarker() {
 // ever having written the bootstrap marker -- so we must be able to recognise
 // "already installed" off the filesystem alone, not just the marker.
 async function isSourceRuntimeUsable(root: string): Promise<boolean> {
-  return (await resolveSourceInstallationBackend(root, [], { hermesHome: KOVA_HOME })) !== null
+  return (await resolveSourceInstallationBackend(root, [], { kovaHome: KOVA_HOME })) !== null
 }
 
 function isActiveRuntimeUsable(): Promise<boolean> {
@@ -4937,41 +4937,41 @@ async function resolveKovaBackend(backendArgs: string[]): Promise<ResolvedKovaBa
   //    Nix wrapper), not a discovered PATH candidate. The pinned backend is
   //    the only valid runtime there. Resolve it before any mutable install,
   //    which may belong to an older release or a different Python environment.
-  const hermesOverride: string | undefined = process.env.KOVA_DESKTOP_HERMES
-  let hermesCommand: string | null = null
+  const kovaOverride: string | undefined = process.env.KOVA_DESKTOP_HERMES
+  let kovaCommand: string | null = null
 
-  if (hermesOverride) {
-    const resolvedOverride: string | null = findOnPath(hermesOverride)
+  if (kovaOverride) {
+    const resolvedOverride: string | null = findOnPath(kovaOverride)
 
     if (resolvedOverride) {
-      hermesCommand = resolvedOverride
-    } else if (!isWindowsBinaryPathInWsl(hermesOverride, { isWsl: IS_WSL })) {
-      hermesCommand = hermesOverride
+      kovaCommand = resolvedOverride
+    } else if (!isWindowsBinaryPathInWsl(kovaOverride, { isWsl: IS_WSL })) {
+      kovaCommand = kovaOverride
     } else {
-      rememberLog(`Ignoring Windows Kova override under WSL: ${hermesOverride}`)
+      rememberLog(`Ignoring Windows Kova override under WSL: ${kovaOverride}`)
     }
 
-    if (hermesCommand) {
-      if (looksLikeDesktopAppBinary(hermesCommand)) {
-        rememberLog(`Ignoring desktop app executable on PATH while resolving Kova CLI: ${hermesCommand}`)
-        hermesCommand = null
+    if (kovaCommand) {
+      if (looksLikeDesktopAppBinary(kovaCommand)) {
+        rememberLog(`Ignoring desktop app executable on PATH while resolving Kova CLI: ${kovaCommand}`)
+        kovaCommand = null
       } else {
         const unwrapped: Awaited<ReturnType<typeof unwrapWindowsVenvKovaCommand>> =
-          await unwrapWindowsVenvKovaCommand(hermesCommand, backendArgs)
+          await unwrapWindowsVenvKovaCommand(kovaCommand, backendArgs)
 
         if (unwrapped) {
           return unwrapped
         }
 
-        const shellForProbe: boolean = isCommandScript(hermesCommand)
+        const shellForProbe: boolean = isCommandScript(kovaCommand)
 
         if (
-          shouldTrustKovaOverride(hermesOverride) ||
-          (await verifyKovaCli(hermesCommand, { shell: shellForProbe }))
+          shouldTrustKovaOverride(kovaOverride) ||
+          (await verifyKovaCli(kovaCommand, { shell: shellForProbe }))
         ) {
           return {
-            label: `existing Kova CLI at ${hermesCommand}`,
-            command: hermesCommand,
+            label: `existing Kova CLI at ${kovaCommand}`,
+            command: kovaCommand,
             args: backendArgs,
             bootstrap: false,
             env: {},
@@ -4982,7 +4982,7 @@ async function resolveKovaBackend(backendArgs: string[]): Promise<ResolvedKovaBa
         }
 
         rememberLog(
-          `Ignoring existing Kova CLI at ${hermesCommand}: --version probe failed; falling through to bootstrap.`
+          `Ignoring existing Kova CLI at ${kovaCommand}: --version probe failed; falling through to bootstrap.`
         )
       }
     }
@@ -4998,7 +4998,7 @@ async function resolveKovaBackend(backendArgs: string[]): Promise<ResolvedKovaBa
   //    bootstrap when the runtime itself is unusable.
   //    KOVA_DESKTOP_IGNORE_EXISTING=1 skips this rung (see backend-resolution).
   const activeBackend: SourceBackend | null = await installedRuntimeGate.resolve(ACTIVE_KOVA_ROOT, () =>
-    resolveSourceInstallationBackend(ACTIVE_KOVA_ROOT, backendArgs, { hermesHome: KOVA_HOME })
+    resolveSourceInstallationBackend(ACTIVE_KOVA_ROOT, backendArgs, { kovaHome: KOVA_HOME })
   )
 
   const activeRuntime: ActiveRuntimeState = activeRuntimeState(activeBackend)
@@ -5139,7 +5139,7 @@ async function ensureRuntime(
       installStamp: backend.installStamp,
       activeRoot: backend.activeRoot,
       sourceRepoRoot: SOURCE_REPO_ROOT,
-      hermesHome: KOVA_HOME,
+      kovaHome: KOVA_HOME,
       logRoot: path.join(KOVA_HOME, 'logs'),
       abortSignal: bootstrapAbortController.signal,
       onEvent: ev => {
@@ -9306,7 +9306,7 @@ function isKovaProcess(pid) {
 function migrateActiveProfileIfMissing() {
   migrateActiveProfileIfMissingPure(DESKTOP_PROFILE_CONFIG_PATH, {
     legacyActivePath: path.join(KOVA_HOME, 'active_profile'),
-    hermesHome: KOVA_HOME,
+    kovaHome: KOVA_HOME,
     profilesRoot: path.join(KOVA_HOME, 'profiles'),
     existsSync: p => fs.existsSync(p),
     readFileSync: (p, enc) => fs.readFileSync(p, enc),
@@ -10115,8 +10115,8 @@ async function rollbackSshBootstrapResult(ssh, result, profile, sshConfig, bound
       pid: result.pid,
       spawnNonce: result.spawnNonce,
       profile: resolveRemoteSshDashboardProfile(sshConfig.remoteProfile, profile),
-      hermesPath: result.hermesPath,
-      hermesHome: result.hermesHome,
+      kovaPath: result.kovaPath,
+      kovaHome: result.kovaHome,
       startedAt: result.startedAt,
       creationTimeNs: result.creationTimeNs,
       creationTime: result.creationTime
@@ -10125,7 +10125,7 @@ async function rollbackSshBootstrapResult(ssh, result, profile, sshConfig, bound
     if (result.platform?.os === 'Windows') {
       await terminateOwnedWindowsDashboardForUpdate(
         ssh,
-        { hermesPath: result.hermesPath, hermesHome: result.hermesHome, python: result.pythonPath },
+        { kovaPath: result.kovaPath, kovaHome: result.kovaHome, python: result.pythonPath },
         expected
       )
     } else if (result.platform?.os === 'Linux' || result.platform?.os === 'Darwin') {
@@ -10290,15 +10290,15 @@ async function bootstrapSshConnectionInner(profile, sshConfig, reuseToken, sourc
         pid: result.pid,
         host: sshConfig.host,
         hostLabel,
-        hermesVersion: result.hermesVersion || '',
+        kovaVersion: result.kovaVersion || '',
         remotePlatform: result.platform?.os || '',
         reused: result.reused,
         spawnNonce: result.spawnNonce,
         creationTimeNs: result.creationTimeNs,
         creationTime: result.creationTime,
         startedAt: result.startedAt,
-        hermesPath: result.hermesPath,
-        hermesHome: result.hermesHome,
+        kovaPath: result.kovaPath,
+        kovaHome: result.kovaHome,
         pythonPath: result.pythonPath,
         remoteProfile: resolveRemoteSshDashboardProfile(sshConfig.remoteProfile, profile),
         registryConnectionId:
@@ -10316,7 +10316,7 @@ async function bootstrapSshConnectionInner(profile, sshConfig, reuseToken, sourc
 
   sshRememberLog(
     `[ssh] connection ${result.reused ? 'REUSED' : 'spawned'} dashboard: ` +
-      `${result.hermesVersion || 'kova (version unknown)'} at ${result.hermesPath || '?'}`
+      `${result.kovaVersion || 'kova (version unknown)'} at ${result.kovaPath || '?'}`
   )
 
   const connection = await buildRemoteConnection(
@@ -10331,7 +10331,7 @@ async function bootstrapSshConnectionInner(profile, sshConfig, reuseToken, sourc
 
   return {
     ...connection,
-    remoteKovaVersion: result.hermesVersion || '',
+    remoteKovaVersion: result.kovaVersion || '',
     ssh: {
       effectiveConfigFingerprint: sshConfig.effectiveConfigFingerprint,
       host: sshConfig.host,
@@ -10674,20 +10674,20 @@ async function testDesktopConnectionConfig(input: any = {}) {
         try {
           await ssh.open()
           const platform: any = await detectRemotePlatform(ssh, sshConfig.remoteKovaPath || '')
-          let hermesPath
-          let hermesVersion
+          let kovaPath
+          let kovaVersion
           let supported
 
           if (platform.os === 'Windows') {
             const runtime = platform
-            hermesPath = runtime.hermesPath
-            const inspection = await helper(ssh, runtime, 'inspect', [runtime.hermesPath])
-            hermesVersion = inspection.version
+            kovaPath = runtime.kovaPath
+            const inspection = await helper(ssh, runtime, 'inspect', [runtime.kovaPath])
+            kovaVersion = inspection.version
             supported = inspection.supported
           } else {
-            hermesPath = await remoteLifecycle.locateHermes(ssh, sshConfig.remoteKovaPath || '')
-            hermesVersion = await remoteLifecycle.probeKovaVersion(ssh, hermesPath)
-            supported = await remoteLifecycle.remoteSupportsSshOwnership(ssh, hermesPath)
+            kovaPath = await remoteLifecycle.locateHermes(ssh, sshConfig.remoteKovaPath || '')
+            kovaVersion = await remoteLifecycle.probeKovaVersion(ssh, kovaPath)
+            supported = await remoteLifecycle.remoteSupportsSshOwnership(ssh, kovaPath)
           }
 
           if (!supported) {
@@ -10703,8 +10703,8 @@ async function testDesktopConnectionConfig(input: any = {}) {
             sshError: null,
             error: null,
             remotePlatform: `${platform.os}/${platform.arch}`,
-            remoteKovaPath: hermesPath,
-            remoteKovaVersion: hermesVersion,
+            remoteKovaPath: kovaPath,
+            remoteKovaVersion: kovaVersion,
             host: sshConfig.user ? `${sshConfig.user}@${sshConfig.host}` : sshConfig.host
           }
         } catch (error: any) {
@@ -11365,7 +11365,7 @@ async function connectRegistryBackend(
       // is only the routing label. kova:api uses it to translate explicit
       // self-profile query filters into the backend's namespace.
       remoteProfile: sshConfig.remoteProfile || '',
-      logs: hermesLog.slice(-80),
+      logs: kovaLog.slice(-80),
       ...getWindowState()
     }
   }
@@ -11400,7 +11400,7 @@ async function connectRegistryBackend(
     // One host, many profiles: REST paths must carry ?profile= (same contract
     // as the global-remote shared-primary route).
     sharedRemote: true,
-    logs: hermesLog.slice(-80),
+    logs: kovaLog.slice(-80),
     ...getWindowState()
   }
 }
@@ -11609,7 +11609,7 @@ async function captureManagedSshScopes(source) {
 }
 
 function remoteUpdateTargetFromState(state): RemoteUpdateTarget {
-  if (!state?.ssh || !state?.hermesPath || !state?.hermesHome) {
+  if (!state?.ssh || !state?.kovaPath || !state?.kovaHome) {
     throw new Error('The managed SSH scope does not carry a complete remote runtime identity.')
   }
 
@@ -11620,8 +11620,8 @@ function remoteUpdateTargetFromState(state): RemoteUpdateTarget {
   return {
     ssh: state.ssh,
     platform: state.remotePlatform,
-    hermesPath: state.hermesPath,
-    hermesHome: state.hermesHome,
+    kovaPath: state.kovaPath,
+    kovaHome: state.kovaHome,
     ...(state.pythonPath ? { pythonPath: state.pythonPath } : {})
   }
 }
@@ -11646,26 +11646,26 @@ async function openManagedSshUpdateTransport(
     const platform: any = await detectRemotePlatform(ssh, config.remoteKovaPath || '')
 
     if (platform.os === 'Windows') {
-      const runtime = platform.hermesPath ? platform : await probeWindowsRemote(ssh, config.remoteKovaPath || '')
+      const runtime = platform.kovaPath ? platform : await probeWindowsRemote(ssh, config.remoteKovaPath || '')
 
       return {
         close: () => ssh.close(),
         target: {
           ssh,
           platform: 'Windows',
-          hermesPath: runtime.hermesPath,
-          hermesHome: runtime.hermesHome,
+          kovaPath: runtime.kovaPath,
+          kovaHome: runtime.kovaHome,
           pythonPath: runtime.python
         }
       }
     }
 
-    const hermesPath = await remoteLifecycle.locateHermes(ssh, config.remoteKovaPath || '')
-    const hermesHome = await remoteLifecycle.probeRemoteKovaHome(ssh)
+    const kovaPath = await remoteLifecycle.locateHermes(ssh, config.remoteKovaPath || '')
+    const kovaHome = await remoteLifecycle.probeRemoteKovaHome(ssh)
 
     return {
       close: () => ssh.close(),
-      target: { ssh, platform: platform.os, hermesPath, hermesHome }
+      target: { ssh, platform: platform.os, kovaPath, kovaHome }
     }
   } catch (error) {
     await ssh.close()
@@ -11694,8 +11694,8 @@ async function drainManagedSshScope(scope) {
       pid: state.pid,
       spawnNonce: state.spawnNonce,
       profile: state.remoteProfile || '',
-      hermesPath: state.hermesPath,
-      hermesHome: state.hermesHome,
+      kovaPath: state.kovaPath,
+      kovaHome: state.kovaHome,
       startedAt: state.startedAt,
       creationTimeNs: state.creationTimeNs,
       creationTime: state.creationTime
@@ -11704,7 +11704,7 @@ async function drainManagedSshScope(scope) {
     if (state.remotePlatform === 'Windows') {
       await terminateOwnedWindowsDashboardForUpdate(
         state.ssh,
-        { hermesPath: state.hermesPath, hermesHome: state.hermesHome, python: state.pythonPath },
+        { kovaPath: state.kovaPath, kovaHome: state.kovaHome, python: state.pythonPath },
         expected
       )
     } else if (state.remotePlatform === 'Linux' || state.remotePlatform === 'Darwin') {
@@ -12064,7 +12064,7 @@ async function runPoolBackendStart(
     return {
       ...remote,
       profile,
-      logs: hermesLog.slice(-80),
+      logs: kovaLog.slice(-80),
       ...getWindowState()
     }
   }
@@ -12183,7 +12183,7 @@ async function runPoolBackendStart(
   // Route old runtimes (no `serve`) through the legacy `dashboard --no-open`.
   backend.args = await getBackendArgsForRuntime(backend)
   assertPoolEntryStillOwned(poolKey, entry, backendPool, localBackendLifecycle.signal)
-  const hermesCwd = resolveKovaCwd()
+  const kovaCwd = resolveKovaCwd()
   const webDist = resolveWebDist()
   const readyFile = backend.readyFile ? makeDashboardReadyFile() : null
 
@@ -12206,17 +12206,17 @@ async function runPoolBackendStart(
     backend.command,
     backend.args,
     hiddenWindowsChildOptions({
-      cwd: hermesCwd,
+      cwd: kovaCwd,
       env: desktopBackendSpawnEnv(
         {
           // Never another profile's dotenv credentials from the Desktop env (#68367).
-          ...profileBackendParentEnv({ hermesHome: KOVA_HOME, profile }),
+          ...profileBackendParentEnv({ kovaHome: KOVA_HOME, profile }),
           KOVA_HOME,
           ...backend.env,
           // Pin the gateway's tool/terminal cwd to the same directory we chose for
           // the child process. Inherited TERMINAL_CWD (or a stale config bridge)
           // can still point at the install dir even when spawn cwd is home.
-          TERMINAL_CWD: hermesCwd,
+          TERMINAL_CWD: kovaCwd,
           KOVA_DASHBOARD_SESSION_TOKEN: token,
           // Marks this dashboard backend as desktop-spawned so it runs the cron
           // scheduler tick loop (the gateway isn't running under the app).
@@ -12347,7 +12347,7 @@ async function runPoolBackendStart(
     token: authToken,
     profile,
     wsUrl,
-    logs: hermesLog.slice(-80),
+    logs: kovaLog.slice(-80),
     ...getWindowState()
   }
 }
@@ -12961,7 +12961,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
         error: null
       })
 
-      return createPrimaryRemoteConnection(remote, hermesLog.slice(-80), getWindowState())
+      return createPrimaryRemoteConnection(remote, kovaLog.slice(-80), getWindowState())
     }
 
     await advanceBootProgress('backend.resolve', 'Resolving Kova backend', 8)
@@ -13067,7 +13067,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
         token: attached.token,
         profile: primaryProfile,
         wsUrl: attached.wsUrl,
-        logs: hermesLog.slice(-80),
+        logs: kovaLog.slice(-80),
         ...getWindowState()
       }
     }
@@ -13081,7 +13081,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
     // Route old runtimes (no `serve`) through the legacy `dashboard --no-open`.
     backend.args = await getBackendArgsForRuntime(backend)
     backendConnectionState.assertCurrentAttempt(connectionAttempt)
-    const hermesCwd = resolveKovaCwd()
+    const kovaCwd = resolveKovaCwd()
     const webDist = resolveWebDist()
     const readyFile = backend.readyFile ? makeDashboardReadyFile() : null
 
@@ -13095,15 +13095,15 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
 
     backendConnectionState.assertCurrentAttempt(connectionAttempt)
 
-    const hermesProcess = spawnOwnedBackend(
+    const kovaProcess = spawnOwnedBackend(
       backend.command,
       backend.args,
       hiddenWindowsChildOptions({
-        cwd: hermesCwd,
+        cwd: kovaCwd,
         env: desktopBackendSpawnEnv(
           {
             // Never another profile's dotenv credentials from the Desktop env (#68367).
-            ...profileBackendParentEnv({ hermesHome: KOVA_HOME, profile: activeProfile }),
+            ...profileBackendParentEnv({ kovaHome: KOVA_HOME, profile: activeProfile }),
             // Explicitly pin KOVA_HOME for the child so Python's get_kova_home()
             // resolves to the SAME location our resolveKovaHome() picked. Without
             // this pin, Python falls back to ~/.kova on every platform — fine on
@@ -13114,7 +13114,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
             // can't reliably do that, so we set it inline for every spawn.
             KOVA_HOME,
             ...backend.env,
-            TERMINAL_CWD: hermesCwd,
+            TERMINAL_CWD: kovaCwd,
             KOVA_DASHBOARD_SESSION_TOKEN: token,
             // Marks this dashboard backend as desktop-spawned so it runs the cron
             // scheduler tick loop (the gateway isn't running under the app).
@@ -13138,7 +13138,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
     // before-ready exit message shown by the boot UI. rememberLog attaches
     // later, after the claim, and would miss anything printed before it.
     const primaryOutputTail = createBackendOutputTail()
-    primaryOutputTail.attach(hermesProcess)
+    primaryOutputTail.attach(kovaProcess)
 
     // Start watching for the READY announcement BEFORE any await (#60323):
     // claimBackendChild can take seconds (its Windows Get-Process probe cold
@@ -13148,7 +13148,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
     // window was lost forever — the wait then hit its 90s timeout and a
     // healthy backend was killed (deterministic on Windows, racy on
     // macOS/Linux). The tail-buffer accessor covers any residual gap.
-    const portAnnouncement = waitForDashboardPortAnnouncement(hermesProcess, {
+    const portAnnouncement = waitForDashboardPortAnnouncement(kovaProcess, {
       bufferedOutput: () => primaryOutputTail.text(),
       describeOutputTail: () => primaryOutputTail.describe(),
       readyFile
@@ -13160,7 +13160,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
 
     const processOwner = await backendConnectionState.claimProcess(
       connectionAttempt,
-      hermesProcess,
+      kovaProcess,
       (child: ChildProcess): ReturnType<typeof claimBackendChild> =>
         claimBackendChild(
           child,
@@ -13172,13 +13172,13 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
     )
 
     if (!processOwner) {
-      await localBackendLifecycle.stop(hermesProcess)
-      releaseBackendChild(hermesProcess)
+      await localBackendLifecycle.stop(kovaProcess)
+      releaseBackendChild(kovaProcess)
       throw new Error('Kova backend start was superseded by a newer connection attempt.')
     }
 
-    hermesProcess.stdout.on('data', rememberLog)
-    hermesProcess.stderr.on('data', rememberLog)
+    kovaProcess.stdout.on('data', rememberLog)
+    kovaProcess.stderr.on('data', rememberLog)
     let backendReady = false
     let rejectBackendStart = null
 
@@ -13186,8 +13186,8 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
       rejectBackendStart = reject
     })
 
-    hermesProcess.once('error', error => {
-      releaseBackendChild(hermesProcess)
+    kovaProcess.once('error', error => {
+      releaseBackendChild(kovaProcess)
 
       if (!backendConnectionState.clearForCurrentProcess(processOwner)) {
         rememberLog(`Ignoring stale Kova backend error: ${error.message}`)
@@ -13215,8 +13215,8 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
       sendBackendExit({ code: null, signal: null, error: error.message })
       rejectBackendStart?.(error)
     })
-    hermesProcess.once('exit', (code, signal) => {
-      releaseBackendChild(hermesProcess)
+    kovaProcess.once('exit', (code, signal) => {
+      releaseBackendChild(kovaProcess)
 
       if (!backendConnectionState.clearForCurrentProcess(processOwner)) {
         rememberLog(formatBackendExitLine('Ignoring stale Kova backend exit', code, signal, primaryOutputTail))
@@ -13285,7 +13285,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
     primaryExitRecovery.reset()
     backendStartFailure = null
 
-    const childAlive = () => hermesProcess.exitCode === null && !hermesProcess.killed
+    const childAlive = () => kovaProcess.exitCode === null && !kovaProcess.killed
 
     const authToken = await adoptServedDashboardToken(baseUrl, token, {
       childAlive,
@@ -13338,7 +13338,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
       token: authToken,
       profile,
       wsUrl,
-      logs: hermesLog.slice(-80),
+      logs: kovaLog.slice(-80),
       ...getWindowState()
     }
   })().catch(async error => {
@@ -18056,7 +18056,7 @@ ipcMain.handle('kova:logs:reveal', async () => {
   }
 })
 
-ipcMain.handle('kova:logs:recent', async () => ({ path: DESKTOP_LOG_PATH, lines: hermesLog.slice(-200) }))
+ipcMain.handle('kova:logs:recent', async () => ({ path: DESKTOP_LOG_PATH, lines: kovaLog.slice(-200) }))
 
 // Renderer error-boundary catches (#79428 defect B): the component stack only
 // exists in renderer memory, so the boundary posts it here and we persist it
@@ -18099,7 +18099,7 @@ ipcMain.on('kova:logs:renderer-line', (_event, line) => {
 
 // Local filesystem + plugin-root IPC (readDir/reveal/rename/trash/…) — see fs-ipc.ts.
 registerFsIpc({
-  hermesHome: KOVA_HOME,
+  kovaHome: KOVA_HOME,
   readActiveDesktopProfile,
   expandUserPath,
   resolveRequestedPathForIpc,
@@ -18202,8 +18202,8 @@ ipcMain.handle('kova:version', async (_event, scope?: { connectionId?: string; p
     electronVersion: process.versions.electron,
     nodeVersion: process.versions.node,
     platform: process.platform,
-    hermesRoot: resolveUpdateRoot(),
-    hermesHome: KOVA_HOME,
+    kovaRoot: resolveUpdateRoot(),
+    kovaHome: KOVA_HOME,
     bundleOutOfSync: skew.outOfSync,
     bundleCommitsBehind: skew.desktopCommitsBehind,
     // The install id: sha16 of the canonical install-root path — the key of
@@ -18220,7 +18220,7 @@ ipcMain.handle('kova:version', async (_event, scope?: { connectionId?: string; p
     // Bundled artifacts always run their payload; light artifacts have no
     // runtime and only reach remote backends. External builds classify from
     // the install stamp (git/docker/nix), 'unknown' when it can't be told.
-    hermesRuntime: resolveKovaRuntime(),
+    kovaRuntime: resolveKovaRuntime(),
     // True when the bundle on disk is not the one this process loaded — a
     // plain app restart (no rebuild, no installer) clears the skew above.
     // Packaged only: a dev `--build-only` rewrites build/install-stamp.json
@@ -18494,7 +18494,7 @@ async function runDesktopUninstall(mode: string): Promise<DesktopUninstallResult
     agentRoot: ACTIVE_KOVA_ROOT,
     uninstallArgs,
     appPath: removeBundle,
-    hermesHome: KOVA_HOME
+    kovaHome: KOVA_HOME
   }
 
   let scriptPath

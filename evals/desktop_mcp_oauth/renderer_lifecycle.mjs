@@ -134,7 +134,7 @@ try {
     await fetch(u.searchParams.get('redirect_uri') + '?code=fixture-code&state=' + u.searchParams.get('state'))
   })
   await page.addInitScript(() => {
-    window.hermesDesktop = {
+    window.kovaDesktop = {
       api: r => window.recordRequest(r),
       getConnectionFor: r => window.fixtureConnection(r),
       mcpOauth: {

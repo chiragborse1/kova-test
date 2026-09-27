@@ -1874,7 +1874,7 @@ export const ja = defineLocale({
     noSessions: 'セッションはまだありません。',
     gatewayRunning: 'メッセージングゲートウェイが実行中',
     gatewayStopped: 'メッセージングゲートウェイが停止中',
-    hermesActiveSessions: (version, count) => `Kova ${version} · アクティブセッション ${count}`,
+    kovaActiveSessions: (version, count) => `Kova ${version} · アクティブセッション ${count}`,
     restartGateway: 'ゲートウェイを再起動',
     openBrowser: 'ブラウザを開く',
     gatewayRestartFailed: 'ゲートウェイの再起動に失敗しました。',

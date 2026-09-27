@@ -26,7 +26,7 @@ from tests.e2e.core.providers._oauth_helpers import (
     OLD_ACCESS,
     Hold,
     credential,
-    run_hermes,
+    run_kova,
     start_anthropic_rig,
     text,
     wait_until,
@@ -71,12 +71,12 @@ def test_concurrent_refresh_across_processes_spends_the_token_once(tmp_path) -> 
 
     rig.tokens.before_refresh_response = slow_token_endpoint
     box: dict = {}
-    thread_a = threading.Thread(target=lambda: box.setdefault("a", run_hermes(
+    thread_a = threading.Thread(target=lambda: box.setdefault("a", run_kova(
         rig.fh, ["-z", "PROCESS-ALPHA say hi"], extra_env=rig.child_env, timeout=150)), daemon=True)
     try:
         thread_a.start()
         wait_until(lambda: any(_who(r) == "A" for r in rig.messages.main_requests()), 90, "process A's first call")
-        proc_b = run_hermes(rig.fh, ["-z", "PROCESS-BRAVO say hi"], extra_env=rig.child_env, timeout=150)
+        proc_b = run_kova(rig.fh, ["-z", "PROCESS-BRAVO say hi"], extra_env=rig.child_env, timeout=150)
         thread_a.join(150)
     finally:
         for ev in (b_arrived, both_rejected):

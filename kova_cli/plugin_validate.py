@@ -74,7 +74,7 @@ class ValidationReport:
 
 
 def _requires_kova_spec_valid(spec: str) -> bool:
-    """Strictly validate a ``requires_hermes`` spec.
+    """Strictly validate a ``requires_kova`` spec.
 
     Unlike :func:`kova_cli.plugins_manifest.version_satisfies` (permissive at load
     time), validation REJECTS clauses whose version segment doesn't parse —
@@ -107,18 +107,18 @@ def _check_manifest_fields(report: ValidationReport, manifest: dict) -> None:
         report.add("manifest fields", True, "name, version, description present")
 
 
-def _check_requires_hermes(report: ValidationReport, manifest: dict) -> None:
-    spec = str(manifest.get("requires_hermes") or "").strip()
+def _check_requires_kova(report: ValidationReport, manifest: dict) -> None:
+    spec = str(manifest.get("requires_kova") or "").strip()
     if not spec:
-        report.add("requires_hermes", True, "not declared")
+        report.add("requires_kova", True, "not declared")
         return
     if _requires_kova_spec_valid(spec):
-        report.add("requires_hermes", True, f"spec {spec!r} parses")
+        report.add("requires_kova", True, f"spec {spec!r} parses")
     else:
         report.add(
-            "requires_hermes",
+            "requires_kova",
             False,
-            f"requires_hermes spec {spec!r} does not parse "
+            f"requires_kova spec {spec!r} does not parse "
             "(expected e.g. \">=0.19\" or \">=0.19, <1.0\")",
         )
 
@@ -507,7 +507,7 @@ def validate_plugin_dir(plugin_dir: Path) -> ValidationReport:
     report.add("manifest", True, "plugin.yaml parses")
 
     _check_manifest_fields(report, manifest)
-    _check_requires_hermes(report, manifest)
+    _check_requires_kova(report, manifest)
     _check_config_spec(report, manifest)
     _check_requires_env(report, manifest)
     _check_loadable(report, plugin_dir)

@@ -16,7 +16,7 @@ description: >-
 maintainer: anpicasso
 tier: community
 category: automation
-requires_hermes: ">=0.21.2"
+requires_kova: ">=0.21.2"
 docs_url: https://github.com/anpicasso/kova-jev-curator/blob/4e8626c7d394a9cbef8594993ec4b208ffb3395f/README.md
 version: "0.1.0"
 platforms: []

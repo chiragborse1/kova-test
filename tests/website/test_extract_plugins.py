@@ -65,7 +65,7 @@ def test_valid_entry_is_extracted_with_install_command(mod, tmp_path):
         "example-plugin",
         tier="official",
         docs_url="https://example.com/docs",
-        requires_hermes=">=0.19",
+        requires_kova=">=0.19",
         platforms=["linux"],
         capabilities={
             "provides_tools": ["do_thing"],

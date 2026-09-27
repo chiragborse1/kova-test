@@ -6,7 +6,7 @@ description: Kova is waiting — full Desktop page for pending approvals.
 maintainer: aydnOktay
 tier: community
 category: desktop
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/aydnOktay/kova-needs-you
 version: "0.1.0"
 image: https://raw.githubusercontent.com/aydnOktay/kova-needs-you/f903b8eb8f166b609e2ee3c535209fb4602b60d3/logo.png

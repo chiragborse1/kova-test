@@ -5,7 +5,7 @@
 // app process to close.
 //
 // What this driver deliberately does NOT do:
-//   - no internal apply call (no window.hermesDesktop.updates.apply or any
+//   - no internal apply call (no window.kovaDesktop.updates.apply or any
 //     bridge invocation that would bypass the user trigger);
 //   - no relaunch of the NEW app — Squirrel.Mac owns the swap and the
 //     relaunch, and the external watcher

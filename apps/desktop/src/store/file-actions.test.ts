@@ -33,7 +33,7 @@ describe('downloadRemoteFile', () => {
   beforeEach(() => {
     clearNotifications()
     saveGatewayFile.mockReset()
-    vi.stubGlobal('hermesDesktop', { saveGatewayFile })
+    vi.stubGlobal('kovaDesktop', { saveGatewayFile })
   })
 
   afterEach(() => {
@@ -59,7 +59,7 @@ describe('downloadRemoteFile', () => {
   })
 
   it('toasts when the gateway download fails', async () => {
-    vi.stubGlobal('hermesDesktop', {})
+    vi.stubGlobal('kovaDesktop', {})
 
     await downloadRemoteFile('/home/linux/project/notes.md')
 

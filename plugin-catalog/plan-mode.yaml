@@ -13,7 +13,7 @@ description: 'Enforced per-session plan mode: /planmode on blocks mutating Kova 
 maintainer: 100yenadmin
 tier: community
 category: tools
-requires_hermes: '>=0.21.2'
+requires_kova: '>=0.21.2'
 docs_url: https://github.com/100yenadmin/kova-plan-mode#readme
 version: "0.2.0"
 platforms: []

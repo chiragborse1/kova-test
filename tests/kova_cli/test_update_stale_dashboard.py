@@ -91,8 +91,8 @@ def _write_valid_ssh_backend_lock(tmp_path, monkeypatch) -> int:
         "pid": pid,
         "port": 46369,
         "profile": "default",
-        "hermesPath": "/opt/kova/bin/kova",
-        "hermesHome": str(tmp_path),
+        "kovaPath": "/opt/kova/bin/kova",
+        "kovaHome": str(tmp_path),
         "logPath": f"{tmp_path}/desktop-ssh/{ownership_id}/{spawn_nonce}.log",
         "startedAt": "2026-08-21T15:27:39Z",
     }))
@@ -265,7 +265,7 @@ class TestKillStaleDashboardWindows:
         with patch("kova_cli.main_dashboard._find_stale_dashboard_pids",
                    return_value=[12345, 12346]), \
              patch("gateway.status.get_process_start_time", return_value=123), \
-             patch("kova_cli._subprocess_compat.pid_is_hermes", return_value=True), \
+             patch("kova_cli._subprocess_compat.pid_is_kova", return_value=True), \
              patch("subprocess.run", side_effect=fake_run) as mock_run:
             _kill_stale_dashboard_processes()
 

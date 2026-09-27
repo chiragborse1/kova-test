@@ -59,7 +59,7 @@ function toolResults(completion: RecordedCompletion | undefined): string {
 test('clarify and approval prompts round-trip exactly once', async () => {
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('prompts')
-  writeProviderHome(sandbox.hermesHome, provider.url, '', 'manual')
+  writeProviderHome(sandbox.kovaHome, provider.url, '', 'manual')
   const { app, page } = await launchCoreApp(coreAppEnv(sandbox))
   const ws = recordWebSockets(page)
   const session: OracleTarget = { sessionId: '', expectUserMarkers: [] }

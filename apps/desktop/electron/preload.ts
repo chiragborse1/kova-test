@@ -8,7 +8,7 @@ import { customWindowControlsEnabled } from './window-controls'
 // needs it before its first paint, and answered by main because deciding it
 // needs `os.release()` — a sandboxed preload may only require electron, events,
 // timers and url, so importing node:os here throws before contextBridge runs
-// and takes the ENTIRE bridge down with it (window.hermesDesktop undefined =>
+// and takes the ENTIRE bridge down with it (window.kovaDesktop undefined =>
 // "Desktop IPC bridge is unavailable"). No reply means no glass, which degrades
 // to an ordinary opaque window rather than a page thinned over nothing.
 const translucencySupport = ipcRenderer.sendSync('kova:translucency:support')
@@ -23,7 +23,7 @@ const launchFlags: { localModels?: boolean; guestOnboarding?: boolean; skipIntro
 // the built-in palette over the skin configured on this machine.
 const localSkin = ipcRenderer.sendSync('kova:skin:local')
 
-contextBridge.exposeInMainWorld('hermesDesktop', {
+contextBridge.exposeInMainWorld('kovaDesktop', {
   glassSupported: translucencySupport?.glass === true,
   translucencySupported: translucencySupport?.translucency === true,
   // Launch-flag fact: the app was started with --local, so the renderer may

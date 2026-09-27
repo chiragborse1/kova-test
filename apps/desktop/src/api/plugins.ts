@@ -3,7 +3,7 @@ import { reconnectBackoffDelayMs } from '@kova/shared'
 import type { KovaConnection } from '@/global'
 import { RECONNECT_ATTEMPT_TIMEOUT_MS, withTimeout } from '@/lib/with-timeout'
 
-import { getApiRequestConnection, getApiRequestProfile, hermesApi, profileScoped } from './client'
+import { getApiRequestConnection, getApiRequestProfile, kovaApi, profileScoped } from './client'
 
 /** Resolve the ACTIVE backend's connection descriptor, (connectionId,
  *  profile)-scoped — mirroring how store/profile resolves $connection: a
@@ -20,7 +20,7 @@ import { getApiRequestConnection, getApiRequestProfile, hermesApi, profileScoped
  *
  *  Exported for tests. */
 export async function activeConnection(): Promise<KovaConnection> {
-  const getConnectionFor = window.hermesDesktop.getConnectionFor
+  const getConnectionFor = window.kovaDesktop.getConnectionFor
   const connectionId = getApiRequestConnection()
   const profile = getApiRequestProfile()
 
@@ -33,13 +33,13 @@ export async function activeConnection(): Promise<KovaConnection> {
   }
 
   return withTimeout(
-    window.hermesDesktop.getConnection(profile),
+    window.kovaDesktop.getConnection(profile),
     RECONNECT_ATTEMPT_TIMEOUT_MS,
     `Timed out connecting to profile "${profile}"`
   )
 }
 
-/** Options for a plugin REST call — mirrors the app's own `hermesDesktop.api`
+/** Options for a plugin REST call — mirrors the app's own `kovaDesktop.api`
  *  shape, minus the path (which is namespace-derived). */
 export interface PluginRestOptions {
   method?: string
@@ -70,13 +70,13 @@ function pluginPathSuffix(caller: string, path: string): string {
  *  REST call. Broader reach (core endpoints, another namespace) is the future
  *  declared-capability seam; today the namespace IS the boundary. */
 export async function pluginRest<T>(pluginId: string, path: string, opts: PluginRestOptions = {}): Promise<T> {
-  if (!window.hermesDesktop?.api) {
+  if (!window.kovaDesktop?.api) {
     throw new Error('Kova desktop bridge unavailable')
   }
 
   const suffix = pluginPathSuffix('pluginRest', path)
 
-  return hermesApi<T>({
+  return kovaApi<T>({
     path: `/api/plugins/${pluginId}${suffix}`,
     method: opts.method,
     body: opts.body,

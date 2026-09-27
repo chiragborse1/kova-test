@@ -9,7 +9,7 @@ import {
   type SidebarProjectTree
 } from '@/app/chat/sidebar/projects/workspace-groups'
 import type { KovaGitBaseBranch, KovaGitBranch } from '@/global'
-import { getKovaConfig, hermesApi, type KovaGateway } from '@/kova'
+import { getKovaConfig, kovaApi, type KovaGateway } from '@/kova'
 import { translateNow } from '@/i18n'
 import { desktopDefaultCwd, isDesktopFsRemoteMode, selectDesktopPaths, writeDesktopFileText } from '@/lib/desktop-fs'
 import { desktopGit } from '@/lib/desktop-git'
@@ -505,7 +505,7 @@ async function refreshProjectTreeAcrossProfiles(): Promise<void> {
   $projectTreeLoading.set(true)
 
   try {
-    const res = await hermesApi<ProjectTreePayload>({
+    const res = await kovaApi<ProjectTreePayload>({
       path: `/api/profiles/projects/tree?preview_limit=${projectTreePreviewLimit()}`,
       timeoutMs: PROJECT_TREE_REQUEST_TIMEOUT_MS
     })
@@ -1407,7 +1407,7 @@ export async function revealPath(path: null | string): Promise<void> {
 // Copy a path to the clipboard (git-GUI standard).
 export async function copyPath(path: null | string): Promise<void> {
   if (path) {
-    await window.hermesDesktop?.writeClipboard?.(path)
+    await window.kovaDesktop?.writeClipboard?.(path)
   }
 }
 

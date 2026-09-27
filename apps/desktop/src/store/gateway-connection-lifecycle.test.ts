@@ -89,7 +89,7 @@ const {
 } = await import('./gateway')
 
 function installDesktop(stub: Record<string, unknown>): void {
-  ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = stub
+  ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = stub
 }
 
 function descriptorFor(connectionId: string, profile: string) {
@@ -114,7 +114,7 @@ afterEach(() => {
   gatewayMocks.eventHandlers.length = 0
   vi.clearAllMocks()
   vi.useRealTimers()
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 describe('a redial of the active route', () => {

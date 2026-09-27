@@ -7,7 +7,7 @@ description: Today's git digest in the current repo, plus the last failed termin
 maintainer: aydnOktay
 tier: community
 category: desktop
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/aydnOktay/kova-debug-desk
 version: "1.0.1"
 image: https://raw.githubusercontent.com/aydnOktay/kova-debug-desk/57cbd4d23eba978dc9a53ab6387a84c336992b74/assets/banner.png

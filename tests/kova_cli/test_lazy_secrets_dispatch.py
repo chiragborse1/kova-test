@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 
-def _run_hermes(args: list[str], timeout: int = 30) -> subprocess.CompletedProcess[str]:
+def _run_kova(args: list[str], timeout: int = 30) -> subprocess.CompletedProcess[str]:
     """Run kova CLI as a subprocess from repo root.
 
     The child runs with all git remote URLs rewritten to an unreachable
@@ -67,7 +67,7 @@ class TestSecretsDispatchE2E:
         This is the exact path that triggered the #86781 self-lock loop on
         Windows: setup/parser nested under lazy-loaded backend.
         """
-        result = _run_hermes(["secrets", "bitwarden", "setup", "--help"])
+        result = _run_kova(["secrets", "bitwarden", "setup", "--help"])
         assert result.returncode == 0, (
             f"bitwarden setup --help failed:\n"
             f"stdout: {result.stdout}\n"
@@ -77,7 +77,7 @@ class TestSecretsDispatchE2E:
 
     def test_bitwarden_status(self) -> None:
         """`kova secrets bitwarden status` must exit 0 (runs lazy backend)."""
-        result = _run_hermes(["secrets", "bitwarden", "status"])
+        result = _run_kova(["secrets", "bitwarden", "status"])
         # status may return non-zero if not configured, but must NOT crash
         # with import errors, recursion, or missing subcommand
         assert result.returncode in (0, 1), (
@@ -91,7 +91,7 @@ class TestSecretsDispatchE2E:
 
     def test_bitwarden_disable(self) -> None:
         """`kova secrets bitwarden disable` must exit 0."""
-        result = _run_hermes(["secrets", "bitwarden", "disable"])
+        result = _run_kova(["secrets", "bitwarden", "disable"])
         assert result.returncode == 0, (
             f"bitwarden disable failed:\n"
             f"stdout: {result.stdout}\n"
@@ -100,7 +100,7 @@ class TestSecretsDispatchE2E:
 
     def test_onepassword_status(self) -> None:
         """`kova secrets onepassword status` must exit 0 (1Password lazy backend)."""
-        result = _run_hermes(["secrets", "onepassword", "status"])
+        result = _run_kova(["secrets", "onepassword", "status"])
         assert result.returncode in (0, 1), (
             f"onepassword status crashed:\n"
             f"stdout: {result.stdout}\n"
@@ -121,7 +121,7 @@ class TestUpdatePathE2E:
     @pytest.mark.live_system_guard_bypass
     def test_update_check_clean(self) -> None:
         """`kova update --check` must not load cryptography._rust."""
-        result = _run_hermes(["update", "--check"])
+        result = _run_kova(["update", "--check"])
         assert result.returncode in (0, 1, 2), (
             f"update --check crashed:\n"
             f"stdout: {result.stdout}\n"

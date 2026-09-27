@@ -6,7 +6,7 @@ description: Search mybot.farm, plant/reinstall Kova packs (Desktop Recruit + CL
 maintainer: badkangaroo
 tier: community
 category: tools
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://mybot.farm/install/kova
 version: "0.3.0"
 platforms: []

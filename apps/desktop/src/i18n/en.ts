@@ -2806,7 +2806,7 @@ export const en: Translations = {
     noSessions: 'No sessions yet.',
     gatewayRunning: 'Messaging gateway running',
     gatewayStopped: 'Messaging gateway stopped',
-    hermesActiveSessions: (version, count) => `Kova ${version} · Active sessions ${count}`,
+    kovaActiveSessions: (version, count) => `Kova ${version} · Active sessions ${count}`,
     restartGateway: 'Restart gateway',
     openBrowser: 'Open browser',
     gatewayRestartFailed: 'Gateway restart failed.',

@@ -45,7 +45,7 @@ describe('Kova REST helpers', () => {
   beforeEach(() => {
     resetSidebarBatchCapability()
     api = vi.fn().mockResolvedValue(emptySessionsResponse)
-    Object.defineProperty(window, 'hermesDesktop', {
+    Object.defineProperty(window, 'kovaDesktop', {
       configurable: true,
       value: { api }
     })
@@ -55,7 +55,7 @@ describe('Kova REST helpers', () => {
     setApiRequestConnection(null)
     setApiRequestProfile(null)
     vi.restoreAllMocks()
-    Reflect.deleteProperty(window, 'hermesDesktop')
+    Reflect.deleteProperty(window, 'kovaDesktop')
   })
 
   it('batches the sidebar slices into a single request with per-slice limits + excludes', async () => {
@@ -687,7 +687,7 @@ describe('pluginSocket', () => {
 
   beforeEach(() => {
     getConnection = vi.fn().mockResolvedValue(null)
-    Object.defineProperty(window, 'hermesDesktop', {
+    Object.defineProperty(window, 'kovaDesktop', {
       configurable: true,
       value: { api: vi.fn(), getConnection }
     })
@@ -695,7 +695,7 @@ describe('pluginSocket', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    Reflect.deleteProperty(window, 'hermesDesktop')
+    Reflect.deleteProperty(window, 'kovaDesktop')
     setApiRequestProfile(null)
   })
 

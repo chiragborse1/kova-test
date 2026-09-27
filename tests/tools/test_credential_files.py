@@ -527,13 +527,13 @@ class TestToAgentVisiblePathPerBackend:
         monkeypatch.setenv("KOVA_HOME", str(kova_home))
         return str(kova_home / "attachments" / "drop.zip")
 
-    def test_docker_maps_to_root_hermes(self, tmp_path, monkeypatch):
+    def test_docker_maps_to_root_kova(self, tmp_path, monkeypatch):
         staged = self._staged(tmp_path, monkeypatch)
         monkeypatch.setenv("TERMINAL_ENV", "docker")
         from tools.credential_files import to_agent_visible_cache_path
         assert to_agent_visible_cache_path(staged) == "/root/.kova/attachments/drop.zip"
 
-    def test_ssh_maps_to_tilde_hermes(self, tmp_path, monkeypatch):
+    def test_ssh_maps_to_tilde_kova(self, tmp_path, monkeypatch):
         staged = self._staged(tmp_path, monkeypatch)
         monkeypatch.setenv("TERMINAL_ENV", "ssh")
         from tools.credential_files import to_agent_visible_cache_path

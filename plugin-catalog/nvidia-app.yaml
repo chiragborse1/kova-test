@@ -12,7 +12,7 @@ title: NVIDIA App
 maintainer: OpenKova
 tier: official
 category: tools
-requires_hermes: ">=0.21.4"
+requires_kova: ">=0.21.4"
 docs_url: https://github.com/OpenKova/kova-nvidia/tree/main/nvidia-app
 version: "0.1.0"
 platforms: [windows]

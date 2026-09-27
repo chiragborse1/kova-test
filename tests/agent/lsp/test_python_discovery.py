@@ -37,7 +37,7 @@ def _seed_pm_python(tmp_path, monkeypatch):
     return exe
 
 
-def test_pyright_uses_the_project_interpreter_before_hermes(tmp_path, monkeypatch):
+def test_pyright_uses_the_project_interpreter_before_kova(tmp_path, monkeypatch):
     from agent.lsp import servers
 
     project = tmp_path / "project"

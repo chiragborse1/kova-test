@@ -37,7 +37,7 @@ beforeEach(() => {
   requests.length = 0
   setApiRequestConnection(owner.connectionId)
   setApiRequestProfile(owner.profile)
-  Object.defineProperty(window, 'hermesDesktop', {
+  Object.defineProperty(window, 'kovaDesktop', {
     configurable: true,
     value: {
       openExternal: vi.fn(async () => undefined),
@@ -89,7 +89,7 @@ afterEach(() => {
   setApiRequestConnection(null)
   setApiRequestProfile(null)
   vi.useRealTimers()
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 function beginContext(): OnboardingContext {
@@ -195,7 +195,7 @@ it('preserves explicit local and untagged legacy routes instead of filling ambie
 // not a hard-coded `default` profile that may be a different one.
 it('keeps readiness on the same profile as REST writes when the owner has none', async () => {
   const getConnectionFor = vi.fn(async () => ({ sharedRemote: true }))
-  Object.assign(window.hermesDesktop, { getConnection: vi.fn(), getConnectionFor })
+  Object.assign(window.kovaDesktop, { getConnection: vi.fn(), getConnectionFor })
   setApiRequestProfile(null)
   const scope = captureOnboardingScope()
 

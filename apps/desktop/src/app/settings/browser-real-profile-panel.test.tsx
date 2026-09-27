@@ -42,7 +42,7 @@ vi.mock('@/store/notifications', () => ({
 }))
 
 vi.mock('../hooks/use-config-record', () => ({
-  hermesConfigCacheWriter: () => (config: Record<string, unknown>) => mocks.cache(config),
+  kovaConfigCacheWriter: () => (config: Record<string, unknown>) => mocks.cache(config),
   useKovaConfigRecord: () => ({ data: mocks.loadedConfig })
 }))
 

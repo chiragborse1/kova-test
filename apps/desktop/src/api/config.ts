@@ -14,7 +14,7 @@ import type {
   StatusResponse
 } from '@/types/kova'
 
-import { capabilityScoped, hermesApi, type ProfileScope, profileScoped, STARTUP_REQUEST_TIMEOUT_MS } from './client'
+import { capabilityScoped, kovaApi, type ProfileScope, profileScoped, STARTUP_REQUEST_TIMEOUT_MS } from './client'
 
 type ConfigReadOrigin = { connectionId?: string; priority?: 'foreground'; profile?: string }
 
@@ -85,7 +85,7 @@ export function resolveConfigWriteScope(
 }
 
 export function getStatus(): Promise<StatusResponse> {
-  return hermesApi<StatusResponse>({
+  return kovaApi<StatusResponse>({
     ...profileScoped(),
     path: '/api/status'
   })
@@ -122,14 +122,14 @@ export function getLogs(params: {
 
   const suffix = query.toString()
 
-  return hermesApi<LogsResponse>({
+  return kovaApi<LogsResponse>({
     ...profileScoped(),
     path: suffix ? `/api/logs?${suffix}` : '/api/logs'
   })
 }
 
 export function getKovaConfig(profile?: string): Promise<KovaConfig> {
-  return hermesApi<KovaConfig>({
+  return kovaApi<KovaConfig>({
     ...profileScoped(profile),
     path: '/api/config',
     timeoutMs: STARTUP_REQUEST_TIMEOUT_MS
@@ -144,7 +144,7 @@ async function fetchBoundConfigRecord(
 ): Promise<KovaConfigRecord> {
   const origin = capabilityScoped(profile ?? undefined)
 
-  const record = await window.hermesDesktop.api<KovaConfigRecord>({ ...origin, ...request })
+  const record = await window.kovaDesktop.api<KovaConfigRecord>({ ...origin, ...request })
 
   if (record && typeof record === 'object') {
     bindConfigReadOrigin(record, origin)
@@ -170,7 +170,7 @@ export function getKovaConfigDefaults(): Promise<KovaConfigRecord> {
 }
 
 export function getKovaConfigSchema(profile?: null | string): Promise<ConfigSchemaResponse> {
-  return hermesApi<ConfigSchemaResponse>({
+  return kovaApi<ConfigSchemaResponse>({
     ...profileScoped(profile),
     path: '/api/config/schema'
   })
@@ -181,7 +181,7 @@ export function saveKovaConfig(
   profile?: ProfileScope,
   { preserveLanguage = false }: { preserveLanguage?: boolean } = {}
 ): Promise<{ ok: boolean }> {
-  return window.hermesDesktop.api<{ ok: boolean }>({
+  return window.kovaDesktop.api<{ ok: boolean }>({
     ...resolveConfigWriteScope(config, profile),
     path: preserveLanguage ? '/api/config?preserve_language=true' : '/api/config',
     method: 'PUT',
@@ -193,7 +193,7 @@ export function saveKovaConfig(
  *  the profile/connection the Capabilities scope selector points at (possibly
  *  on another registered gateway), mirroring getKovaConfigRecord. */
 export function saveKovaConfigRecord(config: KovaConfigRecord, profile?: ProfileScope): Promise<{ ok: boolean }> {
-  return window.hermesDesktop.api<{ ok: boolean }>({
+  return window.kovaDesktop.api<{ ok: boolean }>({
     ...resolveConfigWriteScope(config, profile),
     path: '/api/config',
     method: 'PUT',
@@ -202,14 +202,14 @@ export function saveKovaConfigRecord(config: KovaConfigRecord, profile?: Profile
 }
 
 export function getEnvVars(profile?: null | string): Promise<Record<string, EnvVarInfo>> {
-  return hermesApi<Record<string, EnvVarInfo>>({
+  return kovaApi<Record<string, EnvVarInfo>>({
     ...profileScoped(profile),
     path: '/api/env'
   })
 }
 
 export function setEnvVar(key: string, value: string, profile?: ProfileScope): Promise<{ ok: boolean }> {
-  return window.hermesDesktop.api<{ ok: boolean }>({
+  return window.kovaDesktop.api<{ ok: boolean }>({
     ...capabilityScoped(profile),
     path: '/api/env',
     method: 'PUT',
@@ -218,7 +218,7 @@ export function setEnvVar(key: string, value: string, profile?: ProfileScope): P
 }
 
 export function deleteEnvVar(key: string, profile?: ProfileScope): Promise<{ ok: boolean }> {
-  return window.hermesDesktop.api<{ ok: boolean }>({
+  return window.kovaDesktop.api<{ ok: boolean }>({
     ...capabilityScoped(profile),
     path: '/api/env',
     method: 'DELETE',
@@ -227,7 +227,7 @@ export function deleteEnvVar(key: string, profile?: ProfileScope): Promise<{ ok:
 }
 
 export function revealEnvVar(key: string, profile?: ProfileScope): Promise<{ key: string; value: string }> {
-  return window.hermesDesktop.api<{ key: string; value: string }>({
+  return window.kovaDesktop.api<{ key: string; value: string }>({
     ...capabilityScoped(profile),
     path: '/api/env/reveal',
     method: 'POST',
@@ -241,7 +241,7 @@ export function validateProviderCredential(
   apiKey?: string,
   profile?: ProfileScope
 ): Promise<{ ok: boolean; reachable: boolean; message: string; models?: string[]; resolved_base_url?: string }> {
-  return window.hermesDesktop.api<{
+  return window.kovaDesktop.api<{
     ok: boolean
     reachable: boolean
     message: string
@@ -256,7 +256,7 @@ export function validateProviderCredential(
 }
 
 export function getCustomEndpoints(profile?: null | string): Promise<CustomEndpointsResponse> {
-  return hermesApi<CustomEndpointsResponse>({
+  return kovaApi<CustomEndpointsResponse>({
     ...profileScoped(profile),
     path: '/api/providers/custom-endpoints'
   })
@@ -266,7 +266,7 @@ export function saveCustomEndpoint(
   endpoint: CustomEndpointUpdate,
   profile?: null | string
 ): Promise<CustomEndpointsResponse> {
-  return hermesApi<CustomEndpointsResponse>({
+  return kovaApi<CustomEndpointsResponse>({
     ...profileScoped(profile),
     path: '/api/providers/custom-endpoints',
     method: 'POST',
@@ -278,7 +278,7 @@ export function validateCustomEndpoint(
   endpoint: CustomEndpointUpdate,
   profile?: null | string
 ): Promise<CustomEndpointValidationResponse> {
-  return hermesApi<CustomEndpointValidationResponse>({
+  return kovaApi<CustomEndpointValidationResponse>({
     ...profileScoped(profile),
     path: '/api/providers/custom-endpoints/validate',
     method: 'POST',
@@ -290,7 +290,7 @@ export function activateCustomEndpoint(
   id: string,
   profile?: null | string
 ): Promise<{ ok: boolean; provider: string; model: string }> {
-  return hermesApi<{ ok: boolean; provider: string; model: string }>({
+  return kovaApi<{ ok: boolean; provider: string; model: string }>({
     ...profileScoped(profile),
     path: `/api/providers/custom-endpoints/${encodeURIComponent(id)}/activate`,
     method: 'POST'
@@ -298,7 +298,7 @@ export function activateCustomEndpoint(
 }
 
 export function deleteCustomEndpoint(id: string, profile?: null | string): Promise<CustomEndpointsResponse> {
-  return hermesApi<CustomEndpointsResponse>({
+  return kovaApi<CustomEndpointsResponse>({
     ...profileScoped(profile),
     path: `/api/providers/custom-endpoints/${encodeURIComponent(id)}`,
     method: 'DELETE'
@@ -306,7 +306,7 @@ export function deleteCustomEndpoint(id: string, profile?: null | string): Promi
 }
 
 export function listOAuthProviders(profile?: ProfileScope): Promise<OAuthProvidersResponse> {
-  return window.hermesDesktop.api<OAuthProvidersResponse>({
+  return window.kovaDesktop.api<OAuthProvidersResponse>({
     ...capabilityScoped(profile),
     path: '/api/providers/oauth'
   })
@@ -316,7 +316,7 @@ export function disconnectOAuthProvider(
   providerId: string,
   profile?: null | string
 ): Promise<{ ok: boolean; provider: string }> {
-  return hermesApi<{ ok: boolean; provider: string }>({
+  return kovaApi<{ ok: boolean; provider: string }>({
     ...profileScoped(profile),
     path: `/api/providers/oauth/${encodeURIComponent(providerId)}`,
     method: 'DELETE'
@@ -324,7 +324,7 @@ export function disconnectOAuthProvider(
 }
 
 export function startOAuthLogin(providerId: string, profile?: ProfileScope): Promise<OAuthStartResponse> {
-  return window.hermesDesktop.api<OAuthStartResponse>({
+  return window.kovaDesktop.api<OAuthStartResponse>({
     ...capabilityScoped(profile),
     path: `/api/providers/oauth/${encodeURIComponent(providerId)}/start`,
     method: 'POST',
@@ -338,7 +338,7 @@ export function submitOAuthCode(
   code: string,
   profile?: ProfileScope
 ): Promise<OAuthSubmitResponse> {
-  return window.hermesDesktop.api<OAuthSubmitResponse>({
+  return window.kovaDesktop.api<OAuthSubmitResponse>({
     ...capabilityScoped(profile),
     path: `/api/providers/oauth/${encodeURIComponent(providerId)}/submit`,
     method: 'POST',
@@ -351,14 +351,14 @@ export function pollOAuthSession(
   sessionId: string,
   profile?: ProfileScope
 ): Promise<OAuthPollResponse> {
-  return window.hermesDesktop.api<OAuthPollResponse>({
+  return window.kovaDesktop.api<OAuthPollResponse>({
     ...capabilityScoped(profile),
     path: `/api/providers/oauth/${encodeURIComponent(providerId)}/poll/${encodeURIComponent(sessionId)}`
   })
 }
 
 export function cancelOAuthSession(sessionId: string, profile?: ProfileScope): Promise<{ ok: boolean }> {
-  return window.hermesDesktop.api<{ ok: boolean }>({
+  return window.kovaDesktop.api<{ ok: boolean }>({
     ...capabilityScoped(profile),
     path: `/api/providers/oauth/sessions/${encodeURIComponent(sessionId)}`,
     method: 'DELETE'

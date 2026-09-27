@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 @pytest.fixture
-def fake_hermes(tmp_path, monkeypatch):
+def fake_kova(tmp_path, monkeypatch):
     """Build a two-profile Kova layout and point KOVA_HOME at
     the kova-security profile (matching the original-incident shape).
     """
@@ -55,13 +55,13 @@ def fake_hermes(tmp_path, monkeypatch):
 
 class TestWriteFileCrossProfileGuard:
 
-    def test_cross_profile_write_allowed_guard_retired(self, fake_hermes):
+    def test_cross_profile_write_allowed_guard_retired(self, fake_kova):
         """Guard RETIRED (maintainer decision): profiles are not isolated —
         the same OS user owns every profile dir and the terminal tool
         always could write them. Cross-profile writes now succeed; the
         system prompt's profile hint is the only steering."""
         from tools.file_tools import read_file_tool, write_file_tool
-        target = fake_hermes["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_kova["root"] / "skills" / "shared-skill" / "SKILL.md"
         assert not json.loads(read_file_tool(str(target))).get("error")
         result_json = write_file_tool(str(target), "cross-profile write, allowed")
         result = json.loads(result_json)
@@ -74,9 +74,9 @@ class TestWriteFileCrossProfileGuard:
 
 class TestPatchCrossProfileGuard:
 
-    def test_cross_profile_patch_bypass(self, fake_hermes):
+    def test_cross_profile_patch_bypass(self, fake_kova):
         from tools.file_tools import patch_tool
-        target = fake_hermes["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_kova["root"] / "skills" / "shared-skill" / "SKILL.md"
         result_json = patch_tool(
             mode="replace",
             path=str(target),
@@ -88,13 +88,13 @@ class TestPatchCrossProfileGuard:
         assert not result.get("error"), f"cross_profile still handler-accepted (compat): {result}"
         assert "user-directed update." in target.read_text()
 
-    def test_v4a_patch_writes_through_guard_retired(self, fake_hermes):
+    def test_v4a_patch_writes_through_guard_retired(self, fake_kova):
         """V4A patch to a cross-profile path succeeds (guard retired).
         V4A patches embed target paths in the patch body; path extraction
         for the surviving mirror guards still runs, but cross-profile
         targets are no longer refused."""
         from tools.file_tools import patch_tool
-        target = fake_hermes["root"] / "skills" / "shared-skill" / "SKILL.md"
+        target = fake_kova["root"] / "skills" / "shared-skill" / "SKILL.md"
         v4a = (
             "*** Begin Patch\n"
             f"*** Update File: {target}\n"
@@ -121,11 +121,11 @@ class TestSkillManageCrossProfileErrorUX:
         )
 
     def test_error_names_other_profile_when_skill_lives_there(
-        self, fake_hermes, monkeypatch
+        self, fake_kova, monkeypatch
     ):
         """The original incident shape — model expects 'foo' in active
         profile, but 'foo' lives in default. Error must point at default."""
-        self._make_skill_in_profile(fake_hermes["root"], "default-only-skill")
+        self._make_skill_in_profile(fake_kova["root"], "default-only-skill")
 
         # Re-import the module so SKILLS_DIR picks up KOVA_HOME (set in
         # the fixture). Skill_manager_tool computes SKILLS_DIR at import.
@@ -139,7 +139,7 @@ class TestSkillManageCrossProfileErrorUX:
         assert "default" in err
 
     def test_genuinely_missing_skill_keeps_helpful_hint(
-        self, fake_hermes, monkeypatch
+        self, fake_kova, monkeypatch
     ):
         """When no profile has the skill, error falls back to skills_list hint."""
         import importlib

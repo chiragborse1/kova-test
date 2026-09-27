@@ -2148,7 +2148,7 @@ to the public equivalent or the new module. Test monkeypatch seams are likewise 
 | `update_config` | moved-lazy | `kova_cli.web_routers.config_env` |
 | `update_config_raw` | moved-lazy | `kova_cli.web_routers.analytics` |
 | `update_cron_job` | moved-lazy | `kova_cli.web_routers.cron` |
-| `update_hermes` | moved-lazy | `kova_cli.web_routers.actions` |
+| `update_kova` | moved-lazy | `kova_cli.web_routers.actions` |
 | `update_learning_node` | moved-lazy | `kova_cli.web_routers.status` |
 | `update_memory_provider_config` | moved-lazy | `kova_cli.web_routers.memory_providers` |
 | `update_messaging_platform` | moved-lazy | `kova_cli.web_routers.messaging` |

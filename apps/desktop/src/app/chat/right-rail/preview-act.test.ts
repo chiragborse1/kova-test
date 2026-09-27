@@ -126,7 +126,7 @@ describe('actOnActivePreview (drive_preview tool)', () => {
     } finally {
       rect.mockRestore()
       document.body.replaceChildren()
-      delete (window as unknown as { __hermesActHolder?: unknown }).__hermesActHolder
+      delete (window as unknown as { __kovaActHolder?: unknown }).__kovaActHolder
     }
   })
 
@@ -479,7 +479,7 @@ describe('actOnActivePreview (drive_preview tool)', () => {
       raf.mockRestore()
       rect.mockRestore()
       document.body.replaceChildren()
-      delete (window as unknown as { __hermesActHolder?: unknown }).__hermesActHolder
+      delete (window as unknown as { __kovaActHolder?: unknown }).__kovaActHolder
     }
   })
 

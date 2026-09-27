@@ -218,7 +218,7 @@ def _update_refused(error: str, message: str, update_command: str) -> Dict[str, 
 
 
 @router.post("/api/kova/update")
-async def update_hermes():
+async def update_kova():
     """Kick off ``kova update`` in the background."""
     if is_commit_build(_server_path("PROJECT_ROOT")):
         return _update_refused("commit-build", COMMIT_BUILD_UPDATE_MESSAGE, "")

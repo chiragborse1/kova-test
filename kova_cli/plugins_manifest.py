@@ -35,7 +35,7 @@ _KNOWN_MANIFEST_FIELDS: Set[str] = {
     "pip_dependencies", "provides_browser_providers", "provides_web_providers",
     "manifest_version", "api_version", "requires_plugins", "python_dependencies", "config_schema",
     "license", "homepage", "tags", "capabilities", "emits", "listens", "kova", "depends",
-    "requires_hermes", "python_runtime",
+    "requires_kova", "python_runtime",
 }
 
 # Highest manifest schema version this Kova understands.
@@ -360,7 +360,7 @@ class PluginManifest:
     key: str = ""
     # Kova version requirement (``">=0.19"``, comma-separated clauses allowed). Unsatisfied plugins are
     # recorded with an error and skipped before import — see ``requires_kova_error``.
-    requires_hermes: str = ""
+    requires_kova: str = ""
     portable: bool = False
     skill_namespace: str = ""
     # Declared capability ids, normalized to KNOWN ids. Declaration is consent metadata, NOT a grant: live
@@ -389,7 +389,7 @@ class PluginManifest:
     listens: List[str] = field(default_factory=list)
 
 
-# ── requires_hermes version gate ─────────────────────────────────────────────
+# ── requires_kova version gate ─────────────────────────────────────────────
 _VERSION_COMPARATOR_RE = re.compile(r"^\s*(>=|<=|==|!=|>|<)\s*(.+?)\s*$")
 
 
@@ -435,8 +435,8 @@ def version_satisfies(spec: str, current: str) -> bool:
 
 
 def requires_kova_error(manifest: "PluginManifest") -> Optional[str]:
-    """Load-blocking reason when the manifest's ``requires_hermes`` rejects the running version."""
-    spec = manifest.get("requires_hermes", "") if isinstance(manifest, Mapping) else manifest.requires_hermes
+    """Load-blocking reason when the manifest's ``requires_kova`` rejects the running version."""
+    spec = manifest.get("requires_kova", "") if isinstance(manifest, Mapping) else manifest.requires_kova
     if not spec:
         return None
     current = running_kova_version()
@@ -507,7 +507,7 @@ def parse_manifest_file(
             # ``hooks:`` is the spelling the bundled manifests carried for months; external copies of it
             # must keep declaring the same thing (#108371).
             provides_hooks=data.get("provides_hooks", data.get("hooks", [])), source=source, path=str(plugin_dir),
-            kind=kind, key=key, requires_hermes=str(data.get("requires_hermes") or "").strip(),
+            kind=kind, key=key, requires_kova=str(data.get("requires_kova") or "").strip(),
             capabilities=_parse_declared_capabilities(data.get("capabilities"), name),
             **_parse_manifest_v2_fields(data, key), emits=data.get("emits") or [],
             listens=data.get("listens") or [],

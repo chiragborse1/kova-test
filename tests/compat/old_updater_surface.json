@@ -1050,7 +1050,7 @@
     "kova_cli._subprocess_compat::bounded_probe_run",
     "kova_cli._subprocess_compat::kill_process_tree",
     "kova_cli._subprocess_compat::noninteractive_git_env",
-    "kova_cli._subprocess_compat::pid_is_hermes",
+    "kova_cli._subprocess_compat::pid_is_kova",
     "kova_cli._subprocess_compat::run",
     "kova_cli._subprocess_compat::split_command_line",
     "kova_cli._subprocess_compat::windows_detach_flags_without_breakaway",

@@ -21,7 +21,7 @@ description: >-
 maintainer: Ufonik88
 tier: community
 category: memory
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/Ufonik88/EntropicMem/blob/7e02412366408234629e759a575edc31eb138721/docs/SELF_INSTALL.md
 version: "2.8.1"
 image: https://raw.githubusercontent.com/Ufonik88/EntropicMem/7e02412366408234629e759a575edc31eb138721/docs/assets/banner.png

@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).parents[2]
 
 
-def _run_hermes(home: Path, *args: str, marker: bool = False) -> subprocess.CompletedProcess[str]:
+def _run_kova(home: Path, *args: str, marker: bool = False) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env["KOVA_HOME"] = str(home)
     env["KOVA_KANBAN_HOME"] = str(home)
@@ -43,11 +43,11 @@ def test_delegated_child_kanban_cli_refusal_returns_nonzero_exit_status(tmp_path
     home = tmp_path / "kova"
     home.mkdir()
 
-    created = _run_hermes(home, "kanban", "create", "exit status probe", "--json")
+    created = _run_kova(home, "kanban", "create", "exit status probe", "--json")
     assert created.returncode == 0, created.stderr
     task_id = json.loads(created.stdout)["id"]
 
-    refused = _run_hermes(
+    refused = _run_kova(
         home,
         "kanban",
         "comment",

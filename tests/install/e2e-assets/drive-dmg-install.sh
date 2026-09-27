@@ -127,7 +127,7 @@ bootstrap_completed() {
 install_complete() {
   bootstrap_completed \
     && [ -d "$INSTALL_DIR/.git" ] \
-    && source_hermes "$INSTALL_DIR" >/dev/null 2>&1 \
+    && source_kova "$INSTALL_DIR" >/dev/null 2>&1 \
     && installed_app
 }
 # The bootstrap parks on an error screen instead of exiting when a stage

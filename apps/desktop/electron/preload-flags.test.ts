@@ -17,7 +17,7 @@ vi.mock('electron', () => ({
 
 it('publishes the feature flags answered by main before the renderer starts', async (): Promise<void> => {
   await import('./preload')
-  const registration = host.exposeInMainWorld.mock.calls.find(([name]): boolean => name === 'hermesDesktop')
+  const registration = host.exposeInMainWorld.mock.calls.find(([name]): boolean => name === 'kovaDesktop')
 
   expect(registration).toBeDefined()
   expect(registration![1]).toMatchObject({ localModelsEnabled: true, guestOnboardingEnabled: true, skipIntro: true })
@@ -26,7 +26,7 @@ it('publishes the feature flags answered by main before the renderer starts', as
 
 it('forwards full renderer error lines through the exposed bridge', async (): Promise<void> => {
   await import('./preload')
-  const registration = host.exposeInMainWorld.mock.calls.find(([name]): boolean => name === 'hermesDesktop')
+  const registration = host.exposeInMainWorld.mock.calls.find(([name]): boolean => name === 'kovaDesktop')
   const bridge = registration?.[1] as { logLine?: (line: string) => void } | undefined
   const line: string = '[renderer error:main] Prompt failed: database is locked\n    at saveSession (session.ts:12)'
 

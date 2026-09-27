@@ -221,7 +221,7 @@ class TestUpdateInvokeFallback:
 class TestHandoffSurvivesBrickAB:
     """A/B analog of the reported loop: `venv/bin/kova` execs python3."""
 
-    def _make_hermes(self, root: Path) -> Path:
+    def _make_kova(self, root: Path) -> Path:
         kova = root / "venv/bin/kova"
         _write_exe(
             kova,
@@ -233,7 +233,7 @@ class TestHandoffSurvivesBrickAB:
     def test_bricked_entrypoint_fails_before_and_boots_after_heal(self, tmp_path):
         root = make_venv(tmp_path, python=GOOD_STUB, python3=BAD_STUB,
                          marker="STORE")
-        kova = self._make_hermes(root)
+        kova = self._make_kova(root)
         # BEFORE the heal: the entrypoint dies exactly like the field logs.
         before = subprocess.run([str(kova)], capture_output=True,
                                 text=True, encoding="utf-8", errors="replace")

@@ -10,7 +10,7 @@ import { $connection } from '@/store/session'
 
 import {
   KOVA_CONFIG_KEY,
-  hermesConfigCacheWriter,
+  kovaConfigCacheWriter,
   setKovaConfigCache,
   useKovaConfigRecord
 } from './use-config-record'
@@ -102,7 +102,7 @@ it('a settings cache write after switching gateways does not replace the other g
   // Config settings memoize the writer on the profile name. Both gateways are
   // on `default`, so a captured unscoped key would let the second save replace
   // the first machine's record.
-  const writer = hermesConfigCacheWriter('default')
+  const writer = kovaConfigCacheWriter('default')
 
   useGateway('laptop')
   setKovaConfigCache(laptop)

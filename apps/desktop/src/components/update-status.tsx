@@ -198,7 +198,7 @@ export function VersionHero({
               {version.bundleSwapPending ? (
                 <Button
                   className="mt-2"
-                  onClick={() => void window.hermesDesktop?.relaunchApp?.()}
+                  onClick={() => void window.kovaDesktop?.relaunchApp?.()}
                   size="sm"
                   variant="textStrong"
                 >
@@ -211,7 +211,7 @@ export function VersionHero({
                     href={INSTALLER_URL}
                     onClick={event => {
                       event.preventDefault()
-                      void window.hermesDesktop?.openExternal?.(INSTALLER_URL)
+                      void window.kovaDesktop?.openExternal?.(INSTALLER_URL)
                     }}
                     rel="noreferrer"
                     target="_blank"
@@ -333,7 +333,7 @@ export function UpdateStatusCard({
                 href={RELEASE_NOTES_URL}
                 onClick={event => {
                   event.preventDefault()
-                  void window.hermesDesktop?.openExternal?.(RELEASE_NOTES_URL)
+                  void window.kovaDesktop?.openExternal?.(RELEASE_NOTES_URL)
                 }}
                 rel="noreferrer"
                 target="_blank"

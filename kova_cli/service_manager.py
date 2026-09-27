@@ -312,7 +312,7 @@ _KOVA_UID = 10000
 _KOVA_GID = 10000
 
 
-def _chown_hermes(path: Path) -> None:
+def _chown_kova(path: Path) -> None:
     try:
         os.chown(path, _KOVA_UID, _KOVA_GID)
     except PermissionError:
@@ -345,7 +345,7 @@ def _seed_supervise_skeleton(svc_dir: Path) -> None:
             return
         path.mkdir(parents=False, exist_ok=False)
         path.chmod(mode)
-        _chown_hermes(path)
+        _chown_kova(path)
 
     def _seed(root: Path) -> None:
         # Service-root event/ is the s6-svlisten1 subscription dir, distinct from supervise/event/.
@@ -360,7 +360,7 @@ def _seed_supervise_skeleton(svc_dir: Path) -> None:
         if not control.exists():
             os.mkfifo(control, 0o660)
             control.chmod(0o660)
-            _chown_hermes(control)
+            _chown_kova(control)
 
     _seed(svc_dir)
     log_dir = svc_dir / "log"

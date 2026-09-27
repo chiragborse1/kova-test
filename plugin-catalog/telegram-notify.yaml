@@ -13,7 +13,7 @@ description: >-
 maintainer: madpower2000
 tier: community
 category: automation
-requires_hermes: ">=0.21.5"
+requires_kova: ">=0.21.5"
 docs_url: https://github.com/madpower2000/kova-telegram-notify
 version: "1.1.2"
 platforms: []

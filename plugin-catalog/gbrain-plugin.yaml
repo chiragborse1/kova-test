@@ -5,7 +5,7 @@ description: "Community (non-official) plugin wiring GBrain (garrytan/gbrain, MI
 maintainer: kerrz2020
 tier: community
 category: memory
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/kerrz2020/kova-gbrain#readme
 version: "1.2.1"
 platforms: []

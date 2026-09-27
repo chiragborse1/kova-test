@@ -1180,7 +1180,7 @@ class TestTerminalOutputRedaction:
     @pytest.mark.parametrize(
         ("command", "output", "secret"),
         [
-            ("cat ~/.kova/config.yaml", "api_key: hermesConfigSecret123", "hermesConfigSecret123"),
+            ("cat ~/.kova/config.yaml", "api_key: kovaConfigSecret123", "kovaConfigSecret123"),
             (
                 "head ~/.kova/profiles/work/config.yaml",
                 "provider.token=profileConfigSecret456",

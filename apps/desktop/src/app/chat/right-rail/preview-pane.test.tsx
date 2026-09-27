@@ -54,7 +54,7 @@ describe('PreviewPane console state', () => {
     $connection.set({ mode: 'remote' } as never)
     vi.stubGlobal('window', {
       ...window,
-      hermesDesktop: {
+      kovaDesktop: {
         onPreviewFileChanged,
         watchPreviewFile
       }
@@ -156,8 +156,8 @@ describe('PreviewPane console state', () => {
   it('does not offer the URL-only pop-out action for a local HTML file', async () => {
     vi.stubGlobal('window', {
       ...window,
-      hermesDesktop: {
-        ...window.hermesDesktop,
+      kovaDesktop: {
+        ...window.kovaDesktop,
         openBrowserWindow: vi.fn(async () => ({ ok: true }))
       }
     })
@@ -245,10 +245,10 @@ describe('PreviewPane console state', () => {
       })
     })
 
-    const previousDesktop = window.hermesDesktop
+    const previousDesktop = window.kovaDesktop
     let captureCount = 0
 
-    window.hermesDesktop = {
+    window.kovaDesktop = {
       ...previousDesktop,
       capturePreview: vi.fn(async () => {
         captureCount += 1
@@ -303,7 +303,7 @@ describe('PreviewPane console state', () => {
     })
     await waitFor(() => expect(rendered.queryByRole('form', { name: 'Comment 2' })).toBeNull())
     expect(rendered.queryByRole('button', { name: 'Add 1 comment' })).toBeNull()
-    window.hermesDesktop = previousDesktop
+    window.kovaDesktop = previousDesktop
   })
 
   // The webview always runs on THIS machine, so a remote agent's localhost is
@@ -521,7 +521,7 @@ describe('PreviewPane console state', () => {
     $connection.set({ mode: 'local' } as never)
     vi.stubGlobal('window', {
       ...window,
-      hermesDesktop: {
+      kovaDesktop: {
         readFileDataUrl
       }
     })
@@ -584,7 +584,7 @@ describe('PreviewPane console state', () => {
     $connection.set({ mode: 'local' } as never)
     vi.stubGlobal('window', {
       ...window,
-      hermesDesktop: {
+      kovaDesktop: {
         readFileDataUrl
       }
     })
@@ -621,7 +621,7 @@ describe('PreviewPane console state', () => {
     $connection.set({ mode: 'local' } as never)
     vi.stubGlobal('window', {
       ...window,
-      hermesDesktop: {
+      kovaDesktop: {
         readFileDataUrl
       }
     })
@@ -662,7 +662,7 @@ describe('PreviewPane console state', () => {
     $connection.set({ mode: 'local' } as never)
     vi.stubGlobal('window', {
       ...window,
-      hermesDesktop: {
+      kovaDesktop: {
         api,
         readFileDataUrl
       }
@@ -728,20 +728,20 @@ describe('PreviewPane console state', () => {
 describe('PreviewPane guest external handoff', () => {
   // #112941: a guest page's `_blank` anchor (Streamlit's "Ask Google" button)
   // reaches the OS browser only through the audited `kova:openExternal` IPC.
-  const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
-  const initialKovaDesktop = desktopWindow.hermesDesktop
+  const desktopWindow = window as unknown as { kovaDesktop?: Window['kovaDesktop'] }
+  const initialKovaDesktop = desktopWindow.kovaDesktop
 
   afterEach(() => {
     if (initialKovaDesktop) {
-      desktopWindow.hermesDesktop = initialKovaDesktop
+      desktopWindow.kovaDesktop = initialKovaDesktop
     } else {
-      delete desktopWindow.hermesDesktop
+      delete desktopWindow.kovaDesktop
     }
   })
 
   async function renderWebview() {
     const openExternal = vi.fn(async () => undefined)
-    desktopWindow.hermesDesktop = { openExternal } as unknown as Window['hermesDesktop']
+    desktopWindow.kovaDesktop = { openExternal } as unknown as Window['kovaDesktop']
 
     let rendered!: ReturnType<typeof render>
 
@@ -797,13 +797,13 @@ describe('PreviewPane local HTML Render|Source toggle', () => {
     url: 'file:///work/page.html'
   }
 
-  const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
+  const desktopWindow = window as unknown as { kovaDesktop?: Window['kovaDesktop'] }
 
   beforeEach(() => {
     $connection.set({ mode: 'local' } as never)
-    desktopWindow.hermesDesktop = {
+    desktopWindow.kovaDesktop = {
       readFileText: vi.fn(async () => ({ byteSize: 22, path: target.path, text: '<!doctype html><p>x</p>' }))
-    } as unknown as Window['hermesDesktop']
+    } as unknown as Window['kovaDesktop']
     vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) =>
       window.setTimeout(() => callback(Date.now()), 0)
     )
@@ -814,7 +814,7 @@ describe('PreviewPane local HTML Render|Source toggle', () => {
     cleanup()
     closeRightRail()
     $connection.set(null)
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.kovaDesktop
     vi.unstubAllGlobals()
   })
 
@@ -864,11 +864,11 @@ describe('PreviewPane local HTML Render|Source toggle', () => {
   })
 
   it('lands on Source, not Diff, when Source is picked for a file with uncommitted changes', async () => {
-    desktopWindow.hermesDesktop = {
-      ...desktopWindow.hermesDesktop,
+    desktopWindow.kovaDesktop = {
+      ...desktopWindow.kovaDesktop,
       git: { fileDiff: vi.fn(async () => '--- a/page.html\n+++ b/page.html\n-<p>x</p>\n+<p>y</p>\n') },
       gitRoot: vi.fn(async () => '/work')
-    } as unknown as Window['hermesDesktop']
+    } as unknown as Window['kovaDesktop']
 
     openPreview(target)
 

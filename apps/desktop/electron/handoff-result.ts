@@ -36,15 +36,15 @@ export interface HandoffResult {
   branch: string
 }
 
-export function handoffResultPath(hermesHome: string): string {
-  return path.join(hermesHome, '.kova-update-result.json')
+export function handoffResultPath(kovaHome: string): string {
+  return path.join(kovaHome, '.kova-update-result.json')
 }
 
 export function readAndConsumeHandoffResult(
-  hermesHome: string,
+  kovaHome: string,
   { now = Date.now, maxAgeMs = HANDOFF_RESULT_MAX_AGE_MS }: { now?: () => number; maxAgeMs?: number } = {}
 ): HandoffResult | null {
-  const file = handoffResultPath(hermesHome)
+  const file = handoffResultPath(kovaHome)
   let raw: string
 
   try {

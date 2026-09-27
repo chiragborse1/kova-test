@@ -86,7 +86,7 @@ export function takeGuideShape(): void {
 
   // startChatOnboardingSolo declines when the guide is off; shrink only when it took.
   if ($chatOnboardingSolo.get()) {
-    window.hermesDesktop?.chatOnboarding?.soloBoot?.()
+    window.kovaDesktop?.chatOnboarding?.soloBoot?.()
   }
 }
 
@@ -200,7 +200,7 @@ export function assembleChatOnboarding(id: string, tree: LayoutNode, mode?: Inte
   if (firstPick) {
     const growth = LAYOUT_GROWTH.get(id) ?? { left: 220 }
 
-    window.hermesDesktop?.chatOnboarding?.grow({
+    window.kovaDesktop?.chatOnboarding?.grow({
       bottom: growth.bottom ?? 0,
       left: growth.left ?? 0,
       right: growth.right ?? 0,

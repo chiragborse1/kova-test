@@ -28,7 +28,7 @@ export interface CoreSandbox {
   /** Prepended to PATH: external-platform fakes (see createCoreSandbox). */
   bin: string
   home: string
-  hermesHome: string
+  kovaHome: string
   userDataDir: string
   cleanup: () => void
 }
@@ -43,9 +43,9 @@ export function createCoreSandbox(label: string): CoreSandbox {
   fs.mkdirSync(parent, { recursive: true })
   const root = fs.mkdtempSync(path.join(parent, `core-${label}-`))
   const home = path.join(root, 'home')
-  const hermesHome = path.join(home, '.kova')
+  const kovaHome = path.join(home, '.kova')
   const userDataDir = path.join(root, 'user-data')
-  fs.mkdirSync(hermesHome, { recursive: true })
+  fs.mkdirSync(kovaHome, { recursive: true })
   fs.mkdirSync(userDataDir, { recursive: true })
   fs.writeFileSync(
     path.join(userDataDir, 'window-state.json'),
@@ -67,7 +67,7 @@ export function createCoreSandbox(label: string): CoreSandbox {
     root,
     bin,
     home,
-    hermesHome,
+    kovaHome,
     userDataDir,
     cleanup: () => {
       if (!process.env.KOVA_E2E_CORE_KEEP) {
@@ -140,7 +140,7 @@ export function coreAppEnv(sandbox: CoreSandbox, extra: Record<string, string> =
     ...env,
     PATH: `${sandbox.bin}${path.delimiter}${env.PATH ?? ''}`,
     HOME: sandbox.home,
-    KOVA_HOME: sandbox.hermesHome,
+    KOVA_HOME: sandbox.kovaHome,
     KOVA_DESKTOP_USER_DATA_DIR: sandbox.userDataDir,
     KOVA_DESKTOP_IGNORE_EXISTING: '1',
     KOVA_DESKTOP_KOVA_ROOT: REPO_ROOT,
@@ -220,7 +220,7 @@ function readProc(pid: number): null | { environ: string; cmdline: string; ppid:
 
 /** Every live process whose environment carries this sandbox's KOVA_HOME (orphans included). */
 export function sandboxProcesses(sandbox: CoreSandbox): ProcInfo[] {
-  const needle = `KOVA_HOME=${sandbox.hermesHome}\0`
+  const needle = `KOVA_HOME=${sandbox.kovaHome}\0`
   const out: ProcInfo[] = []
 
   for (const entry of fs.readdirSync('/proc')) {
@@ -601,8 +601,8 @@ export interface PersistedMessage {
 export function storedSessionForMarker(sandbox: CoreSandbox, profile: string, marker: string): null | string {
   const dbPath =
     profile === 'default'
-      ? path.join(sandbox.hermesHome, 'state.db')
-      : path.join(sandbox.hermesHome, 'profiles', profile, 'state.db')
+      ? path.join(sandbox.kovaHome, 'state.db')
+      : path.join(sandbox.kovaHome, 'profiles', profile, 'state.db')
 
   if (!fs.existsSync(dbPath)) {
     return null
@@ -634,7 +634,7 @@ export async function persistedTranscript(
 
   const result = await page.evaluate(
     async ({ sessionId, query }) =>
-      (window as any).hermesDesktop.api({ path: `/api/sessions/${sessionId}/messages?order=oldest&limit=500${query}` }),
+      (window as any).kovaDesktop.api({ path: `/api/sessions/${sessionId}/messages?order=oldest&limit=500${query}` }),
     { sessionId, query }
   )
 

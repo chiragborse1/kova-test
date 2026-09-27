@@ -265,7 +265,7 @@ function logErrorToDesktopLog(error: unknown, fallback: string): void {
     const raw: string =
       error instanceof Error ? (error.stack ?? error.message) : typeof error === 'string' ? error : fallback
 
-    window.hermesDesktop?.logLine?.(`[renderer error:${label}] ${fallback}: ${raw}`)
+    window.kovaDesktop?.logLine?.(`[renderer error:${label}] ${fallback}: ${raw}`)
   } catch {
     // A missing or closed IPC bridge must not prevent the error toast.
   }

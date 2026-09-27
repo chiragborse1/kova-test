@@ -59,10 +59,10 @@ try {
 }
 # __KOVA_ACTIVATED (the sentinel repo scripts and the shebang prologue read)
 # is part of the composed env, so it is saved and restored with the rest.
-$global:_hermesKeys = @($composed.PSObject.Properties.Name)
-$global:_hermesSaved = @{}
-foreach ($key in $global:_hermesKeys) {
-    $global:_hermesSaved[$key] = [pscustomobject]@{
+$global:_kovaKeys = @($composed.PSObject.Properties.Name)
+$global:_kovaSaved = @{}
+foreach ($key in $global:_kovaKeys) {
+    $global:_kovaSaved[$key] = [pscustomobject]@{
         WasSet = (Test-Path "env:$key")
         Value = [Environment]::GetEnvironmentVariable($key)
     }
@@ -73,24 +73,24 @@ foreach ($property in $composed.PSObject.Properties) {
 # This checkout, not whichever `kova` PATH finds. A function beats PATH,
 # an alias, and the MSIX execution alias. It runs only while the shell is
 # inside this worktree.
-$global:_hermesWorktree = $repo
+$global:_kovaWorktree = $repo
 # The branch names the worktree. A checkout cannot share a branch with another.
 # git's "not a repository" is not an activation failure: the directory name is
 # the label, and the command still refuses outside this tree.
 $branch = $null
 try { $branch = & git -C $repo rev-parse --abbrev-ref HEAD 2>$null } catch { $branch = $null }
 if ($branch -and $branch -ne 'HEAD') {
-    $global:_hermesWorktreeName = $branch
+    $global:_kovaWorktreeName = $branch
 } else {
-    $global:_hermesWorktreeName = Split-Path -Leaf $repo
+    $global:_kovaWorktreeName = Split-Path -Leaf $repo
 }
 if (Test-Path function:prompt) {
-    $global:_hermesSavedPrompt = (Get-Item function:prompt).ScriptBlock
+    $global:_kovaSavedPrompt = (Get-Item function:prompt).ScriptBlock
 } else {
-    $global:_hermesSavedPrompt = $null
+    $global:_kovaSavedPrompt = $null
 }
 
-function global:_hermesWorktreeHere {
+function global:_kovaWorktreeHere {
     # Prompt calls this after every command. Keep the user's exit code.
     $saved = $global:LASTEXITCODE
     $top = $null
@@ -98,18 +98,18 @@ function global:_hermesWorktreeHere {
     $global:LASTEXITCODE = $saved
     if (-not $top) { return $false }
     $here = [System.IO.Path]::GetFullPath($top).TrimEnd('\')
-    $root = [System.IO.Path]::GetFullPath($global:_hermesWorktree).TrimEnd('\')
+    $root = [System.IO.Path]::GetFullPath($global:_kovaWorktree).TrimEnd('\')
     return $here.Equals($root, [System.StringComparison]::OrdinalIgnoreCase)
 }
 
 function global:kova {
-    if (-not (_hermesWorktreeHere)) {
+    if (-not (_kovaWorktreeHere)) {
         $here = (Get-Location).Path
-        Write-Error "kova: $here is outside $($global:_hermesWorktree); refusing (the installed command is hidden while this checkout is active)" -ErrorAction Continue
+        Write-Error "kova: $here is outside $($global:_kovaWorktree); refusing (the installed command is hidden while this checkout is active)" -ErrorAction Continue
         $global:LASTEXITCODE = 1
         return
     }
-    Push-Location -LiteralPath $global:_hermesWorktree
+    Push-Location -LiteralPath $global:_kovaWorktree
     try {
         $py = $env:PYTHON
         if (-not $py) {
@@ -129,28 +129,28 @@ function global:kova {
 
 function global:prompt {
     $prefix = ''
-    if (_hermesWorktreeHere) { $prefix = "($($global:_hermesWorktreeName)) " }
-    if ($global:_hermesSavedPrompt) {
-        return $prefix + (& $global:_hermesSavedPrompt)
+    if (_kovaWorktreeHere) { $prefix = "($($global:_kovaWorktreeName)) " }
+    if ($global:_kovaSavedPrompt) {
+        return $prefix + (& $global:_kovaSavedPrompt)
     }
     return "$prefix$($(Get-Location).Path)> "
 }
 
 function global:deactivate {
-    foreach ($key in $global:_hermesKeys) {
-        $saved = $global:_hermesSaved[$key]
+    foreach ($key in $global:_kovaKeys) {
+        $saved = $global:_kovaSaved[$key]
         if ($saved.WasSet) { Set-Item -Path "env:$key" -Value $saved.Value }
         else { Remove-Item -Path "env:$key" -ErrorAction SilentlyContinue }
     }
-    if ($global:_hermesSavedPrompt) {
-        Set-Item -Path function:prompt -Value $global:_hermesSavedPrompt
+    if ($global:_kovaSavedPrompt) {
+        Set-Item -Path function:prompt -Value $global:_kovaSavedPrompt
     } else {
         Remove-Item function:prompt -ErrorAction SilentlyContinue
     }
-    $global:_hermesKeys = $null
-    $global:_hermesSaved = $null
-    $global:_hermesWorktree = $null
-    $global:_hermesWorktreeName = $null
-    $global:_hermesSavedPrompt = $null
-    Remove-Item function:deactivate, function:kova, function:_hermesWorktreeHere -ErrorAction SilentlyContinue
+    $global:_kovaKeys = $null
+    $global:_kovaSaved = $null
+    $global:_kovaWorktree = $null
+    $global:_kovaWorktreeName = $null
+    $global:_kovaSavedPrompt = $null
+    Remove-Item function:deactivate, function:kova, function:_kovaWorktreeHere -ErrorAction SilentlyContinue
 }

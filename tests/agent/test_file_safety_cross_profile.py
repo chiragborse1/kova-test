@@ -13,7 +13,7 @@ import pytest
 
 
 @pytest.fixture
-def fake_hermes(tmp_path, monkeypatch):
+def fake_kova(tmp_path, monkeypatch):
     """Build a fake Kova layout:
 
         <tmp>/
@@ -72,13 +72,13 @@ def _set_active_home(monkeypatch, kova_home: Path):
 
 
 class TestResolveActiveProfileName:
-    def test_default_when_home_is_root(self, fake_hermes, monkeypatch):
-        _set_active_home(monkeypatch, fake_hermes["default_home"])
+    def test_default_when_home_is_root(self, fake_kova, monkeypatch):
+        _set_active_home(monkeypatch, fake_kova["default_home"])
         from agent.file_safety import _resolve_active_profile_name
         assert _resolve_active_profile_name() == "default"
 
 
-    def test_falls_back_to_default_on_resolution_failure(self, fake_hermes, monkeypatch):
+    def test_falls_back_to_default_on_resolution_failure(self, fake_kova, monkeypatch):
         """If KOVA_HOME resolution raises, return 'default' rather than crashing the tool."""
         import agent.file_safety as fs
 

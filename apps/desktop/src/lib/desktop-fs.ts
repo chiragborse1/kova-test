@@ -1,4 +1,4 @@
-import { hermesApi } from '@/api/client'
+import { kovaApi } from '@/api/client'
 import type {
   KovaConnection,
   KovaReadDirResult,
@@ -57,7 +57,7 @@ function fsPath(endpoint: string, filePath: string) {
 }
 
 function bridge() {
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   if (!desktop) {
     throw new Error('Kova Desktop bridge is unavailable')
@@ -67,7 +67,7 @@ function bridge() {
 }
 
 function remoteFsApi<T>(path: string, body?: Record<string, unknown>): Promise<T> {
-  return hermesApi<T>(
+  return kovaApi<T>(
     body ? { body, method: 'POST', path, profile: desktopFsProfile() } : { path, profile: desktopFsProfile() }
   )
 }
@@ -133,7 +133,7 @@ export async function readDesktopFileDataUrl(path: string): Promise<string> {
  */
 export async function readDesktopFileDataUrlLocalFirst(path: string): Promise<string> {
   try {
-    const local = await window.hermesDesktop?.readFileDataUrl?.(path)
+    const local = await window.kovaDesktop?.readFileDataUrl?.(path)
 
     if (local) {
       return local

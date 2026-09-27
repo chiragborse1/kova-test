@@ -150,9 +150,9 @@ export function signInFailureKind(reason: null | string | undefined): FreeTierSi
 // when the bridge isn't there (dev preview, tests) so the flow never strands in
 // a waiting state. Same contract as the onboarding store's opener.
 async function openSignInUrl(url: string) {
-  if (window.hermesDesktop?.openExternal) {
+  if (window.kovaDesktop?.openExternal) {
     try {
-      await window.hermesDesktop.openExternal(url)
+      await window.kovaDesktop.openExternal(url)
 
       return
     } catch {

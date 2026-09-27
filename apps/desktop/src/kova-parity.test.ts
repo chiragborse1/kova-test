@@ -7,7 +7,7 @@ describe('Kova REST parity helpers (hub / mcp / maintenance)', () => {
 
   beforeEach(() => {
     api = vi.fn().mockResolvedValue({})
-    Object.defineProperty(window, 'hermesDesktop', {
+    Object.defineProperty(window, 'kovaDesktop', {
       configurable: true,
       value: { api }
     })
@@ -15,7 +15,7 @@ describe('Kova REST parity helpers (hub / mcp / maintenance)', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
-    Reflect.deleteProperty(window, 'hermesDesktop')
+    Reflect.deleteProperty(window, 'kovaDesktop')
   })
 
   it('encodes hub search params', async () => {

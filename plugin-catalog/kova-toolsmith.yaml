@@ -5,7 +5,7 @@ description: Local developer tools, transformation recipes, and reviewed chat ha
 maintainer: Adolanium
 tier: community
 category: desktop
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/Adolanium/kova-toolsmith#readme
 capabilities:
   provides_tools: []

@@ -253,7 +253,7 @@ export function ContribWiring({ children }: { children: ReactNode }) {
         return
       }
 
-      void window.hermesDesktop
+      void window.kovaDesktop
         ?.recycleBackend?.(normalizeProfileKey($activeGatewayProfile.get()))
         .catch(err => notifyError(err, translateNow('notifications.errors.restartKovaFailed')))
     }
@@ -1268,7 +1268,7 @@ export function ContribWiring({ children }: { children: ReactNode }) {
   const titlebarToolsRight = titlebarToolsRightCss(nativeOverlayWidth, titlebarChrome)
   // WSLg: Electron's native overlay drifts its hit-region under RAIL, so the
   // renderer paints its own min/max/close (main decides via customWindowControls).
-  const customWindowControls = connection?.customWindowControls ?? window.hermesDesktop?.windowControls?.custom ?? false
+  const customWindowControls = connection?.customWindowControls ?? window.kovaDesktop?.windowControls?.custom ?? false
   const appActionsSide = useStore($titlebarAppActionsSide)
   const interfaceMode = useStore($interfaceMode)
   const shownTool = shownInMode(interfaceMode)

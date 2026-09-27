@@ -1,6 +1,6 @@
 import { LOCAL_CONNECTION_ID } from '@kova/shared'
 
-import { capabilityScoped, hermesApi, type OwnerScope } from '@/api/client'
+import { capabilityScoped, kovaApi, type OwnerScope } from '@/api/client'
 import type { KovaConnection } from '@/global'
 import { translateNow } from '@/i18n'
 import { desktopFsCacheKey, readDesktopFileDataUrl } from '@/lib/desktop-fs'
@@ -99,14 +99,14 @@ export async function resolveMediaDisplaySrc(path: string, owner?: OwnerScope): 
   // An explicit local owner is this device, even with a remote foreground.
   // Keep the native reader and its configured size cap; the backend preview
   // endpoint has a separate fixed limit.
-  if (owner?.connectionId === LOCAL_CONNECTION_ID && window.hermesDesktop?.readFileDataUrl) {
-    return window.hermesDesktop.readFileDataUrl(filePathFromMediaPath(path))
+  if (owner?.connectionId === LOCAL_CONNECTION_ID && window.kovaDesktop?.readFileDataUrl) {
+    return window.kovaDesktop.readFileDataUrl(filePathFromMediaPath(path))
   }
 
   // A tile can belong to a different gateway than the foreground. Pin both
   // halves at read admission rather than resolving them when the read settles.
-  if (window.hermesDesktop && (owner?.connectionId || owner?.profile)) {
-    const result = await hermesApi<string | { dataUrl?: string }>({
+  if (window.kovaDesktop && (owner?.connectionId || owner?.profile)) {
+    const result = await kovaApi<string | { dataUrl?: string }>({
       path: `/api/fs/read-data-url?path=${encodeURIComponent(filePathFromMediaPath(path))}`,
       ...(owner.connectionId ? { connectionId: owner.connectionId } : {}),
       ...(owner.profile ? { profile: owner.profile } : {})
@@ -115,15 +115,15 @@ export async function resolveMediaDisplaySrc(path: string, owner?: OwnerScope): 
     return typeof result === 'string' ? result : result.dataUrl || ''
   }
 
-  if (window.hermesDesktop && isRemoteGateway()) {
+  if (window.kovaDesktop && isRemoteGateway()) {
     return gatewayMediaDataUrl(path)
   }
 
-  if (!window.hermesDesktop?.readFileDataUrl) {
+  if (!window.kovaDesktop?.readFileDataUrl) {
     return mediaExternalUrl(path)
   }
 
-  return window.hermesDesktop.readFileDataUrl(filePathFromMediaPath(path))
+  return window.kovaDesktop.readFileDataUrl(filePathFromMediaPath(path))
 }
 
 export interface MediaImageDimensions {
@@ -208,7 +208,7 @@ export async function resolveMediaPlaybackSrc(path: string): Promise<string> {
     return path
   }
 
-  if (window.hermesDesktop && ['audio', 'video'].includes(mediaKind(path))) {
+  if (window.kovaDesktop && ['audio', 'video'].includes(mediaKind(path))) {
     return isRemoteGateway() ? mediaGatewayStreamUrl(path) : mediaStreamUrl(path)
   }
 
@@ -336,14 +336,14 @@ export async function downloadGatewayMediaFile(
     throw new Error('Missing gateway file path')
   }
 
-  if (!window.hermesDesktop?.saveGatewayFile) {
+  if (!window.kovaDesktop?.saveGatewayFile) {
     throw new Error('Desktop file download bridge is unavailable')
   }
 
   const conn = $connection.get()
   const owner = origin.owner ?? { connectionId: conn?.connectionId, profile: origin.profile ?? conn?.profile }
 
-  return window.hermesDesktop.saveGatewayFile({
+  return window.kovaDesktop.saveGatewayFile({
     ...(owner.connectionId ? { connectionId: owner.connectionId } : {}),
     path,
     ...(owner.profile ? { profile: owner.profile } : {}),

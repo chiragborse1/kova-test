@@ -89,11 +89,11 @@
           extraDependencyGroups = [ "messaging" ];
         };
 
-        tui = full.hermesTui;
-        web = full.hermesWeb;
-        desktop = full.hermesDesktop;
+        tui = full.kovaTui;
+        web = full.kovaWeb;
+        desktop = full.kovaDesktop;
 
-        update-npm-lockfile = full.hermesNpmLib.updateNpmLockfile;
+        update-npm-lockfile = full.kovaNpmLib.updateNpmLockfile;
       }
       # Every pm lockfile tool as its own installable derivation:
       # `nix build .#pm-ripgrep`, `nix build .#pm-gh`, ...

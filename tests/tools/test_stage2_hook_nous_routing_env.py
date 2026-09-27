@@ -53,7 +53,7 @@ def _run_sync(stage2_text: str, home: Path, env: dict[str, str | None]) -> subpr
         "set -eu\n"  # production runs the hook under set -eu
         f"{env_setup}"
         f'KOVA_HOME="{home}"\n'
-        'as_hermes() { "$@"; }\n'
+        'as_kova() { "$@"; }\n'
         f"{_path_guard_functions(stage2_text)}\n"
         f"{_sync_block(stage2_text)}\n"
     )

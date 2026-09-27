@@ -5,7 +5,7 @@ description: "Glasser's hosted MCP: search, inspect and run 1,000+ paid data end
 maintainer: glasser-ai
 tier: community
 category: web
-requires_hermes: ">=0.20"
+requires_kova: ">=0.20"
 docs_url: https://glasser.ai/docs/mcp-server
 version: "0.1.0"
 platforms: []

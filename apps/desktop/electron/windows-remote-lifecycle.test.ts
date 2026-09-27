@@ -23,7 +23,7 @@ const ownershipId = '0123456789abcdef0123456789abcdef'
 
 test('Windows spawn holds the update mutex across marker check and helper spawn', () => {
   const command = atomicWindowsSpawnCommand({
-    hermesHome: 'C:\\Users\\andre\\.kova',
+    kovaHome: 'C:\\Users\\andre\\.kova',
     python: 'C:\\Users\\andre\\.kova\\python.exe'
   })
 
@@ -38,15 +38,15 @@ test('Windows spawn holds the update mutex across marker check and helper spawn'
 test('Windows spawn publishes the initial ownership record before releasing the mutex', () => {
   const command = atomicWindowsSpawnCommand(
     {
-      hermesHome: 'C:\\Users\\andre\\.kova',
+      kovaHome: 'C:\\Users\\andre\\.kova',
       python: 'C:\\Users\\andre\\.kova\\python.exe'
     },
     {
       ownershipId,
       spawnNonce: '0123456789abcdef',
       profile: 'default',
-      hermesPath: 'C:\\Kova\\kova.exe',
-      hermesHome: 'C:\\Users\\andre\\.kova',
+      kovaPath: 'C:\\Kova\\kova.exe',
+      kovaHome: 'C:\\Users\\andre\\.kova',
       tokenFingerprint: 'a'.repeat(32),
       startedAt: '2026-07-14T00:00:00.000Z'
     }
@@ -95,7 +95,7 @@ test('every emitted PowerShell script keeps try blocks attached to their catch/f
     'C:\\Users\\alice\\.kova'
   )
   scripts.push(
-    decode(atomicWindowsSpawnCommand({ hermesHome: 'C:\\Users\\alice\\.kova', python: 'C:\\py\\python.exe' })),
+    decode(atomicWindowsSpawnCommand({ kovaHome: 'C:\\Users\\alice\\.kova', python: 'C:\\py\\python.exe' })),
     decode(buildWindowsInteractiveCommand('C:\\work'))
   )
 
@@ -126,8 +126,8 @@ test('Windows relaunch gate refuses live and uncertain markers before executing 
         return JSON.stringify({
           os: 'Windows',
           arch: 'AMD64',
-          hermesHome: 'C:\\Users\\alice\\.kova',
-          hermesPath: 'C:\\Kova\\kova.exe',
+          kovaHome: 'C:\\Users\\alice\\.kova',
+          kovaPath: 'C:\\Kova\\kova.exe',
           python: 'C:\\Kova\\python.exe'
         })
       }
@@ -186,8 +186,8 @@ test('Windows probe validates Kova and Python topology before selection', async 
       return JSON.stringify({
         os: 'Windows',
         arch: 'AMD64',
-        hermesHome: 'C:\\\\h',
-        hermesPath: 'C:\\\\h\\\\kova.exe',
+        kovaHome: 'C:\\\\h',
+        kovaPath: 'C:\\\\h\\\\kova.exe',
         python: 'C:\\\\h\\\\python.exe'
       })
     }),
@@ -196,7 +196,7 @@ test('Windows probe validates Kova and Python topology before selection', async 
 
   const explicitCheck = script.indexOf('if($explicit){Assert-NoReparse $explicit $false;')
   const explicitPythonCheck = script.indexOf('Assert-NoReparse $explicitPython $false')
-  const fallbackJoin = script.indexOf('Join-Path $hermesHome')
+  const fallbackJoin = script.indexOf('Join-Path $kovaHome')
   const candidatePythonCheck = script.indexOf('Assert-NoReparse $candidatePython $true')
   const candidateSelection = script.indexOf('Get-Item -LiteralPath $candidate')
   const pythonJoin = script.indexOf('$python=[IO.Path]::Combine')
@@ -228,8 +228,8 @@ test('platform detection preserves POSIX and falls back to Windows PowerShell', 
       return JSON.stringify({
         os: 'Windows',
         arch: 'ARM64',
-        hermesHome: 'C:\\h',
-        hermesPath: 'C:\\h\\kova.exe',
+        kovaHome: 'C:\\h',
+        kovaPath: 'C:\\h\\kova.exe',
         python: 'C:\\h\\python.exe'
       })
     })
@@ -290,8 +290,8 @@ test('Windows lock validation is scoped and exact', () => {
     creationTimeNs: '1784219690452757504',
     port: 1234,
     tokenFingerprint: 'a'.repeat(32),
-    hermesPath: 'C:\\h\\kova.exe',
-    hermesHome: 'C:\\h'
+    kovaPath: 'C:\\h\\kova.exe',
+    kovaHome: 'C:\\h'
   }
 
   assert.equal(validLock(lock, ownershipId), true)
@@ -316,12 +316,12 @@ test('Windows SSH reuse requires the requested remote profile to match the lock'
     port: 1234,
     profile: 'default',
     tokenFingerprint: crypto.createHash('sha256').update(token).digest('hex').slice(0, 32),
-    hermesPath: 'C:\\h\\kova.exe',
-    hermesHome: 'C:\\h'
+    kovaPath: 'C:\\h\\kova.exe',
+    kovaHome: 'C:\\h'
   }
 
   const state = { alive: true, owned: true }
-  const runtime = { hermesPath: lock.hermesPath, hermesHome: lock.hermesHome }
+  const runtime = { kovaPath: lock.kovaPath, kovaHome: lock.kovaHome }
 
   assert.equal(reusableWindowsLock(lock, state, 'default', token, runtime), true)
   assert.equal(reusableWindowsLock(lock, state, 'desktop-work', token, runtime), false)
@@ -346,8 +346,8 @@ test('managed update drain preserves a Windows owner when creation time does not
     port: 1234,
     profile: 'default',
     tokenFingerprint: 'a'.repeat(32),
-    hermesPath: 'C:\\h\\kova.exe',
-    hermesHome: 'C:\\h'
+    kovaPath: 'C:\\h\\kova.exe',
+    kovaHome: 'C:\\h'
   }
 
   const operations: string[] = []
@@ -388,8 +388,8 @@ test('managed update drain rechecks Windows PID/create-time ownership before exa
     port: 1234,
     profile: 'default',
     tokenFingerprint: 'a'.repeat(32),
-    hermesPath: 'C:\\h\\kova.exe',
-    hermesHome: 'C:\\h'
+    kovaPath: 'C:\\h\\kova.exe',
+    kovaHome: 'C:\\h'
   }
 
   const operations: string[] = []

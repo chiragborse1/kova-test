@@ -39,7 +39,7 @@ function fixture({ details = true, available = true, statusOverride } = {}) {
     }
   })
   const status = statusOverride || { supported: true, behind: available ? 1 : 0 }
-  window.hermesDesktop = { updates: { check: async () => status } }
+  window.kovaDesktop = { updates: { check: async () => status } }
   const page = {
     getByRole(role, { name }) {
       expect(role).toBe('button')

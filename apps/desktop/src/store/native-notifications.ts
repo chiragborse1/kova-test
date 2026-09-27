@@ -241,7 +241,7 @@ export function dispatchNativeNotification(input: NativeNotificationInput): bool
   const namedKey = input.sessionId ? NAMED_TITLE_KEYS[input.kind] : undefined
   const title = namedKey && input.sessionId ? withSessionLabel(namedKey, input.sessionId) : input.title
 
-  void window.hermesDesktop?.notify({
+  void window.kovaDesktop?.notify({
     actions: input.actions,
     activate: input.activate,
     body: input.body,
@@ -424,7 +424,7 @@ export async function respondToApprovalAction(sessionId: null | string, actionId
 // Settings "send test" — bypasses gating. Returns whether the OS accepted it so
 // the panel can flag a silent permission failure instead of looking dead.
 export async function sendTestNativeNotification(title: string, body: string): Promise<boolean> {
-  const bridge = window.hermesDesktop
+  const bridge = window.kovaDesktop
 
   if (!bridge?.notify) {
     return false

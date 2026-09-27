@@ -2,7 +2,7 @@ name: whatsapp-agent-platform
 repo: https://github.com/ahtishamdilawar/kova-whatsapp-agent-platform
 sha: b2443012d5cdfcae949c3aa6996702f0b650f3ab
 version: "0.1.1"
-requires_hermes: ">=0.21.4"
+requires_kova: ">=0.21.4"
 title: WhatsApp Agent Platform
 description: >-
   Community platform plugin (not affiliated with Meta or Nous Research) that connects a WhatsApp Agent

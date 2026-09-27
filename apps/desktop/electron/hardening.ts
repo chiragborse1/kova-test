@@ -445,12 +445,12 @@ function resolveRequestedPathForIpc(filePath, options: { purpose?: string; baseD
  * stored in chat history are frequently HOME-relative (e.g.
  * "AppData/Local/kova/attachments/foo.xlsx" on Windows, or
  * ".kova/attachments/foo.xlsx" elsewhere) rather than relative to cwd
- * (#115609). Pure and DI-testable: takes `home`/`hermesHome` as arguments
+ * (#115609). Pure and DI-testable: takes `home`/`kovaHome` as arguments
  * instead of reaching for `app.getPath('home')` / a module-level constant.
  * Returns an empty array for absolute paths, `file:` URLs, and empty input —
  * those already had their one real resolution attempt upstream.
  */
-function homeRelativeAttachmentCandidates(raw, home, hermesHome) {
+function homeRelativeAttachmentCandidates(raw, home, kovaHome) {
   const trimmed = String(raw || '').trim()
 
   if (!trimmed || /^file:/i.test(trimmed) || path.isAbsolute(trimmed)) {
@@ -459,7 +459,7 @@ function homeRelativeAttachmentCandidates(raw, home, hermesHome) {
 
   const normalized = trimmed.replace(/\\/g, '/')
 
-  return [path.join(home, normalized), path.join(hermesHome, 'attachments', path.basename(normalized))]
+  return [path.join(home, normalized), path.join(kovaHome, 'attachments', path.basename(normalized))]
 }
 
 async function statForIpc(fsImpl: { promises: { stat: typeof fs.promises.stat } }, resolvedPath, purpose, typeLabel) {

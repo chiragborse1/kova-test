@@ -49,7 +49,7 @@ test('Update now while a terminal update runs is refused, and the panel is truth
   const session = await startInstallSession()
   const { facts, provider, env } = session
   const target = publishUpstream('release: next upstream main', 'UPSTREAM_RELEASE.md', `next release ${RUN}\n`)
-  const marker = path.join(facts.hermesHome, '.kova-update-in-progress')
+  const marker = path.join(facts.kovaHome, '.kova-update-in-progress')
   const cliLog = path.join(facts.sandboxRoot, 'terminal-update.log')
   let cliExit: null | number = null
 

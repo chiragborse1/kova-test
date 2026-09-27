@@ -48,7 +48,7 @@ from ._routing_helpers import (
     inference_hosts,
     pool_auth,
     reject_key,
-    run_hermes,
+    run_kova,
     write_home,
 )
 
@@ -283,7 +283,7 @@ def _run_case(case: Case, root: Path) -> tuple[Fleet, list[LegOutcome]]:
         for leg in case.legs:
             marks, egress_mark = fleet.marks(), len(trap.attempts)
             kova_home = home / ".kova" / "profiles" / leg.profile if leg.profile else None
-            run = run_hermes(leg.argv, home, kova_home=kova_home, proxy=trap.url, timeout=leg.timeout)
+            run = run_kova(leg.argv, home, kova_home=kova_home, proxy=trap.url, timeout=leg.timeout)
             outcomes.append(LegOutcome(leg, run, fleet.since(marks), trap.attempts[egress_mark:]))
         return fleet, outcomes
     finally:

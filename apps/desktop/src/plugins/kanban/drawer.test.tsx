@@ -96,7 +96,7 @@ function openDrawer() {
 describe('task attachment compatibility', () => {
   it('downloads the persisted attachment through its original remote owner', async () => {
     const save = vi.fn().mockResolvedValue({ saved: true })
-    vi.stubGlobal('hermesDesktop', { saveGatewayFile: save })
+    vi.stubGlobal('kovaDesktop', { saveGatewayFile: save })
     setApiRequestConnection('remote-owner')
     setApiRequestProfile('research')
     detail = {
@@ -121,7 +121,7 @@ describe('task attachment compatibility', () => {
 
   it('keeps a local-backend attachment on this computer after switching to a remote', async () => {
     const save = vi.fn().mockResolvedValue({ saved: true })
-    vi.stubGlobal('hermesDesktop', { saveGatewayFile: save })
+    vi.stubGlobal('kovaDesktop', { saveGatewayFile: save })
     setApiRequestConnection('local')
     detail = {
       ...legacyDetail,
@@ -149,7 +149,7 @@ describe('task attachment compatibility', () => {
 
   it('reports a failed download and allows retry', async () => {
     const save = vi.fn().mockRejectedValue(new Error('File not found'))
-    vi.stubGlobal('hermesDesktop', { saveGatewayFile: save })
+    vi.stubGlobal('kovaDesktop', { saveGatewayFile: save })
     detail = { ...legacyDetail, attachments: [{ id: 1, filename: 'gone.md', stored_path: '/persisted/gone.md' }] }
     openDrawer()
     const button = await screen.findByRole('button', { name: 'Download gone.md' })
@@ -177,7 +177,7 @@ describe('task attachment compatibility', () => {
         })
     )
 
-    vi.stubGlobal('hermesDesktop', { saveGatewayFile: save })
+    vi.stubGlobal('kovaDesktop', { saveGatewayFile: save })
     detail = { ...legacyDetail, attachments: [{ id: 1, filename: 'report.md', stored_path: '/persisted/report.md' }] }
     openDrawer()
     const button = await screen.findByRole('button', { name: 'Download report.md' })

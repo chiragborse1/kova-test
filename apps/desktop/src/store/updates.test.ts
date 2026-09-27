@@ -157,12 +157,12 @@ describe('gateway version refresh', () => {
       electronVersion: '40',
       nodeVersion: '26',
       platform: 'win32',
-      hermesRoot: ''
+      kovaRoot: ''
     }
 
     const getVersion = vi.fn().mockResolvedValue(version)
-    const previous = window.hermesDesktop
-    window.hermesDesktop = { ...previous, getVersion }
+    const previous = window.kovaDesktop
+    window.kovaDesktop = { ...previous, getVersion }
 
     try {
       expect(await refreshDesktopVersion()).toEqual(version)
@@ -182,7 +182,7 @@ describe('gateway version refresh', () => {
       expect(await pending).toBeNull()
       expect($desktopVersion.get()).toBeNull()
     } finally {
-      window.hermesDesktop = previous
+      window.kovaDesktop = previous
     }
   })
 })
@@ -499,7 +499,7 @@ describe('requestActiveUpdate', () => {
     $backendUpdateStatus.set(null)
     $updateOverlayOpen.set(false)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { apply: applyClientMock, check: checkClientMock } }
+      kovaDesktop: { updates: { apply: applyClientMock, check: checkClientMock } }
     }
     vi.useRealTimers()
   })
@@ -629,7 +629,7 @@ describe('explicit update targets', () => {
     $mockConnectionsRegistry.set(null)
     setRemote(true)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { apply: applyClientMock, check: checkClientMock } }
+      kovaDesktop: { updates: { apply: applyClientMock, check: checkClientMock } }
     }
     vi.useRealTimers()
   })
@@ -726,7 +726,7 @@ describe('applyEverythingUpdate', () => {
     $updateOverlayOpen.set(false)
     $mockConnectionsRegistry.set(null)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: {
+      kovaDesktop: {
         updates: { apply: applyClientMock, check: checkClientMock },
         connections: { updateAll: updateAllMock }
       }
@@ -919,7 +919,7 @@ describe('client nudge after a backend update', () => {
     $mockConnectionsRegistry.set(null)
     setRemote(true)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { apply: applyClientMock, check: checkClientMock } }
+      kovaDesktop: { updates: { apply: applyClientMock, check: checkClientMock } }
     }
     vi.useRealTimers()
   })
@@ -982,7 +982,7 @@ describe('applyUpdates terminal state', () => {
     resetUpdateApplyState()
     $updateOverlayOpen.set(true)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { apply: applyMock } }
+      kovaDesktop: { updates: { apply: applyMock } }
     }
     vi.useRealTimers()
   })
@@ -1507,7 +1507,7 @@ describe('startUpdatePoller', () => {
     })
     $updateStatus.set(null)
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { check: checkMock, onProgress: onProgressMock } },
+      kovaDesktop: { updates: { check: checkMock, onProgress: onProgressMock } },
       addEventListener: vi.fn((event: string, handler: Function) => {
         listeners[event] = handler
       }),
@@ -1743,7 +1743,7 @@ describe('discontinued retirement notice', () => {
     $updateOverlayOpen.set(false)
     checkMock.mockImplementation(async () => discontinuedStatus())
     ;(globalThis as unknown as { window: unknown }).window = {
-      hermesDesktop: { updates: { apply: applyMock, check: checkMock } }
+      kovaDesktop: { updates: { apply: applyMock, check: checkMock } }
     }
     vi.useRealTimers()
   })

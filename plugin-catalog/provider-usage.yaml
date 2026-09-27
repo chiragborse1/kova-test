@@ -20,7 +20,7 @@ description: >-
 maintainer: PhoeniXAbhisheK
 tier: community
 category: desktop
-requires_hermes: ">=0.21.0"
+requires_kova: ">=0.21.0"
 docs_url: https://github.com/PhoeniXAbhisheK/kova-plugin-provider-usage#readme
 version: "0.1.0"
 screenshots:

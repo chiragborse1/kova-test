@@ -227,7 +227,7 @@ assert_checkout() {
   [ "$got" = "$1" ] || fail "installed checkout is $got, expected $2 ($1)"
   ok "checkout is $2 ($1)"
   local kova
-  kova="$(source_hermes "$INSTALL_DIR")" || fail "no usable installed command at $2"
+  kova="$(source_kova "$INSTALL_DIR")" || fail "no usable installed command at $2"
   python3 -B "$REPO_ROOT/tests/install/e2e-assets/source_driver.py" \
     --root "$INSTALL_DIR" --launcher "$kova" --desktop "$EXPECT_DESKTOP" \
     || fail "read-only verification failed at $2; no repair was attempted"
@@ -310,7 +310,7 @@ assert_redirect_is_transport_only() {
 # a checkout-hash assertion cannot see.
 assert_user_shims() {
   local kova user_shim
-  kova="$(source_hermes "$INSTALL_DIR")" || fail "no usable launcher after the upgrade"
+  kova="$(source_kova "$INSTALL_DIR")" || fail "no usable launcher after the upgrade"
   [ -x "$kova" ] || fail "launcher is not executable: $kova"
   user_shim="$HOME/.local/bin/kova"
   if [ -e "$user_shim" ] || [ -L "$user_shim" ]; then
@@ -357,7 +357,7 @@ desktop_checkpoint old "$OLD_SHA" "$INSTALL_METHOD"
 # Produce the user's own state through the ordinary CLI, then snapshot what
 # must survive. Done as late as possible before the update so the window
 # verify() covers contains only the upgrade.
-KOVA="$(source_hermes "$INSTALL_DIR")" || fail "no installed command to drive"
+KOVA="$(source_kova "$INSTALL_DIR")" || fail "no installed command to drive"
 source_build_env user_state_produce "$KOVA"
 user_state_before_upgrade
 assert_redirect_is_transport_only
@@ -425,7 +425,7 @@ case "$UPDATE_METHOD" in
     # `--yes` reaches the update subcommand only in later releases, and
     # argparse rejects the whole invocation when it does not exist. Ask the
     # installed kova; older ones read the prompt from stdin, so close it.
-    KOVA="$(source_hermes "$INSTALL_DIR")" || fail "no installed update command"
+    KOVA="$(source_kova "$INSTALL_DIR")" || fail "no installed update command"
     help="$(source_build_env "$KOVA" update --help 2>&1)" || fail "installed update --help failed: $help"
     build_source_update_command "$KOVA" "$help"
     rc=0
@@ -451,7 +451,7 @@ case "$UPDATE_METHOD" in
     # _electron.launch. Everything before the spawn (build, stamps, sandbox
     # fixup) runs for real in the installed code.
     EXPECT_DESKTOP=present
-    KOVA="$(source_hermes "$INSTALL_DIR")" || fail "no installed desktop command"
+    KOVA="$(source_kova "$INSTALL_DIR")" || fail "no installed desktop command"
     accept_installer_marker "$INSTALL_DIR" \
       || fail "installed source has changes other than the generated install marker"
     ASSETS="$REPO_ROOT/tests/install/e2e-assets"
@@ -525,7 +525,7 @@ collect_install_side_logs
 # its backend replace the live bundle and kills Playwright's renderer target.
 # Desktop legs must therefore drive the ordinary CLI startup even when the
 # launcher exists. No-desktop legs retain the legacy missing-launcher recovery.
-if [ "$EXPECT_DESKTOP" = "present" ] || ! source_hermes "$INSTALL_DIR" >/dev/null 2>&1; then
+if [ "$EXPECT_DESKTOP" = "present" ] || ! source_kova "$INSTALL_DIR" >/dev/null 2>&1; then
   step "next ordinary startup after the update (completes deferred source-update work)"
   STARTUP_HERMES="$(source_kova_for_startup "$INSTALL_DIR")" \
     || fail "no installed command to start after the update"

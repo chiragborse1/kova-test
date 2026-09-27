@@ -13,7 +13,7 @@ description: Persistent agent memory over a mnemostack service or a local Qdrant
 maintainer: udjin-labs
 tier: community
 category: memory
-requires_hermes: '>=0.19'
+requires_kova: '>=0.19'
 docs_url: https://github.com/udjin-labs/kova-mnemostack/blob/0cca8c4ff3b9d81babb74ba182a29363834aa7e6/README.md
 version: '1.0.2'
 capabilities:

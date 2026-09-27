@@ -10,7 +10,7 @@ description: Routes selected Kova auxiliary tasks (approval, MCP sampling, compr
 maintainer: trajectoire-ai
 tier: community
 category: models
-requires_hermes: '>=0.21'
+requires_kova: '>=0.21'
 docs_url: https://github.com/trajectoire-ai/kova-structured-aux-models#readme
 version: 0.1.0
 platforms: []

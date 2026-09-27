@@ -133,7 +133,7 @@ def test_target_worktree_owns_admission_and_fork_comparison(installation, monkey
     assert status["supported"] is True
     assert status["branch"] == "feature/gui"
     assert status["behind"] == 3
-    assert status["hermesRoot"] == str(linked)
+    assert status["kovaRoot"] == str(linked)
     assert check_for_updates(install_root=root, home=home, cache_path=cache)["supported"] is False
     assert requests == [MAIN_CHANNEL, "/repos/fixture/fork/commits/feature%2Fgui",
                         f"/repos/fixture/fork/compare/{head}...{target}"]

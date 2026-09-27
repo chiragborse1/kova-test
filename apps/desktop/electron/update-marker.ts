@@ -9,7 +9,7 @@
  * Why: if the user relaunches the desktop mid-update — the window vanished with
  * no progress and looks crashed — a fresh instance must NOT spawn its own local
  * backend. That backend re-locks the venv shim, the updater's straggler cleanup
- * (`force_kill_other_hermes`, taskkill /IM kova.exe) kills it, the launch
+ * (`force_kill_other_kova`, taskkill /IM kova.exe) kills it, the launch
  * fails with the 45s "backend didn't come up" timeout, and the user relaunches
  * into the same trap — an infinite respawn/kill loop. The desktop gates local
  * backend startup on this marker and parks until the update finishes.
@@ -29,8 +29,8 @@ import path from 'path'
 // recycled the pid onto an unrelated process), so the gate self-heals.
 export const UPDATE_MARKER_MAX_AGE_MS = 20 * 60 * 1000
 
-export function markerPath(hermesHome) {
-  return path.join(hermesHome, '.kova-update-in-progress')
+export function markerPath(kovaHome) {
+  return path.join(kovaHome, '.kova-update-in-progress')
 }
 
 // True only if a host process with this pid is currently alive. Signal 0 does
@@ -64,7 +64,7 @@ export function isPidAlive(pid, kill: typeof process.kill = process.kill.bind(pr
  * clock for tests.
  */
 export function readLiveUpdateMarker(
-  hermesHome,
+  kovaHome,
   {
     kill,
     now = Date.now,
@@ -75,7 +75,7 @@ export function readLiveUpdateMarker(
     kill?: typeof process.kill
   } = {}
 ) {
-  const file = markerPath(hermesHome)
+  const file = markerPath(kovaHome)
   let raw
 
   try {
@@ -127,7 +127,7 @@ export function readLiveUpdateMarker(
  * real PID, so `readLiveUpdateMarker` will self-heal once that PID exits.
  */
 export function writeUpdateMarker(
-  hermesHome,
+  kovaHome,
   pid,
   {
     kill,
@@ -141,9 +141,9 @@ export function writeUpdateMarker(
     startedAt?: number
   } = {}
 ) {
-  const file = markerPath(hermesHome)
+  const file = markerPath(kovaHome)
   const nowMs = now()
-  const owner = readLiveUpdateMarker(hermesHome, { kill, maxAgeMs, now: () => nowMs })
+  const owner = readLiveUpdateMarker(kovaHome, { kill, maxAgeMs, now: () => nowMs })
 
   const acquiredAt =
     typeof startedAt === 'number' && Number.isInteger(startedAt)
@@ -180,14 +180,14 @@ export function writeUpdateMarker(
  * `readLiveUpdateMarker`.
  */
 export function updateHandoffConflict(
-  hermesHome,
+  kovaHome,
   opts: {
     now?: () => number
     maxAgeMs?: number
     kill?: typeof process.kill
   } = {}
 ) {
-  const owner = readLiveUpdateMarker(hermesHome, opts)
+  const owner = readLiveUpdateMarker(kovaHome, opts)
 
   if (!owner) {
     return null

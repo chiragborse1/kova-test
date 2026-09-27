@@ -342,7 +342,7 @@ export type NewChatWorkspaceTarget = null | string | undefined
 export const getConfiguredDefaultProjectDir = (): string => configuredDefaultProjectDir
 
 export async function syncConfiguredDefaultProjectDir(shouldPublish: () => boolean = () => true): Promise<string> {
-  const settings = window.hermesDesktop?.settings?.getDefaultProjectDir
+  const settings = window.kovaDesktop?.settings?.getDefaultProjectDir
 
   if (!settings) {
     if (shouldPublish()) {
@@ -365,7 +365,7 @@ export async function syncConfiguredDefaultProjectDir(shouldPublish: () => boole
  *  packaged, optional Settings override). Clears stale install-dir paths that
  *  PR #37586's localStorage stickiness can preserve across the #37536 fix. */
 export async function ensureDefaultWorkspaceCwd(shouldPublish: () => boolean = () => true): Promise<void> {
-  const sanitize = window.hermesDesktop?.sanitizeWorkspaceCwd
+  const sanitize = window.kovaDesktop?.sanitizeWorkspaceCwd
 
   if (!sanitize || !shouldPublish()) {
     return

@@ -57,7 +57,7 @@ beforeEach(() => {
   setLaunchMode.mockResolvedValue({ ok: true, registry: { ...registry, launchMode: 'last-used' } })
   setPrimary.mockResolvedValue({ ok: true, registry: { ...registry, primary: 'homelab' } })
   test.mockResolvedValue({ ok: true, reachable: true })
-  Object.defineProperty(window, 'hermesDesktop', {
+  Object.defineProperty(window, 'kovaDesktop', {
     configurable: true,
     value: { connections: { list, remove, save, setLaunchMode, setPrimary, test } }
   })
@@ -83,8 +83,8 @@ describe('ConnectionsRegistrySection', () => {
     save.mockRejectedValueOnce(new Error('plaintext consent required'))
     const applyConnectionConfig = vi.fn()
     const select = vi.fn()
-    Object.assign(window.hermesDesktop, { applyConnectionConfig })
-    Object.assign(window.hermesDesktop.connections, { select })
+    Object.assign(window.kovaDesktop, { applyConnectionConfig })
+    Object.assign(window.kovaDesktop.connections, { select })
     render(<ConnectionsRegistrySection />)
     fireEvent.click(await screen.findByRole('button', { name: 'Edit' }))
     const values = screen.getAllByPlaceholderText('Saved — leave blank to keep')
@@ -120,7 +120,7 @@ describe('ConnectionsRegistrySection', () => {
     const pendingLogin = deferred<{ connected: boolean }>()
     const oauthLoginConnectionConfig = vi.fn().mockReturnValue(pendingLogin.promise)
 
-    Object.assign(window.hermesDesktop, {
+    Object.assign(window.kovaDesktop, {
       applyConnectionConfig,
       saveConnectionConfig,
       probeConnectionConfig,
@@ -164,7 +164,7 @@ describe('ConnectionsRegistrySection', () => {
   it('refreshes a cached roster immediately after a successful connection test', async () => {
     _resetFleetRosterForTests()
     const getAgentRoster = vi.fn().mockResolvedValue({ agents: [], sources: [] })
-    Object.assign(window.hermesDesktop!, { getAgentRoster })
+    Object.assign(window.kovaDesktop!, { getAgentRoster })
 
     try {
       await refreshFleetRoster()
@@ -203,7 +203,7 @@ describe('ConnectionsRegistrySection', () => {
 
   it('signs a hand-registered Cloud connection in and saves it as oauth (#89529)', async () => {
     const oauthLoginConnectionConfig = vi.fn().mockResolvedValue({ connected: true, ok: true })
-    Object.assign(window.hermesDesktop!, { oauthLoginConnectionConfig })
+    Object.assign(window.kovaDesktop!, { oauthLoginConnectionConfig })
 
     render(<ConnectionsRegistrySection />)
 

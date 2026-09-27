@@ -12,7 +12,7 @@ description: Hindsight long-term memory provider — knowledge graph, entity res
 maintainer: vectorize-io
 tier: community
 category: memory
-requires_hermes: ">=0.21.4"
+requires_kova: ">=0.21.4"
 docs_url: https://hindsight.vectorize.io/sdks/integrations/kova
 image: https://raw.githubusercontent.com/vectorize-io/hindsight/176f8c2de1369f569c489b831d143b78128b5535/hindsight-integrations/kova/docs/banner.png
 capabilities:

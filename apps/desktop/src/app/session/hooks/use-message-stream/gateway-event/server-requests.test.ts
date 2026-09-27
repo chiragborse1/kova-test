@@ -51,17 +51,17 @@ describe('connection request routing', () => {
 
 describe('approval request routing', () => {
   const notify = vi.fn().mockResolvedValue(true)
-  const desktopWindow = window as unknown as { hermesDesktop?: Window['hermesDesktop'] }
+  const desktopWindow = window as unknown as { kovaDesktop?: Window['kovaDesktop'] }
 
   beforeEach(() => {
     notify.mockClear()
-    desktopWindow.hermesDesktop = { notify } as unknown as Window['hermesDesktop']
+    desktopWindow.kovaDesktop = { notify } as unknown as Window['kovaDesktop']
     setSessions([{ id: 'session-a', title: 'Fix the flaky test' } as SessionInfo])
     setActiveSessionId('session-b')
   })
 
   afterEach(() => {
-    delete desktopWindow.hermesDesktop
+    delete desktopWindow.kovaDesktop
     setSessions([])
     setActiveSessionId(null)
   })

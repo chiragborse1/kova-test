@@ -46,7 +46,7 @@ function installDesktopMock(state: DesktopBootstrapState) {
     }
   }
 
-  Object.defineProperty(window, 'hermesDesktop', {
+  Object.defineProperty(window, 'kovaDesktop', {
     configurable: true,
     value: desktop
   })
@@ -88,7 +88,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.useRealTimers()
-  Reflect.deleteProperty(window, 'hermesDesktop')
+  Reflect.deleteProperty(window, 'kovaDesktop')
 })
 
 describe('DesktopInstallOverlay first-run setup', () => {

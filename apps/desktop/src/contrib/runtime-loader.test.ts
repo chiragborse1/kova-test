@@ -42,7 +42,7 @@ beforeEach(() => {
   stopPreviewFileWatch.mockResolvedValue(true)
   onPreviewFileChanged.mockReset()
   getStatus.mockClear()
-  ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = {
+  ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = {
     desktopPluginsRoot,
     onPreviewFileChanged,
     readDir,
@@ -54,7 +54,7 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 describe('scanDiskPlugins (#66899)', () => {
@@ -276,7 +276,7 @@ describe('plugin source reads (512 KiB preview-cap bug)', () => {
   }
 
   it('loads the full source via readPluginSource when the shell offers it', async () => {
-    ;(window.hermesDesktop as unknown as { readPluginSource: unknown }).readPluginSource = readPluginSource
+    ;(window.kovaDesktop as unknown as { readPluginSource: unknown }).readPluginSource = readPluginSource
     desktopPluginsRoot.mockResolvedValue('/local/.kova/desktop-plugins')
     standaloneRootWith('big')
     // The preview read would truncate this source — it must never be used.
@@ -439,7 +439,7 @@ describe('uninstallDiskPlugin (Plugins hub trash button)', () => {
     readFileText.mockResolvedValue({ text: 'export default { id: "gone", register() {} }' })
     watchPreviewFile.mockResolvedValue({ id: 'w-gone' })
     removeDesktopPlugin.mockReset()
-    ;(window.hermesDesktop as unknown as { removeDesktopPlugin: unknown }).removeDesktopPlugin = removeDesktopPlugin
+    ;(window.kovaDesktop as unknown as { removeDesktopPlugin: unknown }).removeDesktopPlugin = removeDesktopPlugin
 
     await discoverRuntimePlugins()
     expect($pluginRecords.get().gone).toMatchObject({ kind: 'disk', status: 'loaded' })

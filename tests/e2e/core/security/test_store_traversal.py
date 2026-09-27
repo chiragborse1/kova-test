@@ -229,7 +229,7 @@ def deletes(tmp_path_factory: pytest.TempPathFactory) -> Iterator[DeleteRun]:
     run = DeleteRun()
     with FakeLLMServer([], api_key=key) as srv:
         H.write_home(home / ".kova", srv.base_url, api_key=key)
-        pin = H.run_hermes(["curator", "pin", "my-skill"], home, timeout=90)
+        pin = H.run_kova(["curator", "pin", "my-skill"], home, timeout=90)
         assert pin.returncode == 0, f"kova curator pin failed: {pin.stdout}\n{pin.stderr[-2000:]}"
         b = TuiBackend(home, root / "tui.log")
         try:

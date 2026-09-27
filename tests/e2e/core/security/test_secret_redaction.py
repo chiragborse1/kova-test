@@ -26,7 +26,7 @@ import sys
 import pytest
 
 from tests.e2e.core._pending_fixes import known_gate
-from tests.e2e.core.security._helpers import BoundaryBreach, run_hermes, write_home
+from tests.e2e.core.security._helpers import BoundaryBreach, run_kova, write_home
 from tests.e2e.core.security._redact import (
     CONFIG, SCENARIOS, Ctx, Director, Secrets, World, assert_harness_sane, cell_id, cells, check, collect,
     echo_preconditions, prompt_for, seed_workspace,
@@ -51,12 +51,12 @@ def cli_world(tmp_path_factory) -> World:
         write_home(home / ".kova", llm.base_url, api_key=keys.provider, env=keys.env(), config=CONFIG)
         runs: dict[str, str] = {}
         for name, scenario in SCENARIOS.items():
-            r = run_hermes(["chat", "-q", prompt_for(name, keys), "-Q"], home, cwd=ws, timeout=150)
+            r = run_kova(["chat", "-q", prompt_for(name, keys), "-Q"], home, cwd=ws, timeout=150)
             runs[name] = f"rc={r.returncode}\n{r.stdout[-1500:]}\n{r.stderr[-2500:]}"
             if scenario.followup:
                 sid = _SESSION_RE.search(r.stdout + r.stderr)
                 assert r.returncode == 0 and sid, f"{name}: first turn failed\n{runs[name]}"
-                r2 = run_hermes(["chat", "-q", prompt_for(name, keys, followup=True), "-Q", "--resume", sid.group(1)],
+                r2 = run_kova(["chat", "-q", prompt_for(name, keys, followup=True), "-Q", "--resume", sid.group(1)],
                                 home, cwd=ws, timeout=150)
                 assert r2.returncode == 0, f"{name}: follow-up turn failed\n{r2.stdout}\n{r2.stderr}"
             elif name != "provider_error_echo":

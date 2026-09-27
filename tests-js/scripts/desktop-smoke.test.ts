@@ -234,10 +234,10 @@ test('OLD update-window source provenance carries its verified app identity to t
       command: `"${path.join(home, 'python.exe')}" -m kova_cli.main dashboard --port 0` }
 
     expect((): void => {
-      assertUpdateWindowBackendOrigin(backend, { hermesRoot: root }, root, 'source')
+      assertUpdateWindowBackendOrigin(backend, { kovaRoot: root }, root, 'source')
     }).not.toThrow()
     expect((): void => {
-      assertUpdateWindowBackendOrigin(backend, { hermesRoot: other }, root, 'source')
+      assertUpdateWindowBackendOrigin(backend, { kovaRoot: other }, root, 'source')
     }).toThrow('resolved another source installation')
   } finally { fs.rmSync(home, { recursive: true, force: true }) }
 })
@@ -321,7 +321,7 @@ test('a module launch proves its tree without leaning on the app-owned cwd', ():
 
 test('historical identity needs verified provenance and never overrides an app-reported mismatch', (): void => {
   const expected = 'a'.repeat(40)
-  const identity = { appVersion: 'historical', commit: null, hermesRoot: '/unused', platform: process.platform }
+  const identity = { appVersion: 'historical', commit: null, kovaRoot: '/unused', platform: process.platform }
   expect((): void => assertChatCommit(identity, expected)).toThrow('provenance is required')
   expect((): void => assertChatCommit(identity, expected, expected)).not.toThrow()
   expect((): void => assertChatCommit(identity, expected, 'b'.repeat(40))).toThrow('does not equal expected')

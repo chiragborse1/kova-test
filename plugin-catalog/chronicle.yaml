@@ -6,7 +6,7 @@ description: "Local-first long-term memory and memory-aware context compression 
 maintainer: indigokarasu
 tier: community
 category: memory
-requires_hermes: ">=0.19"
+requires_kova: ">=0.19"
 docs_url: https://github.com/indigokarasu/chronicle-agent-context-and-memory#readme
 image: https://raw.githubusercontent.com/indigokarasu/chronicle-agent-context-and-memory/92e4351a852117a11542210d06e8e5bfb61c3f1a/assets/readme/hero.jpg
 readme: true

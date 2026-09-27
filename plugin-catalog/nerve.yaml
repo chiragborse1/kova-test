@@ -15,7 +15,7 @@ description: >-
 maintainer: keeltrace
 tier: community
 category: automation
-requires_hermes: '>=0.21'
+requires_kova: '>=0.21'
 docs_url: https://github.com/keeltrace/kova-nerve#readme
 version: 0.3.0
 capabilities:

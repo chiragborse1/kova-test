@@ -32,7 +32,7 @@ import pytest
 
 from tests.e2e.core.delivery._fake_platform import GatewayProcess, wait_until
 from tests.e2e.core._pending_fixes import known_gate
-from tests.e2e.core.security._helpers import BoundaryBreach, run_hermes, write_home
+from tests.e2e.core.security._helpers import BoundaryBreach, run_kova, write_home
 from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall
 
 pytestmark = pytest.mark.skipif(sys.platform == "win32", reason="POSIX shell variants + process-group harness")
@@ -120,7 +120,7 @@ def _single_query_run(root: Path, single_query_mode: str) -> Dict[str, Any]:
     with FakeLLMServer(script, api_key=key) as srv:
         write_home(home / ".kova", srv.base_url, api_key=key,
                    config=MANUAL + f"  single_query_mode: {single_query_mode}\n")
-        proc = run_hermes(["chat", "-q", "run the maintenance commands", "-Q"], home, timeout=180, cwd=victims)
+        proc = run_kova(["chat", "-q", "run the maintenance commands", "-Q"], home, timeout=180, cwd=victims)
         requests = srv.main_requests()
     assert proc.returncode == 0, f"kova chat -q failed rc={proc.returncode}\n{proc.stdout[-2000:]}\n{proc.stderr[-2000:]}"
     results = _tool_results(requests)

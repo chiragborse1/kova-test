@@ -45,8 +45,8 @@ export interface HostBackendAttachDeps {
   log: (message: string) => void
 }
 
-export function spawnLedgerPath(hermesHomeRoot: string, join: (...parts: string[]) => string): string {
-  return join(hermesHomeRoot, SPAWN_LEDGER_FILENAME)
+export function spawnLedgerPath(kovaHomeRoot: string, join: (...parts: string[]) => string): string {
+  return join(kovaHomeRoot, SPAWN_LEDGER_FILENAME)
 }
 
 function wsUrlFor(baseUrl: string, token: string): string {

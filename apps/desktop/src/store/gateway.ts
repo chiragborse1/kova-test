@@ -48,7 +48,7 @@ function dialPriority(spawnPriority: SpawnPriority): { priority: 'foreground' } 
 }
 
 function dialProfile(
-  desktop: NonNullable<typeof window.hermesDesktop>,
+  desktop: NonNullable<typeof window.kovaDesktop>,
   profile: string,
   spawnPriority: SpawnPriority
 ): Promise<KovaConnection> {
@@ -476,7 +476,7 @@ async function ridesPrimaryBackend(
     return false
   }
 
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   if (!desktop?.getConnectionFor) {
     return false
@@ -693,7 +693,7 @@ function clearTimer(entry: Secondary): void {
 }
 
 async function openSecondary(entry: Secondary, spawnPriority: SpawnPriority = 'background'): Promise<void> {
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   const reauthError = g.reauthFailures.get(entry.scope)?.error
 
@@ -1080,7 +1080,7 @@ function createSecondary(profile: string, connectionId: null | string = null): S
 // poisons the active gateway with "not connected" even though the primary is
 // open right next to it.
 async function sharedPrimaryRoute(profile: string, spawnPriority: SpawnPriority = 'background'): Promise<boolean> {
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   if (!desktop) {
     return false
@@ -1266,7 +1266,7 @@ export async function requestGatewayForAgent<T>(
     return requestOnPrimaryGateway<T>(method, { ...params, profile: key }, timeoutMs, signal)
   }
 
-  if (!window.hermesDesktop?.getConnectionFor) {
+  if (!window.kovaDesktop?.getConnectionFor) {
     throw new Error('This Desktop build cannot dial registry connections. Update Kova Desktop.')
   }
 
@@ -1485,7 +1485,7 @@ export async function retainGatewayForAgent(
     return () => undefined
   }
 
-  if (!window.hermesDesktop?.getConnectionFor) {
+  if (!window.kovaDesktop?.getConnectionFor) {
     // No registry dialing in this build — nothing to hold; the request path
     // will throw its own actionable error.
     return () => undefined
@@ -1677,7 +1677,7 @@ function scopeHasTurnLease(scope: string): boolean {
 // skip for cooperative retirement (electron/pool-retire.ts), never the proof:
 // main asks the backend itself before stopping anything. From #104871.
 function publishTurnLease(scope: string, activeTurn: boolean): void {
-  void window.hermesDesktop?.touchBackend?.(scope, { activeTurn }).catch(() => undefined)
+  void window.kovaDesktop?.touchBackend?.(scope, { activeTurn }).catch(() => undefined)
 }
 
 function releaseTerminalTurnLease(scope: string, event: GatewayEvent): void {
@@ -1768,7 +1768,7 @@ export async function openGatewayForAgent(
     return
   }
 
-  if (!window.hermesDesktop?.getConnectionFor) {
+  if (!window.kovaDesktop?.getConnectionFor) {
     throw new Error('This Desktop build cannot dial registry connections. Update Kova Desktop.')
   }
 
@@ -1822,7 +1822,7 @@ export async function ensureGatewayForAgent(
     return Boolean(isOpen(g.primaryGateway) && !signal?.aborted && applyActive(g.primaryProfile, activationEpoch))
   }
 
-  if (!window.hermesDesktop?.getConnectionFor) {
+  if (!window.kovaDesktop?.getConnectionFor) {
     throw new Error('This Desktop build cannot dial registry connections. Update Kova Desktop.')
   }
 
@@ -2167,7 +2167,7 @@ export function openSecondaryCount(): number {
 // prompt turn leases the scope, so a foreground dial that must retire a
 // resident can skip leased ones early (the backend probe stays the proof).
 export function touchSecondaryGateways(): void {
-  const desktop = window.hermesDesktop
+  const desktop = window.kovaDesktop
 
   for (const entry of g.secondaries.values()) {
     if (entry.wantOpen && isOpen(entry.gateway)) {

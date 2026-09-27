@@ -225,12 +225,12 @@ test.describe('fleet profile rail — two registered gateways', () => {
     test.setTimeout(240_000)
     mock = await startMockServer()
     sandbox = createSandbox('fleet')
-    writeMockProviderConfig(sandbox.hermesHome, mock.url)
-    writeEnvFile(sandbox.hermesHome)
+    writeMockProviderConfig(sandbox.kovaHome, mock.url)
+    writeEnvFile(sandbox.kovaHome)
     // A named profile on This device too, so the active group has a square
     // beside its home pill. "research" exists on BOTH gateways on purpose: the
     // rail must keep the two apart by gateway, never by name alone.
-    seedProfiles(sandbox.hermesHome, ['research'])
+    seedProfiles(sandbox.kovaHome, ['research'])
 
     remote = await startRemoteGateway(sandbox.root, mock.url, ['inbox', 'research'])
     writeConnectionsRegistry(sandbox, remote.url)

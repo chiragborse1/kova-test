@@ -19,7 +19,7 @@ let inflight: null | Promise<void> = null
 let forcedRefresh: null | Promise<void> = null
 
 export async function refreshFleetRoster(options: { force?: boolean } = {}): Promise<void> {
-  const bridge = window.hermesDesktop?.getAgentRoster
+  const bridge = window.kovaDesktop?.getAgentRoster
 
   if (!bridge) {
     return

@@ -35,7 +35,7 @@ function managedResult(over: Partial<DesktopManagedConnectionUpdateResult> = {})
 beforeEach(() => {
   _resetManagedUpdatesForTests()
   updateManaged.mockReset().mockResolvedValue(managedResult())
-  ;(window as { hermesDesktop?: unknown }).hermesDesktop = {
+  ;(window as { kovaDesktop?: unknown }).kovaDesktop = {
     connections: { updateManaged }
   }
 })
@@ -178,7 +178,7 @@ describe('runManagedUpdate', () => {
   })
 
   it('fails closed when the bridge is missing instead of pretending to update', async () => {
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = { connections: {} }
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = { connections: {} }
 
     const state = await runManagedUpdate('linux-ssh')
 

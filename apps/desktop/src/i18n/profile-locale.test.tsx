@@ -32,7 +32,7 @@ function route(profile: string, connectionId: string | null = null) {
 afterEach(() => {
   cleanup()
   route('default')
-  Reflect.deleteProperty(window, 'hermesDesktop')
+  Reflect.deleteProperty(window, 'kovaDesktop')
   vi.restoreAllMocks()
 })
 
@@ -56,7 +56,7 @@ it('reads and persists the owning profile through A → B → A and restart', as
     return structuredClone(configs[key])
   })
 
-  window.hermesDesktop = { api } as never
+  window.kovaDesktop = { api } as never
 
   const view = render(
     <I18nProvider>
@@ -113,7 +113,7 @@ it('isolates stale reads and failed saves when the same profile moves between co
     return Promise.resolve({ display: { language: request.connectionId === 'remote' ? 'zh' : 'en' } })
   })
 
-  window.hermesDesktop = { api } as never
+  window.kovaDesktop = { api } as never
   render(
     <I18nProvider>
       <Probe />

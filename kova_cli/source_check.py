@@ -358,7 +358,7 @@ def check_for_updates(*, install_root: Path | None = None, home: Path | None = N
     embedded = (os.environ.get("KOVA_REVISION") or None) if install_root is None else None
     root = Path(install_root if install_root is not None else get_project_root()).resolve()
     home = Path(home if home is not None else get_kova_home()).resolve()
-    result = {"supported": False, "hermesRoot": str(root), "behind": None, "commits": []}
+    result = {"supported": False, "kovaRoot": str(root), "behind": None, "commits": []}
     unsupported = _unsupported_reason(read_install_stamp(root), root,
                                       explicit_root=install_root is not None, embedded=embedded)
     if unsupported:

@@ -235,11 +235,11 @@ function launchFresh() {
 
   const sandbox = fs.mkdtempSync(`${FRESH_SANDBOX_ROOT}-`)
   const userDataDir = path.join(sandbox, 'electron-user-data')
-  const hermesHome = path.join(sandbox, 'kova-home')
+  const kovaHome = path.join(sandbox, 'kova-home')
   const cwd = path.join(sandbox, 'workspace')
 
   fs.mkdirSync(userDataDir, { recursive: true })
-  fs.mkdirSync(hermesHome, { recursive: true })
+  fs.mkdirSync(kovaHome, { recursive: true })
   fs.mkdirSync(cwd, { recursive: true })
 
   // Strip every credential-shaped env var so the sandbox is actually fresh.
@@ -253,7 +253,7 @@ function launchFresh() {
   env.KOVA_DESKTOP_IGNORE_EXISTING = '1'
   env.KOVA_DESKTOP_TEST_MODE = 'fresh-install'
   env.KOVA_DESKTOP_USER_DATA_DIR = userDataDir
-  env.KOVA_HOME = hermesHome
+  env.KOVA_HOME = kovaHome
   delete env.KOVA_DESKTOP_HERMES
   delete env.KOVA_DESKTOP_KOVA_ROOT
 
@@ -268,7 +268,7 @@ function launchFresh() {
   console.log('\nFresh install sandbox:')
   console.log(`  root: ${sandbox}`)
   console.log(`  electron userData: ${userDataDir}`)
-  console.log(`  KOVA_HOME: ${hermesHome}`)
+  console.log(`  KOVA_HOME: ${kovaHome}`)
   console.log(`  cwd: ${cwd}`)
 
 }
@@ -288,9 +288,9 @@ const LIFECYCLE_KEEP = process.env.KOVA_DESKTOP_LIFECYCLE_KEEP === '1'
 
 function lifecycleEnv(sandbox) {
   const userDataDir = path.join(sandbox, 'electron-user-data')
-  const hermesHome = path.join(sandbox, 'kova-home')
+  const kovaHome = path.join(sandbox, 'kova-home')
   const cwd = path.join(sandbox, 'workspace')
-  for (const dir of [userDataDir, hermesHome, cwd]) fs.mkdirSync(dir, { recursive: true })
+  for (const dir of [userDataDir, kovaHome, cwd]) fs.mkdirSync(dir, { recursive: true })
 
   const env = {}
   for (const [key, value] of Object.entries(process.env)) {
@@ -299,7 +299,7 @@ function lifecycleEnv(sandbox) {
   }
   env.KOVA_DESKTOP_CWD = cwd
   env.KOVA_DESKTOP_USER_DATA_DIR = userDataDir
-  env.KOVA_HOME = hermesHome
+  env.KOVA_HOME = kovaHome
   env.KOVA_DESKTOP_SKIP_QUIT_CONFIRM = '1'
   // Window-title label only — NOT package identity; package identity is build-
   // time. Identity isolation here is the sandboxed userData (single-instance
@@ -314,7 +314,7 @@ function lifecycleEnv(sandbox) {
   }
   delete env.KOVA_DESKTOP_HERMES
   delete env.KOVA_DESKTOP_TEST_MODE
-  return { env, userDataDir, hermesHome, cwd }
+  return { env, userDataDir, kovaHome, cwd }
 }
 
 // Readiness, the app's own way: the Electron main logs
@@ -323,8 +323,8 @@ function lifecycleEnv(sandbox) {
 // Parse that, then confirm externally that the announced port answers
 // GET /api/health with 200 — the same anonymous health route the app probes.
 // No process enumeration, no kills.
-async function serveBackendReady(hermesHome, label, offset) {
-  const logPath = path.join(hermesHome, 'logs', 'desktop.log')
+async function serveBackendReady(kovaHome, label, offset) {
+  const logPath = path.join(kovaHome, 'logs', 'desktop.log')
   const deadline = Date.now() + LIFECYCLE_TIMEOUT_MS
   const tried = new Map()
   let announced = new Set()
@@ -378,13 +378,13 @@ function snapshotHome(root) {
 async function runLifecycle() {
   const { _electron } = await import('@playwright/test')
   const sandbox = fs.mkdtempSync(`${FRESH_SANDBOX_ROOT}-lifecycle-`)
-  const { env, userDataDir, hermesHome } = lifecycleEnv(sandbox)
+  const { env, userDataDir, kovaHome } = lifecycleEnv(sandbox)
   const sessions = []
   let preservedBefore = null
 
   try {
     for (const label of ['session-1', 'session-2']) {
-      const log = path.join(hermesHome, 'logs', 'desktop.log')
+      const log = path.join(kovaHome, 'logs', 'desktop.log')
       const offset = fs.existsSync(log) ? fs.readFileSync(log, 'utf8').length : 0
       const app = await _electron.launch({
         executablePath: APP.binary,
@@ -397,10 +397,10 @@ async function runLifecycle() {
       try {
         const window = await app.firstWindow({ timeout: LIFECYCLE_TIMEOUT_MS })
         console.log(`[${label}] first window: ${window.url()}`)
-        const ready = await serveBackendReady(hermesHome, label, offset)
+        const ready = await serveBackendReady(kovaHome, label, offset)
         console.log(`[${label}] READY: serve backend announced port ${ready.port}, /api/health → 200`)
         sessions.push({ label, appPid: proc.pid, ...ready, windowUrl: window.url() })
-        if (label === 'session-1') preservedBefore = snapshotHome(hermesHome)
+        if (label === 'session-1') preservedBefore = snapshotHome(kovaHome)
       } finally {
         // app.close() is the app's own quit path (before-quit teardown, backend
         // shutdown included) — not a kill.
@@ -414,7 +414,7 @@ async function runLifecycle() {
       }
     }
 
-    const preservedAfter = snapshotHome(hermesHome)
+    const preservedAfter = snapshotHome(kovaHome)
     const lost = preservedBefore.filter(entry => !preservedAfter.includes(entry))
     console.log('\nLifecycle summary:')
     console.log(`  sessions: ${sessions.length}`)
@@ -423,7 +423,7 @@ async function runLifecycle() {
       throw new Error(`preserved-state check FAILED — entries missing after relaunch:\n  ${lost.join('\n  ')}`)
     }
     console.log('  preservation: all pre-relaunch home entries survived the quit + relaunch cycle')
-    console.log(JSON.stringify({ sandbox, userDataDir, hermesHome, backendRoot: env.KOVA_DESKTOP_KOVA_ROOT || null, sessions, preserved: { before: preservedBefore.length, after: preservedAfter.length, lost: 0 } }, null, 2))
+    console.log(JSON.stringify({ sandbox, userDataDir, kovaHome, backendRoot: env.KOVA_DESKTOP_KOVA_ROOT || null, sessions, preserved: { before: preservedBefore.length, after: preservedAfter.length, lost: 0 } }, null, 2))
   } finally {
     if (!LIFECYCLE_KEEP) {
       fs.rmSync(sandbox, { recursive: true, force: true })

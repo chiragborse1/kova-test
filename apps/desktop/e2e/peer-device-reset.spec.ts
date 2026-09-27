@@ -69,7 +69,7 @@ function isolatedEnv(sandbox: Sandbox): Record<string, string> {
     ...env,
     HOME: sandbox.root,
     USERPROFILE: sandbox.root,
-    KOVA_HOME: sandbox.hermesHome,
+    KOVA_HOME: sandbox.kovaHome,
     KOVA_DESKTOP_PYTHON: pythonBinary(),
     PYTHONPATH: REPO_ROOT,
     // On Linux CI, DISPLAY belongs to Xvfb rather than the host Wayland seat.
@@ -161,12 +161,12 @@ const peerTest = test.extend<{ gateways: { app: ElectronApplication; source: Pag
     let desktopLog = ''
 
     try {
-      const remoteProfileHome = path.join(remote.hermesHome, 'profiles', REMOTE_PROFILE)
+      const remoteProfileHome = path.join(remote.kovaHome, 'profiles', REMOTE_PROFILE)
       fs.mkdirSync(remoteProfileHome, { recursive: true })
 
-      for (const hermesHome of [local.hermesHome, remote.hermesHome, remoteProfileHome]) {
-        writeMockProviderConfig(hermesHome, mock.url)
-        writeEnvFile(hermesHome)
+      for (const kovaHome of [local.kovaHome, remote.kovaHome, remoteProfileHome]) {
+        writeMockProviderConfig(kovaHome, mock.url)
+        writeEnvFile(kovaHome)
       }
 
       const port = await freePort()

@@ -3026,7 +3026,7 @@ def _kova_home_for_target_user(target_home_dir: str) -> str:
     """Remap the current KOVA_HOME (root's, under sudo) to the target user's equivalent:
     ``/root/.kova[/profiles/x]`` → ``/home/alice/.kova[/profiles/x]``; custom paths kept as-is."""
     current_kova_raw = os.environ.get("KOVA_HOME", "").strip()
-    current_hermes = Path(current_kova_raw).expanduser() if current_kova_raw else get_kova_home()
+    current_kova = Path(current_kova_raw).expanduser() if current_kova_raw else get_kova_home()
     # Keep paths lexical: resolving a non-existent path can bake a different KOVA_HOME into the unit.
     current_default = Path.home() / ".kova"
     target_default = Path(target_home_dir) / ".kova"
@@ -3034,7 +3034,7 @@ def _kova_home_for_target_user(target_home_dir: str) -> str:
         # Default ~/.kova or a profile/subdir of it → preserve the relative structure under the target.
         return str(target_default / current_kova.relative_to(current_default))
     except ValueError:
-        return str(current_hermes)  # Completely custom path (not under ~/.kova) — keep as-is
+        return str(current_kova)  # Completely custom path (not under ~/.kova) — keep as-is
 
 
 def _build_service_path_dirs(project_root: Path | None = None) -> list[str]:

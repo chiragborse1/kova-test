@@ -77,8 +77,8 @@ _DEFAULTS: Dict[str, Any] = {
 
 # Bundled "hey kova" model (tools/wakewords/) — the default; alias names resolve
 # to it, not to an openWakeWord built-in.
-_BUNDLED_MODEL_NAME = "hey_hermes"
-_BUNDLED_MODEL_ALIASES = frozenset({"", "hey_hermes", "hey kova", "kova"})
+_BUNDLED_MODEL_NAME = "hey_kova"
+_BUNDLED_MODEL_ALIASES = frozenset({"", "hey_kova", "hey kova", "kova"})
 
 
 def _bundled_wakeword_path() -> str:

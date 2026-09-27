@@ -16,7 +16,7 @@ export const PROFILE_SCORE_MIN_SIZE_BYTES = 1024
 export interface MigrationDeps {
   legacyActivePath: string
   /** Default profile home (`~/.kova`). Default's state.db and gateway.pid live here. */
-  hermesHome: string
+  kovaHome: string
   /** Named-profile root (`~/.kova/profiles`). Does not contain `default`. */
   profilesRoot: string
   existsSync: (path: string) => boolean
@@ -36,23 +36,23 @@ export interface MigrationDecision {
 }
 
 /**
- * Production layout: default IS `hermesHome`; named profiles are children of
+ * Production layout: default IS `kovaHome`; named profiles are children of
  * `profilesRoot`. There is no `profiles/default` directory on a normal install.
  */
-export function profileStateDbPath(name: string, hermesHome: string, profilesRoot: string): string {
-  return name === 'default' ? `${hermesHome}/state.db` : `${profilesRoot}/${name}/state.db`
+export function profileStateDbPath(name: string, kovaHome: string, profilesRoot: string): string {
+  return name === 'default' ? `${kovaHome}/state.db` : `${profilesRoot}/${name}/state.db`
 }
 
-export function profileGatewayPidPath(name: string, hermesHome: string, profilesRoot: string): string {
-  return name === 'default' ? `${hermesHome}/gateway.pid` : `${profilesRoot}/${name}/gateway.pid`
+export function profileGatewayPidPath(name: string, kovaHome: string, profilesRoot: string): string {
+  return name === 'default' ? `${kovaHome}/gateway.pid` : `${profilesRoot}/${name}/gateway.pid`
 }
 
-function resolveKovaHome(profilesRoot: string, hermesHome?: string): string {
-  if (hermesHome) {
-    return hermesHome
+function resolveKovaHome(profilesRoot: string, kovaHome?: string): string {
+  if (kovaHome) {
+    return kovaHome
   }
 
-  // Tests that predate hermesHome pass only profilesRoot.
+  // Tests that predate kovaHome pass only profilesRoot.
   for (const suffix of ['/profiles', '\\profiles']) {
     if (profilesRoot.endsWith(suffix)) {
       return profilesRoot.slice(0, -suffix.length)
@@ -101,19 +101,19 @@ export function readLegacyActiveProfile(
  * Tolerates missing/malformed pid files and stale-but-recycled PIDs (the latter is
  * the whole reason we check both liveness AND cmdline identity).
  *
- * `hermesHome` is optional so existing call sites that only pass `profilesRoot`
+ * `kovaHome` is optional so existing call sites that only pass `profilesRoot`
  * still work: it is derived as the parent of `…/profiles`.
  */
 export function findRunningGatewayProfiles(
   profilesRoot: string,
   allProfiles: string[],
-  deps: Pick<MigrationDeps, 'existsSync' | 'readFileSync' | 'isKovaProcess'> & { hermesHome?: string }
+  deps: Pick<MigrationDeps, 'existsSync' | 'readFileSync' | 'isKovaProcess'> & { kovaHome?: string }
 ): string[] {
-  const hermesHome = resolveKovaHome(profilesRoot, deps.hermesHome)
+  const kovaHome = resolveKovaHome(profilesRoot, deps.kovaHome)
   const running: string[] = []
 
   for (const name of allProfiles) {
-    const pidFile = profileGatewayPidPath(name, hermesHome, profilesRoot)
+    const pidFile = profileGatewayPidPath(name, kovaHome, profilesRoot)
 
     if (!deps.existsSync(pidFile)) {
       continue
@@ -190,7 +190,7 @@ export function decideMigration(
   let maxScore = -Infinity
 
   for (const name of candidates) {
-    const s = score(profileStateDbPath(name, deps.hermesHome, deps.profilesRoot))
+    const s = score(profileStateDbPath(name, deps.kovaHome, deps.profilesRoot))
 
     if (s == null) {
       continue

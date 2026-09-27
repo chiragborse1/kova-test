@@ -18,14 +18,14 @@ export const GATEWAY_STOP_TIMEOUT_MS = 20_000
 
 /** Best-effort all-profile drain for uninstall. The deletion lock gate follows. */
 export function stopGatewayBeforeUpdate(
-  hermesCliPath: string,
-  hermesHome: string,
+  kovaCliPath: string,
+  kovaHome: string,
   deps: StopGatewayBeforeUpdateDeps = {}
 ): boolean {
-  return runGatewayLifecycleCommand(hermesCliPath, ['gateway', 'stop', '--all'], deps)
+  return runGatewayLifecycleCommand(kovaCliPath, ['gateway', 'stop', '--all'], deps)
 }
 
-function runGatewayLifecycleCommand(hermesCliPath: string, args: string[], deps: StopGatewayBeforeUpdateDeps): boolean {
+function runGatewayLifecycleCommand(kovaCliPath: string, args: string[], deps: StopGatewayBeforeUpdateDeps): boolean {
   const isWindows = deps.isWindows ?? process.platform === 'win32'
 
   if (!isWindows) {
@@ -36,15 +36,15 @@ function runGatewayLifecycleCommand(hermesCliPath: string, args: string[], deps:
   const exec = deps.execFileSync ?? execFileSync
 
   if (deps.spy) {
-    deps.spy(hermesCliPath, args)
+    deps.spy(kovaCliPath, args)
   }
 
-  if (!existsSync(hermesCliPath)) {
+  if (!existsSync(kovaCliPath)) {
     return false
   }
 
   try {
-    exec(hermesCliPath, args, {
+    exec(kovaCliPath, args, {
       timeout: GATEWAY_STOP_TIMEOUT_MS,
       windowsHide: true,
       stdio: 'ignore',

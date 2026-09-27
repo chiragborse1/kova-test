@@ -20,12 +20,12 @@ it('moves a checkout without a source probe to main, but surfaces a broken probe
       python: process.env.KOVA_PYTHON || 'python3',
       git: 'git',
       updateRoot: root,
-      hermesHome: home
+      kovaHome: home
     })
 
   const deps: CheckoutStrategyDeps = {
     readSourceUpdate: probe,
-    hermesHome: home,
+    kovaHome: home,
     isWindows: process.platform === 'win32',
     isMac: process.platform === 'darwin',
     defaultUpdateBranch: 'main',
@@ -90,7 +90,7 @@ it.skipIf(process.platform === 'win32')(
         python: '/nonexistent/system-python',
         git: 'git',
         updateRoot: root,
-        hermesHome: home,
+        kovaHome: home,
         channel: 'stable' as const
       }
 
@@ -122,7 +122,7 @@ it.skipIf(process.platform !== 'win32')(
         python: 'nonexistent-system-python',
         git: 'git',
         updateRoot: root,
-        hermesHome: home,
+        kovaHome: home,
         channel: 'stable' as const
       }
 

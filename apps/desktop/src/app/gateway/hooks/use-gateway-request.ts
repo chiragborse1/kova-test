@@ -20,7 +20,7 @@ export function useGatewayRequest() {
   const gateway = useStore($gateway) as KovaGateway | null
   const gatewayRef = useRef<KovaGateway | null>(null)
 
-  const connectionRef = useRef<Awaited<ReturnType<NonNullable<typeof window.hermesDesktop>['getConnection']>> | null>(
+  const connectionRef = useRef<Awaited<ReturnType<NonNullable<typeof window.kovaDesktop>['getConnection']>> | null>(
     null
   )
 
@@ -62,7 +62,7 @@ export function useGatewayRequest() {
     }
 
     reconnectingRef.current = (async () => {
-      const desktop = window.hermesDesktop
+      const desktop = window.kovaDesktop
 
       if (!desktop) {
         return null

@@ -153,7 +153,7 @@ def test_url_mismatch_is_needs_fixing(tmp_path):
 FEED = """\
 version: 1.2.0
 released: 2026-09-03T00:00:00Z
-min_hermes: 0.27.0
+min_kova: 0.27.0
 artifacts:
   git: https://example/o/r
   bundle: https://example/o/r/plug-1.2.0.zip
@@ -181,7 +181,7 @@ def test_matching_tag_fetches_feed(tmp_path):
     assert fetched == ["https://feed.example/f.yml"]
     assert r.latest == "1.2.0"
     assert r.current == "1.0.0"
-    assert r.min_hermes == "0.27.0"
+    assert r.min_kova == "0.27.0"
     assert r.update_available is True  # installed 1.0.0 vs feed 1.2.0
 
 

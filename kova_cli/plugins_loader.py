@@ -427,7 +427,7 @@ class PluginLoaderMixin:
         if manifest.portable:
             self._load_portable_plugin(manifest, loaded)
             return
-        # requires_hermes gate: skip cleanly (no import, no traceback) on a version mismatch.
+        # requires_kova gate: skip cleanly (no import, no traceback) on a version mismatch.
         from kova_cli.plugins_manifest import requires_kova_error
         reason = requires_kova_error(manifest)
         if reason:

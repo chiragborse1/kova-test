@@ -103,10 +103,10 @@ describe('ThemeProvider ← local bridge fallback', () => {
   })
 
   it('uses the local bridge skin when a remote gateway has not connected yet', async () => {
-    const previous = Object.getOwnPropertyDescriptor(window, 'hermesDesktop')
+    const previous = Object.getOwnPropertyDescriptor(window, 'kovaDesktop')
 
     try {
-      Object.defineProperty(window, 'hermesDesktop', {
+      Object.defineProperty(window, 'kovaDesktop', {
         configurable: true,
         value: { localSkin: { profile: 'research', skin: bloomberg('#ff9f0a') } }
       })
@@ -131,9 +131,9 @@ describe('ThemeProvider ← local bridge fallback', () => {
       window.localStorage.clear()
 
       if (previous) {
-        Object.defineProperty(window, 'hermesDesktop', previous)
+        Object.defineProperty(window, 'kovaDesktop', previous)
       } else {
-        Reflect.deleteProperty(window, 'hermesDesktop')
+        Reflect.deleteProperty(window, 'kovaDesktop')
       }
 
       vi.resetModules()
@@ -141,11 +141,11 @@ describe('ThemeProvider ← local bridge fallback', () => {
   })
 
   it('keeps a saved desktop appearance ahead of the local bridge fallback', async () => {
-    const previous = Object.getOwnPropertyDescriptor(window, 'hermesDesktop')
+    const previous = Object.getOwnPropertyDescriptor(window, 'kovaDesktop')
 
     try {
       window.localStorage.setItem('kova-desktop-theme-v2', 'everforest')
-      Object.defineProperty(window, 'hermesDesktop', {
+      Object.defineProperty(window, 'kovaDesktop', {
         configurable: true,
         value: { localSkin: { profile: 'research', skin: bloomberg('#ff9f0a') } }
       })
@@ -159,15 +159,15 @@ describe('ThemeProvider ← local bridge fallback', () => {
         </FreshThemeProvider>
       )
 
-      expect(window.document.documentElement.dataset.hermesTheme).toBe('everforest')
+      expect(window.document.documentElement.dataset.kovaTheme).toBe('everforest')
     } finally {
       cleanup()
       window.localStorage.clear()
 
       if (previous) {
-        Object.defineProperty(window, 'hermesDesktop', previous)
+        Object.defineProperty(window, 'kovaDesktop', previous)
       } else {
-        Reflect.deleteProperty(window, 'hermesDesktop')
+        Reflect.deleteProperty(window, 'kovaDesktop')
       }
 
       vi.resetModules()

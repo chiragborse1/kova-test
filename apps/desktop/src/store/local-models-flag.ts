@@ -10,5 +10,5 @@ import { atom } from 'nanostores'
  * where local models are configured and running.
  */
 export const $localModelsEnabled = atom<boolean>(
-  typeof window !== 'undefined' && window.hermesDesktop?.localModelsEnabled === true
+  typeof window !== 'undefined' && window.kovaDesktop?.localModelsEnabled === true
 )

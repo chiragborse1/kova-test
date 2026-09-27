@@ -11,7 +11,7 @@ description: >-
 maintainer: Cody292
 tier: community
 category: general
-requires_hermes: '>=0.19'
+requires_kova: '>=0.19'
 docs_url: https://github.com/Cody292/kova-zh
 version: "0.1.1"
 platforms: []

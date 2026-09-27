@@ -7,7 +7,7 @@
 export {
   getApiRequestConnection,
   getApiRequestProfile,
-  hermesApi,
+  kovaApi,
   KovaGateway,
   profileScopeKey,
   PROMPT_SUBMIT_REQUEST_TIMEOUT_MS,

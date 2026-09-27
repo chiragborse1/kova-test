@@ -119,7 +119,7 @@ def _python_execution_target(argv: Sequence[str]) -> Optional[Tuple[str, str]]:
     return None
 
 
-def _looks_like_hermes(argv: Sequence[str]) -> bool:
+def _looks_like_kova(argv: Sequence[str]) -> bool:
     """Return whether argv identifies a supported Kova execution target."""
     if not argv:
         return False
@@ -477,7 +477,7 @@ def foreign_state_db_holders(db_path: Path) -> List[Tuple[int, str]]:
                     argv = _read_proc_argv(pid)
                     if (
                         argv is not None
-                        and _looks_like_hermes(argv)
+                        and _looks_like_kova(argv)
                         and not _argv_scoped_to_other_home(argv, db_path)
                     ):
                         cmdline = " ".join(argv)
@@ -493,7 +493,7 @@ def foreign_state_db_holders(db_path: Path) -> List[Tuple[int, str]]:
                         argv = _read_proc_argv(pid)
                         if (
                             argv is not None
-                            and _looks_like_hermes(argv)
+                            and _looks_like_kova(argv)
                             and not _argv_scoped_to_other_home(argv, db_path)
                         ):
                             holders.append(
@@ -517,7 +517,7 @@ def foreign_state_db_holders(db_path: Path) -> List[Tuple[int, str]]:
                             argv = _read_proc_argv(pid)
                             if (
                                 argv is not None
-                                and _looks_like_hermes(argv)
+                                and _looks_like_kova(argv)
                                 and not _argv_scoped_to_other_home(argv, db_path)
                             ):
                                 holders.append(

@@ -21,7 +21,7 @@ KOVA_HOME="${KOVA_HOME:-/opt/data}"
 INSTALL_DIR="/opt/kova"
 
 # Drop to kova via s6-setuidgid, but skip it when already non-root.
-as_hermes() { [ "$(id -u)" = 0 ] || { "$@"; return; }; s6-setuidgid kova "$@"; }
+as_kova() { [ "$(id -u)" = 0 ] || { "$@"; return; }; s6-setuidgid kova "$@"; }
 
 # --- Reject the unsupported `docker run --user <uid>:<gid>` start ---
 # Detect the case where the container was launched with `--user` pinned to an
@@ -368,7 +368,7 @@ fi
 # Use direct `mkdir -p` invocation (no `sh -c "..."` wrapper) so the
 # shell isn't a second interpreter — defends against $KOVA_HOME values
 # containing shell metacharacters. PR #30136 review item O2.
-as_hermes mkdir -p \
+as_kova mkdir -p \
     "$KOVA_HOME/backups" \
     "$KOVA_HOME/cron" \
     "$KOVA_HOME/sessions" \
@@ -437,7 +437,7 @@ seed_one() {
         if refuse_symlinked_path "seed" "$KOVA_HOME/$dest"; then
             :
         else
-            as_hermes cp "$INSTALL_DIR/$src" "$KOVA_HOME/$dest"
+            as_kova cp "$INSTALL_DIR/$src" "$KOVA_HOME/$dest"
         fi
     fi
 }
@@ -505,7 +505,7 @@ elif ! grep -q '^API_SERVER_KEY=..*' "$KOVA_HOME/.env" 2>/dev/null; then
             # first instant — no touch→chmod window, and no dependence on a
             # silenced chmod succeeding. The chown/chmod block below still
             # re-tightens perms every boot.
-            (umask 077 && as_hermes touch "$KOVA_HOME/.env") 2>/dev/null || true
+            (umask 077 && as_kova touch "$KOVA_HOME/.env") 2>/dev/null || true
         fi
         if [ -f "$KOVA_HOME/.env" ]; then
             _gen_key=$(head -c 32 /dev/urandom | od -An -tx1 | tr -d ' \n')
@@ -583,7 +583,7 @@ sync_routing_overrides() {
         if grep -qxF -- "$_line" "$_file" 2>/dev/null; then
             continue
         fi
-        if [ ! -f "$_file" ] && ! (umask 077 && as_hermes touch "$_file") 2>/dev/null; then
+        if [ ! -f "$_file" ] && ! (umask 077 && as_kova touch "$_file") 2>/dev/null; then
             echo "[stage2] Warning: could not create $_file — the Nous routing overrides will not reach this profile's secret scope"
             return 0
         fi
@@ -748,7 +748,7 @@ fi
 # the python binary's own bin-stub already sets up (sys.path is rooted
 # at the venv's site-packages by virtue of running .venv/bin/python).
 if [ -d "$INSTALL_DIR/skills" ]; then
-    as_hermes "$INSTALL_DIR/.venv/bin/python" "$INSTALL_DIR/tools/skills_sync.py" \
+    as_kova "$INSTALL_DIR/.venv/bin/python" "$INSTALL_DIR/tools/skills_sync.py" \
         || echo "[stage2] Warning: skills_sync.py failed; continuing"
 fi
 

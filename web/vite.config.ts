@@ -29,7 +29,7 @@ const BACKEND = process.env.KOVA_DASHBOARD_URL ?? "http://127.0.0.1:9119";
  * load and forwards its runtime bootstrap values into the dev HTML. No-op in
  * production builds.
  */
-function hermesDevToken(): Plugin {
+function kovaDevToken(): Plugin {
   const TOKEN_RE = /window\.__KOVA_SESSION_TOKEN__\s*=\s*"([^"]+)"/;
   const EMBEDDED_RE =
     /window\.__KOVA_DASHBOARD_EMBEDDED_CHAT__\s*=\s*(true|false)/;
@@ -81,7 +81,7 @@ export default defineConfig({
     react(),
     babel({ presets: [compilerPreset()] }),
     tailwindcss(),
-    hermesDevToken(),
+    kovaDevToken(),
   ],
   resolve: {
     alias: {

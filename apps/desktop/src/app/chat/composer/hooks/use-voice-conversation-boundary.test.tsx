@@ -24,7 +24,7 @@ vi.mock('@/kova', async importOriginal => ({
   ...(await importOriginal<Record<string, unknown>>()),
   getApiRequestConnection: () => null,
   getApiRequestProfile: () => null,
-  hermesApi: mocks.config,
+  kovaApi: mocks.config,
   speakText: vi.fn()
 }))
 vi.mock('@/api/client', async importOriginal => ({

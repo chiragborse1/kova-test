@@ -77,7 +77,7 @@ describe('AboutSettings', (): void => {
       electronVersion: '40',
       nodeVersion: '26',
       platform: 'linux',
-      hermesRoot: '/test/kova',
+      kovaRoot: '/test/kova',
       installId: 'test-install'
     })
     $updateStatus.set({ supported: true, behind: 0 })

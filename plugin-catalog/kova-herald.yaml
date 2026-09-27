@@ -9,7 +9,7 @@ description: "Cross-profile agent dispatch for Kova Agent — 12 tools for agent
 maintainer: bennybuoy
 tier: community
 category: tools
-requires_hermes: ">=0.21.0"
+requires_kova: ">=0.21.0"
 docs_url: https://github.com/bennybuoy/kova-herald#readme
 version: "1.1.1"
 platforms: []

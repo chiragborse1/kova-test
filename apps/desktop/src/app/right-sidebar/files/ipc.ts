@@ -199,7 +199,7 @@ async function filterIgnored(entries: KovaReadDirEntry[], rootPath: string, dirP
 }
 
 export async function readProjectDir(dirPath: string, rootPath = dirPath): Promise<KovaReadDirResult> {
-  if (!window.hermesDesktop) {
+  if (!window.kovaDesktop) {
     return { entries: [], error: 'no-bridge' }
   }
 

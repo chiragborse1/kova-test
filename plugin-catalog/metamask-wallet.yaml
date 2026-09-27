@@ -6,7 +6,7 @@ description: MetaMask Agent Wallet for Kova — chat-only setup, reads, and appr
 maintainer: akugone
 tier: community
 category: tools
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/akugone/kova-metamask-wallet
 platforms: [macos, linux]
 capabilities:

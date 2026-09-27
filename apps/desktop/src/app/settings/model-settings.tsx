@@ -36,7 +36,7 @@ import { setMainModelAssignment } from '@/store/model-assignment'
 import { notifyError, readableError } from '@/store/notifications'
 import { startManualLocalEndpoint, startManualOnboarding, startManualProviderOAuth } from '@/store/onboarding'
 
-import { hermesConfigCacheWriter, invalidateKovaConfig, useKovaConfigRecord } from '../hooks/use-config-record'
+import { kovaConfigCacheWriter, invalidateKovaConfig, useKovaConfigRecord } from '../hooks/use-config-record'
 import { useOnProfileSwitch } from '../hooks/use-on-profile-switch'
 import { PanelEmpty } from '../overlays/panel'
 
@@ -243,7 +243,7 @@ export function ModelSettings({ onMainModelChanged, scopeProfile, subpage }: Mod
   // agent.* defaults round-trip through the shared config cache (read → write
   // back the whole record), so a save here shows in the MCP/model surfaces.
   const { data: config, writeScope } = useKovaConfigRecord(scopeProfile)
-  const setConfig = useMemo(() => hermesConfigCacheWriter(scopeProfile), [scopeProfile])
+  const setConfig = useMemo(() => kovaConfigCacheWriter(scopeProfile), [scopeProfile])
   const [applying, setApplying] = useState(false)
   const [editingAuxTask, setEditingAuxTask] = useState<null | string>(null)
 
@@ -877,7 +877,7 @@ export function ModelSettings({ onMainModelChanged, scopeProfile, subpage }: Mod
     setSkewRestart(false)
 
     try {
-      await window.hermesDesktop?.recycleBackend?.(scopeProfile)
+      await window.kovaDesktop?.recycleBackend?.(scopeProfile)
       await refresh({ replaceSelection: true })
     } catch (err) {
       setCaughtError(err, m.restartFailed)

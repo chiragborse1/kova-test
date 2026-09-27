@@ -5,7 +5,7 @@ description: OpenRouter speech-to-text and text-to-speech providers for Kova Age
 maintainer: esketids
 tier: community
 category: voice
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/esketids/kova-openrouter-voice#readme
 capabilities:
   provides_tools: []

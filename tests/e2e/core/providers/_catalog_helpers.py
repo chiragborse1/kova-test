@@ -217,7 +217,7 @@ def write_home(root: Path, model: dict[str, Any], extra_cfg: dict[str, Any] | No
     return home
 
 
-def run_hermes(home: Path, cwd: Path, env_extra: dict[str, str], *args: str,
+def run_kova(home: Path, cwd: Path, env_extra: dict[str, str], *args: str,
                timeout: float = TURN_TIMEOUT) -> subprocess.CompletedProcess:
     """Run the real CLI; a child that outlives ``timeout`` is killed (rc -9, reason in stderr)."""
     with tempfile.TemporaryFile("w+", encoding="utf-8") as out, tempfile.TemporaryFile("w+", encoding="utf-8") as err:
@@ -290,7 +290,7 @@ def drive_turn(row: Row, root: Path, catalog: list[Row]) -> TurnResult:
     started = time.monotonic()
     with CatalogFake(tool_args={"path": str(project / "canary.txt")}, final_text=FINAL, routes=row.routes()) as fake:
         home = write_home(root, {"provider": row.name, "base_url": fake.origin + row.base_path})
-        proc = run_hermes(home, project, {**keys, **fake.proxy_env()}, "-z", "Read canary.txt and report.")
+        proc = run_kova(home, project, {**keys, **fake.proxy_env()}, "-z", "Read canary.txt and report.")
         requests = list(fake.requests)
         egress = fake.egress_hosts()
     return TurnResult(row=row, rc=proc.returncode, stdout=proc.stdout, stderr=proc.stderr, requests=requests,

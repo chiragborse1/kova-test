@@ -75,7 +75,7 @@ function taggedProcesses(tag: string): ProcInfo[] {
 test('boot handshake, supervised respawn, and zero orphans on quit', async () => {
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('boot')
-  writeProviderHome(sandbox.hermesHome, provider.url)
+  writeProviderHome(sandbox.kovaHome, provider.url)
   const { app, page } = await launchCoreApp(coreAppEnv(sandbox))
   const ws = recordWebSockets(page)
   let closed = false
@@ -213,7 +213,7 @@ test('boot handshake, supervised respawn, and zero orphans on quit', async () =>
 test('relaunching the same home: one backend per boot, zero after each quit, transcript intact', async () => {
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('relaunch')
-  writeProviderHome(sandbox.hermesHome, provider.url)
+  writeProviderHome(sandbox.kovaHome, provider.url)
   const session: OracleTarget = { sessionId: '', expectUserMarkers: [U(1)] }
   let live: Awaited<ReturnType<typeof launchCoreApp>> | null = null
 

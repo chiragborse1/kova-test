@@ -14,7 +14,7 @@ description: lumberroom memory provider. One durable store shared with every age
 maintainer: lumberroom
 tier: community
 category: memory
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/lumberroom/lumberroom-kova#readme
 capabilities:
   provides_tools: []

@@ -301,8 +301,8 @@ function Invoke-Pre {
   if (-not (Test-Path -LiteralPath $P.Home)) { Fail "no KOVA_HOME at $($P.Home)" }
   if (-not (Test-Path -LiteralPath (Join-Path $P.Install '.git'))) { Fail "no git checkout at $($P.Install) -- this tool covers source installs" }
   Assert-Elevated
-  $hermesExe = Resolve-KovaExe $P
-  if (-not $hermesExe) { Fail "no kova executable found under $($P.Install)\venv\Scripts or $($P.Home)\bin" }
+  $kovaExe = Resolve-KovaExe $P
+  if (-not $kovaExe) { Fail "no kova executable found under $($P.Install)\venv\Scripts or $($P.Home)\bin" }
 
   $volumes = @(Get-VolumeRoot $P.Home)
   $userDataExists = Test-Path -LiteralPath $P.UserData
@@ -342,7 +342,7 @@ function Invoke-Pre {
   $env:KOVA_HOME = $P.Home
   $prev = $ErrorActionPreference
   $ErrorActionPreference = 'Continue'
-  try { $out = & $hermesExe backup -o $zip 2>&1; $code = $LASTEXITCODE }
+  try { $out = & $kovaExe backup -o $zip 2>&1; $code = $LASTEXITCODE }
   finally { $ErrorActionPreference = $prev; $env:KOVA_HOME = $prevHome }
   $elapsed = [int]((Get-Date) - $started).TotalSeconds
   if ($code -eq 1 -and (Test-Path -LiteralPath $zip)) {

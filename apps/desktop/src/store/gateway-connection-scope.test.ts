@@ -56,7 +56,7 @@ const {
 const { setApiRequestConnection } = await import('@/kova')
 
 function installDesktop(): void {
-  ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = {
+  ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = {
     getConnection: vi.fn(async () => ({
       authMode: 'token',
       profile: 'default',
@@ -88,7 +88,7 @@ beforeEach(() => {
 afterEach(() => {
   closeSecondaryGateways()
   vi.clearAllMocks()
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 describe('primary gateway registry scope', () => {

@@ -838,7 +838,7 @@ const ErrorRecoveryActions: FC = () => {
   // the user needs to see to free space after a disk-full failure).
   const openLocalDir = useCallback(async (resolve: (logsRoot: string) => string, failedMessage: string) => {
     try {
-      const root = await window.hermesDesktop?.logsRoot?.()
+      const root = await window.kovaDesktop?.logsRoot?.()
 
       if (!root) {
         notifyError(new Error('logs root unavailable'), failedMessage)
@@ -846,7 +846,7 @@ const ErrorRecoveryActions: FC = () => {
         return
       }
 
-      const result = await window.hermesDesktop?.openDir?.(resolve(root))
+      const result = await window.kovaDesktop?.openDir?.(resolve(root))
 
       if (result && !result.ok) {
         notifyError(new Error(result.error || 'open failed'), failedMessage)
@@ -886,7 +886,7 @@ const ErrorRecoveryActions: FC = () => {
     setModelPickerOpen(true)
   }, [])
 
-  const localFolders = Boolean(window.hermesDesktop?.logsRoot)
+  const localFolders = Boolean(window.kovaDesktop?.logsRoot)
   // The provider's own reset moment (429 Retry-After / resets_at), so the user knows WHEN
   // Retry will work instead of guessing (#98852). Informational only: no automatic retry.
   const limitReset = formatLimitReset(surface?.resetsAt)

@@ -47,7 +47,7 @@
       effectivePackage = common.effectivePackage cfg;
       kova-agent = inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
-      hermesHome = "${cfg.stateDir}/.kova";
+      kovaHome = "${cfg.stateDir}/.kova";
 
       # In container mode, the agent uses the mount path in the container.
       effectiveWorkDir = if cfg.container.enable then containerWorkDir else cfg.workingDirectory;
@@ -236,7 +236,7 @@
       commonUnitEnvironment = {
         HOME = cfg.stateDir;
       }
-      // common.processEnvironment { inherit hermesHome; };
+      // common.processEnvironment { inherit kovaHome; };
 
       unitPath = common.processPath { inherit pkgs cfg; };
 
@@ -376,7 +376,7 @@
           # gateway service instead of creating a separate ~/.kova/.
           (lib.mkIf cfg.addToSystemPackages {
             environment.systemPackages = [ effectivePackage ];
-            environment.variables.KOVA_HOME = hermesHome;
+            environment.variables.KOVA_HOME = kovaHome;
           })
 
           # ── Host user group membership ─────────────────────────────────────
@@ -443,11 +443,11 @@
           {
             systemd.tmpfiles.rules = [
               "d ${cfg.stateDir}                2770 ${cfg.user} ${cfg.group} - -"
-              "d ${hermesHome}                  2770 ${cfg.user} ${cfg.group} - -"
+              "d ${kovaHome}                  2770 ${cfg.user} ${cfg.group} - -"
               "d ${cfg.stateDir}/home           0750 ${cfg.user} ${cfg.group} - -"
               "d ${cfg.workingDirectory}        2770 ${cfg.user} ${cfg.group} - -"
             ]
-            ++ map (d: "d ${hermesHome}/${d} 2770 ${cfg.user} ${cfg.group} - -") common.stateSubdirs;
+            ++ map (d: "d ${kovaHome}/${d} 2770 ${cfg.user} ${cfg.group} - -") common.stateSubdirs;
           }
 
           # ── Activation: link config + auth + documents ────────────────────
@@ -459,29 +459,29 @@
                 )
                 ''
                   # Ensure directories exist (activation runs before tmpfiles)
-                  mkdir -p ${hermesHome}
+                  mkdir -p ${kovaHome}
                   mkdir -p ${cfg.stateDir}/home
                   mkdir -p ${cfg.workingDirectory}
-                  chown ${cfg.user}:${cfg.group} ${cfg.stateDir} ${hermesHome} ${cfg.stateDir}/home ${cfg.workingDirectory}
-                  chmod 2770 ${cfg.stateDir} ${hermesHome} ${cfg.workingDirectory}
+                  chown ${cfg.user}:${cfg.group} ${cfg.stateDir} ${kovaHome} ${cfg.stateDir}/home ${cfg.workingDirectory}
+                  chmod 2770 ${cfg.stateDir} ${kovaHome} ${cfg.workingDirectory}
                   chmod 0750 ${cfg.stateDir}/home
 
                   # Create subdirs, set setgid + group-writable, migrate existing files.
                   # Nix-managed .env/.managed stay 0640/0644; config.yaml uses
                   # configYamlMode (0660 under addToSystemPackages, else 0640).
-                  find ${hermesHome} -maxdepth 1 \
+                  find ${kovaHome} -maxdepth 1 \
                     \( -name "*.db" -o -name "*.db-wal" -o -name "*.db-shm" -o -name "SOUL.md" \) \
                     -exec chmod g+rw {} + 2>/dev/null || true
                   for _subdir in ${lib.concatStringsSep " " common.stateSubdirs}; do
-                    mkdir -p "${hermesHome}/$_subdir"
-                    chown ${cfg.user}:${cfg.group} "${hermesHome}/$_subdir"
-                    chmod 2770 "${hermesHome}/$_subdir"
-                    find "${hermesHome}/$_subdir" -type f \
+                    mkdir -p "${kovaHome}/$_subdir"
+                    chown ${cfg.user}:${cfg.group} "${kovaHome}/$_subdir"
+                    chmod 2770 "${kovaHome}/$_subdir"
+                    find "${kovaHome}/$_subdir" -type f \
                       -exec chmod g+rw {} + 2>/dev/null || true
                   done
 
                   ${common.mkStateScript {
-                    inherit pkgs cfg hermesHome;
+                    inherit pkgs cfg kovaHome;
                     workingDirectory = cfg.workingDirectory;
                     configWorkingDirectory = effectiveWorkDir;
                     owner = "${cfg.user}:${cfg.group}";
@@ -495,7 +495,7 @@
                     };
                   }}
 
-                  chown -h ${cfg.user}:${cfg.group} ${hermesHome}/plugins/nix-managed-* 2>/dev/null || true
+                  chown -h ${cfg.user}:${cfg.group} ${kovaHome}/plugins/nix-managed-* 2>/dev/null || true
 
                   # Container mode metadata — tells the host CLI to exec into the
                   # container instead of running locally. Removed when container mode
@@ -503,11 +503,11 @@
                   ${
                     if cfg.container.enable then
                       ''
-                        install -o ${cfg.user} -g ${cfg.group} -m 0644 ${containerModeFile} ${hermesHome}/.container-mode
+                        install -o ${cfg.user} -g ${cfg.group} -m 0644 ${containerModeFile} ${kovaHome}/.container-mode
                       ''
                     else
                       ''
-                        rm -f ${hermesHome}/.container-mode
+                        rm -f ${kovaHome}/.container-mode
 
                         # Remove symlink bridge for hostUsers
                         ${lib.concatStringsSep "\n" (
@@ -518,7 +518,7 @@
                               symlinkPath = "${userHome}/.kova";
                             in
                             ''
-                              if [ -L "${symlinkPath}" ] && [ "$(readlink "${symlinkPath}")" = "${hermesHome}" ]; then
+                              if [ -L "${symlinkPath}" ] && [ "$(readlink "${symlinkPath}")" = "${kovaHome}" ]; then
                                 rm -f "${symlinkPath}"
                                 echo "kova-agent: removed symlink ${symlinkPath}"
                               fi
@@ -550,7 +550,7 @@
                           fi
                           # For everything else (existing symlink, doesn't exist, etc.)
                           # ln -sfn handles it: replaces symlinks, creates new ones.
-                          ln -sfn "${hermesHome}" "${symlinkPath}"
+                          ln -sfn "${kovaHome}" "${symlinkPath}"
                           chown -h ${user}:${cfg.group} "${symlinkPath}"
                         ''
                       ) cfg.container.hostUsers

@@ -20,7 +20,7 @@ vi.mock('electron', () => electron)
 test('the native preload exposes routed peer opening and default preference events with unsubscribe', async () => {
   await import('./preload')
   const [name, bridge] = electron.contextBridge.exposeInMainWorld.mock.calls[0]
-  assert.equal(name, 'hermesDesktop')
+  assert.equal(name, 'kovaDesktop')
   const route = { connectionId: 'remote-work', profile: 'work' }
 
   await bridge.openWindow(route)

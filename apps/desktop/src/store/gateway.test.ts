@@ -82,7 +82,7 @@ const {
 } = await import('./gateway')
 
 function installDesktop(stub: Record<string, unknown>): void {
-  ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = stub
+  ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = stub
 }
 
 beforeEach(() => {
@@ -96,7 +96,7 @@ afterEach(() => {
   vi.clearAllMocks()
   vi.restoreAllMocks()
   vi.useRealTimers()
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 describe('ensureGatewayForProfile — secondary connect failure surfaces (#81094)', () => {

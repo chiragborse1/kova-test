@@ -15,7 +15,7 @@ description: >-
 maintainer: sxuff
 tier: community
 category: tools
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/sxuff/kova-town#readme
 version: "0.3.0"
 image: https://raw.githubusercontent.com/sxuff/kova-town/f3b89401fafde0cd3ebaaccf01ea9e658bc66ff9/artifacts/catalog-banner.png

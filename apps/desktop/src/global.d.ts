@@ -24,7 +24,7 @@ export type DesktopMachineProfile = MachineProfile
 
 declare global {
   interface Window {
-    hermesDesktop: {
+    kovaDesktop: {
       // Resolve a backend connection. Omit `profile` (or pass the primary) for
       // the window's backend; pass a named profile to lazily spawn/reuse that
       // profile's backend from the pool.
@@ -706,7 +706,7 @@ export interface DesktopVersionInfo {
   electronVersion: string
   nodeVersion: string
   platform: string
-  hermesRoot: string
+  kovaRoot: string
   /** True when the running renderer bundle predates desktop changes in the
    *  installed source tree (runtime updated, app binary not rebuilt/swapped). */
   bundleOutOfSync?: boolean
@@ -739,7 +739,7 @@ export interface DesktopVersionInfo {
   /** What this build carries (embedded / light / external) and where an
    *  external backend resolved from. Bundled artifacts run their payload; light
    *  artifacts have no runtime and only reach remote backends. */
-  hermesRuntime?: { type: 'embedded' } | { type: 'light' } | { type: 'external'; source?: RuntimeSource }
+  kovaRuntime?: { type: 'embedded' } | { type: 'light' } | { type: 'external'; source?: RuntimeSource }
   /** True when the bundle on disk is newer than the running process — a plain
    *  app restart (no rebuild, no installer) is enough to load it. */
   bundleSwapPending?: boolean
@@ -851,7 +851,7 @@ export interface DesktopUpdateApplyResult {
    *  `kova update` themselves. `command` is the exact line to run. */
   manual?: boolean
   command?: string
-  hermesRoot?: string
+  kovaRoot?: string
   /** True when the backend was updated but the GUI couldn't be relaunched in
    *  place (AppImage / dev run): the new version loads on next launch. */
   backendUpdated?: boolean

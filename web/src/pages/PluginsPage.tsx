@@ -1387,8 +1387,8 @@ function CatalogEntryCard(props: CatalogEntryCardProps) {
             </a>
           ) : null}
 
-          {entry.requires_hermes ? (
-            <span>kova {entry.requires_hermes}</span>
+          {entry.requires_kova ? (
+            <span>kova {entry.requires_kova}</span>
           ) : null}
 
           {entry.platforms.length ? (

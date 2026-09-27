@@ -39,7 +39,7 @@ test.describe('dev-mode boot with mock backend', () => {
   // events, timers and url — adding any other node builtin lands here.
   test('the preload bridge reaches the renderer', async () => {
     const bridge = await fixture!.page.evaluate(() => {
-      const desktop = (window as unknown as { hermesDesktop?: Record<string, unknown> }).hermesDesktop
+      const desktop = (window as unknown as { kovaDesktop?: Record<string, unknown> }).kovaDesktop
 
       return {
         present: typeof desktop,

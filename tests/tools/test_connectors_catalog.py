@@ -32,7 +32,7 @@ def _clean_live():
 def _entry(name, *, platforms=(), requires_env=()):
     return SimpleNamespace(
         name=name, repo=f"https://github.com/example/{name}", sha="a" * 40, subdir="", tier="official",
-        description=f"Drives {name}. More text.", requires_hermes="", platforms=list(platforms),
+        description=f"Drives {name}. More text.", requires_kova="", platforms=list(platforms),
         capabilities=SimpleNamespace(requires_env=list(requires_env)),
     )
 

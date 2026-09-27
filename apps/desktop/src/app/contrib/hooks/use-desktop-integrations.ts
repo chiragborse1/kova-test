@@ -95,7 +95,7 @@ export function useDesktopIntegrations({
     // so it always opens the client overlay. Inheriting the connection-mode
     // default pointed a Mac at its remote Linux backend and left the app itself
     // silently stale (#70266).
-    const unsubscribe = window.hermesDesktop?.onOpenUpdatesRequested?.(() => openUpdatesWindow('client'))
+    const unsubscribe = window.kovaDesktop?.onOpenUpdatesRequested?.(() => openUpdatesWindow('client'))
 
     return () => {
       unsubscribe?.()
@@ -108,7 +108,7 @@ export function useDesktopIntegrations({
   // close the window, so claim it unconditionally — the menu then routes ⌘W
   // to us (close-preview-requested IPC) and we decide tab-vs-window.
   useEffect(() => {
-    window.hermesDesktop?.setPreviewShortcutActive?.(true)
+    window.kovaDesktop?.setPreviewShortcutActive?.(true)
   }, [])
 
   const restoredRef = useRef(false)
@@ -299,7 +299,7 @@ export function useDesktopIntegrations({
   // on screen. Runtime id is translated to the stored id the chat route is
   // keyed by; action buttons resolve in place.
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onFocusSession?.(sessionId => {
+    const unsubscribe = window.kovaDesktop?.onFocusSession?.(sessionId => {
       if (sessionId) {
         // Reloads and runtime recovery can leave only the shared mirror bound.
         const viaLocalMap = storedSessionIdForNotification(sessionId, runtimeIdByStoredSessionId.current)
@@ -326,7 +326,7 @@ export function useDesktopIntegrations({
   }, [locationPathname, navigate, runtimeIdByStoredSessionId])
 
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onNotificationAction?.(({ actionId, sessionId }) => {
+    const unsubscribe = window.kovaDesktop?.onNotificationAction?.(({ actionId, sessionId }) => {
       void respondToApprovalAction(sessionId ?? null, actionId)
     })
 
@@ -337,7 +337,7 @@ export function useDesktopIntegrations({
   // is user-driven (click), so this is offer-not-hijack. Paths share the
   // kova://index-network/intent/1 vocabulary with deep links.
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onNotificationActivate?.(payload => {
+    const unsubscribe = window.kovaDesktop?.onNotificationActivate?.(payload => {
       if (!payload) {
         return
       }
@@ -350,7 +350,7 @@ export function useDesktopIntegrations({
 
       if (payload.activate) {
         // Defense-in-depth: re-resolve at the IPC boundary rather than trusting
-        // the pre-IPC validation — any future hermesDesktop.notify caller gets
+        // the pre-IPC validation — any future kovaDesktop.notify caller gets
         // funneled through the same resolver.
         const path = resolveKovaOpenPath(payload.activate)
 
@@ -377,7 +377,7 @@ export function useDesktopIntegrations({
   //  - <plugin>/<path>?… → in-app navigate (e.g. index-network/intent/1)
   //  - open/<path>?… → in-app navigate (generic)
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onDeepLink?.(payload => {
+    const unsubscribe = window.kovaDesktop?.onDeepLink?.(payload => {
       if (!payload?.kind) {
         return
       }
@@ -461,7 +461,7 @@ export function useDesktopIntegrations({
       }
     })
 
-    void window.hermesDesktop?.signalDeepLinkReady?.()
+    void window.kovaDesktop?.signalDeepLinkReady?.()
 
     return () => unsubscribe?.()
   }, [navigate, runtimeIdByStoredSessionId])
@@ -471,7 +471,7 @@ export function useDesktopIntegrations({
   // OS-standard window close, esp. secondary windows). The Win/Linux keyboard
   // path is the `view.closeTab` keybind (use-keybinds), sharing closeActiveTab.
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onClosePreviewRequested?.(
+    const unsubscribe = window.kovaDesktop?.onClosePreviewRequested?.(
       () => void closeActiveTab(id => navigate(sessionRoute(id)))
     )
 
@@ -483,7 +483,7 @@ export function useDesktopIntegrations({
   // answers those against the focused guest and never asks. Only ⌘R has an
   // app-level meaning to fall back to; an unfocused swipe is a no-op.
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onPreviewNav?.(command => {
+    const unsubscribe = window.kovaDesktop?.onPreviewNav?.(command => {
       if (!commandFocusedPreview(command) && command === 'reload') {
         window.location.reload()
       }
@@ -494,7 +494,7 @@ export function useDesktopIntegrations({
 
   // File > Open Folder… — same open-folder-as-project upsert as the ⌘O keybind.
   useEffect(() => {
-    const unsubscribe = window.hermesDesktop?.onOpenFolderRequested?.(() => void openFolderAsProject())
+    const unsubscribe = window.kovaDesktop?.onOpenFolderRequested?.(() => void openFolderAsProject())
 
     return () => unsubscribe?.()
   }, [])

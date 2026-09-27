@@ -89,8 +89,8 @@ test('Stop mid-stream renders exactly the partial reply the session persisted', 
   test.setTimeout(120_000 + RUNS * 45_000)
   const provider = await startScriptedProvider()
   const sandbox = createCoreSandbox('interrupt')
-  writeProviderHome(sandbox.hermesHome, provider.url)
-  const dbPath = path.join(sandbox.hermesHome, 'state.db')
+  writeProviderHome(sandbox.kovaHome, provider.url)
+  const dbPath = path.join(sandbox.kovaHome, 'state.db')
   const { app, page } = await launchCoreApp(coreAppEnv(sandbox))
   const ws = recordWebSockets(page)
 

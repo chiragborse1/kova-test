@@ -10,7 +10,7 @@ Class under test (#98814 / #89614):
 - ``gateway.status.terminate_pid(force=True)`` requires a matching
   ``expected_start_time`` and must refuse (never taskkill) on a missing or
   mismatched identity.
-- ``kova_cli._subprocess_compat.pid_is_hermes`` fails closed on foreign
+- ``kova_cli._subprocess_compat.pid_is_kova`` fails closed on foreign
   processes and identity mismatches.
 """
 import subprocess
@@ -111,7 +111,7 @@ class TestPidIsKovaLive:
     def test_foreign_real_process_is_refused(self):
         """A live non-Kova process (bare python sleeper in a temp-ish argv)
         must never be judged safe for taskkill."""
-        from kova_cli._subprocess_compat import pid_is_hermes
+        from kova_cli._subprocess_compat import pid_is_kova
 
         proc = _spawn_sleeper()
         try:
@@ -120,25 +120,25 @@ class TestPidIsKovaLive:
             # assertion is environment-dependent, so guard for it.
             if "kova" in sys.executable.lower():
                 pytest.skip("interpreter path names kova; probe would match")
-            assert pid_is_hermes(proc.pid) is False
+            assert pid_is_kova(proc.pid) is False
         finally:
             _cleanup(proc)
 
     def test_stale_fingerprint_is_refused_even_for_kova_argv(self):
         from gateway.status import get_process_start_time
-        from kova_cli._subprocess_compat import pid_is_hermes
+        from kova_cli._subprocess_compat import pid_is_kova
 
         proc = _spawn_sleeper()
         try:
             live = get_process_start_time(proc.pid)
             assert live is not None
             assert (
-                pid_is_hermes(proc.pid, expected_start_time=live + 12345) is False
+                pid_is_kova(proc.pid, expected_start_time=live + 12345) is False
             )
         finally:
             _cleanup(proc)
 
     def test_nonexistent_pid_is_refused(self):
-        from kova_cli._subprocess_compat import pid_is_hermes
+        from kova_cli._subprocess_compat import pid_is_kova
 
-        assert pid_is_hermes(2**24) is False
+        assert pid_is_kova(2**24) is False

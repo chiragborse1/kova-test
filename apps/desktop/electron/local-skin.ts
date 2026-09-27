@@ -113,10 +113,10 @@ export function localSkinProfileKey(profile: null | string | undefined): string 
 }
 
 /** The profile home mirrors `kova --profile <name>`: `<root>/profiles/<name>`. */
-export function localSkinHome(hermesHome: string, profile: null | string): string {
+export function localSkinHome(kovaHome: string, profile: null | string): string {
   const name = localSkinProfileKey(profile)
 
-  return name === 'default' ? hermesHome : path.join(hermesHome, 'profiles', name)
+  return name === 'default' ? kovaHome : path.join(kovaHome, 'profiles', name)
 }
 
 function skinFromFile(filePath: string, configuredName: string): KovaSkin | null {
@@ -148,8 +148,8 @@ function skinFromFile(filePath: string, configuredName: string): KovaSkin | null
  * renderer never gets arbitrary file paths or config contents, and a broken
  * local config simply leaves the normal desktop theme in place.
  */
-export function readLocalDisplaySkin(hermesHome: string, profile: null | string): KovaSkin | null {
-  const home = localSkinHome(hermesHome, profile)
+export function readLocalDisplaySkin(kovaHome: string, profile: null | string): KovaSkin | null {
+  const home = localSkinHome(kovaHome, profile)
   const config = parseRecord(readText(path.join(home, 'config.yaml'), MAX_CONFIG_BYTES))
   const display = config && isRecord(config.display) ? config.display : null
   const configuredName = text(display?.skin)
@@ -181,12 +181,12 @@ export function readLocalDisplaySkin(hermesHome: string, profile: null | string)
 
 /** The one small payload preload needs for a window's first theme paint. */
 export function readLocalSkinPayload(
-  hermesHome: string,
+  kovaHome: string,
   routedProfile: null | string | undefined,
   fallbackProfile: null | string | undefined
 ): { profile: string; skin: KovaSkin } | null {
   const profile = localSkinProfileKey(routedProfile ?? fallbackProfile)
-  const skin = readLocalDisplaySkin(hermesHome, profile)
+  const skin = readLocalDisplaySkin(kovaHome, profile)
 
   return skin ? { profile, skin } : null
 }

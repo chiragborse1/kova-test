@@ -16,7 +16,7 @@ import {
   connectionScoped,
   getApiRequestConnection,
   getApiRequestProfile,
-  hermesApi,
+  kovaApi,
   type ProfileScope,
   profileScoped
 } from './client'
@@ -104,7 +104,7 @@ export async function listSessions(
   archived: 'exclude' | 'include' | 'only' = 'exclude',
   order: 'created' | 'recent' = 'recent'
 ): Promise<PaginatedSessions> {
-  const result = await hermesApi<PaginatedSessions>({
+  const result = await kovaApi<PaginatedSessions>({
     ...profileScoped(),
     path:
       `/api/sessions?limit=${limit}&offset=0&min_messages=${Math.max(0, minMessages)}` +
@@ -146,7 +146,7 @@ export async function listAllProfileSessions(
     ? `&exclude_sources=${encodeURIComponent(filter.excludeSources.join(','))}`
     : ''
 
-  const result = await hermesApi<PaginatedSessions>({
+  const result = await kovaApi<PaginatedSessions>({
     ...profileScoped(),
     path:
       `/api/profiles/sessions?limit=${limit}&offset=0&min_messages=${Math.max(0, minMessages)}` +
@@ -295,7 +295,7 @@ async function listSidebarSessionsLegacy(req: SidebarSessionsRequest): Promise<S
 export function scanSessionPullRequests(
   ids: string[]
 ): Promise<{ pull_requests: Record<string, { number: number; url: string }>; scanned: string[] }> {
-  return hermesApi<{
+  return kovaApi<{
     pull_requests: Record<string, { number: number; url: string }>
     scanned: string[]
   }>({
@@ -328,7 +328,7 @@ export async function listSidebarSessions(req: SidebarSessionsRequest): Promise<
   let result: SidebarSessionsResponse
 
   try {
-    result = await hermesApi<SidebarSessionsResponse>({
+    result = await kovaApi<SidebarSessionsResponse>({
       ...profileScoped(),
       path: `/api/profiles/sessions/sidebar?${params.toString()}`,
       timeoutMs: SESSION_LIST_REQUEST_TIMEOUT_MS
@@ -379,7 +379,7 @@ export function setSessionArchived(id: string, archived: boolean, profile?: stri
   // state silently fails to stick — the same class as the unscoped DELETE.
   const owner = sessionWriteProfile(profile)
 
-  return hermesApi<{ ok: boolean }>({
+  return kovaApi<{ ok: boolean }>({
     ...(owner ? { profile: owner } : {}),
     path: `/api/sessions/${encodeURIComponent(id)}`,
     method: 'PATCH',
@@ -397,7 +397,7 @@ export function setSessionPinnedRemote(id: string, pinned: boolean, profile?: st
   // profile's pin must travel in the body or it no-ops on the wrong state.db.
   const owner = sessionWriteProfile(profile)
 
-  return hermesApi<{ ok: boolean }>({
+  return kovaApi<{ ok: boolean }>({
     ...(owner ? { profile: owner } : {}),
     path: `/api/sessions/${encodeURIComponent(id)}`,
     method: 'PATCH',
@@ -416,7 +416,7 @@ export function setSessionUnreadRemote(id: string, unread: boolean, profile?: st
   // state.db.
   const owner = sessionWriteProfile(profile)
 
-  return hermesApi<{ ok: boolean }>({
+  return kovaApi<{ ok: boolean }>({
     ...(owner ? { profile: owner } : {}),
     path: `/api/sessions/${encodeURIComponent(id)}`,
     method: 'PATCH',
@@ -425,7 +425,7 @@ export function setSessionUnreadRemote(id: string, unread: boolean, profile?: st
 }
 
 export function searchSessions(query: string): Promise<SessionSearchResponse> {
-  return hermesApi<SessionSearchResponse>({
+  return kovaApi<SessionSearchResponse>({
     path: `/api/sessions/search?q=${encodeURIComponent(query)}`
   })
 }
@@ -437,7 +437,7 @@ export function searchSessions(query: string): Promise<SessionSearchResponse> {
 export function getSession(id: string, profile?: ProfileScope): Promise<SessionInfo> {
   const suffix = sessionScopeQuery(profile)
 
-  return hermesApi<SessionInfo>({
+  return kovaApi<SessionInfo>({
     ...sessionScoped(profile),
     path: `/api/sessions/${encodeURIComponent(id)}${suffix}`
   })
@@ -479,7 +479,7 @@ export function getSessionMessages(
 
   const suffix = query.size ? `?${query.toString()}` : ''
 
-  return hermesApi<SessionMessagesResponse>({
+  return kovaApi<SessionMessagesResponse>({
     ...sessionScope,
     path: `/api/sessions/${encodeURIComponent(id)}/messages${suffix}`,
     ...(options.passive ? { passive: true } : {})
@@ -660,7 +660,7 @@ export function deleteSession(id: string, profile?: ProfileScope): Promise<{ ok:
   // override + global-remote routing (both re-read/re-append the param).
   const suffix = sessionScopeQuery(profile)
 
-  return hermesApi<{ ok: boolean }>({
+  return kovaApi<{ ok: boolean }>({
     ...sessionScoped(profile),
     path: `/api/sessions/${encodeURIComponent(id)}${suffix}`,
     method: 'DELETE'
@@ -674,7 +674,7 @@ export function renameSession(
 ): Promise<{ ok: boolean; title: string }> {
   const owner = sessionWriteProfile(profile)
 
-  return hermesApi<{ ok: boolean; title: string }>({
+  return kovaApi<{ ok: boolean; title: string }>({
     ...(owner ? { profile: owner } : {}),
     path: `/api/sessions/${encodeURIComponent(id)}`,
     method: 'PATCH',

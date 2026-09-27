@@ -27,11 +27,11 @@ import { activePreviewScriptRunner } from './preview-script-runner'
 function buildTourScript(action: TourAction): string {
   return `(function () {
   var w = window;
-  if (!w.__hermesTourEngine) {
+  if (!w.__kovaTourEngine) {
     ${driverIife}
-    w.__hermesTourHolder = {};
-    w.__hermesTourCollect = (${collectTourTargets.toString()});
-    w.__hermesTourEngine = (${runTourEngine.toString()});
+    w.__kovaTourHolder = {};
+    w.__kovaTourCollect = (${collectTourTargets.toString()});
+    w.__kovaTourEngine = (${runTourEngine.toString()});
   }
   if (!document.getElementById('__kova-tour-style')) {
     var style = document.createElement('style');
@@ -39,11 +39,11 @@ function buildTourScript(action: TourAction): string {
     style.textContent = ${JSON.stringify(driverCss)};
     (document.head || document.documentElement).appendChild(style);
   }
-  return JSON.stringify(w.__hermesTourEngine(
+  return JSON.stringify(w.__kovaTourEngine(
     w.driver.js.driver,
-    w.__hermesTourHolder,
+    w.__kovaTourHolder,
     ${JSON.stringify(action)},
-    w.__hermesTourCollect,
+    w.__kovaTourCollect,
     document
   ));
 })()`

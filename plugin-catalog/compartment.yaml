@@ -11,7 +11,7 @@ description: Encrypted, fully offline memory provider. AEAD-encrypted local vaul
 maintainer: MaxFreedomPollard
 tier: community
 category: memory
-requires_hermes: '>=0.20.1'
+requires_kova: '>=0.20.1'
 docs_url: https://github.com/MaxFreedomPollard/Compartment/blob/b144fc34723911eace9f240ac1044b9280b74bf2/integrations/kova/README.md
 version: 4.10.0
 image: https://raw.githubusercontent.com/MaxFreedomPollard/Compartment/b144fc34723911eace9f240ac1044b9280b74bf2/docs/images/social-preview.png

@@ -6,7 +6,7 @@ machinery (``tests/e2e/core/upgrade``). Building it takes minutes, so it is buil
 ``<root>/sb`` and snapshotted; each spec restores the snapshot back into the SAME path (the install
 bakes absolute paths into launchers and PM facts, so a copy elsewhere would not be the same install).
 
-    python seed.py install <root>     -> JSON {home, hermesHome, checkout, origin, env, headSha}
+    python seed.py install <root>     -> JSON {home, kovaHome, checkout, origin, env, headSha}
     python seed.py restore <root>     -> the snapshot back in place (install + origin)
     python seed.py publish <root> <message> <relpath> <content-file>  -> sha of the new origin/main
 
@@ -78,7 +78,7 @@ def install(root: Path) -> None:
     facts = {
         "sandboxRoot": str(sb.root),
         "home": str(sb.home),
-        "hermesHome": str(sb.kova_home),
+        "kovaHome": str(sb.kova_home),
         "checkout": str(sb.checkout),
         "kova": sb.kova,
         "origin": str(origin),

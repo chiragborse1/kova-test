@@ -19,7 +19,7 @@ import { readDirForIpc } from './fs-read-dir'
 import { gitRootForIpc } from './git-root'
 
 export interface FsIpcDeps {
-  hermesHome: string
+  kovaHome: string
   readActiveDesktopProfile: () => null | string
   expandUserPath: (value: string) => string
   resolveRequestedPathForIpc: (value: string, options: { purpose: string }) => string
@@ -28,7 +28,7 @@ export interface FsIpcDeps {
 }
 
 export function registerFsIpc({
-  hermesHome,
+  kovaHome,
   readActiveDesktopProfile,
   expandUserPath,
   resolveRequestedPathForIpc,
@@ -101,7 +101,7 @@ export function registerFsIpc({
   // global root.
   async function localPluginsRoot(dirName: string): Promise<string> {
     const profile = readActiveDesktopProfile()
-    const base = profile && profile !== 'default' ? path.join(hermesHome, 'profiles', profile) : hermesHome
+    const base = profile && profile !== 'default' ? path.join(kovaHome, 'profiles', profile) : kovaHome
 
     return ensureDir(path.join(base, dirName))
   }
@@ -112,9 +112,9 @@ export function registerFsIpc({
   // Earlier builds scoped it per profile; anything left in those folders is
   // moved up once so it does not silently vanish on a profile switch.
   async function desktopPluginsRoot(): Promise<string> {
-    const root = await ensureDir(path.join(hermesHome, DESKTOP_PLUGINS_DIR))
-    await migrateProfileScopedDesktopPlugins(hermesHome, root)
-    await reconcileUnifiedDesktopHalves(hermesHome, root)
+    const root = await ensureDir(path.join(kovaHome, DESKTOP_PLUGINS_DIR))
+    await migrateProfileScopedDesktopPlugins(kovaHome, root)
+    await reconcileUnifiedDesktopHalves(kovaHome, root)
 
     return root
   }
@@ -125,9 +125,9 @@ export function registerFsIpc({
   // update / uninstall through the gateway) so the app-level copy tracks the
   // package without waiting for the next root resolution.
   ipcMain.handle('kova:fs:reconcileDesktopPlugins', async () => {
-    const root = await ensureDir(path.join(hermesHome, DESKTOP_PLUGINS_DIR))
+    const root = await ensureDir(path.join(kovaHome, DESKTOP_PLUGINS_DIR))
 
-    return reconcileUnifiedDesktopHalves(hermesHome, root)
+    return reconcileUnifiedDesktopHalves(kovaHome, root)
   })
 
   // The LOCAL logs root (`<KOVA_HOME>/logs`, profile-aware) — the error
@@ -164,7 +164,7 @@ export function registerFsIpc({
   // Uninstall a standalone desktop plugin by FOLDER NAME under the app-level
   // root. The renderer never passes a path; containment is re-checked inside.
   ipcMain.handle('kova:plugin:removeDesktop', async (_event, payload) =>
-    removeDesktopPlugin(path.join(hermesHome, DESKTOP_PLUGINS_DIR), payload?.name)
+    removeDesktopPlugin(path.join(kovaHome, DESKTOP_PLUGINS_DIR), payload?.name)
   )
 
   // Rename a file/folder in place. The renderer passes the existing path + a new

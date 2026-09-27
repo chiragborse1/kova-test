@@ -95,7 +95,7 @@ def _calver_release_version(repo_dir: Path) -> tuple[str, int] | None:
     Releases before semver tags existed are tagged ``vYYYY.M.D`` only; the
     version users actually run is in that tag's pyproject. Without this, a
     checkout past such a release would compare as "unknown" against plugins'
-    ``requires_hermes``.
+    ``requires_kova``.
     """
     described = _run_git(repo_dir, "describe", "--tags", "--long", "--match", "v2[0-9][0-9][0-9].*", "HEAD")
     if not described:

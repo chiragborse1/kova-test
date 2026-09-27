@@ -9,7 +9,7 @@ description: Create, analyze, and optimize campaigns across Google Ads, Meta Ads
 maintainer: Adspirer
 tier: community
 category: tools
-requires_hermes: '>=0.20'
+requires_kova: '>=0.20'
 docs_url: https://github.com/Adspirer/adspirer-kova-plugin#readme
 version: 1.0.0
 image: https://raw.githubusercontent.com/Adspirer/adspirer-kova-plugin/4688c38295a7b86f8119d7a0ecc09cd0b83a2730/assets/icon.png

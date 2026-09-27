@@ -5,7 +5,7 @@ description: Say "make me a <role>" and your agent spawns a complete Bot Mode Bo
 maintainer: BkashJEE
 tier: community
 category: automation
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/BkashJEE/kova-bot-forge#readme
 version: "0.12.0"
 image: https://raw.githubusercontent.com/BkashJEE/kova-bot-forge/302eceb39613d8610513519f5650a026f377a813/docs/social-preview.png

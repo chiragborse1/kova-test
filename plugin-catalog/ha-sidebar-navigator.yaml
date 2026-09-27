@@ -8,7 +8,7 @@ description: Full-power sidebar navigator & uncapped project/session explorer fo
 maintainer: badiyee85
 tier: community
 category: desktop
-requires_hermes: ">=0.19"
+requires_kova: ">=0.19"
 docs_url: https://github.com/badiyee85/HA-Plugins-sidebar-navigator
 platforms: []
 capabilities:

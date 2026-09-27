@@ -14,7 +14,7 @@ description: >-
 maintainer: moonlight-lupin
 tier: community
 category: tools
-requires_hermes: ">=0.21.1"
+requires_kova: ">=0.21.1"
 version: "0.3.1"
 capabilities:
   provides_tools: []

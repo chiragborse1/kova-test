@@ -2117,7 +2117,7 @@ export const zhHant = defineLocale({
     noSessions: '暫無工作階段。',
     gatewayRunning: '訊息閘道執行中',
     gatewayStopped: '訊息閘道已停止',
-    hermesActiveSessions: (version, count) => `Kova ${version} · 活躍工作階段 ${count}`,
+    kovaActiveSessions: (version, count) => `Kova ${version} · 活躍工作階段 ${count}`,
     restartGateway: '重新啟動閘道',
     openBrowser: '開啟瀏覽器',
     gatewayRestartFailed: '閘道重新啟動失敗。',

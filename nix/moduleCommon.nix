@@ -10,7 +10,7 @@
 #   nixosModules.nix        the service user and group, stateDir,
 #                           addToSystemPackages, container mode, tmpfiles,
 #                           system.activationScripts, system systemd units
-#   homeManagerModules.nix  hermesHome, programs.kova-agent (the CLI and
+#   homeManagerModules.nix  kovaHome, programs.kova-agent (the CLI and
 #                           the desktop application), home.activation,
 #                           systemd.user.services, launchd.agents
 #
@@ -349,7 +349,7 @@ let
           Use this option for the project context that the agent reads from
           its working directory, for example AGENTS.md, notes and checklists.
           Kova reads SOUL.md and memories/ from KOVA_HOME, so put those
-          files in `hermesHomeFiles`.
+          files in `kovaHomeFiles`.
 
           If you set this option, you must also set `workingDirectory`. The
           default of that option is different on each module. Thus an unset
@@ -363,7 +363,7 @@ let
         '';
       };
 
-      hermesHomeFiles = mkOption {
+      kovaHomeFiles = mkOption {
         type = documentsType;
         default = { };
         description = ''
@@ -776,7 +776,7 @@ let
     {
       pkgs,
       cfg,
-      hermesHome,
+      kovaHome,
       workingDirectory,
       # The value to write as terminal.cwd. It is different from
       # workingDirectory only in the container mode of NixOS. There the agent
@@ -814,7 +814,7 @@ let
       };
       homeDocumentTree = mkDocumentTree {
         inherit pkgs;
-        documents = cfg.hermesHomeFiles;
+        documents = cfg.kovaHomeFiles;
       };
 
       inst = "${run}install ${installFlags}";
@@ -835,10 +835,10 @@ let
       ${run}mkdir -p ${
         lib.escapeShellArgs (
           [
-            hermesHome
+            kovaHome
             workingDirectory
           ]
-          ++ map (d: "${hermesHome}/${d}") stateDirs
+          ++ map (d: "${kovaHome}/${d}") stateDirs
         )
       }
 
@@ -848,47 +848,47 @@ let
       # on disk, and the module keeps all other keys.
       ${
         if cfg.configFile != null then
-          "${inst} -m ${modes.config} -D ${configFiles.effective} ${hermesHome}/config.yaml"
+          "${inst} -m ${modes.config} -D ${configFiles.effective} ${kovaHome}/config.yaml"
         else
           ''
-            ${run}${configFiles.mergeScript} ${configFiles.generated} ${hermesHome}/config.yaml
-            ${run}chmod ${modes.config} ${hermesHome}/config.yaml
+            ${run}${configFiles.mergeScript} ${configFiles.generated} ${kovaHome}/config.yaml
+            ${run}chmod ${modes.config} ${kovaHome}/config.yaml
           ''
       }
 
       # The managed-mode marker. It makes an interactive shell also refuse to
       # change the configuration that Nix owns.
-      ${inst} -m ${modes.managed} ${pkgs.writeText "kova-managed" managedSystem} ${hermesHome}/.managed
+      ${inst} -m ${modes.managed} ${pkgs.writeText "kova-managed" managedSystem} ${kovaHome}/.managed
 
       ${lib.optionalString (cfg.environment != { } || cfg.environmentFiles != [ ]) ''
-        ${run}${envScript} ${hermesHome}/.env ${modes.env} ${lib.escapeShellArgs cfg.environmentFiles}
-        ${lib.optionalString (owner != null) "${run}chown ${owner} ${hermesHome}/.env"}
+        ${run}${envScript} ${kovaHome}/.env ${modes.env} ${lib.escapeShellArgs cfg.environmentFiles}
+        ${lib.optionalString (owner != null) "${run}chown ${owner} ${kovaHome}/.env"}
       ''}
 
       ${lib.optionalString (cfg.authFile != null) (
         if cfg.authFileForceOverwrite then
-          "${inst} -m ${modes.auth} ${cfg.authFile} ${hermesHome}/auth.json"
+          "${inst} -m ${modes.auth} ${cfg.authFile} ${kovaHome}/auth.json"
         else
           ''
-            if [ ! -e ${hermesHome}/auth.json ]; then
-              ${inst} -m ${modes.auth} ${cfg.authFile} ${hermesHome}/auth.json
+            if [ ! -e ${kovaHome}/auth.json ]; then
+              ${inst} -m ${modes.auth} ${cfg.authFile} ${kovaHome}/auth.json
             fi
           ''
       )}
 
       ${installDocuments documentTree workingDirectory cfg.documents}
-      ${installDocuments homeDocumentTree hermesHome cfg.hermesHomeFiles}
+      ${installDocuments homeDocumentTree kovaHome cfg.kovaHomeFiles}
 
       # Declarative plugins. Activation first deletes the old managed
       # symlinks. Thus a plugin that you remove from the configuration also
       # goes away from the plugins directory.
-      ${run}find ${hermesHome}/plugins -maxdepth 1 -type l -name 'nix-managed-*' -delete 2>/dev/null || true
+      ${run}find ${kovaHome}/plugins -maxdepth 1 -type l -name 'nix-managed-*' -delete 2>/dev/null || true
       ${lib.concatMapStringsSep "\n" (plugin: ''
         if [ ! -f ${plugin}/plugin.yaml ]; then
           echo "kova-agent: ERROR extraPlugins entry '${plugin}' has no plugin.yaml" >&2
           exit 1
         fi
-        ${run}ln -sfn ${plugin} ${hermesHome}/plugins/nix-managed-${lib.getName plugin}
+        ${run}ln -sfn ${plugin} ${kovaHome}/plugins/nix-managed-${lib.getName plugin}
       '') cfg.extraPlugins}
     '';
 
@@ -1048,11 +1048,11 @@ let
   # so each module gives its own value.
   processEnvironment =
     {
-      hermesHome,
+      kovaHome,
       managedSystem ? "true",
     }:
     {
-      KOVA_HOME = hermesHome;
+      KOVA_HOME = kovaHome;
       KOVA_MANAGED = managedSystem;
     };
 
@@ -1099,7 +1099,7 @@ let
             ${optionPath}.workingDirectory = "/path/you/want";
 
           To give Kova an identity and a memory, use
-          ${optionPath}.hermesHomeFiles instead. Those files go to
+          ${optionPath}.kovaHomeFiles instead. Those files go to
           KOVA_HOME. Kova reads SOUL.md and memories/ only from there.
         '';
       }

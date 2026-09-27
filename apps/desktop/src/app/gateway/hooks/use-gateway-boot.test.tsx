@@ -318,7 +318,7 @@ beforeEach(() => {
   vi.mocked(notifyError).mockReset()
   vi.mocked(warnIfTerminalBackendUnavailable).mockClear()
   ;(globalThis as { WebSocket: unknown }).WebSocket = FakeWebSocket
-  ;(window as { hermesDesktop?: unknown }).hermesDesktop = fakeDesktop()
+  ;(window as { kovaDesktop?: unknown }).kovaDesktop = fakeDesktop()
   $gatewayState.set('idle')
   $busy.set(false)
   $awaitingResponse.set(false)
@@ -361,7 +361,7 @@ afterEach(() => {
   endGatewaySwitch()
   vi.useRealTimers()
   ;(globalThis as { WebSocket: unknown }).WebSocket = originalWebSocket
-  delete (window as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as { kovaDesktop?: unknown }).kovaDesktop
   window.localStorage.removeItem('kova.desktop.workspace-cwd')
   $currentCwd.set('')
   $busy.set(false)
@@ -378,7 +378,7 @@ async function flushAsync() {
 it('loads and tracks saved gateways without mounting the statusbar or Settings', async () => {
   const desktop = fakeDesktop()
   const bootFetch = deferred<void>()
-  type Listener = Parameters<NonNullable<Window['hermesDesktop']['connections']['onChanged']>>[0]
+  type Listener = Parameters<NonNullable<Window['kovaDesktop']['connections']['onChanged']>>[0]
   const listeners = new Set<Listener>()
 
   let registry: DesktopConnectionsRegistry = {
@@ -405,7 +405,7 @@ it('loads and tracks saved gateways without mounting the statusbar or Settings',
       }
     }
   })
-  ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+  ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
   // Only the real gateway lifecycle mounts; no optional UI can load the cache.
   const view = render(<Harness refreshSessions={() => bootFetch.promise} />)
@@ -467,7 +467,7 @@ describe('default-route profile adoption', () => {
       getGatewayWsUrlFor: vi.fn(async () => coderConn.wsUrl)
     }
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     try {
       render(<Harness />)
@@ -500,7 +500,7 @@ describe('default-route profile adoption', () => {
         profile: { ...base.profile, getDefault: vi.fn(async () => route) }
       }
 
-      ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+      ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
       render(<Harness />)
       await flushAsync()
 
@@ -520,7 +520,7 @@ describe('default-route profile adoption', () => {
     const desktop = fakeDesktop()
     desktop.getConnection.mockResolvedValue({ ...primaryConn, profile: 'research' })
     desktop.profile.get.mockResolvedValue({ profile: 'old-last-used' })
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     render(<Harness />)
     await flushAsync()
     expect($connection.get()?.profile).toBe('research')
@@ -534,7 +534,7 @@ describe('primary failure foreground isolation', () => {
     const snapshot = deferred<Awaited<ReturnType<ReturnType<typeof fakeDesktop>['getBootProgress']>>>()
     const desktop = fakeDesktop()
     desktop.getBootProgress.mockReturnValue(snapshot.promise)
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     render(<Harness />)
     await flushAsync()
     expect($gatewayState.get()).toBe('open')
@@ -561,7 +561,7 @@ describe('primary failure foreground isolation', () => {
     const desktop = fakeDesktop()
     desktop.getBootProgress.mockReturnValue(snapshot.promise)
     desktop.getConnection.mockReturnValue(connection.promise)
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     render(<Harness />)
     await flushAsync()
 
@@ -606,7 +606,7 @@ describe('primary failure foreground isolation', () => {
         connectionId: primaryMode === 'local' ? 'local' : 'primary-vps',
         mode: primaryMode
       } as typeof primaryConn)
-      ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+      ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
       render(<Harness />)
       await flushAsync()
       let opening!: Promise<boolean>
@@ -643,7 +643,7 @@ describe('primary failure foreground isolation', () => {
       remoteKind: 'cloud',
       authMode: 'oauth'
     } as typeof primaryConn)
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     render(<Harness />)
     await flushAsync()
     let opening!: Promise<boolean>
@@ -705,7 +705,7 @@ describe('primary failure foreground isolation', () => {
 
       desktop.getConnection.mockResolvedValue(cloud as typeof primaryConn)
 
-      ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+      ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
       const { BootFailureOverlay } = await import('@/components/boot-failure-overlay')
 
       const overlay = render(
@@ -826,7 +826,7 @@ describe('shared host backend event provenance', () => {
 
     desktop.getConnection.mockResolvedValue(sharedPrimaryConn)
     desktop.getGatewayWsUrl.mockResolvedValue(sharedPrimaryConn.wsUrl)
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -864,7 +864,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
   it('parks rejected primary auth across timers and wake signals until explicit recovery', async () => {
     const desktop = fakeDesktop()
     desktop.getConnection.mockResolvedValue({ ...primaryConn, authMode: 'oauth' })
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     render(<Harness />)
     await flushAsync()
     desktop.getGatewayWsUrl.mockRejectedValue(Object.assign(new Error('Sign in again'), { needsOauthLogin: true }))
@@ -904,7 +904,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
           rejectConn = reject
         })
     )
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -941,7 +941,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
   it('a stale failed Settings switch cannot publish failure or disarm the newer switch owner', async () => {
     const desktop = fakeDesktop()
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1001,7 +1001,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
 
     let rejectStale: (error: Error) => void = () => undefined
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     render(<Harness />)
     await flushAsync()
 
@@ -1143,7 +1143,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       return coderConn.wsUrl
     })
     desktop.connections = { list: vi.fn(async () => registryConnections), setLastUsed }
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     const beforeConnectionSwitch = vi.fn()
     render(<Harness beforeConnectionSwitch={beforeConnectionSwitch} />)
@@ -1230,7 +1230,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       list: vi.fn(async () => registryConnections),
       setLastUsed: vi.fn(async (id: string) => ({ ok: true, registry: { ...registryConnections, lastUsed: id } }))
     }
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1372,7 +1372,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       return sanitizeRead === 1 ? staleSanitize.promise : Promise.resolve({ cwd })
     })
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     const refreshKovaConfig = async (_force = false, shouldPublish?: () => boolean) => {
       if (!shouldPublish) {
@@ -1443,7 +1443,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       profile,
       wsUrl: `wss://${connectionId}.example.com/api/ws?token=r`
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1498,7 +1498,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
 
       throw new Error(`unexpected api call: ${path}`)
     })
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1641,7 +1641,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       // drop hangs indefinitely.
       return callCount === 1 ? originalGetConnection(profile) : new Promise(() => undefined)
     })
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1680,7 +1680,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       // itself stays fast so this isolates the revalidate call specifically.
       return new Promise(() => undefined)
     })
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1725,7 +1725,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       connectionId,
       profile
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1775,7 +1775,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
     // here too, same as attemptReconnect() and softSwitch().
     const desktop = fakeDesktop()
     desktop.getConnection = vi.fn(() => new Promise(() => undefined))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1808,7 +1808,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       // Initial boot succeeds; the switch triggered below hangs indefinitely.
       return callCount === 1 ? originalGetConnection(profile) : new Promise(() => undefined)
     })
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1892,7 +1892,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       getGatewayWsUrlFor: vi.fn(async () => coderConn.wsUrl)
     }
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -1951,7 +1951,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
   })
 
   it('manual reconnect replaces only the active secondary route', async () => {
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = {
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = {
       ...fakeDesktop(),
       getConnectionFor: vi.fn(async () => coderConn),
       getGatewayWsUrlFor: vi.fn(async () => coderConn.wsUrl)
@@ -1976,7 +1976,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
   it('power resume force-redials a half-open primary socket that still reports OPEN', async () => {
     const desktop = fakeDesktop()
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2012,7 +2012,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       emitBootProgress: (payload: Record<string, unknown>) => void
     }
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2071,7 +2071,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
     // Retry is the recovery.
     const desktop = fakeDesktop()
     desktop.getConnection = vi.fn(() => new Promise<never>(() => undefined))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2117,7 +2117,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       setDefaultProjectDir: vi.fn(async () => undefined)
     }
     desktop.sanitizeWorkspaceCwd = vi.fn(async (cwd: string) => ({ cwd }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     // Record the cwd at the exact moment the gateway opens its WebSocket: if
     // the seed moved back post-connect, this would still be '' here and the
@@ -2144,7 +2144,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
   it('FIX: primary sleep/wake reconnect dials the window backend, not the active secondary profile', async () => {
     const desktop = fakeDesktop()
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2207,7 +2207,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: false,
       timestamp: Date.now()
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2242,7 +2242,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: true,
       timestamp: 1
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     FakeWebSocket.mode = 'fail'
 
     render(<Harness />)
@@ -2277,7 +2277,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: true,
       timestamp: 1
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
     FakeWebSocket.mode = 'fail'
 
     render(<Harness />)
@@ -2302,7 +2302,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: true,
       timestamp: 1
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     const refreshKovaConfig = vi.fn(async () => {
       FakeWebSocket.instances[0]?.drop()
@@ -2334,7 +2334,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: false,
       timestamp: Date.now()
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2376,7 +2376,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: false,
       timestamp: Date.now()
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2439,7 +2439,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: false,
       timestamp: Date.now()
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2487,7 +2487,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
       running: false,
       timestamp: Date.now()
     }))
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()
@@ -2675,7 +2675,7 @@ describe('window-state IPC before the first connection publishes (#108641)', () 
       })
     }
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = desktop
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = desktop
 
     render(<Harness />)
     await flushAsync()

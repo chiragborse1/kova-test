@@ -10,7 +10,7 @@ description: >-
 maintainer: yonro
 tier: community
 category: memory
-requires_hermes: '>=0.19'
+requires_kova: '>=0.19'
 docs_url: https://github.com/yonro/kova-xmemo-plugin#readme
 version: '1.1.2'
 platforms: []

@@ -1986,7 +1986,7 @@ _PLUGIN_COMPAT_LAZY = {
     'update_config': ('kova_cli.web_routers.config_env', 'update_config'),
     'update_config_raw': ('kova_cli.web_routers.analytics', 'update_config_raw'),
     'update_cron_job': ('kova_cli.web_routers.cron', 'update_cron_job'),
-    'update_hermes': ('kova_cli.web_routers.actions', 'update_hermes'),
+    'update_kova': ('kova_cli.web_routers.actions', 'update_kova'),
     'update_learning_node': ('kova_cli.web_routers.status', 'update_learning_node'),
     'update_memory_provider_config': ('kova_cli.web_routers.memory_providers', 'update_memory_provider_config'),
     'update_messaging_platform': ('kova_cli.web_routers.messaging', 'update_messaging_platform'),

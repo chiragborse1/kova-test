@@ -1,6 +1,6 @@
 # nix/desktop.nix — Kova Desktop (Electron) app build + wrapper
 #
-# `hermesAgent` is the fully-built `.#default` package — it ships the
+# `kovaAgent` is the fully-built `.#default` package — it ships the
 # `kova` binary with the venv, runtime PATH, bundled skills/plugins, etc.
 # already wired up.  We point the desktop at it via the existing
 # `KOVA_DESKTOP_HERMES` override env var, so the desktop's resolver
@@ -11,9 +11,9 @@
   lib,
   stdenv,
   makeWrapper,
-  hermesNpmLib,
+  kovaNpmLib,
   electron,
-  hermesAgent,
+  kovaAgent,
   installStampFile,
   generatedIcons,
   python3,
@@ -61,7 +61,7 @@ let
       throw "kova-desktop: unsupported host arch for node-pty staging";
 
   # Build the renderer (dist/ + electron/ + package.json).
-  renderer = hermesNpmLib.buildNpmPackage {
+  renderer = kovaNpmLib.buildNpmPackage {
     dirs = [
       "apps/desktop"
       "apps/shared"
@@ -90,7 +90,7 @@ let
       # (node-gyp's --disturl path can't run in the sandbox), and is already
       # the --nodedir layout. Same pattern as signal-desktop / github-desktop /
       # session-desktop / rstudio in nixpkgs.
-      ${lib.getExe hermesNpmLib.node-gyp} rebuild \
+      ${lib.getExe kovaNpmLib.node-gyp} rebuild \
         --directory=node_modules/node-pty \
         --build-from-source \
         --runtime=electron \
@@ -180,7 +180,7 @@ stdenv.mkDerivation {
     # No reimplementation of the agent resolver in the wrapper.
     makeWrapper ${lib.getExe electron} $out/bin/kova-desktop \
       --add-flags "$out/share/kova-desktop" \
-      --set KOVA_DESKTOP_HERMES "${lib.getExe hermesAgent}" \
+      --set KOVA_DESKTOP_HERMES "${lib.getExe kovaAgent}" \
       --set ELECTRON_IS_DEV 0${extraEnvFlags}${extraRunFlags}
 
     # XDG launcher entry

@@ -468,7 +468,7 @@ export async function refreshDesktopVersion(): Promise<DesktopVersionInfo | null
   // as an unhandled promise rejection in the renderer. Swallow it.
   try {
     const connection = $connection.get()
-    const next = await window.hermesDesktop?.getVersion?.({ ...connectionScoped(), ...profileScoped() })
+    const next = await window.kovaDesktop?.getVersion?.({ ...connectionScoped(), ...profileScoped() })
 
     if ($connection.get() !== connection) {
       return null
@@ -590,7 +590,7 @@ export async function checkBackendUpdates({
 }
 
 export async function checkUpdates({ force = false }: UpdateCheckOptions = {}): Promise<DesktopUpdateStatus | null> {
-  const bridge = window.hermesDesktop?.updates
+  const bridge = window.kovaDesktop?.updates
 
   if (!bridge || $updateChecking.get()) {
     return $updateStatus.get()
@@ -636,7 +636,7 @@ export async function applyUpdates(opts: DesktopUpdateApplyOptions = {}): Promis
     return { ok: false, error: 'retirement-blocked' }
   }
 
-  const bridge = window.hermesDesktop?.updates
+  const bridge = window.kovaDesktop?.updates
 
   if (!bridge) {
     return { ok: false, error: 'unavailable', message: 'Desktop bridge unavailable.' }
@@ -1090,7 +1090,7 @@ async function runEverythingUpdate(): Promise<void> {
     // 2. Fan out to every OTHER eligible registered connection. The active
     //    backend was just updated (excluded), and the local runtime updates
     //    with the client in step 3 (excluded). No registry/bridge → skip.
-    const bridge = window.hermesDesktop?.connections
+    const bridge = window.kovaDesktop?.connections
     const registry = $connectionsRegistry.get() ?? (await refreshConnectionsRegistry().catch(() => null))
     const excludeIds = ['local']
     const activeConnectionId = $connection.get()?.connectionId
@@ -1215,7 +1215,7 @@ export function startUpdatePoller(): void {
     return
   }
 
-  const bridge = window.hermesDesktop?.updates
+  const bridge = window.kovaDesktop?.updates
 
   if (!bridge) {
     return

@@ -198,12 +198,12 @@ def test_multiplexed_gateway_never_crosses_tenants(fleet, request: pytest.Fixtur
             assert len(route.srv.requests) == seen, f"{owner.name}'s key drove {route.name}'s provider"  # type: ignore[union-attr]
 
     # Phase 3: profile churn next to the live host never restarts or kills it.
-    created = H.run_hermes(["profile", "create", "gamma"], home)
+    created = H.run_kova(["profile", "create", "gamma"], home)
     assert created.returncode == 0, created.stderr[-2000:]
-    attach = H.run_hermes(["-p", "gamma", "gateway", "run"], home, timeout=150)
+    attach = H.run_kova(["-p", "gamma", "gateway", "run"], home, timeout=150)
     assert "[harness] killed" not in attach.stderr, "`-p gamma gateway run` started a second gateway"
     assert gw.proc.pid == host_pid and gw.proc.poll() is None, "profile create/attach replaced the host"  # type: ignore[union-attr]
-    deleted = H.run_hermes(["profile", "delete", "gamma", "--yes"], home)
+    deleted = H.run_kova(["profile", "delete", "gamma", "--yes"], home)
     assert deleted.returncode == 0, deleted.stderr[-2000:]
     assert gw.proc.pid == host_pid and gw.proc.poll() is None, f"profile delete killed the host\n{gw.tail()}"  # type: ignore[union-attr]
     _turns(gw, tenants, ["alpha", "beta"])

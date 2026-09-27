@@ -4,7 +4,7 @@ import { type ProfileScope, saveKovaConfigRecord } from '@/kova'
 import { useI18n } from '@/i18n'
 import { notify, notifyError } from '@/store/notifications'
 
-import { hermesConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
+import { kovaConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
 
 import { ToggleRow } from './primitives'
 
@@ -43,7 +43,7 @@ export function BrowserRealProfilePanel({ profile }: BrowserRealProfilePanelProp
   const { t } = useI18n()
   const copy = t.settings.toolsets.browserRealProfile
   const { data: config, writeScope } = useKovaConfigRecord(profile)
-  const setConfig = hermesConfigCacheWriter(profile)
+  const setConfig = kovaConfigCacheWriter(profile)
   const [busy, setBusy] = useState(false)
 
   const enabled = readUseRealProfile(config)

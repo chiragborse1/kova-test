@@ -6,7 +6,7 @@ description: "Ultra-fast dual-brain Chrome browser automation with 1-based DOM i
 maintainer: GoldenLoaf24h
 tier: community
 category: web
-requires_hermes: ">=0.19"
+requires_kova: ">=0.19"
 docs_url: "https://github.com/GoldenLoaf24h/browserclaw#readme"
 version: "3.1.0"
 capabilities:

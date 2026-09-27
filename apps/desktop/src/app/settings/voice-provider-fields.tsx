@@ -12,7 +12,7 @@ import { useI18n } from '@/i18n'
 import { notifyError } from '@/store/notifications'
 import type { KovaConfigRecord } from '@/types/kova'
 
-import { hermesConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
+import { kovaConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
 
 import { ConfigField } from './config-field'
 import { SECTIONS } from './constants'
@@ -60,7 +60,7 @@ export function VoiceProviderFields({
   // (null when unscoped, which maps to the bare cache row).
   const scopeKey = profile == null ? null : profileScopeKey(profile)
   // eslint-disable-next-line react-hooks/exhaustive-deps -- scopeKey is the identity of `profile`
-  const writeConfigCache = useMemo(() => hermesConfigCacheWriter(profile), [scopeKey])
+  const writeConfigCache = useMemo(() => kovaConfigCacheWriter(profile), [scopeKey])
 
   const { data: schemaResponse } = useQuery({
     queryKey: ['kova-config-schema'],

@@ -150,9 +150,9 @@ test('bot on a remote secondary connection: a client-only image reaches it as by
   const clientBox = createCoreSandbox('secondary-client')
   // The client's own local backend (default profile) can answer too, so a
   // mis-routed turn would still complete — only the owner assertions tell.
-  writeProviderHome(clientBox.hermesHome, provider.url, IMAGE_CONFIG)
-  writeProviderHome(remoteBox.hermesHome, provider.url, IMAGE_CONFIG)
-  const botHome = path.join(remoteBox.hermesHome, 'profiles', BOT)
+  writeProviderHome(clientBox.kovaHome, provider.url, IMAGE_CONFIG)
+  writeProviderHome(remoteBox.kovaHome, provider.url, IMAGE_CONFIG)
+  const botHome = path.join(remoteBox.kovaHome, 'profiles', BOT)
   writeProviderHome(botHome, provider.url, IMAGE_CONFIG)
   // The picture exists on the client. The remote backend gets a private mount
   // namespace in which this directory is empty: the other machine's view.
@@ -309,7 +309,7 @@ test('bot on a remote secondary connection: a client-only image reaches it as by
       const turn = provider.completions.find(c => c.marker === U1)!
       const user = lastUser(turn.body)
       const userText = typeof user?.content === 'string' ? user.content : JSON.stringify(user?.content ?? '')
-      const at = userText.indexOf(remoteBox.hermesHome)
+      const at = userText.indexOf(remoteBox.kovaHome)
       const staged = at >= 0 ? /^\S+?\.png/.exec(userText.slice(at))?.[0] : undefined
       expect(staged, `the turn references a remote-side image path: ${userText.slice(0, 400)}`).toBeTruthy()
       expect(fs.readFileSync(staged!).equals(png), 'remote-staged image is byte-identical').toBe(true)

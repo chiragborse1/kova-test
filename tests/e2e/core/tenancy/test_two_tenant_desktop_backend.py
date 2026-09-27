@@ -142,7 +142,7 @@ def test_desktop_backend_never_crosses_tenants(fleet, request: pytest.FixtureReq
 
     # Phase 3: profile churn next to the live backend never replaces it.
     b.ok("profiles.create", {"name": "gamma"})
-    deleted = H.run_hermes(["profile", "delete", "gamma", "--yes"], root / "home")
+    deleted = H.run_kova(["profile", "delete", "gamma", "--yes"], root / "home")
     assert deleted.returncode == 0, deleted.stderr[-2000:]
     assert b.proc.pid == pid and b.proc.poll() is None, "profile create/delete replaced the backend"
     b.turn(sids["alpha"], "after profile churn")

@@ -61,8 +61,8 @@ def _run_keygen(
         "set -eu\n"
         f"{env_setup}"
         f'KOVA_HOME="{home}"\n'
-        # In tests we run unprivileged; as_hermes is a passthrough then.
-        'as_hermes() { "$@"; }\n'
+        # In tests we run unprivileged; as_kova is a passthrough then.
+        'as_kova() { "$@"; }\n'
         f"{_path_guard_functions(stage2_text)}\n"
         f"{_keygen_block(stage2_text)}\n"
     )

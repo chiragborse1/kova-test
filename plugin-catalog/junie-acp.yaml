@@ -6,7 +6,7 @@ description: JetBrains Junie coding agent as a Kova model provider over ACP.
 maintainer: JetBrains
 tier: community
 category: models
-requires_hermes: ">=0.21.1"
+requires_kova: ">=0.21.1"
 docs_url: https://github.com/JetBrains/junie/tree/main/kova-plugin
 platforms: []
 capabilities:

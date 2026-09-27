@@ -13,7 +13,7 @@ description: >-
 maintainer: tempoxyz
 tier: community
 category: tools
-requires_hermes: ">=0.21.3"
+requires_kova: ">=0.21.3"
 docs_url: https://github.com/tempoxyz/kova-mpp#native-plugin-installation
 capabilities:
   provides_tools:

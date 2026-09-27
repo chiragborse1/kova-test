@@ -84,8 +84,8 @@ export function resolveNoConsolePython({
     candidates.push(override)
   }
 
-  const hermesRoot = env.KOVA_DESKTOP_KOVA_ROOT
-  const searchRoots = hermesRoot ? [hermesRoot, ...roots] : roots
+  const kovaRoot = env.KOVA_DESKTOP_KOVA_ROOT
+  const searchRoots = kovaRoot ? [kovaRoot, ...roots] : roots
 
   for (const root of searchRoots) {
     if (!root) {

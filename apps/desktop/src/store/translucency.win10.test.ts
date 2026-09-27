@@ -15,7 +15,7 @@ import { describe, expect, it, vi } from 'vitest'
 // on Win32 regardless of glass support.
 vi.hoisted(() => {
   Object.defineProperty(globalThis.navigator, 'platform', { configurable: true, value: 'Win32' })
-  Object.defineProperty(globalThis.window, 'hermesDesktop', {
+  Object.defineProperty(globalThis.window, 'kovaDesktop', {
     configurable: true,
     value: { glassSupported: false }
   })

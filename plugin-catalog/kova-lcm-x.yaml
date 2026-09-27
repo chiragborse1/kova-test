@@ -17,7 +17,7 @@ description: 'Lossless context memory engine: instead of lossy compaction, LCM-X
 maintainer: electricsheephq
 tier: community
 category: memory
-requires_hermes: '>=0.21.3'
+requires_kova: '>=0.21.3'
 docs_url: https://github.com/electricsheephq/lcm-x#readme
 version: "0.24.1"
 platforms: []

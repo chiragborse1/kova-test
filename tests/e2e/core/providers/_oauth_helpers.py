@@ -87,13 +87,13 @@ def kova_argv(*args: str) -> list[str]:
     return [sys.executable, "-m", "kova_cli.main", *args]
 
 
-def run_hermes(fh: FakeHome, args: list[str], *, extra_env: dict[str, str] | None = None,
+def run_kova(fh: FakeHome, args: list[str], *, extra_env: dict[str, str] | None = None,
                timeout: float = 120.0) -> subprocess.CompletedProcess:
     return subprocess.run(kova_argv(*args), env=fh.env(extra_env), cwd=str(fh.root), stdin=subprocess.DEVNULL,
                           capture_output=True, text=True, timeout=timeout)
 
 
-def spawn_hermes(fh: FakeHome, args: list[str], *, extra_env: dict[str, str] | None = None,
+def spawn_kova(fh: FakeHome, args: list[str], *, extra_env: dict[str, str] | None = None,
                  log: Path) -> subprocess.Popen:
     out = open(log, "w", encoding="utf-8")  # noqa: SIM115 - closed when the child is reaped
     try:

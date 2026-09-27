@@ -85,7 +85,7 @@ export function profileScoped(profile?: null | string): { priority?: 'foreground
  *  a Bot on another connection is (its connection, its profile) — never the
  *  active connection with the Bot's profile name. Missing halves fall back to
  *  the ambient scope; an explicit connection — `'local'` included — overrides
- *  the ambient tag `hermesApi` spreads underneath (as capabilityScoped does). */
+ *  the ambient tag `kovaApi` spreads underneath (as capabilityScoped does). */
 export interface OwnerScope {
   connectionId?: null | string
   profile?: null | string
@@ -157,8 +157,8 @@ export function ambientOwnerConnectionId(): string | undefined {
  *  pin — `'local'` included — so a pin always overrides the ambient tag spread
  *  underneath it. (It used to omit the key for 'local', which made the pin
  *  unable to beat the ambient tag; helpers then had to bypass this wrapper.) */
-export function hermesApi<T>(request: KovaApiRequest): Promise<T> {
-  return window.hermesDesktop.api<T>({ ...connectionScoped(), ...request })
+export function kovaApi<T>(request: KovaApiRequest): Promise<T> {
+  return window.kovaDesktop.api<T>({ ...connectionScoped(), ...request })
 }
 
 // ── Capability scope: (connection, profile) routing for the Capabilities

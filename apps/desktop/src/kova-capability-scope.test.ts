@@ -32,14 +32,14 @@ describe('capability helpers are connection-scoped', () => {
   const api = vi.fn(async (_req: { connectionId?: string; path: string; profile?: string }) => ({}) as never)
 
   beforeEach(() => {
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = { api }
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = { api }
     api.mockClear()
   })
 
   afterEach(() => {
     setApiRequestProfile(null)
     setApiRequestConnection(null)
-    delete (window as { hermesDesktop?: unknown }).hermesDesktop
+    delete (window as { kovaDesktop?: unknown }).kovaDesktop
   })
 
   const last = () => api.mock.calls.at(-1)?.[0] as { connectionId?: string; profile?: string; priority?: string }

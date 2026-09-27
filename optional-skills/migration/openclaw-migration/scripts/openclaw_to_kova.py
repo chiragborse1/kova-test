@@ -2726,16 +2726,16 @@ class Migrator:
         if discord_cfg:
             kova_cfg_path = self.target_root / "config.yaml"
             kova_cfg = load_yaml_file(kova_cfg_path)
-            discord_hermes = kova_cfg.get("discord") or {}
+            discord_kova = kova_cfg.get("discord") or {}
             changed = False
             if "requireMention" in discord_cfg:
-                discord_hermes["require_mention"] = discord_cfg["requireMention"]
+                discord_kova["require_mention"] = discord_cfg["requireMention"]
                 changed = True
             if discord_cfg.get("autoThread") is not None:
-                discord_hermes["auto_thread"] = discord_cfg["autoThread"]
+                discord_kova["auto_thread"] = discord_cfg["autoThread"]
                 changed = True
             if changed and self.execute:
-                kova_cfg["discord"] = discord_hermes
+                kova_cfg["discord"] = discord_kova
                 dump_yaml_file(kova_cfg_path, kova_cfg)
 
         # Archive complex channel configs (group settings, thread bindings, etc.)
@@ -2768,19 +2768,19 @@ class Migrator:
 
         kova_cfg_path = self.target_root / "config.yaml"
         kova_cfg = load_yaml_file(kova_cfg_path)
-        browser_hermes = kova_cfg.get("browser") or {}
+        browser_kova = kova_cfg.get("browser") or {}
         changed = False
 
         # Map fields that have Kova equivalents
         if browser.get("cdpUrl"):
-            browser_hermes["cdp_url"] = browser["cdpUrl"]
+            browser_kova["cdp_url"] = browser["cdpUrl"]
             changed = True
         if browser.get("headless") is not None:
-            browser_hermes["headless"] = browser["headless"]
+            browser_kova["headless"] = browser["headless"]
             changed = True
 
         if changed:
-            kova_cfg["browser"] = browser_hermes
+            kova_cfg["browser"] = browser_kova
             if self.execute:
                 self.maybe_backup(kova_cfg_path)
                 dump_yaml_file(kova_cfg_path, kova_cfg)

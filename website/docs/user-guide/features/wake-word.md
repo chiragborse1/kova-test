@@ -155,7 +155,7 @@ wake_word:
   confirmation_frames: 3      # openWakeWord only — consecutive over-threshold frames required to fire
   start_new_session: true     # start a fresh session on wake vs. continue the current one
   openwakeword:
-    model: hey_hermes         # bundled default, or an absolute path to a custom .tflite
+    model: hey_kova         # bundled default, or an absolute path to a custom .tflite
   porcupine:
     keyword: jarvis           # built-in keyword OR path to a custom .ppn
 ```

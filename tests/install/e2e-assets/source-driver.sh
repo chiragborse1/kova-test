@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Source-only helpers: never search PATH for a different installation.
-source_hermes() {
+source_kova() {
   local root="$1" command="$1/.kova/bin/kova"
   if [ -e "$command" ] || [ -L "$command" ]; then
     [ -f "$command" ] && [ -x "$command" ] || {

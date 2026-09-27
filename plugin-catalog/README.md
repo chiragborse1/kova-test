@@ -77,7 +77,7 @@ maintainer: OwnerName
 tier: official              # official | community (default community)
 category: memory            # desktop | memory | platform | web | tools | voice | automation | models | general
                             # (default desktop) — the shelf the entry sits on at /docs/plugins
-requires_hermes: ">=0.19"   # optional
+requires_kova: ">=0.19"   # optional
 docs_url: ""                # optional
 version: "1.4.0"            # optional human label for the sha (quote it); shown as "1.4.0 @ abcd1234"
 image: ""                   # optional https image on a GitHub host, 2:1 (e.g. 1200x600), e.g.

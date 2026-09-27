@@ -47,10 +47,10 @@ interface PaintState {
 async function setupSeededDesktop(mockServer?: MockServerOptions): Promise<SeededFixture> {
   const mock = await startMockServer(mockServer)
   const sandbox = createSandbox('large-session')
-  writeMockProviderConfig(sandbox.hermesHome, mock.url)
-  writeEnvFile(sandbox.hermesHome)
+  writeMockProviderConfig(sandbox.kovaHome, mock.url)
+  writeEnvFile(sandbox.kovaHome)
 
-  const builder = await RealSessionBuilder.start(sandbox.hermesHome)
+  const builder = await RealSessionBuilder.start(sandbox.kovaHome)
   try {
     await builder.createSession({ title: SESSION_TITLE, turns: HISTORY_TURNS })
   } finally {

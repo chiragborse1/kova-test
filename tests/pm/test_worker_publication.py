@@ -132,12 +132,12 @@ def test_selection_refuses_config_edits_during_preparation(client, tmp_path, mon
     assert not (install_state_dir(repo) / "publication.json").exists()
 
 
-@pytest.mark.parametrize("invalid", ["name: [", "manifest_version: 999", "requires_hermes: '>=999'", "name: other"])
+@pytest.mark.parametrize("invalid", ["name: [", "manifest_version: 999", "requires_kova: '>=999'", "name: other"])
 def test_worker_rejects_unloadable_staged_plugin_without_app_dependencies(client, tmp_path, monkeypatch, invalid):
     from pm.store import tree_digest
     repo = _current_environment(tmp_path, monkeypatch, [])
     # The install stamp is the running version identity; without a release
-    # base (a tagless checkout) the requires_hermes gate is permissive.
+    # base (a tagless checkout) the requires_kova gate is permissive.
     monkeypatch.delenv("KOVA_INSTALL_ROOT", raising=False)
     (repo / "install-stamp.json").write_text(json.dumps({
         "commit": "1" * 40, "updateMechanism": "self", "baseVersion": "1.0.0", "source": "local",

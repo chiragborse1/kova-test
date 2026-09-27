@@ -16,7 +16,7 @@ const PR_STYLE: Record<string, { className: string; icon: string }> = {
 
 export function openPullRequest(pr: KovaBranchPullRequest): void {
   if (pr.url) {
-    void window.hermesDesktop?.openExternal?.(pr.url)
+    void window.kovaDesktop?.openExternal?.(pr.url)
   }
 }
 

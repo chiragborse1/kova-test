@@ -361,7 +361,7 @@ def kill_group(proc: subprocess.Popen, sig: int = signal.SIGKILL) -> None:
         pass
 
 
-def run_hermes(argv: list[str], home: Path, timeout: float = 120.0,
+def run_kova(argv: list[str], home: Path, timeout: float = 120.0,
                extra_env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
     proc = subprocess.Popen(
         [sys.executable, "-m", "kova_cli.main", *argv], cwd=str(home), env=hermetic_env(home, extra_env),

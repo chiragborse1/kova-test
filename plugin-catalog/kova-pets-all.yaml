@@ -6,7 +6,7 @@ description: Browse every pet installed for this Kova profile in its own desktop
 maintainer: poponline63
 tier: community
 category: desktop
-requires_hermes: ">=0.19"
+requires_kova: ">=0.19"
 docs_url: https://github.com/poponline63/kova-pets-all
 platforms: []
 capabilities:

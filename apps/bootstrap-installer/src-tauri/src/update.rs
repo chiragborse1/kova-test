@@ -275,7 +275,7 @@ async fn run_update(app: AppHandle) -> Result<()> {
     // Mutual exclusion (#50238): publish an "update in progress" marker for the
     // entire duration of this update. A desktop instance the user relaunches
     // mid-update consults this before spawning its own local backend — without
-    // it, that backend re-locks the venv shim, our `force_kill_other_hermes`
+    // it, that backend re-locks the venv shim, our `force_kill_other_kova`
     // straggler-cleanup kills it, and the relaunch/kill cycle loops. The guard
     // removes the marker on every exit path (incl. early returns / panics).
     //
@@ -322,7 +322,7 @@ async fn run_update(app: AppHandle) -> Result<()> {
     };
 
     let legacy_install = !install_root.join("pm").is_dir();
-    let kova = resolve_hermes(&install_root).await.ok_or_else(|| {
+    let kova = resolve_kova(&install_root).await.ok_or_else(|| {
         let msg = format!(
             "Could not find the kova CLI under {}. Is Kova installed? \
              Re-run the installer to repair the install.",
@@ -778,7 +778,7 @@ async fn run_streamed(
     stage: Option<&str>,
 ) -> Result<CmdResult> {
     let mut stdout_tail: VecDeque<String> = VecDeque::with_capacity(STDOUT_TAIL_LINES);
-    let current = resolve_hermes(cwd).await.ok_or_else(|| anyhow!("Installation launcher missing under {}", cwd.display()))?;
+    let current = resolve_kova(cwd).await.ok_or_else(|| anyhow!("Installation launcher missing under {}", cwd.display()))?;
     let mut command: Vec<String> = vec![current.to_string_lossy().into_owned()];
     if current.starts_with(cwd.join(".kova").join("bin")) {
         let mut query = Command::new(&current);
@@ -859,7 +859,7 @@ struct CmdResult {
 }
 
 /// Resolve only a launcher owned by this installation, never PATH.
-async fn resolve_hermes(install_root: &Path) -> Option<PathBuf> {
+async fn resolve_kova(install_root: &Path) -> Option<PathBuf> {
     let names: &[&str] = if cfg!(target_os = "windows") { &["kova.exe", "kova.cmd"] } else { &["kova"] };
     for name in names {
         let launcher = install_root.join(".kova").join("bin").join(name);
@@ -1220,13 +1220,13 @@ mod tests {
             .join(if cfg!(windows) { "kova.exe" } else { "kova" });
         std::fs::create_dir_all(legacy.parent().unwrap()).unwrap();
         std::fs::write(&legacy, "old").unwrap();
-        assert_eq!(resolve_hermes(&root).await, Some(legacy));
+        assert_eq!(resolve_kova(&root).await, Some(legacy));
         std::fs::create_dir(root.join("pm")).unwrap();
-        assert_eq!(resolve_hermes(&root).await, None, "PM must never fall back to the old venv");
+        assert_eq!(resolve_kova(&root).await, None, "PM must never fall back to the old venv");
         let launcher = root.join(".kova/bin").join(if cfg!(windows) { "kova.cmd" } else { "kova" });
         std::fs::create_dir_all(launcher.parent().unwrap()).unwrap();
         std::fs::write(&launcher, "new").unwrap();
-        assert_eq!(resolve_hermes(&root).await, Some(launcher));
+        assert_eq!(resolve_kova(&root).await, Some(launcher));
         std::fs::remove_dir_all(root).unwrap();
     }
 
@@ -1424,7 +1424,7 @@ mod tests {
 
     #[test]
     fn acquire_adopts_a_marker_prewritten_with_our_own_pid() {
-        // #74761: desktop writeUpdateMarker(hermesHome, child.pid) races ahead
+        // #74761: desktop writeUpdateMarker(kovaHome, child.pid) races ahead
         // of UpdateMarkerGuard::acquire. The marker names US; refusing it made
         // every in-app desktop update loop forever. Adopt it without resetting
         // the holder age, so a wedged updater still reaches the stale ceiling.

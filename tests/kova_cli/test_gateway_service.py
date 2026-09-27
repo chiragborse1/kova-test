@@ -1397,20 +1397,20 @@ class TestSystemUnitKovaHome:
     ):
         """A target-managed Node must suppress caller-specific PATH fallbacks."""
         target_home = tmp_path / "home" / "alice"
-        target_hermes = target_home / ".kova"
+        target_kova = target_home / ".kova"
         root_home = tmp_path / "root"
-        root_hermes = root_home / ".kova"
-        managed_dirs = _seed_pm_node_facts(target_hermes)
+        root_kova = root_home / ".kova"
+        managed_dirs = _seed_pm_node_facts(target_kova)
         root_kova.mkdir(parents=True)
 
         monkeypatch.setattr(Path, "home", staticmethod(lambda: root_home))
-        monkeypatch.setenv("KOVA_HOME", str(root_hermes))
+        monkeypatch.setenv("KOVA_HOME", str(root_kova))
         monkeypatch.setattr(
             gateway_cli,
             "_system_service_identity",
             lambda run_as_user=None: ("alice", "alice", str(target_home), 1001),
         )
-        monkeypatch.setattr(gateway_cli, "get_kova_home", lambda: root_hermes)
+        monkeypatch.setattr(gateway_cli, "get_kova_home", lambda: root_kova)
         monkeypatch.setattr(gateway_cli, "_build_service_path_dirs", lambda: [])
 
         monkeypatch.setattr(gateway_cli.shutil, "which", lambda name: "/root/bin/node")
@@ -1520,14 +1520,14 @@ class TestSystemUnitRefreshSyncsKovaHome:
     def test_refresh_adopts_unit_kova_home_before_rewriting(self, tmp_path, monkeypatch):
         root_home = tmp_path / "root"
         alice_home = tmp_path / "alice"
-        root_hermes = root_home / ".kova"
-        alice_hermes = alice_home / ".kova"
+        root_kova = root_home / ".kova"
+        alice_kova = alice_home / ".kova"
         root_kova.mkdir(parents=True)
         alice_kova.mkdir(parents=True)
-        (root_hermes / "config.yaml").write_text(
+        (root_kova / "config.yaml").write_text(
             "agent:\n  restart_drain_timeout: 60\n", encoding="utf-8"
         )
-        (alice_hermes / "config.yaml").write_text(
+        (alice_kova / "config.yaml").write_text(
             "agent:\n  restart_drain_timeout: 180\n", encoding="utf-8"
         )
 
@@ -1547,16 +1547,16 @@ class TestSystemUnitRefreshSyncsKovaHome:
         monkeypatch.delenv("KOVA_RESTART_DRAIN_TIMEOUT", raising=False)
 
         # Correct installed unit (operator's KOVA_HOME + drain timeout).
-        monkeypatch.setenv("KOVA_HOME", str(alice_hermes))
+        monkeypatch.setenv("KOVA_HOME", str(alice_kova))
         good_unit = gateway_cli.generate_systemd_unit(system=True, run_as_user="alice")
         assert f"TimeoutStopSec={resolve_systemd_timeout_stop_sec(180.0, DEFAULT_GATEWAY_CRON_DRAIN_TIMEOUT)}" in good_unit
         unit_path.write_text(good_unit, encoding="utf-8")
 
         # Simulate sudo without inherited KOVA_HOME (falls back to root).
-        monkeypatch.setenv("KOVA_HOME", str(root_hermes))
+        monkeypatch.setenv("KOVA_HOME", str(root_kova))
         assert gateway_cli.refresh_systemd_unit_if_needed(system=True) is False
         assert unit_path.read_text(encoding="utf-8") == good_unit
-        assert os.environ["KOVA_HOME"] == str(alice_hermes)
+        assert os.environ["KOVA_HOME"] == str(alice_kova)
         assert gateway_cli.systemd_unit_is_current(system=True) is True
 
 

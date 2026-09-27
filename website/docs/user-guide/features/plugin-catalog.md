@@ -71,7 +71,7 @@ directory of the kova-agent repository, declaring:
 | `category` | Browse shelf: `desktop` (default), `memory`, `platform`, `web`, `tools`, `voice`, `automation`, `models` or `general` |
 | `maintainer` | Who owns the plugin |
 | `capabilities` | Declared tools, hooks, middleware, and required env vars |
-| `requires_hermes` | Minimum Kova version, e.g. `>=0.19` (optional) |
+| `requires_kova` | Minimum Kova version, e.g. `>=0.19` (optional) |
 | `platforms` | OS restrictions, empty = all (optional) |
 | `title` | Human name shown on cards, e.g. `NVIDIA App` (optional; defaults to `name`) |
 | `onboarding` | `true` offers the plugin on the desktop onboarding card, beside the hosted connectors, on the platforms it lists. Curated: official entries only (optional, default `false`) |
@@ -101,7 +101,7 @@ The catalog is designed so you know exactly what you're installing:
 - **Desktop plugins run with the app's authority — review is the boundary.**
   A plugin's `desktop/plugin.js` is evaluated inside the Desktop app itself,
   in the same realm as the app's own code: there is no sandbox, and it can
-  do anything the app can (gateway RPC, the full `window.hermesDesktop`
+  do anything the app can (gateway RPC, the full `window.kovaDesktop`
   bridge, storage of other plugins). What protects you is the trust model
   above — a human read the exact pinned commit, and the install is that
   commit — plus two tripwires: admission's `desktop surface` lint refuses

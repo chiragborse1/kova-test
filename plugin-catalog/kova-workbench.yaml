@@ -5,7 +5,7 @@ description: The Kova desktop app in your browser. `kova workbench` serves the d
 maintainer: sxuff
 tier: community
 category: desktop
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/sxuff/kova-workbench#readme
 version: "0.2.1"
 image: https://raw.githubusercontent.com/sxuff/kova-workbench/f07fb5c90e24c1a396604758feb0fd4ae077760b/docs/media/banner.png

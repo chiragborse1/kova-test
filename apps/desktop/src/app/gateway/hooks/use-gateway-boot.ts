@@ -219,7 +219,7 @@ interface GatewayBootOptions {
   /** Server→client request from any registry socket; false = no handler (the channel answers -32601). */
   handleServerRequest: (request: ScopedServerRequest) => boolean
   onConnectionReady: (
-    connection: Awaited<ReturnType<NonNullable<typeof window.hermesDesktop>['getConnection']>> | null
+    connection: Awaited<ReturnType<NonNullable<typeof window.kovaDesktop>['getConnection']>> | null
   ) => void
   onGatewayReady: (gateway: KovaGateway | null) => void
   refreshKovaConfig: (force?: boolean, shouldPublish?: () => boolean) => Promise<void>
@@ -260,7 +260,7 @@ export function useGatewayBoot({
 
   useEffect(() => {
     let cancelled = false
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
 
     // Window-state IPC (fullscreen / traffic-light position) that lands while
     // no connection is published — mid-boot, or between a dropped primary and

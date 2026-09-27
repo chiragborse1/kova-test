@@ -241,7 +241,7 @@ phase_install() {
   [ "$got" = "$OLD_SHA" ] || fail "installed checkout is $got, expected OLD ($OLD_SHA)"
   ok "checkout is OLD ($OLD_SHA)"
   local kova
-  kova="$(source_hermes "$INSTALL_DIR")" || fail "no installed command after install"
+  kova="$(source_kova "$INSTALL_DIR")" || fail "no installed command after install"
   python3 -B "$ASSETS/source_driver.py" --root "$INSTALL_DIR" --launcher "$kova" --desktop present \
     || fail "read-only verification failed after install"
   KOVA_DISABLE_LAZY_INSTALLS=1 PYTHONDONTWRITEBYTECODE=1 source_build_env "$kova" --version 2>&1 | ts_prefix > "$LOG_DIR/version-old.log" || fail "kova --version failed after install"
@@ -312,7 +312,7 @@ phase_update() {
       # help for both flags: this fixture stages unpublished main in serve.git,
       # so newer updaters need explicit --branch main (not the channel object).
       local kova help
-      kova="$(source_hermes "$INSTALL_DIR")" || fail "no installed update command"
+      kova="$(source_kova "$INSTALL_DIR")" || fail "no installed update command"
       help="$(source_build_env "$kova" update --help 2>&1)" || fail "installed update --help failed: $help"
       build_source_update_command "$kova" "$help"
       printf '  CLI update invocation:'
@@ -362,7 +362,7 @@ PYEOF
     kova-desktop-app-update)
       # The product's own launch, captured at its spawn site.
       local kova
-      kova="$(source_hermes "$INSTALL_DIR")" || fail "no installed desktop command"
+      kova="$(source_kova "$INSTALL_DIR")" || fail "no installed desktop command"
       local spec="$WORK_ROOT/launch-spec.json"
       local rc=0
       if [ "$kova" = "$INSTALL_DIR/.kova/bin/kova" ]; then
@@ -413,15 +413,15 @@ PYEOF
   # renderer target. Always drive the ordinary CLI startup before inspecting or
   # launching the app; launcher presence alone does not prove completion.
   step "next ordinary startup after the update (completes deferred source-update work)"
-  local startup_hermes startup_rc=0
-  startup_hermes="$(source_kova_for_startup "$INSTALL_DIR")" \
+  local startup_kova startup_rc=0
+  startup_kova="$(source_kova_for_startup "$INSTALL_DIR")" \
     || fail "no installed command to start after the update"
-  source_build_env "$startup_hermes" status > "$LOG_DIR/post-update-startup.log" 2>&1 || startup_rc=$?
+  source_build_env "$startup_kova" status > "$LOG_DIR/post-update-startup.log" 2>&1 || startup_rc=$?
   log_group "post-update startup" "$LOG_DIR/post-update-startup.log"
   ok "post-update startup ran (exit $startup_rc); the read-only checks below assert completion"
 
   local command
-  command="$(source_hermes "$INSTALL_DIR")" || fail "no installed command after update"
+  command="$(source_kova "$INSTALL_DIR")" || fail "no installed command after update"
   python3 -B "$ASSETS/source_driver.py" --root "$INSTALL_DIR" --launcher "$command" --desktop present \
     || fail "read-only verification failed after update; no repair was attempted"
   KOVA_DISABLE_LAZY_INSTALLS=1 PYTHONDONTWRITEBYTECODE=1 source_build_env "$command" --version 2>&1 | ts_prefix > "$LOG_DIR/version-head.log" \

@@ -65,7 +65,7 @@ describe('connection-switch query invalidation', () => {
 
   beforeEach(() => {
     vi.stubGlobal('window', {
-      hermesDesktop: {
+      kovaDesktop: {
         api: vi.fn(async () => ({})),
         connections: {
           list: vi.fn(async () => registry),
@@ -109,7 +109,7 @@ describe('connection-switch query invalidation', () => {
 
   it('refetches connection-scoped queries against the NEW gateway after a switch', async () => {
     // One active profile-scoped query whose connection tag is read at queryFn
-    // time, which is what pluginRest → hermesApi does.
+    // time, which is what pluginRest → kovaApi does.
     observer = new QueryObserver(queryClient, {
       queryKey: ['kanban', 'boards'],
       queryFn: async () => {

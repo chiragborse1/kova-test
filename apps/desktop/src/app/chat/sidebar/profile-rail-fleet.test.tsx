@@ -231,7 +231,7 @@ beforeEach(() => {
   probeLocalBackend.mockResolvedValue({ bootstrapNeeded: false })
   selectConnection.mockResolvedValue(undefined)
   openWindow.mockResolvedValue({ ok: true })
-  ;(window as { hermesDesktop?: unknown }).hermesDesktop = { getAgentRoster, openWindow, probeLocalBackend }
+  ;(window as { kovaDesktop?: unknown }).kovaDesktop = { getAgentRoster, openWindow, probeLocalBackend }
 })
 
 afterEach(() => {
@@ -244,7 +244,7 @@ afterEach(() => {
   activeConnectionId.set(null)
   profileScope.set('default')
   profiles.set([{ is_default: true, name: 'default' }])
-  delete (window as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 describe('ProfileRail fleet mode', () => {

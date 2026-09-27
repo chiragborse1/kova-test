@@ -5,7 +5,7 @@ description: Read-only Kova Desktop pane for live and past delegated subagent wo
 maintainer: aska-digital
 tier: community
 category: desktop
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/aska-digital/protean-subagent-viewer
 version: "0.1.2"
 readme: true

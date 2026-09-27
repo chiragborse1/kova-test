@@ -43,7 +43,7 @@ class TestOfferOpenclawMigration:
         config_path.write_text("agent:\n  max_turns: 90\n")
 
         # Build a fake migration module
-        fake_mod = ModuleType("openclaw_to_hermes")
+        fake_mod = ModuleType("openclaw_to_kova")
         fake_mod.resolve_selected_options = MagicMock(return_value={"soul", "memory"})
         fake_migrator = MagicMock()
         fake_migrator.migrate.return_value = {

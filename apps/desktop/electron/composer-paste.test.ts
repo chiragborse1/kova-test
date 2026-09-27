@@ -16,12 +16,12 @@ afterEach(() => {
 
 describe('writeComposerPaste', () => {
   it('lands the paste directly under <KOVA_HOME>/composer-pastes so the backend admits it', async () => {
-    const hermesHome = fs.mkdtempSync(path.join(os.tmpdir(), 'kova-home-'))
-    scratch.push(hermesHome)
+    const kovaHome = fs.mkdtempSync(path.join(os.tmpdir(), 'kova-home-'))
+    scratch.push(kovaHome)
 
-    const filePath = await writeComposerPaste(hermesHome, 'pasted body')
+    const filePath = await writeComposerPaste(kovaHome, 'pasted body')
 
-    expect(path.dirname(filePath)).toBe(path.join(hermesHome, COMPOSER_PASTES_DIRNAME))
+    expect(path.dirname(filePath)).toBe(path.join(kovaHome, COMPOSER_PASTES_DIRNAME))
     expect(fs.readFileSync(filePath, 'utf8')).toBe('pasted body')
   })
 })

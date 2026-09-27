@@ -339,7 +339,7 @@ active plugin requests consent against its staged declaration before publication
 A refusal preserves the installed plugin and selected environment.
 
 The installer and PM admission reject unsupported `manifest_version` values
-and unmet `requires_hermes` constraints before publication.
+and unmet `requires_kova` constraints before publication.
 :::
 
 ### Python dependencies

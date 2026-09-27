@@ -1976,7 +1976,7 @@ export const ru = defineLocale({
     noSessions: 'Сеансов пока нет.',
     gatewayRunning: 'Шлюз сообщений работает',
     gatewayStopped: 'Шлюз сообщений остановлен',
-    hermesActiveSessions: (version, count) => `Kova ${version} · Активные сеансы: ${count}`,
+    kovaActiveSessions: (version, count) => `Kova ${version} · Активные сеансы: ${count}`,
     restartGateway: 'Перезапустить шлюз',
     openBrowser: 'Открыть браузер',
     gatewayRestartFailed: 'Не удалось перезапустить шлюз.',

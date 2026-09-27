@@ -577,7 +577,7 @@ export default function SystemPage() {
   // ── Update check / apply ───────────────────────────────────────────
   const checkForUpdate = useCallback(
     async (force = false) => {
-      if (status?.can_update_hermes === false) return;
+      if (status?.can_update_kova === false) return;
       setCheckingUpdate(true);
       try {
         const info = await api.checkKovaUpdate(force);
@@ -602,14 +602,14 @@ export default function SystemPage() {
         setCheckingUpdate(false);
       }
     },
-    [showToast, status?.can_update_hermes],
+    [showToast, status?.can_update_kova],
   );
 
   // Auto-check (cached) runs inside loadAll on mount; this is the
   // user-triggered forced re-check from the "Check for updates" button.
   const applyUpdate = async () => {
     setUpdateConfirmOpen(false);
-    if (status?.can_update_hermes === false) {
+    if (status?.can_update_kova === false) {
       showToast(
         "Kova updates are managed outside this dashboard.",
         "success",
@@ -702,7 +702,7 @@ export default function SystemPage() {
   }
 
   const gatewayRunning = status?.gateway_running;
-  const canUpdateHermes = status?.can_update_hermes !== false;
+  const canUpdateHermes = status?.can_update_kova !== false;
   const activeMemoryProvider = memory?.active
     ? memory.providers.find((provider) => provider.name === memory.active)
     : null;

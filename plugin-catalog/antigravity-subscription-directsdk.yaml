@@ -14,7 +14,7 @@ description: >-
 maintainer: soyelmismo
 tier: community
 category: models
-requires_hermes: ">=0.21.0"
+requires_kova: ">=0.21.0"
 docs_url: https://github.com/soyelmismo/kova-antigravity-subscription#readme
 version: "1.0.4"
 readme: true

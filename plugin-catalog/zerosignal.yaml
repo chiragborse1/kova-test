@@ -6,7 +6,7 @@ description: ZeroSignal — private, pay-per-request inference through the local
 maintainer: TxnLab
 tier: community
 category: models
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/TxnLab/kova-zerosignal-provider#readme
 capabilities:
   provides_tools: []

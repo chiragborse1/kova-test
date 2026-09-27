@@ -64,7 +64,7 @@ def _build_permission_tool_call(command: str, description: str):
     )
 
 
-def _map_outcome_to_hermes(outcome: object, *, allowed_option_ids: set[str]) -> str:
+def _map_outcome_to_kova(outcome: object, *, allowed_option_ids: set[str]) -> str:
     """Map an ACP permission outcome into Kova approval strings."""
     if not isinstance(outcome, AllowedOutcome):
         return "deny"
@@ -148,6 +148,6 @@ def make_approval_callback(request_permission_fn: Callable, loop: asyncio.Abstra
             return "timeout"
         if response is None:
             return "deny"
-        return _map_outcome_to_hermes(response.outcome, allowed_option_ids={option.option_id for option in options})
+        return _map_outcome_to_kova(response.outcome, allowed_option_ids={option.option_id for option in options})
 
     return _callback

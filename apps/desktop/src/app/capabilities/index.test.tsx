@@ -420,7 +420,7 @@ describe('CapabilitiesView toolset management', { timeout: 60_000 }, () => {
       sources: []
     })
 
-    ;(window as { hermesDesktop?: unknown }).hermesDesktop = { connections, getAgentRoster }
+    ;(window as { kovaDesktop?: unknown }).kovaDesktop = { connections, getAgentRoster }
 
     try {
       await renderSkills()
@@ -429,7 +429,7 @@ describe('CapabilitiesView toolset management', { timeout: 60_000 }, () => {
       // The selector paints roster rows labeled profile — device.
       expect(await screen.findByText('default — This device (current)')).toBeTruthy()
     } finally {
-      delete (window as { hermesDesktop?: unknown }).hermesDesktop
+      delete (window as { kovaDesktop?: unknown }).kovaDesktop
     }
   })
 

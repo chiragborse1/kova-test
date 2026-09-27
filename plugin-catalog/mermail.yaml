@@ -10,7 +10,7 @@ description: Privacy-first agent email inboxes and workspace automation through 
 maintainer: Nudgen-Marketing
 tier: community
 category: platform
-requires_hermes: '>=0.20'
+requires_kova: '>=0.20'
 docs_url: https://docs.mermail.app/ai/skills
 version: 1.5.5
 image: https://raw.githubusercontent.com/Nudgen-Marketing/mermail-skills/269a711bf683845d75009df4984bf25eee83b0bd/assets/logo.png

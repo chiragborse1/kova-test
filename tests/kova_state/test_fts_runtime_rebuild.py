@@ -156,7 +156,7 @@ class TestRuntimeFtsRebuild:
         ),
     )
     def test_uninspectable_non_kova_process_is_not_a_holder(self, argv):
-        assert not kova_state_holders._looks_like_hermes(argv)
+        assert not kova_state_holders._looks_like_kova(argv)
 
     @pytest.mark.parametrize(
         "argv",
@@ -180,7 +180,7 @@ class TestRuntimeFtsRebuild:
         ),
     )
     def test_uninspectable_kova_process_remains_a_holder(self, argv):
-        assert kova_state_holders._looks_like_hermes(argv)
+        assert kova_state_holders._looks_like_kova(argv)
 
     @pytest.mark.platforms("linux")
     def test_foreign_holder_detection_proc_readlink_deleted_wal(

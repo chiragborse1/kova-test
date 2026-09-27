@@ -9,7 +9,7 @@ description: >-
 maintainer: scross01
 tier: community
 category: tools
-requires_hermes: ">=0.15"
+requires_kova: ">=0.15"
 version: "0.4.5"
 platforms: []
 capabilities:

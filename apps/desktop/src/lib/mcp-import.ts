@@ -354,7 +354,7 @@ function readKovaToken(flags: KovaAddFlags, tokens: string[], index: number): nu
   return index
 }
 
-function hermesEntry(flags: KovaAddFlags): McpImportEntry | null {
+function kovaEntry(flags: KovaAddFlags): McpImportEntry | null {
   const { args, auth, command, env, name, url } = flags
 
   if (!name || (!url && !command)) {
@@ -389,7 +389,7 @@ function fromKovaAdd(tokens: string[]): McpImportEntry | null {
     }
   }
 
-  return hermesEntry(flags)
+  return kovaEntry(flags)
 }
 
 function fromCursorDeeplink(text: string): McpImportEntry[] | null {

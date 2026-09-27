@@ -21,7 +21,7 @@ export interface KovaConfigRuntime {
 
 export async function readPreUpdateBackupEnabled(
   runtime: KovaConfigRuntime | Promise<KovaConfigRuntime>,
-  hermesHome: string,
+  kovaHome: string,
   run = execFileAsync
 ): Promise<boolean> {
   try {
@@ -33,7 +33,7 @@ export async function readPreUpdateBackupEnabled(
 
     const result = await run(resolvedRuntime.command, resolvedRuntime.args, {
       encoding: 'utf8',
-      env: { ...process.env, ...resolvedRuntime.env, KOVA_HOME: hermesHome },
+      env: { ...process.env, ...resolvedRuntime.env, KOVA_HOME: kovaHome },
       shell: Boolean(resolvedRuntime.shell),
       timeout: 15_000,
       windowsHide: true

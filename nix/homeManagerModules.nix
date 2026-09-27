@@ -22,7 +22,7 @@
 #   added     programs.kova-agent    the CLI and the desktop application,
 #                                      because Home Manager separates an
 #                                      installation from a daemon
-#   changed   stateDir (+ "/.kova")  -> hermesHome, set directly
+#   changed   stateDir (+ "/.kova")  -> kovaHome, set directly
 #
 # To use the module:
 #   imports = [ kova-agent.homeManagerModules.default ];
@@ -64,7 +64,7 @@
       inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
 
       processEnvironment = common.processEnvironment {
-        inherit (cfg) hermesHome;
+        inherit (cfg) kovaHome;
         # The CLI reads this value and names it when it refuses a
         # configuration change.
         managedSystem = "home-manager";
@@ -74,7 +74,7 @@
       # ── The desktop launcher ───────────────────────────────────────────
       # A GUI launcher reads no shell profile, so home.sessionVariables does
       # not reach it, and the application would open ~/.kova while the
-      # services use hermesHome. Thus the launcher carries the value itself.
+      # services use kovaHome. Thus the launcher carries the value itself.
       #
       # KOVA_MANAGED rides along only when the services are enabled. That
       # variable makes the CLI refuse a configuration change and name the
@@ -82,7 +82,7 @@
       # activation and no managed configuration, so the application must not
       # claim one and refuse an edit that nothing else owns.
       desktopEnvironment = {
-        KOVA_HOME = cfg.hermesHome;
+        KOVA_HOME = cfg.kovaHome;
       }
       // lib.optionalAttrs cfg.enable {
         inherit (processEnvironment) KOVA_MANAGED;
@@ -185,7 +185,7 @@
       # a machine with no display.
       #
       # `services.kova-agent` stays the authority for the state and the
-      # configuration. This module reads hermesHome and the backend address
+      # configuration. This module reads kovaHome and the backend address
       # from it, and never the reverse.
       options.programs.kova-agent = {
         enable = lib.mkEnableOption ''
@@ -229,8 +229,8 @@
 
           package = lib.mkOption {
             type = lib.types.package;
-            default = cfgPrograms.package.hermesDesktop;
-            defaultText = lib.literalExpression "config.programs.kova-agent.package.hermesDesktop";
+            default = cfgPrograms.package.kovaDesktop;
+            defaultText = lib.literalExpression "config.programs.kova-agent.package.kovaDesktop";
             description = ''
               The kova-desktop package to use.
 
@@ -253,7 +253,7 @@
           defaultWorkingDirectoryText = lib.literalExpression "config.home.homeDirectory";
         }
         // {
-          hermesHome = lib.mkOption {
+          kovaHome = lib.mkOption {
             type = lib.types.str;
             default = "${config.home.homeDirectory}/.kova";
             defaultText = lib.literalExpression ''"''${config.home.homeDirectory}/.kova"'';
@@ -297,7 +297,7 @@
         # daemon at all.
         (lib.mkIf cfgPrograms.enable {
           home.packages = [ cfgPrograms.package ];
-          home.sessionVariables.KOVA_HOME = cfg.hermesHome;
+          home.sessionVariables.KOVA_HOME = cfg.kovaHome;
         })
 
         # A launcher from the desktop menu reads no shell profile, so the
@@ -367,7 +367,7 @@
               # symlinks are in place. It also runs after linkGeneration, when
               # Home Manager completes the switch. A secret that the activation
               # entry of sops-nix writes exists at that point.
-              home.activation.hermesAgentSetup =
+              home.activation.kovaAgentSetup =
                 lib.hm.dag.entryAfter
                   [
                     "writeBoundary"
@@ -376,7 +376,7 @@
                   (
                     common.mkStateScript {
                       inherit pkgs cfg;
-                      inherit (cfg) hermesHome workingDirectory;
+                      inherit (cfg) kovaHome workingDirectory;
                       run = "$DRY_RUN_CMD ";
                       stateDirs = common.stateSubdirs;
                       managedSystem = "home-manager";

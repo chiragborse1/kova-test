@@ -82,11 +82,11 @@ let
     extraDependencyGroups:
     callPackage ./python.nix {
       inherit uv2nix pyproject-nix pyproject-build-systems;
-      pythonSrc = hermesNpmLib.pythonSrc;
+      pythonSrc = kovaNpmLib.pythonSrc;
       dependency-groups = [ "all" ] ++ extraDependencyGroups;
     };
 
-  hermesVenv = (mkKovaVenv extraDependencyGroups).venv;
+  kovaVenv = (mkKovaVenv extraDependencyGroups).venv;
 
   pmRuntime = callPackage ./pm-runtime.nix {
     inherit uv2nix pyproject-nix pyproject-build-systems;
@@ -97,16 +97,16 @@ let
     inherit (mkKovaVenv [ ]) venv;
   };
 
-  hermesNpmLib = callPackage ./lib.nix {
+  kovaNpmLib = callPackage ./lib.nix {
     inherit npm-lockfile-fix;
   };
 
-  hermesTui = callPackage ./tui.nix {
-    inherit hermesNpmLib;
+  kovaTui = callPackage ./tui.nix {
+    inherit kovaNpmLib;
   };
 
-  hermesWeb = callPackage ./web.nix {
-    inherit hermesNpmLib generatedIcons;
+  kovaWeb = callPackage ./web.nix {
+    inherit kovaNpmLib generatedIcons;
   };
 
   bundledSkills = lib.cleanSourceWith {
@@ -144,7 +144,7 @@ let
   };
 
   runtimeDeps = [
-    hermesNpmLib.nodejs
+    kovaNpmLib.nodejs
     ripgrep
     git
     openssh
@@ -173,17 +173,17 @@ let
 
   agentInputsFile = writeText "kova-agent-inputs.json" (builtins.toJSON {
     project = "${../pyproject.toml}";
-    code = "${hermesVenv}/${sitePackagesPath}";
+    code = "${kovaVenv}/${sitePackagesPath}";
     repo = "share/kova-agent";
     placement = "references";
     target = "${if stdenv.hostPlatform.isDarwin then "darwin" else "linux"}-${
       if stdenv.hostPlatform.isAarch64 then "arm64" else "x64"
     }";
-    python = "${hermesVenv}/bin/python3";
-    site_packages = "${hermesVenv}/${sitePackagesPath}";
-    environment = toString hermesVenv;
+    python = "${kovaVenv}/bin/python3";
+    site_packages = "${kovaVenv}/${sitePackagesPath}";
+    environment = toString kovaVenv;
     pm_runtime = toString pmRuntime;
-    command_dir = "${hermesVenv}/bin";
+    command_dir = "${kovaVenv}/bin";
     resources = {
       skills = toString bundledSkills;
       optional-skills = toString bundledOptionalSkills;
@@ -192,13 +192,13 @@ let
       optional-mcps = toString bundledOptionalMcps;
     };
     frontends = {
-      tui = "${hermesTui}/lib/kova-tui";
-      web = toString hermesWeb;
+      tui = "${kovaTui}/lib/kova-tui";
+      web = toString kovaWeb;
     };
     ref = if dirty then null else rev;
     stamp = toString installStampFile;
     env = {
-      KOVA_NODE = lib.getExe hermesNpmLib.nodejs;
+      KOVA_NODE = lib.getExe kovaNpmLib.nodejs;
     } // lib.optionalAttrs (rev != null && !dirty) {
       KOVA_REVISION = rev;
     };
@@ -219,7 +219,7 @@ let
 
     # Collect core venv package names
     core = set()
-    venv_sp = pathlib.Path('${hermesVenv}/${sitePackagesPath}')
+    venv_sp = pathlib.Path('${kovaVenv}/${sitePackagesPath}')
     for di in venv_sp.glob('*.dist-info'):
         meta = di / 'METADATA'
         if meta.exists():
@@ -293,7 +293,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     ${lib.optionalString (extraPythonPackages != [ ]) ''
       echo "=== Checking for plugin/core package collisions ==="
-      ${hermesVenv}/bin/python3 -c "${checkPackageCollisions}"
+      ${kovaVenv}/bin/python3 -c "${checkPackageCollisions}"
       echo "=== No collisions ==="
     ''}
 
@@ -306,10 +306,10 @@ stdenv.mkDerivation (finalAttrs: {
     in
     {
       inherit
-        hermesTui
-        hermesWeb
-        hermesNpmLib
-        hermesVenv
+        kovaTui
+        kovaWeb
+        kovaNpmLib
+        kovaVenv
         agentBuilderSrc
         agentInputsFile
         installStampFile
@@ -317,17 +317,17 @@ stdenv.mkDerivation (finalAttrs: {
         python
         ;
 
-      # `hermesDesktop` references `finalAttrs.finalPackage` (this whole
+      # `kovaDesktop` references `finalAttrs.finalPackage` (this whole
       # derivation, after all overrides are applied) so the desktop wrapper
       # can pin its `kova` command via KOVA_DESKTOP_HERMES. The
       # deployment override then picks up the fully wrapped
       # `kova` binary — venv with all deps, bundled skills/plugins,
       # runtime PATH (ripgrep/git/ffmpeg/etc).  No re-implementation
       # of the agent resolution in the desktop wrapper.
-      hermesDesktop = callPackage ./desktop.nix {
-        inherit hermesNpmLib electron installStampFile generatedIcons;
+      kovaDesktop = callPackage ./desktop.nix {
+        inherit kovaNpmLib electron installStampFile generatedIcons;
         python3 = python;
-        hermesAgent = finalAttrs.finalPackage;
+        kovaAgent = finalAttrs.finalPackage;
       };
 
       devShellHook = ''

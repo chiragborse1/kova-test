@@ -29,7 +29,7 @@ import { repoDiscoveryPolicyFromConfig, repoDiscoveryPolicySignature, scanAndRec
 import { $settingsRequestProfile } from '@/store/settings-scope'
 import type { ConfigFieldSchema, KovaConfigRecord } from '@/types/kova'
 
-import { hermesConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
+import { kovaConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
 import { useOnProfileSwitch } from '../hooks/use-on-profile-switch'
 import { PanelEmpty } from '../overlays/panel'
 
@@ -117,7 +117,7 @@ function ConfigSettingsInner({
 
   // Writes land on the same cache key the query above reads (base key when
   // following the active profile, suffixed when a scope override is set).
-  const writeConfigCache = useMemo(() => hermesConfigCacheWriter(scopeProfile), [scopeProfile])
+  const writeConfigCache = useMemo(() => kovaConfigCacheWriter(scopeProfile), [scopeProfile])
 
   const {
     data: schemaResponse,

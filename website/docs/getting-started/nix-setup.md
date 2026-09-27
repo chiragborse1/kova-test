@@ -315,7 +315,7 @@ Run `nix build .#configKeys && cat result` to see every leaf config key extracte
     # ── Documents ──────────────────────────────────────────────────────
     # USER.md is memory, so it goes to KOVA_HOME. Workspace files use
     # `documents`, and that option needs an explicit `workingDirectory`.
-    hermesHomeFiles = {
+    kovaHomeFiles = {
       "memories/USER.md" = ./documents/USER.md;
     };
 
@@ -364,7 +364,7 @@ Quick reference for the most common things Nix users want to customize:
 | Change the LLM model | `settings.model.default` | `"anthropic/claude-sonnet-4"` |
 | Use a different provider endpoint | `settings.model.base_url` | `"https://openrouter.ai/api/v1"` |
 | Add API keys | `environmentFiles` | `[ config.sops.secrets."kova-env".path ]` |
-| Give the agent an identity | `hermesHomeFiles."SOUL.md"` | `"You are a terse ops assistant."` |
+| Give the agent an identity | `kovaHomeFiles."SOUL.md"` | `"You are a terse ops assistant."` |
 | Add project context to the workspace | `documents."AGENTS.md"` | `./documents/AGENTS.md` |
 | Run the backend for the desktop app or the dashboard | `backend.mode` | `"serve"` or `"dashboard"` |
 | Add MCP tool servers | `mcpServers.<name>` | See [MCP Servers](#mcp-servers) |
@@ -471,11 +471,11 @@ files in a directory that you did not select. A directory with the same path as
 the default is a correct selection, and it satisfies the rule.
 :::
 
-`hermesHomeFiles` installs into **`KOVA_HOME`**. Kova reads the identity file and the memory files of the agent from that directory. `SOUL.md` and `memories/` work only from there. A `SOUL.md` in `documents` makes a workspace file. Kova does not load that file as the identity:
+`kovaHomeFiles` installs into **`KOVA_HOME`**. Kova reads the identity file and the memory files of the agent from that directory. `SOUL.md` and `memories/` work only from there. A `SOUL.md` in `documents` makes a workspace file. Kova does not load that file as the identity:
 
 ```nix
 {
-  services.kova-agent.hermesHomeFiles = {
+  services.kova-agent.kovaHomeFiles = {
     "SOUL.md" = "You are a helpful AI assistant.";
     "memories/USER.md" = ./documents/USER.md;
   };
@@ -484,7 +484,7 @@ the default is a correct selection, and it satisfies the rule.
 
 Each value is a string or a path. A key in either option can contain subdirectories, and the module makes the parent directories. Each activation installs the files again.
 
-`hermesHomeFiles` needs no `workingDirectory`, because the module owns the `KOVA_HOME` directory. Most users want `hermesHomeFiles`.
+`kovaHomeFiles` needs no `workingDirectory`, because the module owns the `KOVA_HOME` directory. Most users want `kovaHomeFiles`.
 
 ---
 
@@ -623,7 +623,7 @@ The option set is the same set that the NixOS module uses. It is `services.kova-
 | | NixOS module | Home Manager module |
 |---|---|---|
 | Runs as | a system user that you declare, with `user`, `group` and `createUser` | you |
-| State directory | `stateDir` and `/.kova` | `hermesHome`, set directly. The default is `~/.kova`. |
+| State directory | `stateDir` and `/.kova` | `kovaHome`, set directly. The default is `~/.kova`. |
 | Service | `systemd.services` | `systemd.user.services` on Linux, `launchd.agents` on macOS |
 | CLI on the PATH | `addToSystemPackages`, which exports `KOVA_HOME` for the full system | `programs.kova-agent.enable`, which exports it for your session only |
 | Desktop application | not supported, because a system service cannot own a user session | `programs.kova-agent.desktop.enable` |
@@ -1011,7 +1011,7 @@ nix build .#checks.x86_64-linux.config-roundtrip    # merge script preserves use
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `documents` | `attrsOf (either str path)` | `{}` | Workspace files. Each key is a path relative to `workingDirectory`. You must set that option to use this one. |
-| `hermesHomeFiles` | `attrsOf (either str path)` | `{}` | Files that go into `KOVA_HOME`. `SOUL.md` and `memories/` must be here, or Kova does not load them. |
+| `kovaHomeFiles` | `attrsOf (either str path)` | `{}` | Files that go into `KOVA_HOME`. `SOUL.md` and `memories/` must be here, or Kova does not load them. |
 
 ### MCP Servers
 
@@ -1057,7 +1057,7 @@ This option runs the process that Kova Desktop and the web dashboard connect to,
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `hermesHome` | `str` | `"${config.home.homeDirectory}/.kova"` | `KOVA_HOME` directly. The NixOS module builds it from `stateDir`. |
+| `kovaHome` | `str` | `"${config.home.homeDirectory}/.kova"` | `KOVA_HOME` directly. The NixOS module builds it from `stateDir`. |
 | `gateway.enable` | `bool` | `false` | Run the messaging gateway. On the NixOS module the gateway is the service, so that module has no such option. |
 
 ### `programs.kova-agent` (Home Manager only)
@@ -1065,14 +1065,14 @@ This option runs the process that Kova Desktop and the web dashboard connect to,
 Home Manager separates "install this application for me" from "run this
 daemon". `services.kova-agent` keeps the state, the configuration and the
 daemons. `programs.kova-agent` installs what you use, and reads
-`hermesHome` and the backend address from the services.
+`kovaHome` and the backend address from the services.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `enable` | `bool` | `false` | Add the `kova` CLI to `home.packages`, and export `KOVA_HOME` for your shells |
 | `package` | `package` | `services.kova-agent.package` | The package to install. The default applies `extraPythonPackages` and `extraDependencyGroups` from the services, so both are one build. |
 | `desktop.enable` | `bool` | `false` | Add the Kova Desktop application, with a launcher entry on Linux |
-| `desktop.package` | `package` | `package.hermesDesktop` | The desktop package. The default follows `package`, so the application and the services run one Kova runtime. |
+| `desktop.package` | `package` | `package.kovaDesktop` | The desktop package. The default follows `package`, so the application and the services run one Kova runtime. |
 
 ```nix
 programs.kova-agent = {
@@ -1091,7 +1091,7 @@ The launcher carries `KOVA_HOME` itself. A desktop menu reads no shell
 profile, so the value that `programs.kova-agent.enable` exports with
 `home.sessionVariables` reaches an interactive shell only. Without the
 value in the launcher, the application opens `~/.kova` while the
-services use `hermesHome`, and you see no sessions and no keys.
+services use `kovaHome`, and you see no sessions and no keys.
 
 With `backend.sessionTokenFile`, the application connects to the backend
 of the service instead of starting one of its own. Both sides read the
@@ -1122,7 +1122,7 @@ replacement.
 ```
 /var/lib/kova/                     # stateDir (owned by kova:kova, 0750)
 ├── .kova/                         # KOVA_HOME
-│   ├── SOUL.md                      # from hermesHomeFiles: the agent identity
+│   ├── SOUL.md                      # from kovaHomeFiles: the agent identity
 │   ├── config.yaml                  # Nix-generated (deep-merged each rebuild)
 │   ├── .managed                     # Marker: CLI config mutation blocked
 │   ├── .env                         # Merged from environment + environmentFiles
@@ -1144,8 +1144,8 @@ replacement.
 ### Home Manager
 
 ```
-~/.kova/                           # hermesHome (KOVA_HOME), 0700
-├── SOUL.md                          # from hermesHomeFiles
+~/.kova/                           # kovaHome (KOVA_HOME), 0700
+├── SOUL.md                          # from kovaHomeFiles
 ├── config.yaml                      # written by Nix, merged at each activation
 ├── .managed                         # marker: names the system that manages this
 ├── .env                             # written again from environment + environmentFiles

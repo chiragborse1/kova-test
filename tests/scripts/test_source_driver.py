@@ -27,21 +27,21 @@ def test_shell_selects_the_installed_command_not_the_phase_or_path(tmp_path):
     env = dict(os.environ, INSTALL_DIR=str(root), ASSETS=str(ASSETS), HOME=str(tmp_path))
     result = subprocess.run(["bash", "-euc", '''
 source "$ASSETS/source-driver.sh"
-command=$(source_hermes "$INSTALL_DIR")
+command=$(source_kova "$INSTALL_DIR")
 "$command" 'literal argument'
 rm "$INSTALL_DIR/venv/bin/kova"
-test "$(source_hermes "$INSTALL_DIR")" = "$command"
+test "$(source_kova "$INSTALL_DIR")" = "$command"
 printf '#!/bin/sh\nexit 23\n' > "$command"
 "$command" || test "$?" = 23
 rm "$command"
-if source_hermes "$INSTALL_DIR"; then exit 91; fi
+if source_kova "$INSTALL_DIR"; then exit 91; fi
 printf '#!/bin/sh\nprintf legacy\n' > "$INSTALL_DIR/venv/bin/kova"
 chmod +x "$INSTALL_DIR/venv/bin/kova"
-"$(source_hermes "$INSTALL_DIR")"
+"$(source_kova "$INSTALL_DIR")"
 # A PM checkout cannot hide missing publication behind its old venv.
 mkdir -p "$INSTALL_DIR/pm"
 printf '{}' > "$INSTALL_DIR/pm/lock.json"
-if source_hermes "$INSTALL_DIR"; then exit 92; fi
+if source_kova "$INSTALL_DIR"; then exit 92; fi
 '''], env=env, cwd=tmp_path, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert result.stdout.splitlines() == ["published:literal argument", "legacy"]

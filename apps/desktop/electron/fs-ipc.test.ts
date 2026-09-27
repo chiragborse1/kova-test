@@ -38,7 +38,7 @@ import { registerFsIpc } from './fs-ipc'
 const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'kova-fs-ipc-'))
 
 registerFsIpc({
-  hermesHome: scratch,
+  kovaHome: scratch,
   readActiveDesktopProfile: () => null,
   // `~/` resolves under the scratch dir so tilde paths can be exercised.
   expandUserPath: value => (value.startsWith('~/') ? path.join(scratch, value.slice(2)) : value),

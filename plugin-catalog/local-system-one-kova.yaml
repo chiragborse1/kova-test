@@ -18,7 +18,7 @@ description: >-
 maintainer: NMTZ-z
 tier: community
 category: automation
-requires_hermes: ">=0.21.4"
+requires_kova: ">=0.21.4"
 version: "0.5.2"
 docs_url: https://github.com/NMTZ-z/system-one-benchmark-lab/tree/823aff58d97b989f3468dbd2c2b12526c6e6936e/integrations/kova/local-system-one-kova
 readme: true

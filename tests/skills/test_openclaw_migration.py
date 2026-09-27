@@ -17,7 +17,7 @@ SCRIPT_PATH = (
 
 
 def load_module():
-    spec = importlib.util.spec_from_file_location("openclaw_to_hermes", SCRIPT_PATH)
+    spec = importlib.util.spec_from_file_location("openclaw_to_kova", SCRIPT_PATH)
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     sys.modules[spec.name] = module

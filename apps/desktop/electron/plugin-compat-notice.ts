@@ -41,9 +41,9 @@ export function reportKey(report: PluginCompatReport): string {
   return `${report.in_effect ? 'disabled' : 'pending'}|${parts.join(',')}`
 }
 
-export function readReport(hermesHome: string): PluginCompatReport | null {
+export function readReport(kovaHome: string): PluginCompatReport | null {
   try {
-    const raw = fs.readFileSync(path.join(hermesHome, REPORT_FILE), 'utf8')
+    const raw = fs.readFileSync(path.join(kovaHome, REPORT_FILE), 'utf8')
     const parsed = JSON.parse(raw)
 
     if (!parsed || typeof parsed !== 'object' || !parsed.plugins || !Array.isArray(parsed.lines)) {
@@ -100,8 +100,8 @@ export interface PendingNotice {
 }
 
 /** The modal to show this boot, or null (no report, or this exact report already dismissed). */
-export function pendingNotice(hermesHome: string, userData: string): PendingNotice | null {
-  const report = readReport(hermesHome)
+export function pendingNotice(kovaHome: string, userData: string): PendingNotice | null {
+  const report = readReport(kovaHome)
 
   if (!report) {
     return null

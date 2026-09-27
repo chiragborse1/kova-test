@@ -17,7 +17,7 @@ import {
 
 import { useDesktopIntegrations } from './use-desktop-integrations'
 
-const originalBridge = window.hermesDesktop
+const originalBridge = window.kovaDesktop
 
 beforeAll(() => {
   const dispose = registry.register({
@@ -57,19 +57,19 @@ afterEach(() => {
   }
 
   $selectedStoredSessionId.set(null)
-  window.hermesDesktop = originalBridge
+  window.kovaDesktop = originalBridge
   syncWorkspaceRoute('/')
 })
 
 it('a native click reveals the existing remote Bot tab without changing its owner or duplicating main', () => {
   let fire!: (id: string) => void
-  window.hermesDesktop = {
+  window.kovaDesktop = {
     onFocusSession: callback => {
       fire = callback
 
       return () => undefined
     }
-  } as Window['hermesDesktop']
+  } as Window['kovaDesktop']
   const navigate = vi.fn()
   renderHook(() =>
     useDesktopIntegrations({

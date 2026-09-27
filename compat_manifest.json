@@ -7054,7 +7054,7 @@
   },
   {
    "facade": "kova_cli.web_server",
-   "name": "update_hermes",
+   "name": "update_kova",
    "kind": "moved-lazy",
    "target": "kova_cli.web_routers.actions"
   },

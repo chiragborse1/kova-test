@@ -128,7 +128,7 @@ def kill_group(proc: subprocess.Popen, sig: int = signal.SIGKILL) -> None:
         pass
 
 
-def run_hermes(argv: list[str], home: Path, *, timeout: float = 120.0, cwd: Path | None = None,
+def run_kova(argv: list[str], home: Path, *, timeout: float = 120.0, cwd: Path | None = None,
                extra_env: dict[str, str] | None = None, stdin: str | None = None) -> subprocess.CompletedProcess:
     """``python -m kova_cli.main <argv>`` in its own process group; the group is always reaped."""
     proc = subprocess.Popen(

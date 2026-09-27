@@ -6,7 +6,7 @@ description: "Secret-leak protection for Kova chats. Scans inbound messages and 
 maintainer: Ufonik88
 tier: community
 category: tools
-requires_hermes: ">=0.19"
+requires_kova: ">=0.19"
 docs_url: https://github.com/Ufonik88/Kova-VaultKnox/blob/8aea272fd9b071615fcd0c93a38b760485673316/docs/PLUGIN.md
 version: "0.8.3"
 image: https://raw.githubusercontent.com/Ufonik88/Kova-VaultKnox/8aea272fd9b071615fcd0c93a38b760485673316/docs/images/banner.png

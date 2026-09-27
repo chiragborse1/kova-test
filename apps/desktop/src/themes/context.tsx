@@ -238,8 +238,8 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
   const skinName = theme.name.endsWith(`-${mode}`) ? theme.name.slice(0, -mode.length - 1) : theme.name
 
   root.style.setProperty('color-scheme', rendered)
-  root.dataset.hermesTheme = skinName
-  root.dataset.hermesMode = rendered
+  root.dataset.kovaTheme = skinName
+  root.dataset.kovaMode = rendered
   root.classList.toggle('dark', isDark)
 
   // Translucency is tuned per appearance, and "appearance" means the palette
@@ -304,7 +304,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
 
   const chromeBg = chromeBackground(c.background, isDark)
 
-  window.hermesDesktop?.setTitleBarTheme?.({
+  window.kovaDesktop?.setTitleBarTheme?.({
     background: chromeBg,
     foreground: c.foreground
   })
@@ -324,7 +324,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
     const link = document.createElement('link')
     link.rel = 'stylesheet'
     link.href = typo.fontUrl
-    link.dataset.hermesThemeFont = 'true'
+    link.dataset.kovaThemeFont = 'true'
     document.head.appendChild(link)
     INJECTED_FONT_URLS.add(typo.fontUrl)
   }
@@ -344,7 +344,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
     if (!cssEl) {
       cssEl = document.createElement('style')
       cssEl.id = cssId
-      cssEl.dataset.hermesSkinCSS = 'true'
+      cssEl.dataset.kovaSkinCSS = 'true'
       document.head.appendChild(cssEl)
     }
 
@@ -357,7 +357,7 @@ function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily 
 // theme instead of the OS appearance. An explicit light/dark pick is forced;
 // 'system' stays 'system' so prefers-color-scheme keeps tracking the OS.
 const syncNativeTheme = (pref: ThemeMode, rendered: 'light' | 'dark') =>
-  window.hermesDesktop?.setNativeTheme?.(pref === 'system' ? 'system' : rendered)
+  window.kovaDesktop?.setNativeTheme?.(pref === 'system' ? 'system' : rendered)
 
 // Boot-time paint to avoid a flash before <ThemeProvider> mounts. Use the last
 // active profile's appearance so a non-default profile relaunch paints its own

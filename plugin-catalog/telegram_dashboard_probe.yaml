@@ -6,7 +6,7 @@ description: "Read-only Kova status dashboard kept in one pinned Telegram messag
 maintainer: bablobanov
 tier: community
 category: automation
-requires_hermes: ">=0.21.1"
+requires_kova: ">=0.21.1"
 docs_url: https://github.com/bablobanov/kova-agent-telegram-dashboard#readme
 version: "0.6.0"
 image: https://raw.githubusercontent.com/bablobanov/kova-agent-telegram-dashboard/a409e9a7e0a20009613e4be5f80b4676f9e4cd99/docs/social-preview.jpg

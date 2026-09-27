@@ -102,12 +102,12 @@ class _BotState:
 
 
 # JS injected into the Meet tab: MutationObserver on the caption container
-# collects {speaker, text}; ``window.__hermesMeetDrain()`` pulls new entries.
+# collects {speaker, text}; ``window.__kovaMeetDrain()`` pulls new entries.
 _CAPTION_OBSERVER_JS = r"""
 (() => {
-  if (window.__hermesMeetInstalled) return;
-  window.__hermesMeetInstalled = true;
-  window.__hermesMeetQueue = [];
+  if (window.__kovaMeetInstalled) return;
+  window.__kovaMeetInstalled = true;
+  window.__kovaMeetQueue = [];
 
   const captionSelector = '[role="region"][aria-label*="aption" i], ' +
                           'div[jsname="YSxPC"], ' +  // legacy
@@ -115,7 +115,7 @@ _CAPTION_OBSERVER_JS = r"""
 
   function pushEntry(speaker, text) {
     if (!text || !text.trim()) return;
-    window.__hermesMeetQueue.push({
+    window.__kovaMeetQueue.push({
       ts: Date.now(),
       speaker: (speaker || '').trim(),
       text: text.trim(),
@@ -152,9 +152,9 @@ _CAPTION_OBSERVER_JS = r"""
     const iv = setInterval(() => { if (attach()) clearInterval(iv); }, 1500);
   }
 
-  window.__hermesMeetDrain = () => {
-    const out = window.__hermesMeetQueue.slice();
-    window.__hermesMeetQueue = [];
+  window.__kovaMeetDrain = () => {
+    const out = window.__kovaMeetQueue.slice();
+    window.__kovaMeetQueue = [];
     return out;
   };
 })();
@@ -174,7 +174,7 @@ _LEAVE_CALL_JS = (
 _ADMISSION_PROBE_JS = r"""
     (() => {
       if (document.querySelector('button[aria-label*="eave call" i]')) return true;
-      if (window.__hermesMeetInstalled && document.querySelector(
+      if (window.__kovaMeetInstalled && document.querySelector(
           '[role="region"][aria-label*="aption" i], div[jsname="YSxPC"], div[jsname="tgaKEf"]')) return true;
       return !!document.querySelector('[aria-label*="articipants" i]');
     })();
@@ -409,7 +409,7 @@ def _drain_loop(page, cfg: _BotConfig, state: _BotState, rt: dict, stop_flag: di
                 state.set(error="host denied admission", leave_reason="denied")
                 return
         try:
-            queued = page.evaluate("window.__hermesMeetDrain && window.__hermesMeetDrain()")
+            queued = page.evaluate("window.__kovaMeetDrain && window.__kovaMeetDrain()")
             for entry in (e for e in (queued if isinstance(queued, list) else ()) if isinstance(e, dict)):
                 speaker = str(entry.get("speaker", ""))
                 state.record_caption(speaker=speaker, text=str(entry.get("text", "")))

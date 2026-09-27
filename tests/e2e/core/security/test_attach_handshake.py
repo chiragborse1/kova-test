@@ -53,7 +53,7 @@ from tests.e2e.core.security._helpers import (
     canary,
     hermetic_env,
     kill_group,
-    run_hermes,
+    run_kova,
     run_python,
     write_home,
 )
@@ -247,7 +247,7 @@ def home(tmp_path: Path) -> Path:
 def _resume(home: Path, sid: str) -> tuple[subprocess.CompletedProcess, dict | None]:
     """Run ``kova --tui --resume SID``; return the process result and what the TUI child received."""
     out = home.parent / f"handoff-{uuid.uuid4().hex}.json"
-    result = run_hermes(
+    result = run_kova(
         ["--tui", "--resume", sid], home, timeout=90,
         extra_env={"KOVA_TUI_DIR": str(home.parent / "tui-probe"), "KOVA_SKIP_NODE_BOOTSTRAP": "1",
                    "ATTACH_PROBE_OUT": str(out)})

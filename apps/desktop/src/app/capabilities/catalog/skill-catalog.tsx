@@ -80,7 +80,7 @@ function ScopedSkillCatalog({
     // lock map rather than guessing identity from a community skill's name.
     // The older getSkillHubSources helper cannot carry a connection pin.
     queryFn: () =>
-      window.hermesDesktop.api<SkillHubSourcesResponse>({
+      window.kovaDesktop.api<SkillHubSourcesResponse>({
         ...capabilityScoped(profile),
         path: '/api/skills/hub/sources',
         timeoutMs: 45_000

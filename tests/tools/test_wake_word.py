@@ -153,7 +153,7 @@ def test_engine_construction_ensures_audio_io_only_for_local_capture(monkeypatch
     monkeypatch.setattr(pm, "available", lambda feature: feature in ensured)
 
     class _FakeModel:
-        id = "hey_hermes"
+        id = "hey_kova"
 
         @staticmethod
         def from_model(model_path, libtensorflowlite_c_path=None):
@@ -439,7 +439,7 @@ def test_openwakeword_custom_model_path_used(monkeypatch):
         {"provider": "openwakeword", "openwakeword": {"model": "/models/hey_kova.tflite"}}
     )
     assert captured["path"] == "/models/hey_kova.tflite"
-    assert eng._labels == ["hey_hermes"]
+    assert eng._labels == ["hey_kova"]
 
 
 def test_bundled_hey_kova_model_ships_on_disk():

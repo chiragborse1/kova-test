@@ -16,7 +16,7 @@ import {
 it('reads a remote-owned image through its gateway, never the local file reader', async () => {
   const readFileDataUrl = vi.fn(async () => 'data:local')
   const api = vi.fn(async () => ({ dataUrl: 'data:remote' }))
-  vi.stubGlobal('hermesDesktop', { readFileDataUrl, api })
+  vi.stubGlobal('kovaDesktop', { readFileDataUrl, api })
   // A local foreground must not pull a remote tile's path off this disk.
   $connection.set({ connectionId: 'local', mode: 'local', profile: 'default' } as KovaConnection)
 

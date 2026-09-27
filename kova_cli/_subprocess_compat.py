@@ -33,7 +33,7 @@ __all__ = [
     "noninteractive_git_env",
     "NO_DRIVER_DIFF_FLAGS",
     "NO_LAZY_FETCH_ENV",
-    "pid_is_hermes",
+    "pid_is_kova",
     "pid_exists_stdlib",
 ]
 
@@ -543,7 +543,7 @@ def _process_start_time(pid: int) -> int | None:
         return None
 
 
-def _text_names_hermes(text: str) -> bool:
+def _text_names_kova(text: str) -> bool:
     r"""True when *text* names Kova at a path-segment / token boundary.
 
     A bare ``"kova" in text`` substring test would also match unrelated processes whose paths
@@ -553,7 +553,7 @@ def _text_names_hermes(text: str) -> bool:
                for token in re.split(r"[\\/\s=,;\"']+", text.lower()))
 
 
-def _process_command_is_hermes(pid: int) -> bool:
+def _process_command_is_kova(pid: int) -> bool:
     """Best-effort check that *pid* currently runs Kova code."""
     try:
         import psutil
@@ -561,12 +561,12 @@ def _process_command_is_hermes(pid: int) -> bool:
         process = psutil.Process(pid)
         command = " ".join(process.cmdline() or [])
         executable = process.exe() or ""
-        return _text_names_hermes(f"{command} {executable}")
+        return _text_names_kova(f"{command} {executable}")
     except Exception:
         return False
 
 
-def pid_is_hermes(pid: int, *, expected_start_time: int | None = None) -> bool:
+def pid_is_kova(pid: int, *, expected_start_time: int | None = None) -> bool:
     """Whether it is safe to use ``taskkill`` for *pid*.
 
     The PID must be valid, currently exist, and identify a Kova process. When the caller captured
@@ -591,7 +591,7 @@ def pid_is_hermes(pid: int, *, expected_start_time: int | None = None) -> bool:
     if expected_start_time is not None and current_start_time != expected_start_time:
         return False
     try:
-        return _process_command_is_hermes(pid)
+        return _process_command_is_kova(pid)
     except Exception:
         return False
 
@@ -646,7 +646,7 @@ def _legacy_kill_process_tree(proc: "subprocess.Popen") -> None:
         pass
     if IS_WINDOWS:
         # No identity guard on purpose: *proc* is our own retained Popen handle, so the PID cannot
-        # be recycled while we hold it. The fail-closed ``pid_is_hermes`` guard is for BARE pids.
+        # be recycled while we hold it. The fail-closed ``pid_is_kova`` guard is for BARE pids.
         try:
             subprocess.run(["taskkill", "/T", "/F", "/PID", str(proc.pid)],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

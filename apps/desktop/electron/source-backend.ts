@@ -26,14 +26,14 @@ interface SourceOptions {
 export async function resolveSourceInstallationBackend(
   root: string,
   args: string[],
-  options: SourceOptions & { hermesHome?: string } = {}
+  options: SourceOptions & { kovaHome?: string } = {}
 ): Promise<SourceBackend | null> {
   if (!existsSync(path.join(root, 'kova_cli', 'main.py'))) {
     return null
   }
 
   const isWindows: boolean = options.isWindows ?? process.platform === 'win32'
-  const launcher: string | null = resolveInstallationLauncher(root, isWindows, options.hermesHome)
+  const launcher: string | null = resolveInstallationLauncher(root, isWindows, options.kovaHome)
 
   if (!launcher) {
     return null

@@ -43,7 +43,7 @@ def run_tool_calls(home: Path, calls: list[tuple[str, dict[str, Any]]], *, cwd: 
         H.write_home(home / ".kova", srv.base_url, api_key=key, config=config, env=env_lines)
         if prepare is not None:
             prepare()
-        proc = H.run_hermes(["chat", "-q", "run the scripted tools", "-Q"], home, cwd=cwd,
+        proc = H.run_kova(["chat", "-q", "run the scripted tools", "-Q"], home, cwd=cwd,
                             extra_env=extra_env, timeout=timeout)
         reqs = srv.main_requests()
     assert proc.returncode == 0, f"kova chat -q rc={proc.returncode}\n{proc.stdout[-2000:]}\n{proc.stderr[-4000:]}"

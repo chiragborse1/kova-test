@@ -5,7 +5,7 @@ description: "Saved chat prompts — click a tray item to insert it into the Kov
 maintainer: aydnOktay
 tier: community
 category: desktop
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/aydnOktay/kova-prompt-tray
 version: "0.1.0"
 platforms: []

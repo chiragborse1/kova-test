@@ -56,7 +56,7 @@ def journey(tmp_path_factory):
             machine.teardown()
 
 
-def test_install_lands_on_head_and_publishes_hermes(journey: Journey) -> None:
+def test_install_lands_on_head_and_publishes_kova(journey: Journey) -> None:
     m, run = journey.machine, journey["install"]
     assert run.returncode == 0, fail_with(m, f"install.ps1 exited {run.returncode}", run)
     installed = journey["installed"]

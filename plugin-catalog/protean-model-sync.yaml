@@ -5,7 +5,7 @@ description: "Fleet-wide provider and model presets with CLI and Kova Desktop su
 maintainer: aska-digital
 tier: community
 category: models
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/aska-digital/protean-model-sync
 version: "1.1.0"
 readme: true

@@ -428,7 +428,7 @@ def _is_caller_wrapper_shell(pid: int, ancestors: set[int]) -> bool:
 def _kill_pids_windows(pids: list[int], killed: list[int], failed: list[tuple[int, str]]) -> None:
     """``taskkill /F`` each PID after re-verifying its identity."""
     from gateway.status import get_process_start_time
-    from kova_cli._subprocess_compat import pid_is_hermes, windows_hide_flags
+    from kova_cli._subprocess_compat import pid_is_kova, windows_hide_flags
     # Identity captured right after discovery: a PID reused before the kill fails the check.
     pid_start_times = {pid: get_process_start_time(pid) for pid in pids}
     for pid in pids:
@@ -436,7 +436,7 @@ def _kill_pids_windows(pids: list[int], killed: list[int], failed: list[tuple[in
             expected_start_time = pid_start_times.get(pid)
             if expected_start_time is None:
                 failed.append((pid, "could not verify process identity"))
-            elif not pid_is_hermes(pid, expected_start_time=expected_start_time):
+            elif not pid_is_kova(pid, expected_start_time=expected_start_time):
                 failed.append((pid, "not kova-owned or process identity changed"))
             else:
                 result = subprocess.run(
@@ -861,7 +861,7 @@ def _valid_lockfile_payload(parsed: object, ownership_id: str) -> bool:
         return False
     # String fields must be present and bounded (the writer enforces <=1024).
     if any(not isinstance(parsed.get(f), str) or len(parsed[f]) > 1024
-           for f in ("profile", "hermesPath", "hermesHome", "logPath", "startedAt")):
+           for f in ("profile", "kovaPath", "kovaHome", "logPath", "startedAt")):
         return False
     # Suffix-only check of logPath so a relocated KOVA_HOME can't reject a legitimate backend.
     return parsed["logPath"].endswith(f"/{ownership_id}/{parsed['spawnNonce']}.log")

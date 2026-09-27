@@ -16,7 +16,7 @@ beforeEach(() => {
   resetProjectTreeState()
   $showIgnoredRoots.set([])
   readDir.mockReset()
-  ;(window as unknown as { hermesDesktop: { readDir: typeof readDir } }).hermesDesktop = { readDir }
+  ;(window as unknown as { kovaDesktop: { readDir: typeof readDir } }).kovaDesktop = { readDir }
 })
 
 afterEach(() => {
@@ -24,7 +24,7 @@ afterEach(() => {
   $connection.set(null)
   resetProjectTreeState()
   $showIgnoredRoots.set([])
-  delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 })
 
 function ok(entries: { name: string; path: string; isDirectory: boolean }[]): KovaReadDirResult {
@@ -82,7 +82,7 @@ describe('useProjectTree', () => {
         })
     )
     readDir.mockResolvedValueOnce(ok([{ name: 'from-b', path: '/shared/from-b', isDirectory: false }]))
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { readDir, sanitizeWorkspaceCwd }
+    ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = { readDir, sanitizeWorkspaceCwd }
     $connection.set({ baseUrl: 'local-a', connectionId: 'connection-a', mode: 'local', profile: 'default' } as never)
 
     const { result } = renderHook(() => useProjectTree('/shared'))
@@ -181,7 +181,7 @@ describe('useProjectTree', () => {
 
       throw new Error(`unexpected path ${path}`)
     })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { gitRoot, readDir, readFileDataUrl }
+    ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = { gitRoot, readDir, readFileDataUrl }
 
     $connection.set({ baseUrl: 'local-a', mode: 'local' } as never)
     await expect(readProjectDir('/repo/src', '/repo')).resolves.toMatchObject({
@@ -434,7 +434,7 @@ describe('useProjectTree', () => {
 
       throw new Error(`unexpected path ${path}`)
     })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { readDir, sanitizeWorkspaceCwd }
+    ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = { readDir, sanitizeWorkspaceCwd }
 
     const { result } = renderHook(() => useProjectTree('/deleted/worktree'))
 
@@ -449,7 +449,7 @@ describe('useProjectTree', () => {
   it('keeps the root error when sanitize offers no usable fallback', async () => {
     const sanitizeWorkspaceCwd = vi.fn(async () => ({ cwd: '/deleted/worktree', sanitized: false }))
     readDir.mockResolvedValue({ entries: [], error: 'ENOENT' })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { readDir, sanitizeWorkspaceCwd }
+    ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = { readDir, sanitizeWorkspaceCwd }
 
     const { result } = renderHook(() => useProjectTree('/deleted/worktree'))
 
@@ -457,8 +457,8 @@ describe('useProjectTree', () => {
     expect(result.current.effectiveCwd).toBe('/deleted/worktree')
   })
 
-  it('returns no-bridge gracefully when window.hermesDesktop is missing', async () => {
-    delete (window as unknown as { hermesDesktop?: unknown }).hermesDesktop
+  it('returns no-bridge gracefully when window.kovaDesktop is missing', async () => {
+    delete (window as unknown as { kovaDesktop?: unknown }).kovaDesktop
 
     const { result } = renderHook(() => useProjectTree('/p'))
 
@@ -585,7 +585,7 @@ describe('useProjectTree', () => {
 
       return ok([])
     })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { gitRoot, readDir, readFileDataUrl }
+    ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = { gitRoot, readDir, readFileDataUrl }
 
     const { result } = renderHook(() => useProjectTree('/p'))
 
@@ -650,7 +650,7 @@ describe('useProjectTree', () => {
 
       return ok([])
     })
-    ;(window as unknown as { hermesDesktop: unknown }).hermesDesktop = { gitRoot, readDir, readFileDataUrl }
+    ;(window as unknown as { kovaDesktop: unknown }).kovaDesktop = { gitRoot, readDir, readFileDataUrl }
 
     const { result } = renderHook(() => useProjectTree('/p'))
 

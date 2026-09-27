@@ -2386,7 +2386,7 @@ export interface Translations {
     noSessions: string
     gatewayRunning: string
     gatewayStopped: string
-    hermesActiveSessions: (version: string, count: number) => string
+    kovaActiveSessions: (version: string, count: number) => string
     restartGateway: string
     openBrowser: string
     gatewayRestartFailed: string

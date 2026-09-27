@@ -1998,7 +1998,7 @@ export interface StatusResponse {
   auth_flows?: string[];
   /** False when the dashboard is running in a hosted/managed layout where
    * updates are handled by the outer launcher instead of ``kova update``. */
-  can_update_hermes?: boolean;
+  can_update_kova?: boolean;
   config_path: string;
   config_version: number;
   env_path: string;
@@ -2817,7 +2817,7 @@ export interface CatalogEntry {
   sha_short: string;
   tier: "official" | "community";
   maintainer: string;
-  requires_hermes: string;
+  requires_kova: string;
   platforms: string[];
   capabilities: CatalogCapabilities;
   docs_url: string;

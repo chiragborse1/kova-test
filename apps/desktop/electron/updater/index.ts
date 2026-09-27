@@ -65,7 +65,7 @@ export interface UpdaterStatusWire {
   targetSha?: string
   commits?: { sha: string; summary: string; author: string; at: number }[]
   dirty?: boolean
-  hermesRoot?: string
+  kovaRoot?: string
   fetchedAt?: number
 }
 
@@ -78,7 +78,7 @@ export interface UpdaterApplyResultWire {
   manual?: boolean
   bundled?: boolean
   command?: string
-  hermesRoot?: string
+  kovaRoot?: string
   handedOff?: boolean
   updater?: string
   [key: string]: unknown

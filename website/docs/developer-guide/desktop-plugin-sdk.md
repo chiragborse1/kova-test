@@ -1113,7 +1113,7 @@ Deliberately **not** keys, and why:
 | keybind map (`kova.desktop.keybinds`) | `KEYBINDS_AREA` contribution | a raw map write rebinds every other plugin's shortcuts; the area merges per plugin and is torn down with it |
 | active theme / mode record | `THEMES_AREA` (register a theme; the user selects it) | theme selection is per window/profile and arbitrated by the app, not a flat preference |
 | `pluginDecisions` (desktop plugin on/off) | the app's Plugins tab (a read-only view is a separate SDK hook) | a plugin toggling another plugin's enable state is plugins interfering with each other |
-| `toolView.technical`, `embed-mode`, `titlebarAppActions`, `translucency.v2`, `user-bubble-transparency.v1`, `hermesDesktop.zoom.*` | follow-up keys after each store is audited | some drive the main process or window chrome; each needs its own guard and ownership review before it becomes plugin-writable |
+| `toolView.technical`, `embed-mode`, `titlebarAppActions`, `translucency.v2`, `user-bubble-transparency.v1`, `kovaDesktop.zoom.*` | follow-up keys after each store is audited | some drive the main process or window chrome; each needs its own guard and ownership review before it becomes plugin-writable |
 
 Migration — `kova-appearance-hub`, which today does
 `localStorage.setItem('kova.desktop.sessionListDensity', id)` followed by
@@ -1160,7 +1160,7 @@ scoping. Omit `profile` to act on the app-wide active profile; pass a name or a
 `{ connectionId, profile }` route to configure another profile without swapping
 the foreground one. Nothing new is arbitrated: every call is already reachable
 through `host.request` — the value is typing plus profile scoping, so stop
-calling `window.hermesDesktop.api` raw.
+calling `window.kovaDesktop.api` raw.
 
 `host.pluginDecisions` mirrors the app's plugin enable/disable map (plugin id →
 `true`/`false`; an absent id means the user never chose and the plugin's own
@@ -1491,7 +1491,7 @@ companion repo.
 
 A loaded plugin is evaluated as ESM in the renderer realm with **full app
 authority** — the React singleton, the whole SDK (`host.request` gateway RPC,
-`ctx.rest`, storage, `navigate`) and the `window.hermesDesktop` native bridge
+`ctx.rest`, storage, `navigate`) and the `window.kovaDesktop` native bridge
 (files, git, terminal, installs). The isolation the loader provides is **error
 isolation only**: a plugin can't crash the app (contributions are error-bounded,
 listeners isolated, a throwing `register()` is rolled back and reported on the

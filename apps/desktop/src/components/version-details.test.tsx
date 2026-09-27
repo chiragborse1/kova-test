@@ -16,7 +16,7 @@ afterEach((): void => {
 const baseVersion: DesktopVersionInfo = {
   appVersion: '0.19.0',
   electronVersion: '37.0.0',
-  hermesRoot: '/tmp/kova',
+  kovaRoot: '/tmp/kova',
   nodeVersion: '22.0.0',
   platform: 'linux'
 }
@@ -34,15 +34,15 @@ describe('VersionDetails', () => {
     { version: { source: 'nix', distribution: 'nix' }, visible: ['Build Origin', 'Nix', 'Distribution'] },
     { version: { source: 'ci', distribution: 'docker' }, visible: ['CI', 'Distribution', 'Docker'] },
     {
-      version: { distribution: 'desktop-app', hermesRuntime: { type: 'embedded' } },
+      version: { distribution: 'desktop-app', kovaRuntime: { type: 'embedded' } },
       visible: ['Runtime', 'Embedded runtime']
     },
     {
-      version: { hermesRuntime: { type: 'external', source: { type: 'git', root: '/home/u/.kova/kova-agent' } } },
+      version: { kovaRuntime: { type: 'external', source: { type: 'git', root: '/home/u/.kova/kova-agent' } } },
       visible: ['Runtime', 'git (/home/u/.kova/kova-agent)'],
       absent: ['External (uses the machine runtime)']
     },
-    { version: { hermesRuntime: { type: 'external' } }, visible: ['Runtime', 'External (uses the machine runtime)'] },
+    { version: { kovaRuntime: { type: 'external' } }, visible: ['Runtime', 'External (uses the machine runtime)'] },
     {
       version: { distribution: 'desktop-app', updateMechanism: 'microsoft-store' },
       visible: ['Distribution', 'Microsoft Store'],
@@ -111,11 +111,11 @@ describe('VersionDetails', () => {
   })
 
   it('opens the commit URL via the system-browser bridge without opening a preview tab', async () => {
-    const openExternal: Mock<Window['hermesDesktop']['openExternal']> = vi
-      .fn<Window['hermesDesktop']['openExternal']>()
+    const openExternal: Mock<Window['kovaDesktop']['openExternal']> = vi
+      .fn<Window['kovaDesktop']['openExternal']>()
       .mockResolvedValue(undefined)
 
-    vi.stubGlobal('hermesDesktop', { openExternal } satisfies Pick<Window['hermesDesktop'], 'openExternal'>)
+    vi.stubGlobal('kovaDesktop', { openExternal } satisfies Pick<Window['kovaDesktop'], 'openExternal'>)
 
     render(
       <I18nProvider configClient={null} initialLocale="en">

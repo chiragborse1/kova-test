@@ -171,7 +171,7 @@ export async function startRemoteBackend(
         PATH: `${sandbox.bin}${path.delimiter}${env.PATH ?? ''}`,
         PYTHONPATH: REPO_ROOT,
         HOME: sandbox.home,
-        KOVA_HOME: sandbox.hermesHome,
+        KOVA_HOME: sandbox.kovaHome,
         KOVA_DASHBOARD_SESSION_TOKEN: token,
         GIT_NO_LAZY_FETCH: '1'
       },
@@ -248,7 +248,7 @@ export interface SessionRow {
 export function sessionRows(sandbox: CoreSandbox): SessionRow[] {
   return (
     withDb(
-      path.join(sandbox.hermesHome, 'state.db'),
+      path.join(sandbox.kovaHome, 'state.db'),
       db =>
         db
           .prepare('SELECT id, title, parent_session_id, end_reason FROM sessions ORDER BY started_at, id')
@@ -261,7 +261,7 @@ export function sessionRows(sandbox: CoreSandbox): SessionRow[] {
 export function messageRows(sandbox: CoreSandbox, sessionId: string): { role: string; content: string }[] {
   return (
     withDb(
-      path.join(sandbox.hermesHome, 'state.db'),
+      path.join(sandbox.kovaHome, 'state.db'),
       db =>
         db
           .prepare(

@@ -94,8 +94,8 @@ test('a healthy local install opens straight to chat on every launch: no setup c
           expect(serve.length, `one backend for the install\n${diagnostics(facts)}`).toBe(1)
           const cwd = fs.realpathSync(`/proc/${serve[0].pid}/cwd`)
           expect(
-            [serve[0].cmdline, cwd].some(s => s.includes(facts.hermesHome)),
-            `backend runs from the install under ${facts.hermesHome}: ${serve[0].cmdline} (cwd ${cwd})`
+            [serve[0].cmdline, cwd].some(s => s.includes(facts.kovaHome)),
+            `backend runs from the install under ${facts.kovaHome}: ${serve[0].cmdline} (cwd ${cwd})`
           ).toBe(true)
 
           provider.script(U(launch), [{ text: [`${A(launch)} `, 'healthy ', 'install'] }])
@@ -121,7 +121,7 @@ test('a healthy local install opens straight to chat on every launch: no setup c
     }
 
     expect(
-      fs.existsSync(path.join(facts.hermesHome, 'kova-agent', '.git')),
+      fs.existsSync(path.join(facts.kovaHome, 'kova-agent', '.git')),
       'the install is still the git checkout the installer made'
     ).toBe(true)
   } finally {

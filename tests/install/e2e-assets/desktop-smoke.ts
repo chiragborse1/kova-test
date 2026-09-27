@@ -157,7 +157,7 @@ function selectLocal(userData: string): void {
 }
 
 interface BackendWindow extends Window {
-  hermesDesktop?: {
+  kovaDesktop?: {
     getConnection: () => Promise<{ baseUrl: string; mode?: string; logs: string[] }>
   }
 }
@@ -166,7 +166,7 @@ async function backendConnection(page: Page): Promise<{ baseUrl: string; mode?: 
   return z.object({ baseUrl: z.string(), mode: z.string().optional(), logs: z.array(z.string()) }).parse(
     await page.evaluate(async (): Promise<{ baseUrl: string; mode?: string; logs: string[] }> => {
       // SAFETY: the desktop preload owns this bridge; its result is validated at the boundary.
-      const bridge = (window as BackendWindow).hermesDesktop
+      const bridge = (window as BackendWindow).kovaDesktop
       if (!bridge) { throw new Error('Desktop connection bridge is unavailable') }
       const { baseUrl, mode, logs } = await bridge.getConnection()
       return { baseUrl, mode, logs }
@@ -318,15 +318,15 @@ export async function runInstalledDesktopSmoke(options: SmokeOptions, launchApp:
       throw new Error('Required local backend was replaced by a remote connection')
     }
     const identity = await readChatIdentity(page)
-    if (options.origin === 'source' && fs.realpathSync(identity.hermesRoot) !== fs.realpathSync(options.root)) {
+    if (options.origin === 'source' && fs.realpathSync(identity.kovaRoot) !== fs.realpathSync(options.root)) {
       throw new Error('Desktop resolved a different source installation')
     }
     // A bundled artifact that bakes its own env resolves its home itself; the
     // app must report the home the driver predicted and seeded, not some other
     // (possibly real, pre-existing) profile.
     if (predictedHome) {
-      if (!identity.hermesHome || fs.realpathSync(identity.hermesHome) !== fs.realpathSync(predictedHome)) {
-        throw new Error(`Desktop resolved Kova home ${identity.hermesHome ?? '(unreported)'} instead of the predicted ${predictedHome}`)
+      if (!identity.kovaHome || fs.realpathSync(identity.kovaHome) !== fs.realpathSync(predictedHome)) {
+        throw new Error(`Desktop resolved Kova home ${identity.kovaHome ?? '(unreported)'} instead of the predicted ${predictedHome}`)
       }
     }
     const backend = localBackendProcess(Number(base.port), running.pid)
@@ -334,10 +334,10 @@ export async function runInstalledDesktopSmoke(options: SmokeOptions, launchApp:
     // assertBackendOrigin fails, or the leg reports a mismatch with nothing to
     // inspect.
     fs.writeFileSync(path.join(out, `desktop-backend-${options.phase}.log`), connection.logs.map(redact).join('\n'))
-    // `identity.hermesRoot` was asserted against options.root above, and the listener was
+    // `identity.kovaRoot` was asserted against options.root above, and the listener was
     // tied to this app process when it was identified, so on a platform that cannot read
     // the backend's own environment those two facts are the available evidence.
-    assertBackendOrigin(backend, options.root, options.origin, { appReportedRoot: identity.hermesRoot })
+    assertBackendOrigin(backend, options.root, options.origin, { appReportedRoot: identity.kovaRoot })
     const provenanceCommit = readInstallationCommit(options.root, options.origin)
     if (provenanceCommit !== options['expect-commit']) { throw new Error('Installed commit differs from --expect-commit') }
     fs.writeFileSync(path.join(out, `desktop-backend-${options.phase}.log`), connection.logs.map(redact).join('\n'))

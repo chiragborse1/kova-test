@@ -1349,7 +1349,7 @@ export const SIDEBAR_CROSS_TEXTS = {
 
 interface DevSandbox {
   root: string
-  hermesHome: string
+  kovaHome: string
   userDataDir: string
   cleanup: () => void
 }
@@ -1357,14 +1357,14 @@ interface DevSandbox {
 /** Create an isolated KOVA_HOME + Electron user-data dir in the OS temp dir. */
 function createDevSandbox(): DevSandbox {
   const root = fs.mkdtempSync(nodePath.join(os.tmpdir(), `kova-dev-mock-${Date.now()}`))
-  const hermesHome = nodePath.join(root, 'kova-home')
+  const kovaHome = nodePath.join(root, 'kova-home')
   const userDataDir = nodePath.join(root, 'electron-user-data')
-  fs.mkdirSync(hermesHome, { recursive: true })
+  fs.mkdirSync(kovaHome, { recursive: true })
   fs.mkdirSync(userDataDir, { recursive: true })
 
   return {
     root,
-    hermesHome,
+    kovaHome,
     userDataDir,
     cleanup: () => {
       try {
@@ -1412,15 +1412,15 @@ async function runDevLaunch(): Promise<void> {
   console.log(`  Mock server: ${mock.url}`)
 
   const sandbox = createDevSandbox()
-  writeMockProviderConfig(sandbox.hermesHome, mock.url)
-  writeEnvFile(sandbox.hermesHome)
-  console.log(`  KOVA_HOME: ${sandbox.hermesHome}`)
+  writeMockProviderConfig(sandbox.kovaHome, mock.url)
+  writeEnvFile(sandbox.kovaHome)
+  console.log(`  KOVA_HOME: ${sandbox.kovaHome}`)
 
   const electronBin = findElectron(repoRoot)
 
   const env: Record<string, string> = {
     ...process.env,
-    KOVA_HOME: sandbox.hermesHome,
+    KOVA_HOME: sandbox.kovaHome,
     KOVA_DESKTOP_USER_DATA_DIR: sandbox.userDataDir,
     KOVA_DESKTOP_IGNORE_EXISTING: '1',
     KOVA_DESKTOP_KOVA_ROOT: repoRoot,

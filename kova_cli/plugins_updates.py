@@ -51,7 +51,7 @@ class CheckResult:
     latest: Optional[str] = None
     update_available: Optional[bool] = None   # None = unknown/uncheckable
     needs_fixing: Optional[str] = None        # mismatch reason when set
-    min_hermes: Optional[str] = None          # feed's version floor, if any
+    min_kova: Optional[str] = None          # feed's version floor, if any
     reason: str = ""
 
     def to_json(self) -> dict:
@@ -62,7 +62,7 @@ class CheckResult:
             "latest": self.latest,
             "update_available": self.update_available,
             "needs_fixing": self.needs_fixing,
-            "min_hermes": self.min_hermes,
+            "min_kova": self.min_kova,
             "reason": self.reason,
         }
 
@@ -178,7 +178,7 @@ def check_provenanced(
             result.reason = f"feed unparseable: {exc}"
             return result
         result.latest = feed.get("version")
-        result.min_hermes = feed.get("min_hermes")
+        result.min_kova = feed.get("min_kova")
         # Like-for-like identity only (audit C17): a feed that ships a full
         # git SHA compares SHA vs recorded revision; otherwise the feed's
         # semantic version compares against the installed manifest's
@@ -236,7 +236,7 @@ def check_provenanced(
 
 def parse_feed_yml(text: str) -> dict:
     """The electron-updater-derived feed shape: version, released,
-    min_hermes, artifacts{git,bundle,bundle_sha256}, notes_url."""
+    min_kova, artifacts{git,bundle,bundle_sha256}, notes_url."""
     import kova_yaml as yaml
 
     try:
@@ -249,7 +249,7 @@ def parse_feed_yml(text: str) -> dict:
     if not isinstance(version, str) or not version.strip():
         raise ValueError("feed missing 'version'")
     out: dict[str, Any] = {"version": version.strip()}
-    for key in ("min_hermes", "notes_url"):
+    for key in ("min_kova", "notes_url"):
         value = data.get(key)
         if isinstance(value, str) and value.strip():
             out[key] = value.strip()

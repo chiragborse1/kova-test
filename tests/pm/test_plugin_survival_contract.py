@@ -427,7 +427,7 @@ def test_update_sync_survives_unreadable_secondary_profile(admission_env):
 
 @pytest.mark.skipif(not _uv_available(), reason="uv not on PATH")
 def test_plugin_our_version_rejects_sits_out_without_being_disabled(admission_env, monkeypatch):
-    """requires_hermes is judged against our version identity, which can lag (an untagged
+    """requires_kova is judged against our version identity, which can lag (an untagged
     source checkout reads as an older release). Such a plugin sits out: config untouched,
     boot's currency check neither raises nor loops, and it rejoins once the verdict flips."""
     from pm.environments import runtime_facts_path
@@ -438,7 +438,7 @@ def test_plugin_our_version_rejects_sits_out_without_being_disabled(admission_en
 
     tmp_path, home = admission_env
     core = tmp_path / "core"
-    # A tagless checkout (CI's) has no parseable version, which makes requires_hermes permissive.
+    # A tagless checkout (CI's) has no parseable version, which makes requires_kova permissive.
     monkeypatch.setattr(plugins_manifest, "running_kova_version", lambda: "1.0.0")
     for name in ("fits", "needs-newer"):
         plugin = home / "plugins" / name
@@ -448,7 +448,7 @@ def test_plugin_our_version_rejects_sits_out_without_being_disabled(admission_en
             'dependencies=[]\n[tool.uv]\npackage=false\n', encoding="utf-8",
         )
     manifest = home / "plugins" / "needs-newer" / "plugin.yaml"
-    manifest.write_text("name: needs-newer\nrequires_hermes: '>=999'\n", encoding="utf-8")
+    manifest.write_text("name: needs-newer\nrequires_kova: '>=999'\n", encoding="utf-8")
     _write_enabled(home, ["fits", "needs-newer"])
     before = (home / "config.yaml").read_bytes()
 
@@ -461,7 +461,7 @@ def test_plugin_our_version_rejects_sits_out_without_being_disabled(admission_en
     assert "needs-newer" not in (workspace / "pyproject.toml").read_text()
     assert venv_is_current(project_root=core) is True
 
-    manifest.write_text("name: needs-newer\nrequires_hermes: '>=0'\n", encoding="utf-8")
+    manifest.write_text("name: needs-newer\nrequires_kova: '>=0'\n", encoding="utf-8")
     assert venv_is_current(project_root=core) is False
     sync_venv(explicit=True, evict_incompatible_plugins=True)
     workspace = Path(Facts(runtime_facts_path(core), strict=True).get("venv")["resolved_lock"]).parent

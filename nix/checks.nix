@@ -7,7 +7,7 @@
   perSystem = { pkgs, lib, self', ... }:
     let
       kova-agent = self'.packages.default;
-      hermesVenv = kova-agent.hermesVenv;
+      kovaVenv = kova-agent.kovaVenv;
 
       configMergeScript = pkgs.callPackage ./configMergeScript.nix { };
 
@@ -103,7 +103,7 @@
       ];
       homeOnlyOptions = [
         "gateway"
-        "hermesHome"
+        "kovaHome"
         "installPackage"
       ];
 
@@ -111,7 +111,7 @@
       configKeys = pkgs.runCommand "kova-config-keys" {} ''
         set -euo pipefail
         export HOME=$TMPDIR
-        ${hermesVenv}/bin/python3 -c '
+        ${kovaVenv}/bin/python3 -c '
 import json, sys
 from kova_cli.config import DEFAULT_CONFIG
 
@@ -224,7 +224,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
                 settings.model.default = "test/model";
                 environment.KOVA_TEST = "1";
                 environmentFiles = [ "/run/secrets/kova-env" ];
-                hermesHomeFiles."SOUL.md" = "test soul";
+                kovaHomeFiles."SOUL.md" = "test soul";
                 # documents needs an explicit workingDirectory. The check
                 # workspace-files-need-a-directory below asserts that rule.
                 workingDirectory = "/home/test-user/workspace";
@@ -265,7 +265,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
                 if lib.isAttrs env then lib.mapAttrsToList (k: v: "${k}=${toString v}") env else env
               );
 
-            activation = cfg.home.activation.hermesAgentSetup.data;
+            activation = cfg.home.activation.kovaAgentSetup.data;
 
             failures =
               lib.optional (names != [
@@ -292,7 +292,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
               ) "activation must deep-merge config.yaml, not overwrite it"
               ++ lib.optional (
                 !lib.hasInfix "/home/kova-check/.kova/SOUL.md" activation
-              ) "hermesHomeFiles must install into KOVA_HOME"
+              ) "kovaHomeFiles must install into KOVA_HOME"
               ++ lib.optional (
                 !lib.hasInfix "/home/test-user/workspace/AGENTS.md" activation
               ) "documents must install into workingDirectory"
@@ -370,8 +370,8 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
                 };
               }
               {
-                name = "hermesHomeFiles needs no directory";
-                ok = accepts { hermesHomeFiles."SOUL.md" = "x"; };
+                name = "kovaHomeFiles needs no directory";
+                ok = accepts { kovaHomeFiles."SOUL.md" = "x"; };
               }
               {
                 name = "no files at all is accepted";
@@ -416,7 +416,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
               };
               services = {
                 enable = true;
-                hermesHome = "/home/kova-check/.kova-work";
+                kovaHome = "/home/kova-check/.kova-work";
                 # An override on purpose. Without one the effective package
                 # IS the default package, so a launcher that pinned the plain
                 # default would look correct while it shipped a second
@@ -696,7 +696,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
               backend.mode = "dashboard";
               settings.model.default = "test/model";
               environmentFiles = [ "/run/secrets/kova-env" ];
-              hermesHomeFiles."SOUL.md" = "test soul";
+              kovaHomeFiles."SOUL.md" = "test soul";
             }).config;
 
             units = lib.filterAttrs (n: _: lib.hasPrefix "kova" n) cfg.systemd.services;
@@ -720,7 +720,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
               ) "gateway and backend must share one KOVA_HOME"
               ++ lib.optional (
                 !lib.hasInfix "/var/lib/kova/.kova/SOUL.md" activation
-              ) "hermesHomeFiles must install into KOVA_HOME";
+              ) "kovaHomeFiles must install into KOVA_HOME";
 
             # You cannot use container mode and the backend together. The
             # module says so with an assertion. Without the assertion it
@@ -1154,7 +1154,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           # Verify the wrapper override resolves real strings.
           export HOME=$(mktemp -d)
           RENDERED=$(cd "$HOME" && KOVA_BUNDLED_LOCALES=${kova-agent}/share/kova-agent/locales \
-            ${hermesVenv}/bin/python3 -c "from agent import i18n; print(i18n.t('gateway.reset.header_default', lang='en'))")
+            ${kovaVenv}/bin/python3 -c "from agent import i18n; print(i18n.t('gateway.reset.header_default', lang='en'))")
           echo "rendered: $RENDERED"
           test "$RENDERED" != "gateway.reset.header_default" || (echo "FAIL: i18n returned the raw key with KOVA_BUNDLED_LOCALES set"; exit 1)
           echo "PASS: i18n renders a human string via the wrapper override"
@@ -1266,18 +1266,18 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           # Built with the lock-derived interpreter, so this check fails
           # loudly if the package set and the lock drift apart.
           testPkg = pythonLock.interpreter.pkgs.pyfiglet;
-          hermesWithExtra = kova-agent.override {
+          kovaWithExtra = kova-agent.override {
             extraPythonPackages = [ testPkg ];
           };
         in pkgs.runCommand "kova-extra-python-packages" { } ''
           set -e
           echo "=== Checking extraPythonPackages PYTHONPATH injection ==="
 
-          grep -q "PYTHONPATH" ${hermesWithExtra}/bin/kova || \
+          grep -q "PYTHONPATH" ${kovaWithExtra}/bin/kova || \
             (echo "FAIL: PYTHONPATH not in wrapper"; exit 1)
           echo "PASS: PYTHONPATH present in wrapper"
 
-          grep -q "${testPkg}" ${hermesWithExtra}/bin/kova || \
+          grep -q "${testPkg}" ${kovaWithExtra}/bin/kova || \
             (echo "FAIL: test package path not in PYTHONPATH"; exit 1)
           echo "PASS: test package path found in wrapper"
 
@@ -1298,7 +1298,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           echo "=== Checking Nix Python derives from pm/lock.json ==="
           family=${pythonLock.family}
           echo "locked family: $family"
-          if [ "$family" != "$(${hermesVenv}/bin/python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" ]; then
+          if [ "$family" != "$(${kovaVenv}/bin/python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" ]; then
             echo "FAIL: selected interpreter major.minor does not match pm/lock.json"; exit 1
           fi
           echo "PASS: interpreter matches lock"
@@ -1329,7 +1329,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
 
         # Verify extraDependencyGroups passes through to python.nix
         extra-dependency-groups = let
-          hermesWithGroups = kova-agent.override {
+          kovaWithGroups = kova-agent.override {
             extraDependencyGroups = [ "honcho" ];
           };
         in pkgs.runCommand "kova-extra-dependency-groups" { } ''
@@ -1339,8 +1339,8 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           # Eval-only: verify the override produces valid derivation paths
           # without building the full venv (which is expensive and redundant
           # since the mechanism is just list concatenation into python.nix).
-          echo "derivation: ${hermesWithGroups}"
-          echo "venv: ${hermesWithGroups.hermesVenv}"
+          echo "derivation: ${kovaWithGroups}"
+          echo "venv: ${kovaWithGroups.kovaVenv}"
           echo "PASS: extraDependencyGroups override evaluates cleanly"
 
           echo "=== All extraDependencyGroups checks passed ==="
@@ -1354,7 +1354,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         messaging-variant = pkgs.runCommand "kova-messaging-variant" { } ''
           set -e
           echo "=== Checking discord.py importable from messaging variant ==="
-          ${self'.packages.messaging.hermesVenv}/bin/python3 -c \
+          ${self'.packages.messaging.kovaVenv}/bin/python3 -c \
             "import discord; print(discord.__version__)"
           echo "PASS: discord.py importable from messaging variant venv"
           mkdir -p $out
@@ -1435,7 +1435,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
             local kova_home="$1"
             export KOVA_HOME="$kova_home"
             ${configMergeScript} ${nixSettings} "$kova_home/config.yaml"
-            ${hermesVenv}/bin/python3 -c '
+            ${kovaVenv}/bin/python3 -c '
 import json, sys
 from kova_cli.config import load_config
 json.dump(load_config(), sys.stdout, default=str)

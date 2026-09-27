@@ -153,7 +153,7 @@ beforeEach((): void => {
   $connection.set(null)
   vi.mocked(notify).mockClear()
   vi.mocked(notifyError).mockClear()
-  Object.defineProperty(window, 'hermesDesktop', { configurable: true, value: { api } })
+  Object.defineProperty(window, 'kovaDesktop', { configurable: true, value: { api } })
   setApiRequestConnection('A')
   setApiRequestProfile('work')
   $activeGatewayProfile.set('work')

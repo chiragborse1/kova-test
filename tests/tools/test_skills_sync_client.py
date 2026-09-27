@@ -526,7 +526,7 @@ class TestEndToEnd:
         ssc.push_skills(client, identity=identity)
 
         # Simulate a fresh device: new skills dir, same server, same opt-in.
-        dev2 = tmp_path / "hermes2" / "skills"
+        dev2 = tmp_path / "kova2" / "skills"
         dev2.mkdir(parents=True)
         monkeypatch.setattr(ssc, "_skills_dir", lambda: dev2)
         monkeypatch.setattr(ssc, "read_sync_state", lambda: {"head": None, "skills": {}})

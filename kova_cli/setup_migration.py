@@ -140,10 +140,10 @@ _OPENCLAW_SCRIPT = (
 
 
 def _load_openclaw_migration_module():
-    """Load the openclaw_to_hermes migration script as a module; None if it can't be loaded."""
+    """Load the openclaw_to_kova migration script as a module; None if it can't be loaded."""
     if not _OPENCLAW_SCRIPT.exists():
         return None
-    spec = importlib.util.spec_from_file_location("openclaw_to_hermes", _OPENCLAW_SCRIPT)
+    spec = importlib.util.spec_from_file_location("openclaw_to_kova", _OPENCLAW_SCRIPT)
     if spec is None or spec.loader is None:
         return None
     mod = importlib.util.module_from_spec(spec)

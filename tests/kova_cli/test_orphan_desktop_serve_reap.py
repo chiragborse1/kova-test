@@ -136,8 +136,8 @@ def _valid_lock_payload(pid: int, ownership_id: str, spawn_nonce: str) -> dict:
         "pid": pid,
         "port": 0,
         "profile": "default",
-        "hermesPath": "/opt/kova/bin/kova",
-        "hermesHome": "~/.kova",
+        "kovaPath": "/opt/kova/bin/kova",
+        "kovaHome": "~/.kova",
         "logPath": f"~/.kova/desktop-ssh/{ownership_id}/{spawn_nonce}.log",
         "startedAt": "2026-08-04T20:00:00Z",
     }

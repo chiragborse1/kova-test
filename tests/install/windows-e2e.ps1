@@ -396,9 +396,9 @@ function Save-InstallSideState([string]$Label) {
 
 function Test-KovaRuns([string]$Label) {
     Save-InstallSideState $Label
-    $hermesExe = $null
+    $kovaExe = $null
     try {
-        $hermesExe = Get-SourceHermes $InstallDir
+        $kovaExe = Get-SourceHermes $InstallDir
     } catch {
         # A pre-handoff release cannot complete inside `kova update`: its
         # update path reaches no retired-hook seam, so the update ends with the
@@ -425,9 +425,9 @@ function Test-KovaRuns([string]$Label) {
             $ErrorActionPreference = $prevStartupEap
         }
         Write-Host "  first startup after the update ran (exit $startupExit); the checks below assert the launcher it must have published"
-        $hermesExe = Get-SourceHermes $InstallDir
+        $kovaExe = Get-SourceHermes $InstallDir
     }
-    & $DriverPython -B (Join-Path $AssetsDir 'source_driver.py') --root $InstallDir --launcher $hermesExe --desktop $script:ExpectedDesktop
+    & $DriverPython -B (Join-Path $AssetsDir 'source_driver.py') --root $InstallDir --launcher $kovaExe --desktop $script:ExpectedDesktop
     Assert-True ($LASTEXITCODE -eq 0) "$Label -- read-only install verification (no repair)"
     $prevLazy = $env:KOVA_DISABLE_LAZY_INSTALLS
     $prevBytecode = $env:PYTHONDONTWRITEBYTECODE
@@ -436,7 +436,7 @@ function Test-KovaRuns([string]$Label) {
         $env:KOVA_DISABLE_LAZY_INSTALLS = '1'
         $env:PYTHONDONTWRITEBYTECODE = '1'
         $ErrorActionPreference = 'Continue'
-        & $hermesExe --version 2>&1 | ForEach-Object { Write-Host "    kova --version| $_" }
+        & $kovaExe --version 2>&1 | ForEach-Object { Write-Host "    kova --version| $_" }
         $versionExit = $LASTEXITCODE
     } finally {
         $env:KOVA_DISABLE_LAZY_INSTALLS = $prevLazy
@@ -515,10 +515,10 @@ function Assert-DesktopArtifact([string]$Label) {
 function Invoke-KovaUpdate {
     # --yes reaches the update subcommand only in later
     # releases; ask the installed binary, never parse its source.
-    $hermesExe = Get-SourceHermes $InstallDir
+    $kovaExe = Get-SourceHermes $InstallDir
     $updateArgs = @("update")
     $prevEap = $ErrorActionPreference; $ErrorActionPreference = "Continue"
-    $helpText = & $hermesExe update --help 2>&1 | Out-String
+    $helpText = & $kovaExe update --help 2>&1 | Out-String
     $helpExit = $LASTEXITCODE
     if ($helpExit -ne 0) {
         $ErrorActionPreference = $prevEap
@@ -531,7 +531,7 @@ function Invoke-KovaUpdate {
     $watchdog = Start-HangWatchdog -Minutes $UpdateDeadlineMinutes -EvidencePath $hangLog
     Push-Location $InstallDir
     try {
-        & $hermesExe @updateArgs 2>&1 | Add-TsPrefix | Out-File -Encoding UTF8 $log
+        & $kovaExe @updateArgs 2>&1 | Add-TsPrefix | Out-File -Encoding UTF8 $log
         $updateExit = $LASTEXITCODE
     } finally {
         Pop-Location
@@ -672,7 +672,7 @@ function Invoke-KovaDesktopAppUpdate([string]$TargetSha) {
     # real pipeline; the driver intercepts the product's final spawn
     # (argv/cwd/env captured by e2e-assets/launch-capture/sitecustomize.py)
     # and re-executes it under Playwright, which clicks Update now.
-    $hermesExe = Get-SourceHermes $InstallDir
+    $kovaExe = Get-SourceHermes $InstallDir
     $spec = Join-Path $WorkRoot "launch-spec.json"
     New-Item -ItemType Directory -Path (Join-Path $WorkRoot "logs") -Force | Out-Null
     $log = Join-Path $WorkRoot "logs\desktop-launch-capture.log"
@@ -685,14 +685,14 @@ function Invoke-KovaDesktopAppUpdate([string]$TargetSha) {
     $prevEap = $ErrorActionPreference; $ErrorActionPreference = "Continue"
     Push-Location $InstallDir
     try {
-        if ($hermesExe.StartsWith((Join-Path $InstallDir '.kova'), [StringComparison]::OrdinalIgnoreCase)) {
+        if ($kovaExe.StartsWith((Join-Path $InstallDir '.kova'), [StringComparison]::OrdinalIgnoreCase)) {
             # The PM launcher runs its interpreter with -I, so PYTHONPATH never
             # imports sitecustomize. Same as installer-script-e2e.sh: ask the
             # launcher for its own isolated command and inject the hook into it.
-            & $DriverPython -I (Join-Path $capDir 'pm-launch.py') $hermesExe $spec 2>&1 | Add-TsPrefix | Out-File -Encoding UTF8 $log
+            & $DriverPython -I (Join-Path $capDir 'pm-launch.py') $kovaExe $spec 2>&1 | Add-TsPrefix | Out-File -Encoding UTF8 $log
         } else {
             # Pre-PM venv console scripts load sitecustomize from PYTHONPATH.
-            & $hermesExe desktop 2>&1 | Add-TsPrefix | Out-File -Encoding UTF8 $log
+            & $kovaExe desktop 2>&1 | Add-TsPrefix | Out-File -Encoding UTF8 $log
         }
         $capExit = $LASTEXITCODE
     } finally {

@@ -24,7 +24,7 @@ def _version(repo, version, *, broken=False, minimum="", libraries=("shared-libr
 
     (repo / "plugin.yaml").write_text(
         f"name: transactional\nversion: {version}\nmanifest_version: {SUPPORTED_MANIFEST_VERSION}\n"
-        f"requires_hermes: '{minimum}'\n", encoding="utf-8")
+        f"requires_kova: '{minimum}'\n", encoding="utf-8")
     (repo / "__init__.py").write_text(f"VERSION = {version!r}\ndef register(ctx):\n    pass\n", encoding="utf-8")
     (repo / ".gitignore").write_text("node_modules/\n", encoding="utf-8")
     deps = '["impossible-plugin-dep==1", "impossible-plugin-dep==2"]' if broken else '[]'

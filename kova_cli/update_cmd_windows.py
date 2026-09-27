@@ -506,7 +506,7 @@ def _orphaned_desktop_backend_pids(matches: list[tuple[int, str, str]]) -> list[
         try:
             proc = psutil.Process(int(pid))
             # Fingerprint from the SAME psutil handle, centisecond-quantized like
-            # gateway.status.get_process_start_time so pid_is_hermes round-trips at kill time.
+            # gateway.status.get_process_start_time so pid_is_kova round-trips at kill time.
             process_start_time = int(round(proc.create_time() * 100))
         except psutil.NoSuchProcess:
             continue  # exited during classification — nothing to reap
@@ -591,14 +591,14 @@ def _stop_process_trees(pids: list[int] | list[tuple[int, int]]) -> None:
     See #70026.
     """
     from gateway.status import get_process_start_time
-    from kova_cli._subprocess_compat import pid_is_hermes, windows_hide_flags
+    from kova_cli._subprocess_compat import pid_is_kova, windows_hide_flags
     for entry in pids:
         pid, expected_start_time = entry if isinstance(entry, tuple) else (int(entry), get_process_start_time(int(entry)))
         try:
             if expected_start_time is None:
                 logger.debug("Skipping taskkill of PID %s: process identity unavailable", pid)
                 continue
-            if not pid_is_hermes(pid, expected_start_time=expected_start_time):
+            if not pid_is_kova(pid, expected_start_time=expected_start_time):
                 logger.debug("Skipping taskkill of non-Kova or changed PID %s", pid)
                 continue
             subprocess.run(

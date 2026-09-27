@@ -7,7 +7,7 @@ description: Session source tray — URLs the Kova agent opened via web_search,
 maintainer: aydnOktay
 tier: community
 category: web
-requires_hermes: ">=0.21"
+requires_kova: ">=0.21"
 docs_url: https://github.com/aydnOktay/kova-source-tray
 version: "0.1.1"
 platforms: []

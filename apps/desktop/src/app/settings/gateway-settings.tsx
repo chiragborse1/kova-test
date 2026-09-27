@@ -263,7 +263,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
     host: 'settings',
     enabled: !loading && state.mode === 'remote',
     beforeOAuthLogin: async (payload: DesktopConnectionConfigInput): Promise<void> => {
-      await window.hermesDesktop.saveConnectionConfig(payload)
+      await window.kovaDesktop.saveConnectionConfig(payload)
     },
     onNotice: notify
   })
@@ -295,7 +295,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   useEffect(() => {
     let cancelled = false
 
-    void window.hermesDesktop
+    void window.kovaDesktop
       ?.getSecretStorageEncryption?.()
       .then(res => {
         if (!cancelled && res) {
@@ -315,7 +315,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
     setKeychainEncryptionState(on)
 
     try {
-      const res = await window.hermesDesktop.setSecretStorageEncryption(on)
+      const res = await window.kovaDesktop.setSecretStorageEncryption(on)
 
       setKeychainEncryptionState(res?.on === true)
     } catch (err) {
@@ -372,7 +372,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
 
   useEffect(() => {
     let cancelled = false
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
 
     if (!desktop?.getConnectionConfig) {
       setLoading(false)
@@ -443,7 +443,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
         throw error
       }
 
-      const desktop = window.hermesDesktop
+      const desktop = window.kovaDesktop
 
       // Cloud registry URLs are the persisted agent dashboardUrl. Keep saved
       // rows usable without discovery, but never run the cascade against ''.
@@ -491,12 +491,12 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   }, [state.sshHost, sshHostSuggestions])
 
   useEffect(() => {
-    if (state.mode !== 'ssh' || !window.hermesDesktop?.sshConfigHosts) {
+    if (state.mode !== 'ssh' || !window.kovaDesktop?.sshConfigHosts) {
       return
     }
 
     let cancelled = false
-    void window.hermesDesktop
+    void window.kovaDesktop
       .sshConfigHosts()
       .then(result => {
         if (!cancelled) {
@@ -568,8 +568,8 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
 
     try {
       const next = apply
-        ? await window.hermesDesktop.applyConnectionConfig(payload(allowPlainTextToken))
-        : await window.hermesDesktop.saveConnectionConfig(payload(allowPlainTextToken))
+        ? await window.kovaDesktop.applyConnectionConfig(payload(allowPlainTextToken))
+        : await window.kovaDesktop.saveConnectionConfig(payload(allowPlainTextToken))
 
       if (seq !== saveSeq.current) {
         return
@@ -651,7 +651,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   // `org` scopes discovery for multi-org users; when discovery comes back with
   // needsOrgSelection we surface the org list and show a picker instead.
   const discoverCloud = async (org?: string) => {
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
     const seq = contextSeq.current
 
     if (!desktop?.cloud) {
@@ -736,7 +736,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
       return
     }
 
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
 
     if (!desktop?.cloud) {
       return
@@ -782,7 +782,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   }, [state.mode])
 
   const cloudSignIn = async () => {
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
     const seq = ++signingSeq.current
 
     if (!desktop?.cloud) {
@@ -815,7 +815,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   }
 
   const cloudSignOut = async () => {
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
     const seq = ++signingSeq.current
 
     if (!desktop?.cloud) {
@@ -858,7 +858,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
       return
     }
 
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
 
     if (!desktop?.cloud) {
       return
@@ -951,14 +951,14 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
   }
 
   const resolveSshHost = async (host: string) => {
-    if (!host || !window.hermesDesktop?.sshResolveHost) {
+    if (!host || !window.kovaDesktop?.sshResolveHost) {
       return
     }
 
     const seq = ++sshResolveSeq.current
 
     try {
-      const resolved = await window.hermesDesktop.sshResolveHost(host)
+      const resolved = await window.kovaDesktop.sshResolveHost(host)
 
       if (seq !== sshResolveSeq.current) {
         return
@@ -996,7 +996,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
     setLastTest(null)
 
     try {
-      const result = await window.hermesDesktop.testConnectionConfig(payload())
+      const result = await window.kovaDesktop.testConnectionConfig(payload())
 
       if (seq !== sshTestSeq.current) {
         return
@@ -1042,7 +1042,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
     )
   }
 
-  if (!window.hermesDesktop?.getConnectionConfig) {
+  if (!window.kovaDesktop?.getConnectionConfig) {
     return <EmptyState description={g.unavailableDesc} title={g.unavailableTitle} />
   }
 
@@ -1475,7 +1475,7 @@ function GatewayConnectionSettings({ embedded, standalone }: { embedded: boolean
           />
           <ListRow
             action={
-              <Button onClick={() => void window.hermesDesktop?.revealLogs()} size="sm" variant="textStrong">
+              <Button onClick={() => void window.kovaDesktop?.revealLogs()} size="sm" variant="textStrong">
                 <FileText />
                 {g.openLogs}
               </Button>

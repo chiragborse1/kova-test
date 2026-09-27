@@ -73,13 +73,13 @@ def updated(tmp_path_factory, provider):
     return {"sb": sb, "target": target, "update": up, "origin": origin, "root": root}
 
 
-def _venv_hermes(sb: I.Sandbox) -> str:
+def _venv_kova(sb: I.Sandbox) -> str:
     return str(P.selected_generation(sb) / "venv" / "bin" / "kova")
 
 
 def test_managed_env_kova_can_check_for_updates(updated):
     sb = updated["sb"]
-    exe = _venv_hermes(sb)
+    exe = _venv_kova(sb)
     assert Path(exe).is_file(), f"harness: selected generation ships no kova console script: {exe}"
     cp = sb.run([exe, "update", "--check"], timeout=300)
     with known_failure(r"`kova update --check` from the managed environment: .*Not a git repository",
@@ -91,7 +91,7 @@ def test_managed_env_kova_can_check_for_updates(updated):
 
 def test_managed_env_kova_reports_the_checkout_as_the_install(updated):
     sb = updated["sb"]
-    cp = P.ok(sb.run([_venv_hermes(sb), "--version"], timeout=300))
+    cp = P.ok(sb.run([_venv_kova(sb), "--version"], timeout=300))
     shown = re.search(r"Install directory: (.+)", cp.stdout)
     method = re.search(r"Install method: (.+)", cp.stdout)
     with known_failure(r"managed-environment kova reports install .*/environments/[0-9a-f]+/workspace",

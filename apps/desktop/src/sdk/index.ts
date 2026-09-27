@@ -46,7 +46,7 @@ import {
 import { onGatewayEvent } from '@/contrib/events'
 import { registry } from '@/contrib/registry'
 import type { WorkspaceMode } from '@/contrib/types'
-import { deleteProfile, getLogs, getStatus, hermesApi, type KovaGateway } from '@/kova'
+import { deleteProfile, getLogs, getStatus, kovaApi, type KovaGateway } from '@/kova'
 import { completeMcpDesktopOAuth } from '@/lib/mcp-dashboard-oauth'
 import {
   $gateway,
@@ -285,7 +285,7 @@ async function requestPluginProfile<T>(
       : requestGatewayForAgent<T>(route.connectionId, route.profile, method, params, timeoutMs)
   }
 
-  const getAgentRoster = window.hermesDesktop?.getAgentRoster
+  const getAgentRoster = window.kovaDesktop?.getAgentRoster
 
   if (!getAgentRoster) {
     return dialProfile(route)
@@ -313,7 +313,7 @@ async function requestPluginProfile<T>(
  *  no longer authority to touch that backend, even when its labels still look
  *  identical. */
 async function pluginRouteStillRegistered(route: PluginProfileRoute): Promise<boolean> {
-  const getProfileRoutes = window.hermesDesktop?.getProfileRoutes
+  const getProfileRoutes = window.kovaDesktop?.getProfileRoutes
 
   if (!getProfileRoutes) {
     return false
@@ -888,7 +888,7 @@ export const host = {
   /** The registered connection list (labels, kinds, primary) — token bytes
    *  never included. Rejects on Desktop builds without the registry. */
   connections: async () => {
-    const bridge = window.hermesDesktop?.connections
+    const bridge = window.kovaDesktop?.connections
 
     if (!bridge) {
       throw new Error('This Desktop build has no connection registry. Update Kova Desktop.')
@@ -905,7 +905,7 @@ export const host = {
    *  duplicates. Sources that are unreachable (or ssh connect-on-demand)
    *  appear in `sources` with an error instead of failing the call. */
   agents: async () => {
-    const roster = window.hermesDesktop?.getAgentRoster
+    const roster = window.kovaDesktop?.getAgentRoster
 
     if (!roster) {
       throw new Error('This Desktop build cannot enumerate multi-source agents. Update Kova Desktop.')
@@ -1471,7 +1471,7 @@ export const host = {
   /** Credential-free routes across every current registry source. Identity is
    *  the (connectionId, profile) pair; endpoint/auth details stay in Electron. */
   profileRoutes: async () => {
-    const desktop = window.hermesDesktop
+    const desktop = window.kovaDesktop
     const getProfileRoutes = desktop?.getProfileRoutes
 
     if (!getProfileRoutes) {
@@ -1579,7 +1579,7 @@ export const host = {
       profile
     })
 
-    return hermesApi<PaginatedSessions>({
+    return kovaApi<PaginatedSessions>({
       ...(route ? { connectionId: route.connectionId } : {}),
       path: `/api/profiles/sessions?${query.toString()}`,
       timeoutMs: 60_000
@@ -1603,7 +1603,7 @@ export const host = {
       throw new Error('Persisted session updates require a profile and session id')
     }
 
-    return hermesApi<{ ok: boolean; hidden: boolean }>({
+    return kovaApi<{ ok: boolean; hidden: boolean }>({
       ...(route ? { connectionId: route.connectionId } : {}),
       path: `/api/sessions/${encodeURIComponent(options.sessionId)}`,
       method: 'PATCH',

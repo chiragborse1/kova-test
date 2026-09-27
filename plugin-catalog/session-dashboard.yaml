@@ -5,7 +5,7 @@ description: 'Session Analyzer — per-session analytics for the Kova desktop ap
 maintainer: tommulkins
 tier: community
 category: desktop
-requires_hermes: ">=0.20.0"
+requires_kova: ">=0.20.0"
 docs_url: https://github.com/tommulkins/kova-plugin-session-analyzer
 platforms: []
 capabilities:

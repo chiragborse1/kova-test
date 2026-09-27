@@ -63,14 +63,14 @@ export type { Appearance }
 
 /**
  * Glass needs a native window material. Electron is authoritative (preload
- * sets `hermesDesktop.glassSupported` from `os.release()` so Win10 cannot
+ * sets `kovaDesktop.glassSupported` from `os.release()` so Win10 cannot
  * sneak through). Tests and non-Electron shells fall back to a UA sniff —
  * Mac or Windows — which is why this file pins `navigator.platform` before
  * import.
  */
 export const GLASS_SUPPORTED =
-  typeof window !== 'undefined' && typeof window.hermesDesktop?.glassSupported === 'boolean'
-    ? window.hermesDesktop.glassSupported
+  typeof window !== 'undefined' && typeof window.kovaDesktop?.glassSupported === 'boolean'
+    ? window.kovaDesktop.glassSupported
     : isMacPlatform() || isWindowsPlatform()
 
 /**
@@ -79,8 +79,8 @@ export const GLASS_SUPPORTED =
  * Settings hides the row rather than offering a lever that does nothing.
  */
 export const TRANSLUCENCY_SUPPORTED =
-  typeof window !== 'undefined' && typeof window.hermesDesktop?.translucencySupported === 'boolean'
-    ? window.hermesDesktop.translucencySupported
+  typeof window !== 'undefined' && typeof window.kovaDesktop?.translucencySupported === 'boolean'
+    ? window.kovaDesktop.translucencySupported
     : isMacPlatform() || isWindowsPlatform()
 
 /** Windows collapses the frost ladder — see `glassMaterialsFor`. */
@@ -363,7 +363,7 @@ if (typeof window !== 'undefined') {
   // exactly right: the window's tint and native opacity change with it.
   $translucency.subscribe(state => {
     applyGlassSurfaces(state)
-    window.hermesDesktop?.setTranslucency?.(state)
+    window.kovaDesktop?.setTranslucency?.(state)
   })
 
   // Persistence follows the BOOK, so an appearance switch (which changes the

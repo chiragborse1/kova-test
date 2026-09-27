@@ -1,6 +1,6 @@
 # Self-contained Kova TUI, compiled by the same recipe as npm.
-{ hermesNpmLib, ... }:
-hermesNpmLib.buildNpmPackage {
+{ kovaNpmLib, ... }:
+kovaNpmLib.buildNpmPackage {
   dirs = [
     "ui-tui"
     "apps/shared"

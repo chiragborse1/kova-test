@@ -71,7 +71,7 @@ def _scrub_child_env(source_env, is_passthrough=None, is_windows=None):
     scrubbed = {}
     # Non-secret KOVA_* vars no allowlist admits are dropped on purpose; a script importing a
     # repo module that reads one would see it silently unset — log the drop, point at the opt-in.
-    _dropped_hermes = []
+    _dropped_kova = []
     for k, v in source_env.items():
         if is_passthrough(k):
             resolved = resolve_passthrough_value(k, v)
@@ -89,13 +89,13 @@ def _scrub_child_env(source_env, is_passthrough=None, is_windows=None):
     # Declared names only the bound profile scope holds (a routed profile's own .env / sources
     # never enter the process env) — the loop above sees only names ``source_env`` carries.
     scrubbed.update((k, v) for k, v in scoped_passthrough_additions(scrubbed).items() if is_passthrough(k))
-    if _dropped_hermes:
+    if _dropped_kova:
         logger.debug(
             "execute_code: dropped %d non-allowlisted KOVA_* var(s) from the "
             "sandbox child env (%s). This is intentional hardening (#27303); if "
             "a sandbox script legitimately needs one, declare it via "
             "env_passthrough in the skill/config so it passes by explicit opt-in.",
-            len(_dropped_hermes), ", ".join(sorted(_dropped_hermes)),
+            len(_dropped_kova), ", ".join(sorted(_dropped_kova)),
         )
     # delegate_task children are marked by a ContextVar, not os.environ, and the sandbox crosses
     # a process boundary: strip dispatcher-owned Kanban vars AFTER the scrub so an explicit

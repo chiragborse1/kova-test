@@ -88,7 +88,7 @@ ORDERED: list[tuple[str, str, str]] = [
     ("hermes-agent", "kova-agent"),
 
     # --- env var prefix + SHOUTY ---
-    ("HERMES_", "KOVA_"),
+    ("KOVA_", "KOVA_"),
     ("\\bHERMES\\b", "KOVA"),
     ("\\bHermes\\b", "Kova"),
     ("Hermes(?=[A-Z])", "Kova"),

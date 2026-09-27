@@ -18,7 +18,7 @@ beforeEach(() => {
   document.body.replaceChildren()
   // The host hangs off documentElement, so clearing body does not reach it.
   document.querySelector('kova-watch')?.remove()
-  delete (window as unknown as Record<string, unknown>).__hermesWatch
+  delete (window as unknown as Record<string, unknown>).__kovaWatch
 })
 
 /** The overlay lives in a closed shadow root, so a test can only see the host. */
@@ -27,8 +27,8 @@ const host = () => document.querySelector('kova-watch')
 /** …except through the parts the engine parks on the window for its own reuse,
  *  which is the only way to inspect what the overlay actually drew. */
 const drawn = () =>
-  (window as unknown as { __hermesWatch: { parts: Record<string, HTMLElement> & { shadow: ShadowRoot } } })
-    .__hermesWatch.parts
+  (window as unknown as { __kovaWatch: { parts: Record<string, HTMLElement> & { shadow: ShadowRoot } } })
+    .__kovaWatch.parts
 
 /** Everything the overlay drew for this action. The cursor is the only fixed
  *  layer — every box and pin is a mark that comes and goes. */
@@ -182,7 +182,7 @@ describe('watchInPage', () => {
     document.body.append(target)
 
     const stamp = (value: number) => {
-      ;(window as unknown as Record<string, unknown>).__hermesWatchTag = value
+      ;(window as unknown as Record<string, unknown>).__kovaWatchTag = value
     }
 
     stamp(1)

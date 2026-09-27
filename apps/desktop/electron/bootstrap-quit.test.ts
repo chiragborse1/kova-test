@@ -25,7 +25,7 @@ for (const boundary of ['resolution', 'manifest'] as const) {
         installStamp: null,
         activeRoot: path.join(home, 'agent'),
         sourceRepoRoot: home,
-        hermesHome: home,
+        kovaHome: home,
         abortSignal: controller.signal,
         onEvent: event => {
           if (boundary === 'resolution' && event.line?.includes('using local')) {

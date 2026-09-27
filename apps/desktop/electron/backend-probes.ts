@@ -133,7 +133,7 @@ async function canImportKovaCli(
 }
 
 /**
- * Return true iff `<hermesCommand> --version` exits 0.
+ * Return true iff `<kovaCommand> --version` exits 0.
  *
  * Used to gate the "existing `kova` on PATH" rung. Without this, a
  * stale kova.cmd shim left behind by an uninstalled pip install (or
@@ -144,7 +144,7 @@ async function canImportKovaCli(
  * here -- `--version` is the cheapest "is this binary alive" smoke
  * test that every kova_cli entry-point has supported since 0.1.
  *
- * @param {string} hermesCommand - Resolved absolute path to a kova
+ * @param {string} kovaCommand - Resolved absolute path to a kova
  *   executable (or an interpreter+script wrapper).
  * @param {boolean} [opts.shell] - Whether to run through a shell. For
  *   .cmd/.bat shims on Windows spawn needs shell:true to find
@@ -158,17 +158,17 @@ async function canImportKovaCli(
  * its immutable, matching Kova package; it must never fall through to the
  * mutable install-script bootstrap path if a best-effort probe is slow.
  */
-function shouldTrustKovaOverride(hermesOverride?: string) {
-  return typeof hermesOverride === 'string' && hermesOverride.trim().length > 0
+function shouldTrustKovaOverride(kovaOverride?: string) {
+  return typeof kovaOverride === 'string' && kovaOverride.trim().length > 0
 }
 
-async function verifyKovaCli(hermesCommand: string, opts?: { shell?: boolean }) {
-  if (!hermesCommand) {
+async function verifyKovaCli(kovaCommand: string, opts?: { shell?: boolean }) {
+  if (!kovaCommand) {
     return false
   }
 
   try {
-    await execProbe(hermesCommand, ['--version'], {
+    await execProbe(kovaCommand, ['--version'], {
       stdio: 'ignore',
       timeout: PROBE_TIMEOUT_MS,
       shell: Boolean(opts?.shell),

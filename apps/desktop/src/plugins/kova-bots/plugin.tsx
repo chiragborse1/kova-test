@@ -320,7 +320,7 @@ export default {
             try {
               const registry =
                 typeof window !== 'undefined'
-                  ? await Promise.resolve(window.hermesDesktop?.connections?.list?.()).catch(() => null)
+                  ? await Promise.resolve(window.kovaDesktop?.connections?.list?.()).catch(() => null)
                   : null
 
               const liveIds = Array.isArray(registry?.connections)
@@ -394,7 +394,7 @@ export default {
     try {
       if (typeof window !== 'undefined') {
         unbindConnectionsChanged =
-          window.hermesDesktop?.connections?.onChanged?.(payload => {
+          window.kovaDesktop?.connections?.onChanged?.(payload => {
             if (payload?.reason === 'removed') {
               sweepGroupChatMembersForRemovedConnection(payload.connectionId)
             }
