@@ -72,7 +72,11 @@ _EDIT_FORMAT_GUIDANCE: dict[str, tuple[tuple[str, ...], str]] = {
     "replace": (
         ("claude", "sonnet", "opus", "haiku",
          "gemini", "gemma", "deepseek", "qwen", "kimi", "glm", "grok",
-         "kova", "llama", "mistral", "devstral", "minimax"),
+         # "hermes" is retained deliberately: it is a MODEL-FAMILY needle
+         # matching real served model ids (nousresearch/hermes-4-405b,
+         # hermes-3-llama-*). Renaming it to "kova" would break edit-format
+         # selection for those models. Do not "rebrand" this string.
+         "hermes", "kova", "llama", "mistral", "devstral", "minimax"),
         "- Edit format: author new files with `write_file`; for edits to "
         "existing code prefer `patch` in `mode='replace'` — match a unique "
         "snippet and swap it. Reach for `mode='patch'` (V4A) only when an edit "
