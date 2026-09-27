@@ -1,9 +1,9 @@
 name: Build Skills Index
 
 on:
-  schedule:
+  # schedule: DISABLED-FOR-KOVA-FORK
     # Run twice daily: 6 AM and 6 PM UTC
-    - cron: "0 6,18 * * *"
+    # - cron: DISABLED-FOR-KOVA-FORK
   workflow_dispatch: # Manual trigger
   push:
     branches: [main]

@@ -12,8 +12,8 @@ name: Canary Release
 # conclusion=failure is a canary failure signal.
 
 on:
-  schedule:
-    - cron: "41 6 * * *" # daily, 06:41 UTC
+  # schedule: DISABLED-FOR-KOVA-FORK
+    # - cron: DISABLED-FOR-KOVA-FORK
   workflow_dispatch:
 
 permissions:
