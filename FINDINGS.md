@@ -390,3 +390,59 @@ CHECKS THAT NOW RUN
   scripts/kova/fix_repo_urls.py     --check finds 0 product files
   scripts/kova/fix_hostnames.py     --check finds 0 files
   scripts/kova/fix_provider_alias.py --check finds 0 files
+
+=====================================================================
+PUSHED to chiragborse1/kova-test
+=====================================================================
+
+  remote   https://github.com/chiragborse1/kova-test.git  (as `kova-test`)
+  branch   main
+  HEAD     7ea1787e  (local and remote identical)
+  history  24 commits above the 2a977be9 boundary, all authored by
+           Chirag Borse, each with a full message
+
+  contributors/  0 files on the remote
+  .mailmap       absent
+  upstream history below the boundary intact (45089 commits total)
+
+  Before publishing, checked for what should not go out:
+    - no .env, credential stores, .pem/.key/id_rsa
+    - the five files matching a secret pattern are the REDACTION code
+      (agent/redact.py, auth.py _PLACEHOLDER_KEY_PREFIXES,
+      group-activity.ts) and documented placeholders
+      ("ghp_xxxxxxxxxxxxxxxxxxxx" in .env.example). None is a credential.
+    - largest tracked file 3.7 MB, 182 MB total
+
+TWO PUSH FAILURES WORTH RECORDING
+
+1. shallow clone
+   The first attempt failed with
+       remote: fatal: did not receive expected object 7d6da01e
+   That object is the PARENT of the shallow boundary commit 2a977be9. A
+   shallow repository records "history stops here" rather than carrying the
+   parent, and the remote cannot verify the commits it is being sent
+   without it. `git fsck` was clean, which is what made it confusing: the
+   repo was not corrupt, it was deliberately truncated.
+   Fixed with `git fetch --unshallow origin`. Worth remembering for any
+   future fork-and-push: a --depth 1 clone cannot be pushed as-is.
+
+2. transport
+   182 MB over HTTPS reset twice (SEC_E_MESSAGE_ALTERED, then curl 55
+   connection reset) before succeeding on the third attempt with
+       http.postBuffer 1GB, http.lowSpeedLimit 0, pack.threads 1
+   There is no SSH key on this machine, so HTTPS is the only path.
+   Nothing was deleted to make the push smaller - the large files are
+   legitimate upstream assets (screenshots, icons, a DMG tiff), and
+   shrinking the payload to suit a flaky link would have been the wrong
+   trade.
+
+TYPE CHECK (new this pass)
+  scripts/kova/tsc_check.py type-checks the TS the branch authored and
+  compares against a pristine 2a977be9 worktree:
+      this branch : 18 errors
+      pristine    : 18 errors
+      -> no new type errors
+  The absolute number is meaningless on its own - this project does not
+  type-check clean upstream either. Only the delta answers the question.
+  Requires ~72 MB (compiler + 4 type packages) rather than a full
+  node_modules install.
