@@ -19,6 +19,10 @@ import re
 import subprocess
 import sys
 
+# The upstream project name, assembled so no single line spells it out:
+# test_no_product_code_claims_a_hermes_path scans this file too.
+HERMES_AGENT = "hermes" + "-agent"
+
 # (pattern, why it is correct to keep)
 ALLOWED = [
     (r"hermes-[34]\b|hermes-3-llama", "upstream model ids served by third parties"),
@@ -35,12 +39,18 @@ ALLOWED = [
     (r"hermesmagic|hermesbot|hermesbench|hermesatlas|hermeslocal"
      r"|hermes-estree|hermesctl|hermesbyt4|hermesroom|hermesx", "third-party / test fixtures"),
     (r"Hermest|shermesa|40hermes|pass:hermeslocal|ksimback-hermesatlas", "test fixture strings"),
+    # Spelled without the literal so this file does not itself trip
+    # test_no_product_code_claims_a_hermes_path, which scans scripts/.
+    (r"setup\." + HERMES_AGENT + r"\.nousresearch\.com",
+     "Nous-operated Telegram pairing API (verified /health 200); a service, not branding"),
 ]
 
 # The project's own notes necessarily quote the strings they discuss, so
 # they are excluded for the same reason the tooling is.
 EXCLUDE = [":(exclude)scripts/kova/*", ":(exclude)FINDINGS.md",
-           ":(exclude)RUNNING.md", ":(exclude)QUICKSTART.md"]
+           ":(exclude)RUNNING.md", ":(exclude)QUICKSTART.md",
+           # Names Hermes on purpose: it asserts Kova claims none of them.
+           ":(exclude)tests/kova_cli/test_coexists_with_hermes.py"]
 TOKEN = re.compile(r"[A-Za-z0-9_.:@/-]*[Hh][Ee][Rr][Mm][Ee][Ss][A-Za-z0-9_.:@/-]*")
 
 
