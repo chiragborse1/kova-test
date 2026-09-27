@@ -45,6 +45,67 @@ const SYSTEM_MONO =
 export const DEFAULT_TYPOGRAPHY: DesktopThemeTypography = { fontSans: SYSTEM_SANS, fontMono: SYSTEM_MONO }
 
 /**
+ * Kova - the first-party default identity.
+ *
+ * Unlike `nous` (a GitHub-chrome fork carrying a blue accent), this preset
+ * is Kova's own: a violet-leaning neutral ramp with a single purple accent
+ * family, authored in OKLCH-friendly steps so the light and dark palettes
+ * share one hue rather than drifting.
+ *
+ * `#6d3bf5` is the light-mode brand accent (5.9:1 on `#fbfafc`); dark lifts
+ * to `#9d7bff` to clear AA against `#0b0910`. Terminal palettes are tuned to
+ * the same ramp so the embedded shell matches the app chrome.
+ */
+export const kovaTheme: DesktopTheme = {
+  name: 'kova',
+  label: 'Kova',
+  description: 'Kova violet - the default identity',
+  ...THEME_PRESET_PALETTES.kova,
+  typography: {
+    fontSans: SYSTEM_SANS,
+    fontMono: SYSTEM_MONO
+  },
+  terminal: {
+    foreground: '#1a1625',
+    black: '#221d2e',
+    red: '#c62f4b',
+    green: '#1c7d4f',
+    yellow: '#8a5a00',
+    blue: '#3b5bdb',
+    magenta: '#8a3ffc',
+    cyan: '#0f7a8a',
+    white: '#635d75',
+    brightBlack: '#7d7791',
+    brightRed: '#e8475f',
+    brightGreen: '#22a565',
+    brightYellow: '#b57c00',
+    brightBlue: '#4c74ff',
+    brightMagenta: '#a45dff',
+    brightCyan: '#14a0b5',
+    brightWhite: '#ece9f5'
+  },
+  darkTerminal: {
+    foreground: '#ece9f5',
+    black: '#2a2438',
+    red: '#ff6b83',
+    green: '#3fca7d',
+    yellow: '#e3a83b',
+    blue: '#7a97ff',
+    magenta: '#c08cff',
+    cyan: '#4fd1e0',
+    white: '#9a93ad',
+    brightBlack: '#635d75',
+    brightRed: '#ff8fa1',
+    brightGreen: '#5fe0a0',
+    brightYellow: '#ffc861',
+    brightBlue: '#96b0ff',
+    brightMagenta: '#d4a8ff',
+    brightCyan: '#6fe0ee',
+    brightWhite: '#ffffff'
+  }
+}
+
+/**
  * Nous — the canonical Kova desktop identity, forked from the GitHub VS Code
  * theme (github.github-vscode-theme). Light is GitHub Light Default, dark is
  * GitHub Dark Default, both converted through the same path a Marketplace
@@ -396,6 +457,7 @@ export const slateTheme: DesktopTheme = {
 }
 
 export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
+  kova: kovaTheme,
   nous: nousTheme,
   github: githubTheme,
   catppuccin: catppuccinTheme,
@@ -411,5 +473,9 @@ export const BUILTIN_THEMES: Record<string, DesktopTheme> = {
 
 export const BUILTIN_THEME_LIST = Object.values(BUILTIN_THEMES)
 
-/** Skin used when nothing is persisted or the persisted name is retired. */
-export const DEFAULT_SKIN_NAME = 'nous'
+/**
+ * Skin used when nothing is persisted or the persisted name is retired.
+ *
+ * `nous` remains a registered theme: anyone who already chose it keeps it.
+ */
+export const DEFAULT_SKIN_NAME = 'kova'
