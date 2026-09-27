@@ -7,9 +7,9 @@ import webbrowser
 from kova_cli.colors import Colors, color
 from kova_cli.config import load_config
 
-DEFAULT_PORTAL_URL = "https://portal.openkova.com"
-SUBSCRIPTION_URL = "https://portal.openkova.com/manage-subscription"
-DOCS_URL = "https://kova-agent.openkova.com/docs/user-guide/features/tool-gateway"
+DEFAULT_PORTAL_URL = "https://portal.nousresearch.com"
+SUBSCRIPTION_URL = "https://portal.nousresearch.com/manage-subscription"
+DOCS_URL = "https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway"
 # Static `portal tools` catalog — the partners Tool Gateway routes to today: (key, label, partner).
 _CATALOG = [
     ("web", "Web search & extract", "Nous-managed"),

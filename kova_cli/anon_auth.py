@@ -201,7 +201,7 @@ def guest_carries_inference() -> bool:
     return guest_enabled() and has_guest()
 
 
-WELCOME_HOSTS = frozenset({"welcome-api.openkova.com"})
+WELCOME_HOSTS = frozenset({"welcome-api.nousresearch.com"})
 # Dev-only: extra hostnames that count as the welcome host, comma-separated (for example
 # ``127.0.0.1`` while ``NOUS_INFERENCE_BASE_URL`` points at a local stand-in). Read from the
 # environment, which the user controls, so it sits at the same trust level as the URL override

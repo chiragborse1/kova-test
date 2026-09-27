@@ -176,7 +176,7 @@ async def test_status_command_uses_most_recent_persisted_model_route(tmp_path):
             "sess-1",
             model="upstage/solar-pro4:free",
             billing_provider="nous",
-            billing_base_url="https://inference-api.openkova.com/v1/",
+            billing_base_url="https://inference-api.nousresearch.com/v1/",
             input_tokens=60,
             api_call_count=6,
         )
@@ -185,7 +185,7 @@ async def test_status_command_uses_most_recent_persisted_model_route(tmp_path):
         db.update_session_billing_route(
             "sess-1",
             provider="nous",
-            base_url="https://inference-api.openkova.com/v1/",
+            base_url="https://inference-api.nousresearch.com/v1/",
         )
 
         result = await runner._handle_message(_make_event("/status"))

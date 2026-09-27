@@ -268,7 +268,7 @@ def _route_replays_reasoning_details(base_url: Any) -> bool:
     """
     from utils import base_url_host_matches
 
-    return base_url_host_matches(base_url, "openrouter.ai") or base_url_host_matches(base_url, "openkova.com")
+    return base_url_host_matches(base_url, "openrouter.ai") or base_url_host_matches(base_url, "nousresearch.com")
 
 
 def _has_replayable_thought_signature(extra_content: Any) -> bool:

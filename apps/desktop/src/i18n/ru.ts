@@ -1411,7 +1411,7 @@ export const ru = defineLocale({
       sshErrHostKey:
         'Ключ хоста ИЗМЕНИЛСЯ с последнего подключения. Убедитесь, что это ожидаемо, затем выполните ssh-keygen -R <host> и переподключитесь.',
       sshErrNotInstalled:
-        'Kova не установлен на удалённой машине. Установите его там (curl -fsSL https://kova-agent.openkova.com/install.sh | sh) или задайте путь к Kova.',
+        'Kova не установлен на удалённой машине. Установите его там (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh) или задайте путь к Kova.',
       sshErrPlatform:
         'Неподдерживаемая удалённая платформа. SSH-режим Kova Desktop поддерживает удалённые хосты Linux, macOS и Windows.',
       sshErrTimeout: 'SSH-соединение истекло. Хост может быть недоступен или «спит».',

@@ -287,7 +287,7 @@ The rebrand was verified by grep. Running the suite against a pristine
    user's Startup folder.
 
 5. ~900 dead links from an INVENTED DOMAIN
-   The rebrand mapped nousresearch.com -> openkova.com host-wide.
+   The rebrand mapped nousresearch.com -> nousresearch.com host-wide.
    Nobody owns that domain: 347 files pointed docs, install scripts,
    badges and the Nous Portal OAuth endpoints at nothing. There is no
    Kova-hosted site, so scripts/kova/fix_hostnames.py maps them back to

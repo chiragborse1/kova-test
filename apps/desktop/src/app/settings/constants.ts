@@ -49,7 +49,7 @@ export const PROVIDER_GROUPS: ProviderPrefix[] = [
     prefix: 'NOUS_',
     name: 'Nous Portal',
     description: 'Hosted Kova & Nous-trained models',
-    docsUrl: 'https://portal.openkova.com',
+    docsUrl: 'https://portal.nousresearch.com',
     priority: 0
   },
   {

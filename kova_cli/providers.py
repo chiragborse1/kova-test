@@ -28,7 +28,7 @@ class KovaOverlay:
 KOVA_OVERLAYS: Dict[str, KovaOverlay] = {
     "moa": KovaOverlay(auth_type="virtual", base_url_override="moa://local"),
     "openrouter": KovaOverlay(is_aggregator=True, base_url_env_var="OPENROUTER_BASE_URL"),
-    "nous": KovaOverlay(auth_type="oauth_device_code", base_url_override="https://inference-api.openkova.com/v1"),
+    "nous": KovaOverlay(auth_type="oauth_device_code", base_url_override="https://inference-api.nousresearch.com/v1"),
     "openai-codex": KovaOverlay(transport="codex_responses", auth_type="oauth_external",
                                   base_url_override="https://chatgpt.com/backend-api/codex"),
     "openai-api": KovaOverlay(transport="codex_responses", base_url_override="https://api.openai.com/v1",

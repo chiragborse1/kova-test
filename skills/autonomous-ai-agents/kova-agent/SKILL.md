@@ -28,7 +28,7 @@ What makes Kova different:
 
 **This skill is a hub.** The body covers identity, quick start, spawning/orchestration, and hard invariants. Everything else lives in reference files — **load the matching reference (below) before answering**; do not answer detail questions from the body alone.
 
-**Docs:** https://kova-agent.openkova.com/docs/
+**Docs:** https://hermes-agent.nousresearch.com/docs/
 
 ## Scope & Verification
 
@@ -36,7 +36,7 @@ This skill is a concise operating guide, not the complete source of truth for ev
 
 Good verification targets, cheapest first:
 
-- **Every shipped feature, one line each: https://kova-agent.openkova.com/docs/llms.txt.** Start here for any "can Kova do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`, or `curl -s https://kova-agent.openkova.com/docs/llms.txt` when web tools are off. The whole documentation set in one file is at `/docs/llms-full.txt`.
+- **Every shipped feature, one line each: https://hermes-agent.nousresearch.com/docs/llms.txt.** Start here for any "can Kova do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`, or `curl -s https://hermes-agent.nousresearch.com/docs/llms.txt` when web tools are off. The whole documentation set in one file is at `/docs/llms-full.txt`.
 - CLI commands: `kova --help`, `kova <command> --help`, and `kova_cli/main.py`
 - Source tree: https://github.com/chiragborse1/kova-test
 
@@ -46,7 +46,7 @@ Never answer "Kova can't do that" from memory. Kova ships far more than this ski
 
 ```bash
 # Install (shell installer — bootstraps PM, Python, dependencies, and the launcher)
-curl -fsSL https://kova-agent.openkova.com/install.sh | bash
+curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
 
 # Interactive chat (default surface; set display.interface: tui to launch the Ink TUI instead)
 kova
@@ -88,7 +88,7 @@ Profiles use `~/.kova/profiles/<name>/` with the same layout. When a profile is 
 
 | User wants... | Load |
 |---|---|
-| **Anything not listed below — "can Kova do X?", "how do I set up X?"** | **https://kova-agent.openkova.com/docs/llms.txt** |
+| **Anything not listed below — "can Kova do X?", "how do I set up X?"** | **https://hermes-agent.nousresearch.com/docs/llms.txt** |
 | Bots that chat, run routines, or message each other; the Bots tab | docs: `/user-guide/bot-mode` |
 | CLI commands, subcommands, flags, "how do I run X" | `references/cli-reference.md` |
 | In-session slash commands | `references/slash-commands.md` |

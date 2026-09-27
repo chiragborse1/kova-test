@@ -3,7 +3,7 @@
   "updated_at": "2026-09-23T07:20:37Z",
   "metadata": {
     "source": "kova-agent repo",
-    "docs": "https://kova-agent.openkova.com/docs/reference/model-catalog"
+    "docs": "https://hermes-agent.nousresearch.com/docs/reference/model-catalog"
   },
   "providers": {
     "openrouter": {

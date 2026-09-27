@@ -69,8 +69,8 @@ class NousProfile(ProviderProfile):
 nous = NousProfile(
     name="nous", aliases=("nous-portal", "openkova"), env_vars=("NOUS_API_KEY",),
     display_name="Nous Research", description="Nous Research — Kova model family",
-    signup_url="https://openkova.com/", fallback_models=("kova-3-405b", "kova-3-70b"),
-    base_url="https://inference-api.openkova.com/v1", auth_type="oauth_device_code",
+    signup_url="https://nousresearch.com/", fallback_models=("kova-3-405b", "kova-3-70b"),
+    base_url="https://inference-api.nousresearch.com/v1", auth_type="oauth_device_code",
 )
 
 register_provider(nous)

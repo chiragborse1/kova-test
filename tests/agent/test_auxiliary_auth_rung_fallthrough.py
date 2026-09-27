@@ -43,7 +43,7 @@ import agent.auxiliary_client as aux
 
 AUX_MODEL = "z-ai/glm-5.3-flash"
 FALLBACK_MODEL = "fallback-model"
-NOUS_HOST = "inference-api.openkova.com"
+NOUS_HOST = "inference-api.nousresearch.com"
 
 
 class _ApiError(Exception):

@@ -314,8 +314,8 @@ The CLI uses argparse, so `--help` is a good first probe for "did my new flag re
 
 ## See also
 
-- User-facing setup + troubleshooting: [Egress proxy](https://kova-agent.openkova.com/docs/user-guide/egress/iron-proxy)
-- Docker backend internals: [Docker](https://kova-agent.openkova.com/docs/user-guide/docker)
-- Bitwarden Secrets Manager integration: [`kova secrets bitwarden`](https://kova-agent.openkova.com/docs/user-guide/secrets/bitwarden)
-- CLI command reference: [`kova egress`](https://kova-agent.openkova.com/docs/reference/cli-commands#kova-egress)
-- Sandbox-injected environment variables: [Egress proxy (sandbox-injected)](https://kova-agent.openkova.com/docs/reference/environment-variables#egress-proxy-sandbox-injected)
+- User-facing setup + troubleshooting: [Egress proxy](https://hermes-agent.nousresearch.com/docs/user-guide/egress/iron-proxy)
+- Docker backend internals: [Docker](https://hermes-agent.nousresearch.com/docs/user-guide/docker)
+- Bitwarden Secrets Manager integration: [`kova secrets bitwarden`](https://hermes-agent.nousresearch.com/docs/user-guide/secrets/bitwarden)
+- CLI command reference: [`kova egress`](https://hermes-agent.nousresearch.com/docs/reference/cli-commands#kova-egress)
+- Sandbox-injected environment variables: [Egress proxy (sandbox-injected)](https://hermes-agent.nousresearch.com/docs/reference/environment-variables#egress-proxy-sandbox-injected)

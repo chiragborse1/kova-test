@@ -1560,7 +1560,7 @@ def cmd_gui(args: argparse.Namespace):
             print(
                 "  This Kova came from Homebrew, which does not ship the desktop app's\n"
                 "  source tree, so it cannot be built from this install.\n"
-                "  Install the desktop app from https://kova-agent.openkova.com,\n"
+                "  Install the desktop app from https://hermes-agent.nousresearch.com,\n"
                 "  or run `kova desktop` from a source checkout."
             )
         sys.exit(1)

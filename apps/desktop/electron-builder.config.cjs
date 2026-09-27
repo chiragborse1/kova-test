@@ -258,7 +258,7 @@ module.exports = {
   },
   linux: {
     category: 'Development',
-    maintainer: 'Nous Research <support@openkova.com>',
+    maintainer: 'Nous Research <support@nousresearch.com>',
     synopsis: light
       ? 'Remote-only desktop client for Kova Agent.'
       : 'Native desktop shell for Kova Agent.',

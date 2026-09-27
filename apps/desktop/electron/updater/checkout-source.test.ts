@@ -168,7 +168,7 @@ function buildManifest(
       windowsVersion: `0.0.${sequence}.0`,
       identity,
       bundleEnv: {},
-      publicBase: 'https://kova-assets.openkova.com'
+      publicBase: 'https://kova-assets.nousresearch.com'
     },
     packages: [
       {
@@ -304,7 +304,7 @@ original_build = urllib.request.build_opener
 passthrough = original_build().open
 def local(request, *args, **kwargs):
     parsed = urlsplit(request.full_url if isinstance(request, urllib.request.Request) else request)
-    assert parsed.hostname in ('kova-assets.openkova.com', 'api.github.com')
+    assert parsed.hostname in ('kova-assets.nousresearch.com', 'api.github.com')
     url = 'http://127.0.0.1:${address.port}' + parsed.path + ('?' + parsed.query if parsed.query else '')
     # ChannelReader compares response.geturl() against the ORIGINAL request url:
     # wrap so the redirect detector still sees the un-rewritten authority.

@@ -16,10 +16,10 @@ import pytest
 
 from kova_cli import auth_nous
 
-PROD_INFERENCE = "https://inference-api.openkova.com/v1"
-ENV_INFERENCE = "https://inference.example-env.openkova.com/v1"
-OTHER_NOUS_HOST = "https://portal.openkova.com/v1"  # Nous-owned, but not an inference gateway
-NONPROD_PORTAL = "https://portal.example-env.openkova.com"
+PROD_INFERENCE = "https://inference-api.nousresearch.com/v1"
+ENV_INFERENCE = "https://inference.example-env.nousresearch.com/v1"
+OTHER_NOUS_HOST = "https://portal.nousresearch.com/v1"  # Nous-owned, but not an inference gateway
+NONPROD_PORTAL = "https://portal.example-env.nousresearch.com"
 
 
 @pytest.mark.parametrize("helper, var", [
@@ -31,15 +31,15 @@ def test_routing_overrides_follow_the_profile_scope_and_fail_closed_without_one(
     miss, and a call with NO scope gets None — never the launch profile's ambient value."""
     from agent import secret_scope as ss
 
-    monkeypatch.setenv(var, "https://launch.example.openkova.com")
+    monkeypatch.setenv(var, "https://launch.example.nousresearch.com")
     monkeypatch.delenv("NOUS_PORTAL_BASE_URL", raising=False)
-    assert helper() == "https://launch.example.openkova.com"
+    assert helper() == "https://launch.example.nousresearch.com"
 
     ss.set_multiplex_active(True)
     try:
-        token = ss.set_secret_scope({var: "https://profile.example.openkova.com"})
+        token = ss.set_secret_scope({var: "https://profile.example.nousresearch.com"})
         try:
-            assert helper() == "https://profile.example.openkova.com"
+            assert helper() == "https://profile.example.nousresearch.com"
         finally:
             ss.reset_secret_scope(token)
         token = ss.set_secret_scope({})

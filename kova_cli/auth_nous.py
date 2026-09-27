@@ -75,7 +75,7 @@ _NOUS_EMPTY_AGENT_KEY_FIELDS: Dict[str, Any] = {
     "agent_key": None, "agent_key_id": None, "agent_key_expires_at": None,
     "agent_key_expires_in": None, "agent_key_reused": None, "agent_key_obtained_at": None}
 
-_NOUS_STALE_PORTAL_HOSTS: FrozenSet[str] = frozenset({"api.openkova.com"})
+_NOUS_STALE_PORTAL_HOSTS: FrozenSet[str] = frozenset({"api.nousresearch.com"})
 
 
 def _portal_entitlement_message(capability: str) -> str:
@@ -109,9 +109,9 @@ def _migrate_stale_nous_portal_url(providers: Dict[str, Any]) -> None:
 # the NOUS_INFERENCE_BASE_URL env override bypasses it (documented dev/staging escape hatch, the
 # user set it themselves).
 _ALLOWED_NOUS_INFERENCE_HOSTS: FrozenSet[str] = frozenset({
-    "inference-api.openkova.com",
+    "inference-api.nousresearch.com",
     # Free-tier (anonymous) host: serves the single ``nous/welcome`` model.
-    "welcome-api.openkova.com"})
+    "welcome-api.nousresearch.com"})
 
 def _nous_inference_host_allowed(hostname: Optional[str]) -> bool:
     """Production hosts always; otherwise only the host the operator named in
@@ -1647,4 +1647,4 @@ def _login_nous(args, pconfig: ProviderConfig) -> None:
 
 
 def _portal_host(portal_url: Optional[str]) -> str:
-    return urlparse(portal_url or DEFAULT_NOUS_PORTAL_URL).hostname or "portal.openkova.com"
+    return urlparse(portal_url or DEFAULT_NOUS_PORTAL_URL).hostname or "portal.nousresearch.com"

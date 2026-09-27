@@ -266,7 +266,7 @@ def stage(
                 "Package": fields["Package"],
                 "Version": fields["Version"],
                 "Architecture": arch,
-                "Maintainer": fields.get("Maintainer", "Kova Agent <noreply@openkova.com>"),
+                "Maintainer": fields.get("Maintainer", "Kova Agent <noreply@nousresearch.com>"),
                 "Installed-Size": fields.get("Installed-Size", "0"),
                 "Description": fields.get("Description", "Kova Agent"),
                 "Filename": filename,
@@ -515,7 +515,7 @@ def main(argv: list | None = None) -> int:
     ap.add_argument("--pool", required=True, type=Path)
     ap.add_argument("--out", required=True, type=Path)
     # kova-nightly is the suite actually published today
-    # (https://kova-assets.openkova.com/releases/termux/nightly/,
+    # (https://kova-assets.nousresearch.com/releases/termux/nightly/,
     # verified 2026-09-06); kova-stable/kova-canary are what CI stages
     # for the stable/canary channels.
     ap.add_argument(

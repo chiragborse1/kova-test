@@ -9,7 +9,7 @@ import pytest
 from kova_cli import providers as _providers
 from kova_cli import runtime_provider as rp
 
-PORTAL = "https://inference-api.openkova.com/v1"
+PORTAL = "https://inference-api.nousresearch.com/v1"
 
 
 def _cfg(tmp_path, body: str, monkeypatch):

@@ -346,7 +346,7 @@ def _print_nous_401_diagnostics(agent: Any, api_error: Exception) -> None:
         agent,
         "   Troubleshooting:",
         "     • Re-authenticate: kova auth add nous",
-        "     • Check credits / billing: https://portal.openkova.com",
+        "     • Check credits / billing: https://portal.nousresearch.com",
         f"     • Verify stored credentials: {display_kova_home()}/auth.json",
         "     • Switch providers temporarily: /model <model> --provider openrouter",
     )
@@ -863,7 +863,7 @@ def _print_nonretryable_auth_guidance(
                 "   💡 Nous Portal OAuth token was rejected (HTTP 401). Your token may be",
                 "      expired, revoked, or your account may be out of credits. To fix:",
                 "      1. Re-authenticate: kova portal",
-                "      2. Check your portal account: https://portal.openkova.com",
+                "      2. Check your portal account: https://portal.nousresearch.com",
             )
             # ``:free`` is OpenRouter slug syntax; Nous Portal will reject the model
             # name even after a successful re-auth.

@@ -1967,7 +1967,7 @@ export const frOverrides = {
       sshErrHostKey:
         "La clé de l'hôte a changé depuis votre dernière connexion. Vérifiez que ce changement est attendu, puis exécutez ssh-keygen -R <host> et reconnectez-vous.",
       sshErrNotInstalled:
-        "Kova n'est pas installé sur l'hôte distant. Installez-le là-bas (curl -fsSL https://kova-agent.openkova.com/install.sh | sh) ou définissez le chemin Kova.",
+        "Kova n'est pas installé sur l'hôte distant. Installez-le là-bas (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | sh) ou définissez le chemin Kova.",
       sshErrPlatform:
         'Plateforme distante non prise en charge. Le mode SSH de Kova Desktop supporte les hôtes distants Linux, macOS et Windows.',
       sshErrTimeout: "Expiration de la connexion SSH. L'hôte peut être inaccessible ou en veille.",

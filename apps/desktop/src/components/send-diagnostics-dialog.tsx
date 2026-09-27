@@ -27,7 +27,7 @@ import { $sendDiagnostics, confirmSendDiagnostics, dismissSendDiagnostics } from
 
 const SUPPORT_LINKS = [
   { key: 'github', url: 'https://github.com/chiragborse1/kova-test/issues' },
-  { key: 'portal', url: 'https://portal.openkova.com/help' },
+  { key: 'portal', url: 'https://portal.nousresearch.com/help' },
   { key: 'discord', url: 'https://discord.gg/OpenKova' }
 ] as const
 

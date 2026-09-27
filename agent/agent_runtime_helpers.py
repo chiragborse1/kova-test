@@ -1671,7 +1671,7 @@ def anthropic_prompt_cache_policy(
     is_kimi = _model_name_is_kimi_family(eff_model) or "moonshot" in model_lower
     is_openrouter = base_url_host_matches(eff_base_url, "openrouter.ai")
     # Nous Portal proxies to OpenRouter; treat as OpenRouter-equivalent for cache layout.
-    is_nous_portal = base_url_host_matches(eff_base_url, "openkova.com")
+    is_nous_portal = base_url_host_matches(eff_base_url, "nousresearch.com")
     is_anthropic_wire = eff_api_mode == "anthropic_messages"
     is_native_anthropic = is_anthropic_wire and (
         eff_provider == "anthropic" or base_url_hostname(eff_base_url) == "api.anthropic.com"

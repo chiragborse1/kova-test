@@ -11,7 +11,7 @@ def build_worktree_parser(subparsers) -> None:
             "accumulate. Never deletes uncommitted tracked changes, unique "
             "unpushed commits, or in-use trees; untracked-only scratch is "
             "archived to ~/.kova/archive/worktree-prune/ before removal. See: "
-            "https://kova-agent.openkova.com/docs/user-guide/cli#worktree-cleanup")
+            "https://hermes-agent.nousresearch.com/docs/user-guide/cli#worktree-cleanup")
     worktree_subparsers = worktree_parser.add_subparsers(dest="worktree_action")
     worktree_list = worktree_subparsers.add_parser(
         "list", aliases=["ls", "audit"],

@@ -1,7 +1,7 @@
 # Kova CLI Reference
 
 Live sources when anything looks stale: `kova --help`, `kova <command> --help`,
-https://kova-agent.openkova.com/docs/reference/cli-commands
+https://hermes-agent.nousresearch.com/docs/reference/cli-commands
 
 ### Global Flags
 
@@ -79,7 +79,7 @@ kova gateway run|install|start|stop|restart|status|setup
 ```
 
 20+ platforms: Telegram, Discord, Slack, WhatsApp (Baileys + Business Cloud API), iMessage (Photon — `kova photon setup`), Signal, Email, SMS, Matrix, Mattermost, Teams, LINE, SimpleX, ntfy, Google Chat, Home Assistant, DingTalk, Feishu, WeCom, Weixin, API Server, Webhooks. Open WebUI connects via the API Server adapter. Most adapters ship under `plugins/platforms/`.
-Docs: https://kova-agent.openkova.com/docs/user-guide/messaging/
+Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
 
 ### Sessions
 
@@ -142,10 +142,10 @@ Plugin- and provider-supplied subcommands (e.g. `kova photon setup`) only appear
 
 | Looking for... | Location |
 |---|---|
-| Config options | `kova config edit` · [Configuration docs](https://kova-agent.openkova.com/docs/user-guide/configuration) |
-| Tools / toolsets | `kova tools list` · [Tools reference](https://kova-agent.openkova.com/docs/reference/tools-reference) |
-| Skills catalog | `kova skills browse` · [Skills catalog](https://kova-agent.openkova.com/docs/reference/skills-catalog) |
-| Provider setup | `kova model` · [Providers guide](https://kova-agent.openkova.com/docs/integrations/providers) |
-| Env variables | `kova config env-path` · [Env vars reference](https://kova-agent.openkova.com/docs/reference/environment-variables) |
+| Config options | `kova config edit` · [Configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) |
+| Tools / toolsets | `kova tools list` · [Tools reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference) |
+| Skills catalog | `kova skills browse` · [Skills catalog](https://hermes-agent.nousresearch.com/docs/reference/skills-catalog) |
+| Provider setup | `kova model` · [Providers guide](https://hermes-agent.nousresearch.com/docs/integrations/providers) |
+| Env variables | `kova config env-path` · [Env vars reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) |
 | Gateway logs | `~/.kova/logs/gateway.log` (or `kova logs`) |
 | Sessions | `kova sessions browse` (reads state.db) |

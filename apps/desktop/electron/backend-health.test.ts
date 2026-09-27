@@ -427,14 +427,14 @@ test('isServerSideHttpError detects 502/503/504', () => {
 
 test('isNousCloudAgentUrl detects cloud agent hosts', () => {
   // Positive cases
-  assert.equal(isNousCloudAgentUrl('https://ares-3009.agents.openkova.com'), true)
-  assert.equal(isNousCloudAgentUrl('https://ares-3009.agents.openkova.com/api/health'), true)
-  assert.equal(isNousCloudAgentUrl('http://test.agents.openkova.com'), true)
+  assert.equal(isNousCloudAgentUrl('https://ares-3009.agents.nousresearch.com'), true)
+  assert.equal(isNousCloudAgentUrl('https://ares-3009.agents.nousresearch.com/api/health'), true)
+  assert.equal(isNousCloudAgentUrl('http://test.agents.nousresearch.com'), true)
 
   // Negative cases
   assert.equal(isNousCloudAgentUrl('http://127.0.0.1:9000'), false)
   assert.equal(isNousCloudAgentUrl('https://gateway.example.com'), false)
-  assert.equal(isNousCloudAgentUrl('https://openkova.com'), false)
+  assert.equal(isNousCloudAgentUrl('https://nousresearch.com'), false)
   assert.equal(isNousCloudAgentUrl('not-a-url'), false)
 })
 
@@ -443,7 +443,7 @@ test('waitForKovaReady classifies a persistent cloud agent 503 as cloud-backend-
   const currentTime = { value: 0 }
 
   try {
-    await waitForKovaReady('https://ares-3009.agents.openkova.com', {
+    await waitForKovaReady('https://ares-3009.agents.nousresearch.com', {
       fetchPublicJson: async () => {
         attempts++
         // Always return 503
@@ -537,7 +537,7 @@ test('isServerSideHttpError structured path excludes 500/401/403/404/429 even wh
 test('makeNousCloudBackendDownError produces the Cloud shape and preserves cause', () => {
   const err = new Error('upstream unavailable') as any
   err.statusCode = 503
-  const result = makeNousCloudBackendDownError('https://ares-3009.agents.openkova.com', err)
+  const result = makeNousCloudBackendDownError('https://ares-3009.agents.nousresearch.com', err)
   assert.ok(result)
   assert.equal((result as any).isCloudBackendDown, true)
   assert.equal((result as any).statusCode, 503)
@@ -547,7 +547,7 @@ test('makeNousCloudBackendDownError produces the Cloud shape and preserves cause
 test('makeNousCloudBackendDownError returns null for a Cloud 401 (routes to reauth)', () => {
   const err = new Error('Unauthorized') as any
   err.statusCode = 401
-  assert.equal(makeNousCloudBackendDownError('https://ares-3009.agents.openkova.com', err), null)
+  assert.equal(makeNousCloudBackendDownError('https://ares-3009.agents.nousresearch.com', err), null)
 })
 
 test('makeNousCloudBackendDownError returns null for a non-Cloud 503 (generic remote failure)', () => {
@@ -559,7 +559,7 @@ test('makeNousCloudBackendDownError returns null for a non-Cloud 503 (generic re
 
 test('makeNousCloudBackendDownError preserves legacy string-prefix compatibility', () => {
   const result = makeNousCloudBackendDownError(
-    'https://ares-3009.agents.openkova.com',
+    'https://ares-3009.agents.nousresearch.com',
     new Error('503: Service Unavailable')
   )
 

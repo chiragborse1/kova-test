@@ -21,7 +21,7 @@ export function SidebarFooter({ status }: SidebarFooterProps) {
       </Typography>
 
       <a
-        href="https://openkova.com"
+        href="https://nousresearch.com"
         target="_blank"
         rel="noopener noreferrer"
         className={cn(

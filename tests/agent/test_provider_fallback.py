@@ -185,7 +185,7 @@ class TestFallbackChainAdvancement:
         """
         from kova_cli import providers as _providers
         monkeypatch.setattr(_providers, "_nous_anthropic_wire", lambda: "native")
-        portal = "https://inference-api.openkova.com/v1"
+        portal = "https://inference-api.nousresearch.com/v1"
         fbs = [
             {
                 "provider": "nous",
@@ -234,7 +234,7 @@ class TestFallbackChainAdvancement:
         assert agent._anthropic_client is not None
 
     def test_nous_non_anthropic_fallback_stays_on_chat_completions(self):
-        portal = "https://inference-api.openkova.com/v1"
+        portal = "https://inference-api.nousresearch.com/v1"
         fbs = [{"provider": "nous", "model": "hermes-4-405b"}]
         agent = _make_agent(fallback_model=fbs)
         with (

@@ -10,7 +10,7 @@ Python dependency commands on this page use a
 [PM-prepared source checkout](../reference/package-management.md#developer-workflow).
 After a dependency change, reactivate the checkout and restart Kova.
 
-[Kova Cloud](https://portal.openkova.com/cloud) runs hosted Kova Agent instances for you. Normally you manage them from the `/agents` page in the [Nous Portal](../integrations/nous-portal.md). This guide connects your **local** Kova Agent to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
+[Kova Cloud](https://portal.nousresearch.com/cloud) runs hosted Kova Agent instances for you. Normally you manage them from the `/agents` page in the [Nous Portal](../integrations/nous-portal.md). This guide connects your **local** Kova Agent to the Portal's MCP server so you can manage those cloud instances by just asking — "list my cloud agents", "restart the stopped one", "what's it costing me" — without leaving your terminal.
 
 It's a standard [MCP](../user-guide/features/mcp.md) server hosted by Nous Research, gated by the same OAuth login you already use for the Portal. Once connected, Kova gets two tools it can call on your behalf.
 
@@ -32,7 +32,7 @@ Every call runs against **your** org with your Portal identity, and membership i
 
 ## Prerequisites
 
-- A [Nous Portal](../integrations/nous-portal.md) account with [Kova Cloud](https://portal.openkova.com/cloud) access (at least one instance, or the ability to create one).
+- A [Nous Portal](../integrations/nous-portal.md) account with [Kova Cloud](https://portal.nousresearch.com/cloud) access (at least one instance, or the ability to create one).
 - MCP support installed. If you used the standard install script it's already there; otherwise:
 
   ```bash
@@ -45,7 +45,7 @@ You do **not** need a separate API key or client secret — the server uses OAut
 ## Step 1: add the server
 
 ```bash
-kova mcp add --url https://portal.openkova.com/mcp --auth oauth kova-cloud
+kova mcp add --url https://portal.nousresearch.com/mcp --auth oauth kova-cloud
 ```
 
 `--auth oauth` tells Kova this is an OAuth-protected HTTP server. On first connect Kova:
@@ -112,7 +112,7 @@ After `kova mcp add`, the server lives in `~/.kova/config.yaml`:
 ```yaml
 mcp_servers:
   kova-cloud:
-    url: "https://portal.openkova.com/mcp"
+    url: "https://portal.nousresearch.com/mcp"
     auth: oauth
 ```
 
@@ -125,7 +125,7 @@ The server exposes both read (`agents`) and mutating (`agent`) tools. If you wan
 ```yaml
 mcp_servers:
   kova-cloud:
-    url: "https://portal.openkova.com/mcp"
+    url: "https://portal.nousresearch.com/mcp"
     auth: oauth
     tools:
       include: [agents]
@@ -146,7 +146,7 @@ The stored client registration no longer matches the server (for example, you co
 ```bash
 kova mcp remove kova-cloud
 rm -f ~/.kova/mcp-tokens/kova-cloud.*
-kova mcp add --url https://portal.openkova.com/mcp --auth oauth kova-cloud
+kova mcp add --url https://portal.nousresearch.com/mcp --auth oauth kova-cloud
 ```
 
 ### The tools aren't showing up after adding the server

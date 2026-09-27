@@ -11,8 +11,8 @@ import pytest
 
 from kova_cli import anon_auth
 
-WELCOME = "https://welcome-api.openkova.com/v1"
-PAID = "https://inference-api.openkova.com/v1"
+WELCOME = "https://welcome-api.nousresearch.com/v1"
+PAID = "https://inference-api.nousresearch.com/v1"
 
 
 # ── Auxiliary client: the welcome host serves exactly one model ──────────────────────────────────

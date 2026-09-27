@@ -492,7 +492,7 @@ class TestNestedDictModelDefaultPairing:
                 },
                 "providers": {
                     "nous": {
-                        "base_url": "https://inference-api.openkova.com/v1",
+                        "base_url": "https://inference-api.nousresearch.com/v1",
                     },
                 },
             },

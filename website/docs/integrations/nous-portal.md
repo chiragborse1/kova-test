@@ -6,7 +6,7 @@ description: "One subscription, 300+ frontier models, and the Tool Gateway — t
 
 # Nous Portal
 
-[Nous Portal](https://portal.openkova.com) is Nous Research's unified subscription gateway and **the recommended way to run Kova Agent**. One OAuth login replaces the juggling act of separate accounts, API keys, and billing relationships across every model lab, search API, image generator, and browser provider you'd otherwise need to wire up by hand.
+[Nous Portal](https://portal.nousresearch.com) is Nous Research's unified subscription gateway and **the recommended way to run Kova Agent**. One OAuth login replaces the juggling act of separate accounts, API keys, and billing relationships across every model lab, search API, image generator, and browser provider you'd otherwise need to wire up by hand.
 
 If you only have time to set up one thing, set up this. The fastest path:
 
@@ -16,7 +16,7 @@ kova setup --portal
 
 That single command runs the Portal OAuth, lets you pick a Nous model, sets Nous as your inference provider in `config.yaml`, and turns on the Tool Gateway. You're ready to `kova chat` immediately after.
 
-Don't have a subscription yet? [portal.openkova.com/manage-subscription](https://portal.openkova.com/manage-subscription) — sign up, then come back and run the command above.
+Don't have a subscription yet? [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) — sign up, then come back and run the command above.
 
 ## What's in the subscription
 
@@ -85,7 +85,7 @@ They are **not recommended for use inside Kova Agent**, however. Kova 4 is tuned
 /model deepseek/deepseek-v4-pro        # cost-effective coder
 ```
 
-The Portal's own [model info page](https://portal.openkova.com/info) carries the same warning, so this isn't a Kova-side opinion — it's the official guidance from Nous Research.
+The Portal's own [model info page](https://portal.nousresearch.com/info) carries the same warning, so this isn't a Kova-side opinion — it's the official guidance from Nous Research.
 
 ## Setup
 
@@ -97,14 +97,14 @@ kova setup --portal
 
 This runs the full setup in one shot:
 
-1. Opens your browser to portal.openkova.com for OAuth login
+1. Opens your browser to portal.nousresearch.com for OAuth login
 2. Stores the refresh token at `~/.kova/auth.json`
 3. Lets you pick a Nous model from the curated list (or skip to keep your current one)
 4. Sets Nous as your inference provider in `~/.kova/config.yaml` (when you pick a model)
 5. Turns on the Tool Gateway (web, image, TTS, browser routing)
 6. Returns you to your terminal ready to `kova chat`
 
-If you don't have a subscription yet, sign up at [portal.openkova.com/manage-subscription](https://portal.openkova.com/manage-subscription) first.
+If you don't have a subscription yet, sign up at [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription) first.
 
 ### Existing install — add Portal alongside other providers
 
@@ -146,7 +146,7 @@ kova portal open       # open the subscription management page in your browser
   Nous Portal
   ───────────
   Auth:    ✓ logged in
-  Portal:  https://portal.openkova.com
+  Portal:  https://portal.nousresearch.com
   Model:   ✓ using Nous as inference provider
 
   Tool Gateway
@@ -199,7 +199,7 @@ The Tool Gateway is opt-in per tool, not all-or-nothing. The managed backends sh
 
 Manage your plan, view usage, or upgrade/cancel at any time:
 
-- **Web:** [portal.openkova.com/manage-subscription](https://portal.openkova.com/manage-subscription)
+- **Web:** [portal.nousresearch.com/manage-subscription](https://portal.nousresearch.com/manage-subscription)
 - **CLI shortcut:** `kova portal open` (opens the same page in your default browser)
 
 ## Configuration reference
@@ -210,7 +210,7 @@ After `kova setup --portal`, `~/.kova/config.yaml` will look like:
 model:
   provider: nous
   default: anthropic/claude-sonnet-4.6     # or whatever model you picked
-  base_url: https://inference-api.openkova.com/v1
+  base_url: https://inference-api.nousresearch.com/v1
 ```
 
 The Tool Gateway settings live under their respective tool sections — each category has a single selection key, and picking **Nous Subscription** in `kova tools` (or `kova setup --portal`) writes the value `nous`:

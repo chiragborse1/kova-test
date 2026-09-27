@@ -1,6 +1,6 @@
-﻿"""Replace the fabricated openkova.com host with the real upstream host.
+﻿"""Replace the fabricated nousresearch.com host with the real upstream host.
 
-The rebrand mapped nousresearch.com -> openkova.com, inventing a domain
+The rebrand mapped nousresearch.com -> nousresearch.com, inventing a domain
 nobody owns. That produced ~900 dead links across 349 files: docs, install
 instructions, badge targets, the Nous Portal integration and the OAuth
 entry points.
@@ -10,9 +10,9 @@ a plausible-looking domain would be worse than pointing them at the host
 that actually serves the content. The rebrand keeps the product name; the
 infrastructure is still Nous Research's until Kova runs its own.
 
-  kova-agent.openkova.com   -> kova-agent.nousresearch.com   (docs/install)
-  openkova.com              -> nousresearch.com              (org home)
-  portal.openkova.com       -> portal.nousresearch.com       (Nous Portal API)
+  hermes-agent.nousresearch.com   -> hermes-agent.nousresearch.com   (docs/install)
+  nousresearch.com              -> nousresearch.com              (org home)
+  portal.nousresearch.com       -> portal.nousresearch.com       (Nous Portal API)
 
 Usage:  python scripts/kova/fix_hostnames.py [--check]
 """
@@ -21,11 +21,11 @@ from __future__ import annotations
 import subprocess
 import sys
 
-# Longest first: portal.openkova.com must be handled before the bare host.
+# Longest first: portal.nousresearch.com must be handled before the bare host.
 RULES = [
-    ("kova-agent.openkova.com", "kova-agent.nousresearch.com"),
-    ("portal.openkova.com", "portal.nousresearch.com"),
-    ("openkova.com", "nousresearch.com"),
+    ("hermes-agent.nousresearch.com", "hermes-agent.nousresearch.com"),
+    ("portal.nousresearch.com", "portal.nousresearch.com"),
+    ("nousresearch.com", "nousresearch.com"),
 ]
 
 SKIP_DIRS = ("node_modules/", ".venv/", "_salvage/", "_regression/",
@@ -57,7 +57,7 @@ def main() -> int:
             text = raw.decode("utf-8")
         except UnicodeDecodeError:
             continue
-        if "openkova.com" not in text:
+        if "nousresearch.com" not in text:
             continue
         new = text
         for old, rep in RULES:

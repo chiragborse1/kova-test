@@ -71,7 +71,7 @@ def reader_result(source, name, destination=None, repository="kova-agent"):
         "schema": 1, "request": {"buildId": "build-fixture", "channel": terminal["name"],
         "sequence": 1, "repository": repository, "commit": source.commits[1],
         "sourceVersion": "1.2.3", "version": "0.0.1", "identity": {}, "bundleEnv": {},
-        "publicBase": "https://kova-assets.openkova.com"}, "packages": []})
+        "publicBase": "https://kova-assets.nousresearch.com"}, "packages": []})
 
 
 def install_reader(monkeypatch, result):

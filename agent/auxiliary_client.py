@@ -867,7 +867,7 @@ _PROVIDERS_WITHOUT_VISION: frozenset = frozenset({"kimi-coding", "kimi-coding-cn
 
 # OpenRouter app attribution (always sent). `X-Title` is what the dashboard reads.
 _OR_HEADERS_BASE = {
-    "HTTP-Referer": "https://kova-agent.openkova.com",
+    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
     "X-Title": "Kova Agent",
     "X-OpenRouter-Categories": "productivity,cli-agent",
 }
@@ -935,7 +935,7 @@ def build_nvidia_nim_headers(base_url: str | None) -> dict:
 from kova_cli.version_info import get_version_info
 
 _AI_GATEWAY_HEADERS = {
-    "HTTP-Referer": "https://kova-agent.openkova.com",
+    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
     "X-Title": "Kova Agent",
     "User-Agent": f"KovaAgent/{get_version_info().base_version}",
 }
@@ -958,7 +958,7 @@ auxiliary_is_nous: bool = False
 # are honored untouched (_warn_paid_lane_once fires).
 _OPENROUTER_MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
 _NOUS_MODEL = "google/gemini-3.6-flash"
-_NOUS_DEFAULT_BASE_URL = "https://inference-api.openkova.com/v1"
+_NOUS_DEFAULT_BASE_URL = "https://inference-api.nousresearch.com/v1"
 _ANTHROPIC_DEFAULT_BASE_URL = "https://api.anthropic.com"
 _AUTH_JSON_PATH = get_kova_home() / "auth.json"
 _AUTH_JSON_PATH_AT_IMPORT = _AUTH_JSON_PATH
@@ -3627,12 +3627,12 @@ def _pool_cache_hint(provider: str, *, main_runtime: Optional[Dict[str, Any]] = 
 # Ordered (host, provider) tables for inferring a backend from a client base URL.
 _POOL_PROVIDER_BY_HOST = (
     ("chatgpt.com", "openai-codex"), ("openrouter.ai", "openrouter"),
-    ("inference-api.openkova.com", "nous"), ("api.anthropic.com", "anthropic"),
+    ("inference-api.nousresearch.com", "nous"), ("api.anthropic.com", "anthropic"),
     ("githubcopilot.com", "copilot"), ("api.kimi.com", "kimi-coding"), ("api.x.ai", "xai-oauth"),
 )
 _AUTH_REFRESH_PROVIDER_BY_HOST = (
     ("api.githubcopilot.com", "copilot"), ("chatgpt.com", "openai-codex"),
-    ("api.anthropic.com", "anthropic"), ("inference-api.openkova.com", "nous"),
+    ("api.anthropic.com", "anthropic"), ("inference-api.nousresearch.com", "nous"),
     # An aux call that inherits the main xai-oauth route arrives as "auto"; without this row the
     # 403 bad-credentials rung skipped the refresh and benched the only grant (#84845).
     ("api.x.ai", "xai-oauth"),
@@ -7776,7 +7776,7 @@ def _aux_recovery_ladder(
     if first_err is None:
         return resp
     client_is_nous = (resolved_provider == "nous"
-                      or base_url_host_matches(base_info, "inference-api.openkova.com"))
+                      or base_url_host_matches(base_info, "inference-api.nousresearch.com"))
     resp, first_err = yield from _ladder_nous_rungs(first_err, route, kwargs, client_is_nous)
     if first_err is None:
         return resp

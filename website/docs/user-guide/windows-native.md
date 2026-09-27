@@ -28,7 +28,7 @@ No admin rights required. The installer goes to `%LOCALAPPDATA%\kova\` and adds 
 **Installer options** use a scriptblock:
 
 ```powershell
-& ([scriptblock]::Create((irm https://kova-agent.openkova.com/install.ps1))) -NonInteractive -Branch main
+& ([scriptblock]::Create((irm https://hermes-agent.nousresearch.com/install.ps1))) -NonInteractive -Branch main
 ```
 
 | Parameter | Purpose |

@@ -41,7 +41,7 @@ STEWARD_UPDATE_MESSAGES = {
         "\n"
         "Manage updates from within the desktop app.\n"
         "Prefer a self-managed source install? See:\n"
-        "  https://kova-agent.openkova.com/docs/user-guide/switching-to-source"
+        "  https://hermes-agent.nousresearch.com/docs/user-guide/switching-to-source"
     ),
     STEWARD_NIX: (
         "✗ This Kova runs from the Nix store.\n"

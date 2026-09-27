@@ -4,7 +4,7 @@ _ALLOWED_NOUS_INFERENCE_HOSTS treatment.
 
 Real incident (2026-07): a hosted agent provisioned by nous-account-service
 on the `staging` Vercel environment is stamped with
-``KOVA_PORTAL_BASE_URL=https://portal.staging-openkova.com`` in its
+``KOVA_PORTAL_BASE_URL=https://portal.staging-nousresearch.com`` in its
 container env (the documented dev/staging override), while its bootstrap
 ``auth.json`` ALSO persists ``portal_base_url`` to the same staging host.
 
@@ -102,7 +102,7 @@ class TestResolveAccessTokenEnvOverrideWins:
         allowlist-rejection warning must never fire."""
         import kova_cli.auth as auth
 
-        staging_portal = "https://portal.staging-openkova.com"
+        staging_portal = "https://portal.staging-nousresearch.com"
         monkeypatch.setenv("KOVA_HOME", str(tmp_path))
         monkeypatch.setenv("KOVA_PORTAL_BASE_URL", staging_portal)
         self._write_auth_file(tmp_path, stored_portal_url=staging_portal)

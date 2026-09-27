@@ -106,10 +106,10 @@ def _is_deepseek_anthropic_endpoint(base_url: str | None) -> bool:
 
 def _is_nous_portal_endpoint(base_url: str | None) -> bool:
     """Nous Portal's Anthropic Messages route (Bearer JWT, verbatim catalog ids, native
-    thinking-signature replay). Trusted hosts only: prod ``inference-api.openkova.com`` or the
+    thinking-signature replay). Trusted hosts only: prod ``inference-api.nousresearch.com`` or the
     operator-set ``NOUS_INFERENCE_BASE_URL`` host (exact hostname equality, so neither lookalike
     domains nor sibling hosts of the override match)."""
-    if base_url_host_matches(base_url or "", "inference-api.openkova.com"):
+    if base_url_host_matches(base_url or "", "inference-api.nousresearch.com"):
         return True
     try:
         from kova_cli.auth import _nous_inference_env_override

@@ -34,7 +34,7 @@ fireworks = FireworksProfile(
     # Attribution headers (canonical Kova set); via default_headers so they
     # survive switch_model and credential rotation.
     default_headers={
-        "HTTP-Referer": "https://kova-agent.openkova.com",
+        "HTTP-Referer": "https://hermes-agent.nousresearch.com",
         "X-Title": "Kova Agent",
         "User-Agent": f"KovaAgent/{get_version_info().base_version}",
     },

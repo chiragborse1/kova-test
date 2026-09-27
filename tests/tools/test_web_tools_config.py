@@ -74,14 +74,14 @@ class TestFirecrawlClientConfig:
 
     def test_tool_gateway_domain_builds_firecrawl_gateway_origin(self):
         """Shared gateway domain should derive the Firecrawl vendor hostname."""
-        with patch.dict(os.environ, {"TOOL_GATEWAY_DOMAIN": "openkova.com"}):
+        with patch.dict(os.environ, {"TOOL_GATEWAY_DOMAIN": "nousresearch.com"}):
             with patch("tools.managed_tool_gateway.read_nous_access_token", return_value="nous-token"):
                 with patch("plugins.web.firecrawl.provider.Firecrawl") as mock_fc:
                     from plugins.web.firecrawl.provider import _get_firecrawl_client
                     result = _get_firecrawl_client()
                     mock_fc.assert_called_once_with(
                         api_key="nous-token",
-                        api_url="https://firecrawl-gateway.openkova.com",
+                        api_url="https://firecrawl-gateway.nousresearch.com",
                     )
                     assert result is mock_fc.return_value
 

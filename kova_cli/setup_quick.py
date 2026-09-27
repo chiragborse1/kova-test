@@ -61,7 +61,7 @@ def _run_portal_one_shot(config: dict) -> None:
     _info(None, "  One subscription, 300+ models, plus the Tool Gateway:",
           "    web search, image generation, TTS, browser automation",
           "    — all routed through your Nous Portal sub.", None,
-          "  Sign up: https://portal.openkova.com/manage-subscription", None)
+          "  Sign up: https://portal.nousresearch.com/manage-subscription", None)
 
     def _on_error(exc: Exception) -> None:
         from kova_cli.auth_error_copy import provider_setup_failure_lines
@@ -95,7 +95,7 @@ def _run_first_time_quick_setup(config: dict, kova_home, is_existing: bool):
     print_header("Nous Portal", gap=True)
     _info("One subscription, 300+ models, plus the Tool Gateway:",
           "  web search, image generation, TTS, browser automation.",
-          "Sign up: https://portal.openkova.com/manage-subscription", None)
+          "Sign up: https://portal.nousresearch.com/manage-subscription", None)
 
     def _on_error(exc: Exception) -> None:
         from kova_cli.auth_error_copy import provider_setup_failure_lines

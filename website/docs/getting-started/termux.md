@@ -14,7 +14,7 @@ does not run.
 
 The Termux package runs Kova on **aarch64 (arm64-v8a)** Android devices.
 Two APT channels are published under
-`https://kova-assets.openkova.com/releases/termux/<channel>`:
+`https://kova-assets.nousresearch.com/releases/termux/<channel>`:
 
 | Channel | APT suite | Contents |
 | --- | --- | --- |
@@ -51,7 +51,7 @@ Do not use the desktop/server `install.sh` or a glibc Linux archive on this targ
    ```bash
    mkdir -p "$PREFIX/etc/apt/keyrings"
    curl -fsSL \
-     https://kova-assets.openkova.com/releases/termux/stable/key.asc \
+     https://kova-assets.nousresearch.com/releases/termux/stable/key.asc \
      -o "$PREFIX/etc/apt/keyrings/kova-agent.asc"
    ```
 
@@ -73,7 +73,7 @@ Do not use the desktop/server `install.sh` or a glibc Linux archive on this targ
 
    ```bash
    printf '%s\n' \
-     "deb [signed-by=$PREFIX/etc/apt/keyrings/kova-agent.asc] https://kova-assets.openkova.com/releases/termux/stable kova-stable main" \
+     "deb [signed-by=$PREFIX/etc/apt/keyrings/kova-agent.asc] https://kova-assets.nousresearch.com/releases/termux/stable kova-stable main" \
      > "$PREFIX/etc/apt/sources.list.d/kova-agent.list"
    ```
 

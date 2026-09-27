@@ -29,7 +29,7 @@ def is_managed_nous_gateway_url(
     (:func:`managed_gateway_origin`) and the connectors host
     (:func:`connector_gateway_origin`). Each is compared as an exact
     ``(scheme, netloc)`` pair — never as a name or a domain suffix — so
-    ``evil-connector-gateway.openkova.com.attacker.dev`` and an ``http``
+    ``evil-connector-gateway.nousresearch.com.attacker.dev`` and an ``http``
     downgrade of a real host both stay outside the set.
 
     Anything granting a URL extra trust — our bearer, reading files off disk to

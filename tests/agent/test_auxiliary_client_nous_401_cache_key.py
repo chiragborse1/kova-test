@@ -14,7 +14,7 @@ import pytest
 import agent.auxiliary_client as ac
 
 
-NOUS_BASE_URL = "https://inference-api.openkova.com/v1"
+NOUS_BASE_URL = "https://inference-api.nousresearch.com/v1"
 
 
 @pytest.fixture(autouse=True)

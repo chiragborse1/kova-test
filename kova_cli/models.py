@@ -374,7 +374,7 @@ def fetch_nous_recommended_models(
     process restarts. ``force_refresh`` bypasses both caches. Stale disk data remains a fallback
     on live failure; reading it never renews its freshness.
     """
-    base = (portal_base_url or "https://portal.openkova.com").rstrip("/")
+    base = (portal_base_url or "https://portal.nousresearch.com").rstrip("/")
     now = time.monotonic()
     cache_key = (_pricing_profile_key(), base)
     cached = _nous_recommended_cache.get(cache_key)
@@ -411,7 +411,7 @@ def _resolve_nous_portal_url() -> str:
         portal = str(state.get("portal_base_url") or "").strip()
         return (portal or str(DEFAULT_NOUS_PORTAL_URL)).rstrip("/")
     except Exception:
-        return "https://portal.openkova.com"
+        return "https://portal.nousresearch.com"
 
 
 def _extract_model_name(entry: Any) -> Optional[str]:

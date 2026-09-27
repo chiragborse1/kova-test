@@ -13,7 +13,7 @@ import urllib.request
 from kova_cli.update_channel import STABLE_TAG_RE, is_canary_tag
 
 logger = logging.getLogger(__name__)
-_PUBLIC_BASE = "https://kova-assets.openkova.com"
+_PUBLIC_BASE = "https://kova-assets.nousresearch.com"
 OFFICIAL_REPOSITORY = "kova-agent"
 _GITHUB_ORIGIN = re.compile(
     r"^(?:https://github\.com/|git@github\.com:|ssh://git@github\.com/)"

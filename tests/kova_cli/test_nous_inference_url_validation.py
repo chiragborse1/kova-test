@@ -42,7 +42,7 @@ class TestValidatorRules:
         """Sanity check: DEFAULT_NOUS_INFERENCE_URL must itself validate.
 
         If anyone retargets the default away from
-        ``inference-api.openkova.com``, they MUST update the allowlist
+        ``inference-api.nousresearch.com``, they MUST update the allowlist
         in the same change — otherwise the allowlist would reject the
         Portal's own legitimate default and break every install.
         """
@@ -91,7 +91,7 @@ class TestEnvOverrideNotGated:
 
 class TestHealsPoisonedStoredValue:
     """A stored inference_base_url that is NOT in the allowlist (e.g. a
-    stale ``stg-inference-api.openkova.com`` persisted before the
+    stale ``stg-inference-api.nousresearch.com`` persisted before the
     allowlist existed) must be HEALED back to the production default on
     the next refresh — not silently retained.
 
@@ -107,7 +107,7 @@ class TestHealsPoisonedStoredValue:
         import kova_cli.auth as auth
         import kova_cli.auth_nous as kova_cli_auth_nous
 
-        poisoned = "https://stg-inference-api.openkova.com/v1"
+        poisoned = "https://stg-inference-api.nousresearch.com/v1"
         state = {
             "access_token": "tok",
             "refresh_token": "rtok",
@@ -168,7 +168,7 @@ class TestEnvOverrideWins:
     override is a runtime overlay, never written to auth.json).
     """
 
-    STAGING = "https://stg-inference-api.openkova.com/v1"
+    STAGING = "https://stg-inference-api.nousresearch.com/v1"
 
     def _patch_no_refresh(self, monkeypatch, auth, state):
         import kova_cli.auth_nous as kova_cli_auth_nous

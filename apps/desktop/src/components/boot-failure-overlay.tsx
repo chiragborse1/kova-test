@@ -451,7 +451,7 @@ export function BootFailureOverlay() {
       {
         key: 'portal',
         label: copy.cloudDownCheckPortal,
-        onClick: () => openExternalLink('https://portal.openkova.com'),
+        onClick: () => openExternalLink('https://portal.nousresearch.com'),
         icon: <ExternalLink />
       },
       localAction,

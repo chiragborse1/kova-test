@@ -118,7 +118,7 @@ export function isServerSideHttpError(error: unknown): {
  *    runs BEFORE the readiness loop; and
  *  - readiness-probe exhaustion in waitForKovaReady().
  *
- * Returns null unless the backend is a *.agents.openkova.com host AND the
+ * Returns null unless the backend is a *.agents.nousresearch.com host AND the
  * error classifies as 502/503/504. When it matches, returns an error carrying:
  * isCloudBackendDown, statusCode, detail, and the original cause. The renderer
  * overlay keys on isCloudBackendDown/statusCode; main owns the classification.
@@ -148,7 +148,7 @@ export function makeNousCloudBackendDownError(baseUrl: string, error: unknown): 
   const err = new Error(
     `Nous Cloud agent ${hostname} is down ` +
       `(HTTP ${serverError.statusCode}: server-side fault). ` +
-      'Check https://portal.openkova.com for backend status, ' +
+      'Check https://portal.nousresearch.com for backend status, ' +
       'or switch to Local mode in Settings → Gateway. ' +
       'You can also reach out on Discord at discord.gg/OpenKova ' +
       'for immediate assistance. ' +
@@ -165,7 +165,7 @@ export function makeNousCloudBackendDownError(baseUrl: string, error: unknown): 
 
 /**
  * True when the backend URL points at a Nous-managed Kova Cloud instance
- * (e.g. ares-3009.agents.openkova.com). These are Fly.io-hosted machines
+ * (e.g. ares-3009.agents.nousresearch.com). These are Fly.io-hosted machines
  * the user cannot restart themselves — a 503 from one means the server is down
  * and the recovery path is Portal/Discord/wait.
  */
@@ -173,7 +173,7 @@ export function isNousCloudAgentUrl(baseUrl: string): boolean {
   try {
     const host = new URL(baseUrl).hostname
 
-    return host.endsWith('.agents.openkova.com')
+    return host.endsWith('.agents.nousresearch.com')
   } catch {
     return false
   }
