@@ -1,0 +1,33 @@
+﻿Kova Agent
+Copyright (c) 2026 Kova Agent (OpenKova)
+
+This product is a fork and derivative work of "hermes-agent",
+originally developed and released by Nous Research
+(https://github.com/NousResearch/hermes-agent).
+
+Upstream material licensed under the MIT License:
+  Copyright (c) 2025 Nous Research
+
+Kova Agent is distributed under the same MIT License. The full license
+text is in LICENSE. The original copyright notice is retained there as
+the MIT license requires.
+
+What was changed:
+  - Rebranded from "hermes-agent" / "Hermes Agent" to "Kova Agent".
+  - Renamed Python modules (hermes_cli -> kova_cli, hermes_platform ->
+    kova_platform, hermes_state* -> kova_state*), npm packages
+    (@hermes/* -> @kova/*), and the CLI entry points.
+  - Replaced the user interface.
+  - Removed the upstream contributor-email mapping directory
+    (contributors/) and .mailmap, which map commit emails to GitHub
+    logins for upstream's own release tooling. Those tools are not
+    used by this fork.
+
+What was NOT changed:
+  - The license itself.
+  - Upstream model identifiers (e.g. nousresearch/hermes-4-405b), which
+    name real models served by third-party providers. Renaming them
+    breaks model routing.
+  - Third-party project names referenced in documentation.
+
+Upstream project: https://github.com/NousResearch/hermes-agent

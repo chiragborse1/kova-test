@@ -1,6 +1,12 @@
-MIT License
+﻿MIT License
 
 Copyright (c) 2025 Nous Research
+Copyright (c) 2026 Kova Agent (OpenKova) - modifications
+
+Kova Agent is a fork and derivative work of hermes-agent, originally
+released by Nous Research under the MIT License (see NOTICE). The
+original copyright notice above is retained as required by that
+license. Kova Agent is distributed under the same MIT terms.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
