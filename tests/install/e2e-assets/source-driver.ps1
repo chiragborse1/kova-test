@@ -1,6 +1,6 @@
 # Dot-source only. Prefer the published command; never rescue a broken one
 # through PATH, the user's shared bin, or an obsolete checkout venv.
-function Get-SourceHermes([string]$Root) {
+function Get-SourceKova([string]$Root) {
     foreach ($name in @('kova.exe', 'kova.cmd')) {
         $command = Join-Path $Root ".kova/bin/$name"
         if (Test-Path -LiteralPath $command) {

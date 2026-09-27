@@ -166,7 +166,7 @@ _kova_profiles() {{
     _describe 'profile' profiles
 }}
 
-_hermes() {{
+_kova() {{
     local context state line
     typeset -A opt_args
 
@@ -193,7 +193,7 @@ _hermes() {{
     esac
 }}
 
-compdef _hermes kova
+compdef _kova kova
 """
 
 

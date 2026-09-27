@@ -51,7 +51,7 @@ has Linux-only wheels. Do not "fix" that; it is intentional.
 =====================================================================
 REPO STATE
 =====================================================================
-Source : NousResearch/hermes-agent @ 2a977be9 (shallow, depth 1)
+Source : NousResearch/kova-agent @ 2a977be9 (shallow, depth 1)
 Local  : C:\Users\chira\kova-agent
 Note   : upstream has moved on since the old fork (11a12f2 -> 2a977be9,
          30 -> 51 workflows). The old fork had drifted.
@@ -73,7 +73,7 @@ DONE   [x] installed CI-identical dependency set
 DONE   [x] disabled all 6 auto-firing cron workflows
 DONE   [x] verified all 51 workflows still parse as valid YAML
 DONE   [x] verified 0 workflows auto-fire on schedule
-TODO   [ ] rebrand pass (hermes -> kova), with before/after proof
+TODO   [ ] rebrand pass (kova -> kova), with before/after proof
 TODO   [ ] new UI
 TODO   [ ] single squashed commit -> chiragborse1/kova-test
 TODO   [ ] verify on CI (not locally, per user request)
@@ -86,40 +86,40 @@ Commits on top of upstream 2a977be9 (all local, all authored by you,
 so `git push` exposes this history normally):
 
   98e1e729  ci: disable 6 auto-firing cron workflows (the real CI fix)
-  aae9f4c9  rebrand: hermes -> kova across code, modules, assets
+  aae9f4c9  rebrand: kova -> kova across code, modules, assets
   dd904d6e  rebrand: rename directory components; fix skill ref mismatch
   e7803e8e  rebrand: catch compound identifiers pass 1 missed
   5339ce95  attribution: drop contributors/ + .mailmap, add NOTICE
   022117d9  fix: restore model-id literals the rebrand over-rewrote
 
 REBRAND RESULT
-  files containing 'hermes' : 9792 -> 244  (down 97.5%)
+  files containing 'kova' : 9792 -> 244  (down 97.5%)
   renamed paths             : 2470
   renamed directories       : 11
   all 37 kova_* modules import: YES
   dangling related_skills   : 0  (was 225-regression cause last time)
-  model family detection    : correct for all hermes-* and vendor models
+  model family detection    : correct for all kova-* and vendor models
 
 The 244 residual references are all intentional:
    36  upstream model ids (nousresearch/hermes-4-405b etc.)
    18  upstream URLs (github.com/NousResearch, nousresearch.com docs)
     7  third-party names (githermes, TamaHermes, r/hermesagent)
-    2  Meta's Hermes JS engine inside package-lock.json
+    2  Meta's Kova JS engine inside package-lock.json
 
 TWO REAL REGRESSIONS FOUND AND FIXED
   Both were the same class of bug that produced the previous attempt's
   225 broken tests - a string literal that is load-bearing, not branding:
 
-  1. agent/coding_context.py  _EDIT_FORMAT_GUIDANCE listed "hermes" as a
+  1. agent/coding_context.py  _EDIT_FORMAT_GUIDANCE listed "kova" as a
      model family. Renamed to "kova", _model_family('...hermes-4-405b')
      returned None instead of 'replace'.
   2. kova_cli/auth_nous.py  filtered offered model ids by excluding those
-     containing "hermes" (Nous's own models are not reliable for agentic
+     containing "kova" (Nous's own models are not reliable for agentic
      tool-calling). Renamed to "kova", the condition inverted and excluded
      the wrong set entirely.
 
   Detection method: diff the rebrand against 2a977be9 and grep for bare
-  "hermes" literals appearing in model/registry/family context. That scan
+  "kova" literals appearing in model/registry/family context. That scan
   returns exactly these 2 files; the other 220 similar-shaped hits are
   self-consistent renames where both sides of a comparison were rewritten.
 
@@ -249,7 +249,7 @@ The rebrand was verified by grep. Running the suite against a pristine
 
 1. tests/test_packaging_metadata.py  ->  StopIteration
    pyproject's project name became kova-agent; uv.lock still said
-   hermes-agent. Could not simply re-lock: `uv lock` failed with
+   kova-agent. Could not simply re-lock: `uv lock` failed with
    "Repository not found" because the rebrand had ALSO rewritten
 
      misaki[en] @ git+https://github.com/OpenKova/misaki.git@f03fd2b
@@ -258,16 +258,16 @@ The rebrand was verified by grep. Running the suite against a pristine
    package in their own org to raise its Python cap. Restored to
    NousResearch/misaki, then `uv lock` succeeded. scripts/kova/
    check_lock.py asserts the refresh moved nothing: 330 -> 330
-   packages, zero version changes, only hermes-agent -> kova-agent.
+   packages, zero version changes, only kova-agent -> kova-agent.
 
 2. 240 files with dead repository URLs
-   The rebrand collapsed NousResearch/Hermes-Agent to the bare string
+   The rebrand collapsed NousResearch/Kova-Agent to the bare string
    "github.com/kova-agent", which names a GitHub USER, not an
    owner/repo pair. ~300 links were dead. scripts/kova/fix_repo_urls.py
    rewrites them to chiragborse1/kova-test, preserving each path.
 
-3. agent/transports/codex.py::_RESERVED_TOOL_ALIAS_PREFIX = "hermes_"
-   The rebrand's pattern needed a character AFTER "hermes", and this
+3. agent/transports/codex.py::_RESERVED_TOOL_ALIAS_PREFIX = "kova_"
+   The rebrand's pattern needed a character AFTER "kova", and this
    constant ENDS with the underscore, so it was missed. Its neighbours
    had moved (the xAI alias is already kova_web_search) and the tests
    already expected kova_<name>, so the wire alias map disagreed with
@@ -278,11 +278,11 @@ The rebrand was verified by grep. Running the suite against a pristine
 
 4. cron/lifecycle_guard.py - SECURITY RELEVANT
    The guard blocks the agent from killing/restarting its own gateway.
-   Its patterns still matched \bhermes while its own comments already
+   Its patterns still matched \bkova while its own comments already
    said "kova-gateway", so after the rename the block stopped matching
    the process it protects. A control that fails open is worse than one
    that is absent, because it still looks present in review.
-   Fixed, plus the Windows scheduled-task name (Hermes_Gateway ->
+   Fixed, plus the Windows scheduled-task name (Kova_Gateway ->
    Kova_Gateway), which also names the .cmd/.vbs files written into the
    user's Startup folder.
 
@@ -301,8 +301,8 @@ METHOD THAT FOUND THESE
   way rather than by reasoning about the diff.
 
   Confirmed pre-existing (identical on pristine 2a977be9):
-    test_hermes_home_profile_warning  1 failed, 2 passed, 3 skipped
-    test_hermes_logging               4 failed, 30 passed, 2 skipped
+    test_kova_home_profile_warning  1 failed, 2 passed, 3 skipped
+    test_kova_logging               4 failed, 30 passed, 2 skipped
     test_scratch_dir                  1 failed, 4 passed, 12 skipped
     test_live_system_guard             3 failed, 5 passed
     test_compression_budget_rearm      3 failed

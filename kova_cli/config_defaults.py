@@ -2084,7 +2084,7 @@ DEFAULT_CONFIG = {
         "delivery_ledger": True,
         # Seconds to wait for one platform to connect at startup/reconnect; raise on "discord
         # connect timed out" loops (many slash commands to sync). 0/negative = wait forever. Bridged
-        # to KOVA_GATEWAY_PLATFORM_CONNECT_TIMEOUT, which wins if set explicitly.
+        # to Kova_Gateway_PLATFORM_CONNECT_TIMEOUT, which wins if set explicitly.
         # Seconds the gateway waits for a single messaging platform to finish connecting during startup (and
         # on reconnect). Discord in particular can blow past the old fixed 30s when an account has many
         # slash commands to sync (#19776: 90-173 skills → ~28-31s sync). Raise this if your gateway hits
@@ -2168,7 +2168,7 @@ DEFAULT_CONFIG = {
         # Respawn-storm circuit breaker (complements restart_loop_guard): counts (re)starts in a
         # sliding window and sleeps an exponential backoff before booting so a crash-looping
         # supervisor can't hammer the process. max_starts <= 0 disables. Env escape hatches:
-        # KOVA_GATEWAY_MAX_STARTS / KOVA_GATEWAY_START_WINDOW_S.
+        # Kova_Gateway_MAX_STARTS / Kova_Gateway_START_WINDOW_S.
         "respawn_storm": {"max_starts": 5, "window_seconds": 120},
         # Prefix user messages IN THE MODEL'S CONTEXT with a timestamp (e.g. "[Tue 2026-04-28
         # 13:40:53 CEST]") for temporal awareness. Persisted transcripts stay clean (timestamp is

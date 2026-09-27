@@ -3,7 +3,7 @@
 Kova rebrand engine.
 
 Ordered longest-match-first token replacement across git-tracked text files,
-renaming the hermes-agent codebase to Kova Agent.
+renaming the kova-agent codebase to Kova Agent.
 
 This is the corrected version of the previous attempt's engine. The previous
 run produced 225 newly-broken tests; the cause was that it renamed tokens
@@ -38,7 +38,7 @@ PROTECTED_SUBSTRINGS = [
 ]
 
 # 2. Lockfiles are generated; rewriting them corrupts the dependency graph.
-#    package-lock.json also contains Meta's Hermes JS engine
+#    package-lock.json also contains Meta's Kova JS engine
 #    (hermes-engine / hermes-parser), which is entirely unrelated to this
 #    project - renaming it would break React Native tooling.
 SKIP_FILENAMES = {
@@ -67,38 +67,38 @@ SKIP_PATHS = (
 # ORDERED REPLACEMENTS - longest and most specific first.
 # --------------------------------------------------------------------------
 ORDERED: list[tuple[str, str, str]] = [
-    # --- upstream attribution + URLs (must precede generic 'hermes') ---
-    ("NousResearch/Hermes-Agent", "kova-agent"),
-    ("NousResearch/hermes-agent", "kova-agent"),
-    ("nousresearch/hermes-agent", "kova-agent"),
+    # --- upstream attribution + URLs (must precede generic 'kova') ---
+    ("NousResearch/Kova-Agent", "kova-agent"),
+    ("NousResearch/kova-agent", "kova-agent"),
+    ("nousresearch/kova-agent", "kova-agent"),
     ("NousResearch", "OpenKova"),
     ("nousresearch", "openkova"),
     ("github\\.com/NousResearch", "github.com/OpenKova"),
 
     # --- domains / installers ---
-    ("hermes-agent\\.neuralstudio\\.in", "kova-agent.neuralstudio.in"),
-    ("hermes-agent\\.nousresearch\\.com", "kova-agent.neuralstudio.in"),
-    ("setup-hermes\\.sh", "setup-kova.sh"),
-    ("setup-hermes\\.ps1", "setup-kova.ps1"),
+    ("kova-agent\\.neuralstudio\\.in", "kova-agent.neuralstudio.in"),
+    ("kova-agent\\.nousresearch\\.com", "kova-agent.neuralstudio.in"),
+    ("setup-kova\\.sh", "setup-kova.sh"),
+    ("setup-kova\\.ps1", "setup-kova.ps1"),
 
     # --- python package / module roots ---
-    ("hermes_cli", "kova_cli"),
-    ("hermes_platform", "kova_platform"),
-    ("hermes_agent", "kova_agent"),
-    ("hermes-agent", "kova-agent"),
+    ("kova_cli", "kova_cli"),
+    ("kova_platform", "kova_platform"),
+    ("kova_agent", "kova_agent"),
+    ("kova-agent", "kova-agent"),
 
     # --- env var prefix + SHOUTY ---
     ("KOVA_", "KOVA_"),
-    ("\\bHERMES\\b", "KOVA"),
-    ("\\bHermes\\b", "Kova"),
-    ("Hermes(?=[A-Z])", "Kova"),
+    ("\\bKova\\b", "KOVA"),
+    ("\\bKova\\b", "Kova"),
+    ("Kova(?=[A-Z])", "Kova"),
 
     # --- lowercase compounds ---
-    ("hermes_(?=[a-z0-9])", "kova_"),
-    ("hermes-(?=[a-z0-9])", "kova-"),
-    ("hermes\\.(?=[a-z])", "kova."),
-    ("/hermes\\b", "/kova"),
-    ("\\bhermes\\b", "kova"),
+    ("kova_(?=[a-z0-9])", "kova_"),
+    ("kova-(?=[a-z0-9])", "kova-"),
+    ("kova\\.(?=[a-z])", "kova."),
+    ("/kova\\b", "/kova"),
+    ("\\bkova\\b", "kova"),
 ]
 
 
@@ -108,7 +108,7 @@ SENTINEL = "\x00KOVAPROT%d\x00"
 def shield(text: str, stats: dict) -> tuple[str, list[str]]:
     """Replace protected tokens with sentinels so patterns cannot touch them.
 
-    Detection alone is not enough: 'hermes-4-405b' contains 'hermes', so the
+    Detection alone is not enough: 'hermes-4-405b' contains 'kova', so the
     rename patterns would still rewrite it. The previous attempt did exactly
     that, which is what made _model_family() return None upstream.
     """

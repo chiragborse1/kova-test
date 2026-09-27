@@ -67,14 +67,14 @@ export const ja = defineLocale({
     retry: '再試行',
     more: 'さらに表示',
     pinned: 'レビュー済みコミット',
-    snapshotHint: 'Hermesカタログの情報です。閲覧時に提供元のリポジトリへ接続することはありません。',
+    snapshotHint: 'Kovaカタログの情報です。閲覧時に提供元のリポジトリへ接続することはありません。',
     installHint: 'インストール前にソースを確認してください。変更は新しいセッションに適用されます。',
     results: (count: number) => `${count.toLocaleString('ja')}件の結果`,
     back: '結果に戻る'
   },
   sessionImport: {
     title: '別のアプリから続ける',
-    subtitle: '会話をHermesに取り込み、続きを始めましょう。',
+    subtitle: '会話をKovaに取り込み、続きを始めましょう。',
     action: 'セッションを取り込む',
     readingFrom: '読み込み元',
     connectedComputer: '接続先のコンピューター',
@@ -101,8 +101,8 @@ export const ja = defineLocale({
     snapshot: 'この会話は取り込み済みです。既存のコピーを開いて続けられます。',
     copyNotice: '会話のテキストをコピーします。元のファイルは変更されません。ツール出力と推論は含まれません。',
     importing: '取り込み中…',
-    open: 'Hermesで開く',
-    continue: 'Hermesで続ける',
+    open: 'Kovaで開く',
+    continue: 'Kovaで続ける',
     importError: '会話を取り込めませんでした。'
   },
   common: {
@@ -249,7 +249,7 @@ export const ja = defineLocale({
       'この Kova アプリは接続先のバックエンドより古く、正常に動作しない場合があります。アプリを更新して揃えてください。',
     updateDesktopApp: 'アプリを更新',
     installMethodUnsupportedTitle: 'サポート対象外のインストール方法',
-    updateHermes: 'Kova を更新',
+    updateKova: 'Kova を更新',
     updateReadyTitle: '更新の準備ができました',
     updateReadyMessage: count => `${count} 件の新しい変更が利用可能です。`,
     updateReadyMessageUnknown: '新しい更新が利用可能です。',
@@ -383,7 +383,7 @@ export const ja = defineLocale({
     uninstallSection: {
       dangerZone: '危険ゾーン',
       checkingInstalled: 'インストール内容を確認中…',
-      uninstallHermes: 'Kova をアンインストール',
+      uninstallKova: 'Kova をアンインストール',
       chooseHowMuch:
         '削除する範囲を選択してください。完了するためにアプリが閉じます。インストーラーを開き直せばいつでも戻れます。',
       confirmUninstall: 'アンインストールの確認',
@@ -727,7 +727,7 @@ export const ja = defineLocale({
       introSplashDesc: '空のチャットに表示されるワードマークとプロンプト。',
       reactionsTitle: 'メッセージリアクション',
       reactionsDesc:
-        'iMessage風の絵文字タップバック — メッセージにリアクションでき、Hermesもあなたのメッセージにリアクションします。',
+        'iMessage風の絵文字タップバック — メッセージにリアクションでき、Kovaもあなたのメッセージにリアクションします。',
       tipsTitle: 'アプリ内ヒント',
       tipsDesc:
         'アプリや Kova からのヒントをときどき表示します。各ヒントは一度だけ表示されます。利用開始から30日後に自動でオフになりますが、再びオンにできます。',
@@ -1882,7 +1882,7 @@ export const ja = defineLocale({
     sharedGatewayRestartDescription: bots => `このデバイス上のすべてのボットが再接続します: ${bots}`,
     sharedGatewayRestartConfirm: 'すべて再起動',
     sharedGatewayRestarted: count => `共有ゲートウェイを再起動しました（${count} ボット）`,
-    updateHermes: 'Kova を更新',
+    updateKova: 'Kova を更新',
     reloadWindow: 'ウィンドウを再読み込み',
     actionRunning: '実行中',
     actionDone: '完了',
@@ -3006,9 +3006,9 @@ export const ja = defineLocale({
   },
 
   updates: {
-    discontinuedTitle: 'このHermesビルドはサポートされていません',
+    discontinuedTitle: 'このKovaビルドはサポートされていません',
     discontinuedBody:
-      'このHermesビルドはサポートが終了し、動作しなくなる可能性があります。アンインストールしてください。データはディスクに残ります。',
+      'このKovaビルドはサポートが終了し、動作しなくなる可能性があります。アンインストールしてください。データはディスクに残ります。',
     channels: { stable: '安定版', canary: '先行版' },
     bundleSwapPending: '再起動して更新を完了',
     bundleSwapPendingDesc:

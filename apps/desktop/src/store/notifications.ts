@@ -102,11 +102,11 @@ const MAINTENANCE_ROUTE = '/command-center?section=maintenance'
 /** One-click recoveries reused by several rules. */
 export const RECOVERY_ACTIONS = {
   openUpdates: (): NotificationAction => ({
-    label: translateNow('notifications.updateHermes'),
+    label: translateNow('notifications.updateKova'),
     onClick: () => void import('@/store/updates').then(({ openUpdatesWindow }) => openUpdatesWindow())
   }),
-  restartHermes: (): NotificationAction => ({
-    label: translateNow('notifications.actions.restartHermes'),
+  restartKova: (): NotificationAction => ({
+    label: translateNow('notifications.actions.restartKova'),
     onClick: requestBackendRestart
   }),
   openKeys: (envKey: string): NotificationAction => ({
@@ -177,7 +177,7 @@ const ERROR_SUMMARIES: ErrorSummaryRule[] = [
   {
     test: msg => /method not allowed/i.test(msg),
     summarize: () => translateNow('notifications.errors.methodNotAllowed'),
-    action: () => RECOVERY_ACTIONS.restartHermes()
+    action: () => RECOVERY_ACTIONS.restartKova()
   },
   {
     test: msg => /microphone permission/i.test(msg),
@@ -191,7 +191,7 @@ const ERROR_SUMMARIES: ErrorSummaryRule[] = [
   {
     test: msg => /Restart required:/i.test(msg),
     summarize: () => translateNow('notifications.errors.codeSkewRestartRequired'),
-    action: () => RECOVERY_ACTIONS.restartHermes()
+    action: () => RECOVERY_ACTIONS.restartKova()
   }
 ]
 

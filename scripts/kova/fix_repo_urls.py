@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python3
 """Rewrite the project's own repository URLs to the fork's real home.
 
-The rebrand mapped NousResearch/Hermes-Agent -> "kova-agent", which is not a
+The rebrand mapped NousResearch/Kova-Agent -> "kova-agent", which is not a
 valid owner/repo pair: it names a GitHub *user*, not an org holding a repo.
 That produced ~300 malformed links across 240 files (docs cross-references,
 skill references, issue and PR links, badge targets).

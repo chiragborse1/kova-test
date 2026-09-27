@@ -592,7 +592,7 @@ function shellSections({ navigate, t }: ShellVerbs): ReactNode[][] {
       <Item
         icon="cloud-download"
         key="shell-update"
-        label={t.commandCenter.updateHermes}
+        label={t.commandCenter.updateKova}
         onSelect={requestActiveUpdate}
       />
     ]

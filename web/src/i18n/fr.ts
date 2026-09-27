@@ -120,8 +120,8 @@ export const fr: Translations = {
     starting: "Démarrage",
     startedInBackground: "Démarré en arrière-plan — consultez les journaux pour la progression",
     stopped: "Arrêté",
-    updateHermes: "Mettre à jour Kova",
-    updatingHermes: "Mise à jour de Kova…",
+    updateKova: "Mettre à jour Kova",
+    updatingKova: "Mise à jour de Kova…",
     waitingForOutput: "En attente de la sortie…",
   },
 

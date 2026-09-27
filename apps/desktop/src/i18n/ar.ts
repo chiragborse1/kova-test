@@ -250,7 +250,7 @@ export const ar = defineLocale({
     desktopOutOfDateTitle: 'التطبيق قديم',
     desktopOutOfDateMessage: 'تطبيق Kova أقدم من الخلفية المتصل بها وقد لا يعمل كما يجب. حدّث التطبيق ليتوافقا.',
     updateDesktopApp: 'تحديث التطبيق',
-    updateHermes: 'تحديث Kova',
+    updateKova: 'تحديث Kova',
     updateReadyTitle: 'التحديث جاهز',
     updateReadyMessage: count => `${count} تغيير جديد متاح.`,
     updateReadyMessageUnknown: 'يتوفر تحديث جديد.',
@@ -728,7 +728,7 @@ export const ar = defineLocale({
       reactionsDesc: 'تفاعلات إيموجي بأسلوب iMessage — تفاعل مع الرسائل، ويمكن لـ Kova التفاعل مع رسائلك.',
       tipsTitle: 'نصائح داخل التطبيق',
       tipsDesc:
-        'نصائح تظهر أحيانًا من التطبيق وHermes. تظهر كل نصيحة مرة واحدة. تُعطّل تلقائيًا بعد أول 30 يومًا من الاستخدام، ويمكنك تفعيلها مجددًا.',
+        'نصائح تظهر أحيانًا من التطبيق وKova. تظهر كل نصيحة مرة واحدة. تُعطّل تلقائيًا بعد أول 30 يومًا من الاستخدام، ويمكنك تفعيلها مجددًا.',
       tipsReset: count => `إظهار ${count} نصيحة مرة أخرى`,
       toursTitle: 'جولات إرشادية',
       toursDesc:
@@ -1510,7 +1510,7 @@ export const ar = defineLocale({
     sharedGatewayRestartDescription: bots => `تتم إعادة اتصال جميع البوتات على هذا الجهاز: ${bots}`,
     sharedGatewayRestartConfirm: 'إعادة تشغيل الكل',
     sharedGatewayRestarted: count => `تمت إعادة تشغيل البوابة المشتركة (${count} بوت)`,
-    updateHermes: 'تحديث Kova',
+    updateKova: 'تحديث Kova',
     reloadWindow: 'إعادة تحميل النافذة',
     actionRunning: 'الإجراء قيد التشغيل',
     actionDone: 'اكتمل الإجراء',

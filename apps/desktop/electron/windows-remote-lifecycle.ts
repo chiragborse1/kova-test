@@ -554,7 +554,7 @@ async function connectWindowsRemote(deps) {
     pickLocalPort,
     forward,
     cancelForward,
-    waitForHermes,
+    waitForKova,
     probeReuseProof,
     rememberLog = () => {},
     readyTimeoutMs = 45_000
@@ -718,7 +718,7 @@ async function connectWindowsRemote(deps) {
     localPort = await pickLocalPort()
     await forward(localPort, remotePort)
     const baseUrl = `http://127.0.0.1:${localPort}`
-    await waitForHermes(baseUrl, token)
+    await waitForKova(baseUrl, token)
     assertBootstrapNotSuperseded(signal)
     await helper(ssh, runtime, 'write-lock', [ownershipId], JSON.stringify({ ...owned, port: remotePort }))
 

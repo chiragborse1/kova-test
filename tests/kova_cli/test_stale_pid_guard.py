@@ -24,7 +24,7 @@ def _probe_stdout(value: str) -> mock.Mock:
     return mock.Mock(stdout=value)
 
 
-class TestPidIsHermes:
+class TestPidIsKova:
     """The shared identity probe must fail closed on every ambiguity."""
 
     def test_non_windows_is_unconditional_pass(self):

@@ -164,11 +164,11 @@ export interface Translations {
     starting: string;
     startedInBackground: string;
     stopped: string;
-    updateHermes: string;
+    updateKova: string;
     updateKovaConfirmMessage?: string;
     updateKovaConfirmNow?: string;
     updateKovaConfirmTitle?: string;
-    updatingHermes: string;
+    updatingKova: string;
     waitingForOutput: string;
   };
 

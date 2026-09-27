@@ -16,7 +16,7 @@
  *   - clean up a stale dashboard only when it is provably ours.
  *
  * No `import 'electron'` so it's unit-testable with `node --test`. main.ts wires
- * the real SshConnection, fetch, adoptServedDashboardToken, and waitForHermes in.
+ * the real SshConnection, fetch, adoptServedDashboardToken, and waitForKova in.
  *
  * The minted KOVA_DASHBOARD_SESSION_TOKEN is the SPAWN credential. After
  * readiness the caller runs served-token adoption against the tunneled baseUrl
@@ -168,7 +168,7 @@ function expandRemotePath(p) {
 // (throws a path-naming error if not executable — never silently falls back to a
 // different install). A BLANK path auto-detects: login-shell `command -v` (a
 // non-login `ssh host cmd` PATH misses user installs), then known install paths.
-async function locateHermes(ssh, remoteKovaPath) {
+async function locateKova(ssh, remoteKovaPath) {
   const resolveLauncher = async (candidate: string) => {
     // Return the candidate path directly. The kova binary or wrapper script
     // is executable and handles argument forwarding (e.g. `exec <python> <script> "$@"`)
@@ -1419,7 +1419,7 @@ async function openForward(deps, remotePort, attempts = 3) {
 
 /**
  * Establish (or reuse) a remote dashboard and a tunnel to it. `deps` injects the
- * opened SshConnection, forward/pickLocalPort/waitForHermes, a token-gated
+ * opened SshConnection, forward/pickLocalPort/waitForKova, a token-gated
  * probeReuseProof, and adoptServedToken. Returns the connection descriptor
  * { baseUrl, token, tokenFingerprint, remotePort, localPort, pid, reused, platform }.
  */
@@ -1468,7 +1468,7 @@ async function connect(deps) {
     ownershipId,
     forward,
     pickLocalPort,
-    waitForHermes,
+    waitForKova,
     probeReuseProof,
     adoptServedToken,
     rememberLog = () => {},
@@ -1484,7 +1484,7 @@ async function connect(deps) {
   log(`remote platform ${platform.os}/${platform.arch}`)
   const kovaHome = await probeRemoteKovaHome(ssh)
   await assertRemoteInstallUpdateClear(ssh, kovaHome)
-  const kovaPath = await locateHermes(ssh, remoteKovaPath)
+  const kovaPath = await locateKova(ssh, remoteKovaPath)
   log(`located kova at ${kovaPath}`)
   const kovaVersion = await probeKovaVersion(ssh, kovaPath)
 
@@ -1690,7 +1690,7 @@ async function connect(deps) {
     localPort = await openForward(deps, remotePort)
     assertBootstrapNotSuperseded(signal)
     const baseUrl = `http://127.0.0.1:${localPort}`
-    await waitForHermes(baseUrl, spawnToken)
+    await waitForKova(baseUrl, spawnToken)
     assertBootstrapNotSuperseded(signal)
 
     const token = await adoptOwnedServedToken(adoptServedToken, baseUrl, spawnToken, ssh, pid, 'remote dashboard')
@@ -1762,7 +1762,7 @@ export {
   isForwardBindCollision,
   isLockfileSkew,
   listRemoteKovaProfiles,
-  locateHermes,
+  locateKova,
   LOCKFILE_SCHEMA_VERSION,
   lockfilePath,
   mintToken,

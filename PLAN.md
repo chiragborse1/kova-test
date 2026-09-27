@@ -24,7 +24,7 @@ From tools/rebrand/gate*_report.txt:
     upstream baseline : 29710 tests, 522 already failing
     previous attempt  :  8968 tests, 413 failing, 225 NEWLY broken
 
-KEY INSIGHT: 522 tests fail on PRISTINE upstream hermes. A green build is
+KEY INSIGHT: 522 tests fail on PRISTINE upstream kova. A green build is
 not the target. The target is <= 522 failures and ZERO newly-broken.
 
 The 225 newly-broken were almost all rebrand collateral, e.g.:
@@ -43,7 +43,7 @@ failure sets against the upstream baseline. Never eyeball test counts.
 
 C: drive: 510 GB used, ~520 MB FREE. Cloning is impossible right now.
 5 stale clones occupy ~13.3 GB:
-  AppData\Local\kova\hermes-agent      5,273 MB  (live install, venv+node_modules)
+  AppData\Local\kova\kova-agent      5,273 MB  (live install, venv+node_modules)
   kova-neon-ui                        3,485 MB  (ORPHANED worktree - see below)
   AppData\Local\KovaAgent\kova-agent  3,163 MB  (renamed clone install)
   Projects\kova                       1,119 MB  (dev clone, has rebrand engine)

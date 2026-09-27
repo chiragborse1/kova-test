@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # ACP permission option id -> Kova approval result. Ids are stable across the
 # ``allow_permanent=True`` and ``False`` paths even though the option list differs.
-_OPTION_ID_TO_HERMES = {
+_OPTION_ID_TO_Kova = {
     "allow_once": "once", "allow_session": "session", "allow_always": "always", "deny": "deny", "deny_always": "deny"
 }
 
@@ -71,7 +71,7 @@ def _map_outcome_to_kova(outcome: object, *, allowed_option_ids: set[str]) -> st
     if outcome.option_id not in allowed_option_ids:
         logger.warning("Permission request returned unknown option_id: %s", outcome.option_id)
         return "deny"
-    return _OPTION_ID_TO_HERMES.get(outcome.option_id, "deny")
+    return _OPTION_ID_TO_Kova.get(outcome.option_id, "deny")
 
 
 def await_permission(

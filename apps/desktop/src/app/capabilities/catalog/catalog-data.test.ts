@@ -66,7 +66,7 @@ describe('public catalog data', () => {
       maintainer: `${tier} maintainer`,
       overview: `Overview for ${tier}`,
       version: '1.2.3',
-      requiresHermes: '>=0.17',
+      requiresKova: '>=0.17',
       platforms: ['macos', 'linux'],
       docsUrl: `https://example.com/${tier}/docs`,
       capabilities: {
@@ -90,7 +90,7 @@ describe('public catalog data', () => {
         author: row.maintainer,
         overview: row.overview,
         version: row.version,
-        requiresHermes: row.requiresHermes,
+        requiresKova: row.requiresKova,
         platforms: row.platforms,
         docsUrl: row.docsUrl,
         sourceUrl: row.repo,

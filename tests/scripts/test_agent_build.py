@@ -235,7 +235,7 @@ def test_payload_smoke_uses_relocated_manifest_commands(tmp_path):
     source = Path(data["code"])
     (source / "pyproject.toml").write_text(
         '[project]\nname="smoke-fixture"\nversion="1"\n'
-        '[project.scripts]\nhermes="entry:main"\n', encoding="utf-8")
+        '[project.scripts]\nkova="entry:main"\n', encoding="utf-8")
     (source / "entry.py").write_text(
         "import json, os, sys\nfrom pathlib import Path\n"
         "def main():\n"

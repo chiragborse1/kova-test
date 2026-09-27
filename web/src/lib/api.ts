@@ -1044,7 +1044,7 @@ export const api = {
     fetchJSON<GatewayMigratePlan>("/api/gateway/migrate/plan"),
   migrateGatewayToMultiplex: () =>
     fetchJSON<ActionResponse>("/api/gateway/migrate", { method: "POST" }),
-  updateHermes: () =>
+  updateKova: () =>
     fetchJSON<ActionResponse>("/api/kova/update", { method: "POST" }),
   checkKovaUpdate: (force = false) =>
     fetchJSON<UpdateCheckResponse>(

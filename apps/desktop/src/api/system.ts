@@ -143,7 +143,7 @@ export function restartGateway(): Promise<ActionResponse> {
   })
 }
 
-export function updateHermes(): Promise<ActionResponse> {
+export function updateKova(): Promise<ActionResponse> {
   return kovaApi<ActionResponse>({
     ...profileScoped(),
     path: '/api/kova/update',

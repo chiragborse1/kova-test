@@ -37,7 +37,7 @@ it('moves a checkout without a source probe to main, but surfaces a broken probe
     remoteGatewayActive: (): boolean => false,
     emitUpdateProgress: vi.fn(),
     rememberLog: vi.fn(),
-    startHermes: vi.fn(async (): Promise<void> => {}),
+    startKova: vi.fn(async (): Promise<void> => {}),
     stopBackendsForUpdate: vi.fn(async (): Promise<void> => {}),
     repairMacUpdaterHelper: vi.fn(),
     preflightStateDb: vi.fn(),

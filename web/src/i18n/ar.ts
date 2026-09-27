@@ -120,8 +120,8 @@ export const ar = defineLocale({
     starting: "قيد البدء",
     startedInBackground: "بدء في الخلفية — تحقق من السجلات للتقدم",
     stopped: "متوقف",
-    updateHermes: "تحديث Kova",
-    updatingHermes: "جاري تحديث Kova…",
+    updateKova: "تحديث Kova",
+    updatingKova: "جاري تحديث Kova…",
     waitingForOutput: "في انتظار الناتج…",
   },
 

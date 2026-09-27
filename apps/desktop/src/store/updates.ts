@@ -15,7 +15,7 @@ import type {
   DesktopVersionInfo,
   KovaConnection
 } from '@/global'
-import { checkKovaUpdate, getActionStatus, updateHermes } from '@/kova'
+import { checkKovaUpdate, getActionStatus, updateKova } from '@/kova'
 import { translateNow } from '@/i18n'
 import { persistString, storedString } from '@/lib/storage'
 import { $connectionsRegistry, refreshConnectionsRegistry } from '@/store/connections'
@@ -200,7 +200,7 @@ export function reportBackendContract(contract: number | undefined): void {
 
     notify({
       action: {
-        label: translateNow('notifications.updateHermes'),
+        label: translateNow('notifications.updateKova'),
         onClick: () => {
           snoozeSkewToast()
           void applyBackendUpdate()
@@ -864,7 +864,7 @@ async function runBackendUpdate(): Promise<DesktopUpdateApplyResult> {
       ? previousStatus.targetSha.slice('backend:'.length)
       : undefined
 
-    const started = await updateHermes()
+    const started = await updateKova()
     const applyStartedAtMs = Date.now()
 
     if (!started.ok) {

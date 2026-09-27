@@ -3,18 +3,18 @@
 Kova rebrand pass 2: compound identifiers the first pass missed.
 
 Pass 1 ordered its patterns longest-first but only handled:
-    hermes_cli, hermes-agent, HERMES_, Hermes(?=[A-Z]), \\bhermes\\b
+    kova_cli, kova-agent, Kova_, Kova(?=[A-Z]), \\bkova\\b
 
 That leaves camelCase and compound forms untouched, e.g.
-    window.hermesDesktop   (532 refs in apps/desktop)
-    KOVA_DESKTOP_HERMES    (compound env var; HERMES_ needs a trailing _)
-    __hermesWatch, .hermes2, can_update_hermes, hermesNpmLib
+    window.kovaDesktop   (532 refs in apps/desktop)
+    KOVA_DESKTOP_HERMES    (compound env var; Kova_ needs a trailing _)
+    __kovaWatch, .kova2, can_update_kova, kovaNpmLib
 
 This pass targets exactly those, while protecting:
-  - upstream model ids            (hermes-3*, hermes-4*)
-  - Meta's Hermes JS engine      (hermes-engine / hermes-parser)
-  - third-party repos & handles  (github.com/*/hermes*, reddit r/hermesagent,
-                                   githermes, TamaHermes, alice_hermes, ...)
+  - upstream model ids            (kova-3*, kova-4*)
+  - Meta's Kova JS engine      (hermes-engine / hermes-parser)
+  - third-party repos & handles  (github.com/*/kova*, reddit r/hermesagent,
+                                   githermes, TamaHermes, alice_kova, ...)
   - upstream docs URLs           (hermes-agent.nousresearch.com)
   - contributors/ and .mailmap  (attribution pass handles these)
 """
@@ -58,28 +58,28 @@ def unshield(text: str) -> str:
 
 # github.com/<owner>/<repo> and generic URLs -> leave whole token alone
 URL_RE = re.compile(r'(?:https?://|git\+https?://)[^\s"\'<>),;]+')
-# bare npm scopes @hermes/... and @hermes-agent/...
-SCOPE_RE = re.compile(r'@hermes(?:-agent)?(?=/)')
+# bare npm scopes @kova/... and @kova-agent/...
+SCOPE_RE = re.compile(r'@kova(?:-agent)?(?=/)')
 
 ORDERED = [
-    # env-var compounds: HERMES anywhere in an ALLCAPS token
-    (re.compile(r"HERMES(?=[A-Z0-9_]*(?:[_A-Z0-9]|$))"), "KOVA"),
-    # camelCase / lowerCamel: hermesFoo -> kovaFoo
-    (re.compile(r"\bhermes(?=[A-Z])"), "kova"),
-    # private-ish underscore compounds: __hermesWatch, _hermesFoo
-    (re.compile(r"(?<=[_@])hermes(?=[A-Z])"), "kova"),
-    # dotted members: .hermesDesktop, __hermesActHolder
-    (re.compile(r"(?<=\.)hermes(?=[A-Z])"), "kova"),
+    # env-var compounds: Kova anywhere in an ALLCAPS token
+    (re.compile(r"Kova(?=[A-Z0-9_]*(?:[_A-Z0-9]|$))"), "KOVA"),
+    # camelCase / lowerCamel: kovaFoo -> kovaFoo
+    (re.compile(r"\bkova(?=[A-Z])"), "kova"),
+    # private-ish underscore compounds: __kovaWatch, _kovaFoo
+    (re.compile(r"(?<=[_@])kova(?=[A-Z])"), "kova"),
+    # dotted members: .kovaDesktop, __kovaActHolder
+    (re.compile(r"(?<=\.)kova(?=[A-Z])"), "kova"),
     # npm scopes
     (SCOPE_RE, "@kova"),
-    # trailing-compound: .hermes2, hermes2
-    (re.compile(r"\bhermes(?=\d)"), "kova"),
-    # _hermesFoo style identifiers with capital after underscore
-    (re.compile(r"(?<=\b[a-zA-Z])_hermes(?=[A-Z])"), "_kova"),
-    # remaining plain identifier compounds like can_update_hermes
-    (re.compile(r"(?<=[a-z0-9])_hermes(?![a-z0-9])"), "_kova"),
-    # __hermesX / .__hermesX leading-underscore runs
-    (re.compile(r"(__|\.)(__?)hermes(?=[A-Z])"), r"\1\2kova"),
+    # trailing-compound: .kova2, kova2
+    (re.compile(r"\bkova(?=\d)"), "kova"),
+    # _kovaFoo style identifiers with capital after underscore
+    (re.compile(r"(?<=\b[a-zA-Z])_kova(?=[A-Z])"), "_kova"),
+    # remaining plain identifier compounds like can_update_kova
+    (re.compile(r"(?<=[a-z0-9])_kova(?![a-z0-9])"), "_kova"),
+    # __kovaX / .__kovaX leading-underscore runs
+    (re.compile(r"(__|\.)(__?)kova(?=[A-Z])"), r"\1\2kova"),
 ]
 
 

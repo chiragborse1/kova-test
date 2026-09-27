@@ -748,11 +748,11 @@ def fetch_nous_models(
     model_ids: List[str] = []
     for item in data:
         model_id = item.get("id") if isinstance(item, dict) else None
-        # Nous's own Hermes models aren't reliable for agentic tool-calling,
-        # so they are excluded from the offered list. The substring "hermes"
+        # Nous's own Kova models aren't reliable for agentic tool-calling,
+        # so they are excluded from the offered list. The substring "kova"
         # must stay: it matches the real served model ids
         # (nousresearch/hermes-4-405b, hermes-3-llama-*). Do not rebrand it.
-        if _nonempty_str(model_id) and "hermes" not in model_id.lower():
+        if _nonempty_str(model_id) and "kova" not in model_id.lower():
             model_ids.append(model_id.strip())
     model_ids.sort(key=_model_priority)
     return list(dict.fromkeys(model_ids))

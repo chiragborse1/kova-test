@@ -398,7 +398,7 @@ function Test-KovaRuns([string]$Label) {
     Save-InstallSideState $Label
     $kovaExe = $null
     try {
-        $kovaExe = Get-SourceHermes $InstallDir
+        $kovaExe = Get-SourceKova $InstallDir
     } catch {
         # A pre-handoff release cannot complete inside `kova update`: its
         # update path reaches no retired-hook seam, so the update ends with the
@@ -409,7 +409,7 @@ function Test-KovaRuns([string]$Label) {
         # still judged by the strict checks below, and `--version` probes keep
         # their ban: a probe must never complete an unfinished update.
         Write-Host "  no published launcher yet; running the next ordinary startup (this is what completes a pre-handoff release)"
-        $startupHermes = Get-SourceKovaForStartup $InstallDir
+        $startupKova = Get-SourceKovaForStartup $InstallDir
         $startupLog = Join-Path $WorkRoot 'logs\post-update-startup.log'
         New-Item -ItemType Directory -Force -Path (Split-Path $startupLog) | Out-Null
         # prepare_launch reports its progress on stderr, and a native command's
@@ -419,13 +419,13 @@ function Test-KovaRuns([string]$Label) {
         $prevStartupEap = $ErrorActionPreference
         try {
             $ErrorActionPreference = 'Continue'
-            & $startupHermes status 2>&1 | Out-File -Encoding UTF8 $startupLog
+            & $startupKova status 2>&1 | Out-File -Encoding UTF8 $startupLog
             $startupExit = $LASTEXITCODE
         } finally {
             $ErrorActionPreference = $prevStartupEap
         }
         Write-Host "  first startup after the update ran (exit $startupExit); the checks below assert the launcher it must have published"
-        $kovaExe = Get-SourceHermes $InstallDir
+        $kovaExe = Get-SourceKova $InstallDir
     }
     & $DriverPython -B (Join-Path $AssetsDir 'source_driver.py') --root $InstallDir --launcher $kovaExe --desktop $script:ExpectedDesktop
     Assert-True ($LASTEXITCODE -eq 0) "$Label -- read-only install verification (no repair)"
@@ -515,7 +515,7 @@ function Assert-DesktopArtifact([string]$Label) {
 function Invoke-KovaUpdate {
     # --yes reaches the update subcommand only in later
     # releases; ask the installed binary, never parse its source.
-    $kovaExe = Get-SourceHermes $InstallDir
+    $kovaExe = Get-SourceKova $InstallDir
     $updateArgs = @("update")
     $prevEap = $ErrorActionPreference; $ErrorActionPreference = "Continue"
     $helpText = & $kovaExe update --help 2>&1 | Out-String
@@ -672,7 +672,7 @@ function Invoke-KovaDesktopAppUpdate([string]$TargetSha) {
     # real pipeline; the driver intercepts the product's final spawn
     # (argv/cwd/env captured by e2e-assets/launch-capture/sitecustomize.py)
     # and re-executes it under Playwright, which clicks Update now.
-    $kovaExe = Get-SourceHermes $InstallDir
+    $kovaExe = Get-SourceKova $InstallDir
     $spec = Join-Path $WorkRoot "launch-spec.json"
     New-Item -ItemType Directory -Path (Join-Path $WorkRoot "logs") -Force | Out-Null
     $log = Join-Path $WorkRoot "logs\desktop-launch-capture.log"
@@ -1329,7 +1329,7 @@ except Exception:
 function Invoke-UserStateActions {
     # Everything here is a command a user would run against the real installed
     # CLI with a real (mocked-inference) provider configured.
-    $kova = Get-SourceHermes $InstallDir
+    $kova = Get-SourceKova $InstallDir
     if (-not $script:ChatMock) {
         # Same mock + config writer the desktop chat checkpoints use, so the
         # leg has a genuinely configured provider rather than a dummy key.
@@ -1485,7 +1485,7 @@ function Assert-RedirectIsTransportOnly {
 function Assert-UserShims {
     # A launcher left pointing at a vanished tree is the "update lost
     # something" shape a checkout-hash assertion cannot see.
-    $kova = Get-SourceHermes $InstallDir
+    $kova = Get-SourceKova $InstallDir
     Assert-True (Test-Path -LiteralPath $kova) "a usable launcher still exists after the upgrade ($kova)"
     $userShim = Join-Path $KovaHome 'bin\kova.exe'
     if (-not (Test-Path -LiteralPath $userShim)) { $userShim = Join-Path $KovaHome 'bin\kova.cmd' }

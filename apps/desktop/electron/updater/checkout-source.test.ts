@@ -380,7 +380,7 @@ urllib.request.build_opener = local_build
 
       emitUpdateProgress: vi.fn(),
       rememberLog: vi.fn(),
-      startHermes: async (): Promise<void> => {},
+      startKova: async (): Promise<void> => {},
 
       stopBackendsForUpdate: vi.fn(async (): Promise<void> => {}),
       repairMacUpdaterHelper: (): void => {},

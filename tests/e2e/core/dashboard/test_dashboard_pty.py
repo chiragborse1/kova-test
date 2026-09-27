@@ -121,7 +121,7 @@ class Chat:
         def ready() -> bool:
             s = term.text()
             return term.closed or ("❯" in s and "Session:" in s
-                                   and "startingagent" not in s and "summoninghermes" not in s)
+                                   and "startingagent" not in s and "summoningkova" not in s)
         try:
             poll(ready, 120, "the TUI composer to be ready")
             assert not term.closed, f"/api/pty closed (code={term.close_code}) during TUI startup"

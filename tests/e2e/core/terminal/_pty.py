@@ -99,7 +99,7 @@ def cmdline(pid: int) -> str:
         return "?"
 
 
-class PtyHermes:
+class PtyKova:
     """One interactive ``kova`` process on a PTY with an emulated screen."""
 
     def __init__(self, root: Path, argv_tail: list[str], llm: FakeLLMServer, *, rows: int, cols: int,

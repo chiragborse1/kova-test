@@ -32,7 +32,7 @@ from pathlib import Path
 
 import pytest
 
-from tests.e2e.core.terminal._pty import REPO_ROOT, PtyHermes, canon
+from tests.e2e.core.terminal._pty import REPO_ROOT, PtyKova, canon
 from tests.fakes.fake_llm_provider import FakeLLMServer, Text, ToolCall
 
 pytestmark = [
@@ -143,7 +143,7 @@ def test_terminal_transcript_integrity(surface: str, scenario: str, tmp_path: Pa
     script = [r for turn in spec.turns for r in turn.responses]
     rows, cols = spec.rows, 100
     with FakeLLMServer(script, aux=lambda _req: Text(TITLE)) as llm:
-        term = PtyHermes(tmp_path, SURFACES[surface], llm, rows=rows, cols=cols)
+        term = PtyKova(tmp_path, SURFACES[surface], llm, rows=rows, cols=cols)
         try:
             term.wait_ready()
             expected_main = 0

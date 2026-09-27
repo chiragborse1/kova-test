@@ -314,7 +314,7 @@ export function useGatewayBoot({
     // signals that fire around wake (power resume, network online, the window
     // becoming visible).
     let bootCompleted = false
-    // The other way a cold boot concludes. Main keeps startHermes() available
+    // The other way a cold boot concludes. Main keeps startKova() available
     // after the renderer gave up, and every later getConnection() caller
     // re-enters it, replaying `backend.resolve` (running:true) then
     // `backend.remote` (error:null) onto a renderer whose boot is over. Without
@@ -889,7 +889,7 @@ export function useGatewayBoot({
         return
       }
 
-      // Soft switch / post-boot startHermes re-emits progress — ignore so the
+      // Soft switch / post-boot startKova re-emits progress — ignore so the
       // cold-boot CONNECTING overlay stays down. A boot that ended in failure
       // is concluded too: replaying its steps would take the recovery overlay
       // back down. Post-boot errors are gated:
@@ -1337,7 +1337,7 @@ export function useGatewayBoot({
         message: translateNow('boot.errors.backgroundExited'),
         durationMs: 0,
         action: {
-          label: translateNow('boot.errors.restartHermes'),
+          label: translateNow('boot.errors.restartKova'),
           onClick: requestBackendRestart
         },
         secondaryAction: {

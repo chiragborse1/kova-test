@@ -85,7 +85,7 @@ def test_valid_entry_is_extracted_with_install_command(mod, tmp_path):
     assert e["shaShort"] == "38fe0fb"
     assert e["tier"] == "official"
     assert e["maintainer"] == "Example"
-    assert e["requiresHermes"] == ">=0.19"
+    assert e["requiresKova"] == ">=0.19"
     assert e["platforms"] == ["linux"]
     assert e["docsUrl"] == "https://example.com/docs"
     assert e["capabilities"]["providesTools"] == ["do_thing"]

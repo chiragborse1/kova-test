@@ -239,7 +239,7 @@ kova gateway uninstall   # Removes schtasks entry, Startup shortcut, pid file
 
 `kova gateway status` is idempotent — call it a thousand times in a row and it will never accidentally kill the gateway. (Pre-PR #21561 it silently did, via `os.kill(pid, 0)` colliding with `CTRL_C_EVENT` at the C level — see "process management internals" below if you care about the story.)
 
-Login auto-start is only ever installed on an explicit answer: `kova gateway install`, a `Y` on a real terminal, or `KOVA_GATEWAY_INSTALL_START_ON_LOGIN=1`. A scripted or piped `kova gateway start` (no TTY, or `KOVA_NONINTERACTIVE=1`) starts the gateway without touching the Scheduled Task or the Startup folder; set `KOVA_GATEWAY_INSTALL_START_ON_LOGIN=0` to skip the question on a terminal too.
+Login auto-start is only ever installed on an explicit answer: `kova gateway install`, a `Y` on a real terminal, or `Kova_Gateway_INSTALL_START_ON_LOGIN=1`. A scripted or piped `kova gateway start` (no TTY, or `KOVA_NONINTERACTIVE=1`) starts the gateway without touching the Scheduled Task or the Startup folder; set `Kova_Gateway_INSTALL_START_ON_LOGIN=0` to skip the question on a terminal too.
 
 ### Why not a Windows Service?
 

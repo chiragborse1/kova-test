@@ -32,7 +32,7 @@ from kova_cli.model_switch import (
         "kova_4_70b",
         "openrouter/kova3:70b",
         "openrouter/nousresearch/hermes-4-405b",
-        "OpenKova/Hermes3",
+        "OpenKova/Kova3",
         "kova-3.1",
     ],
 )

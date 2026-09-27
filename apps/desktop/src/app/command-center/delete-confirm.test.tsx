@@ -22,7 +22,7 @@ vi.mock('@/kova', async importOriginal => ({
   getStatus: vi.fn(() => Promise.resolve({})),
   getUsageAnalytics: vi.fn(() => Promise.resolve({})),
   restartGateway: vi.fn(),
-  updateHermes: vi.fn()
+  updateKova: vi.fn()
 }))
 vi.mock('@/lib/session-export', () => ({ exportSession: vi.fn() }))
 vi.mock('./maintenance', () => ({ MaintenancePanel: () => null }))

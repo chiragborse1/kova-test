@@ -77,7 +77,7 @@ def test_bootstrap_environment_isolates_owned_paths_without_mutating_caller(tmp_
 
     mixed = toolchain.bootstrap_environment(source, work, cache, {
         "Home": str(original_home), "UserProfile": str(original_home), "LocalAppData": "live-local",
-        "Hermes_Home": "live-profile", "Hermes_Runtime_Dir": "live-store", "Cargo_Home": "custom-cargo",
+        "Kova_Home": "live-profile", "Kova_Runtime_Dir": "live-store", "Cargo_Home": "custom-cargo",
         "Rustup_Home": "custom-rustup", "NPM_CONFIG_CACHE": "live-npm", "Path": os.defpath,
     })
     assert mixed["CARGO_HOME"] == "custom-cargo" and mixed["RUSTUP_HOME"] == "custom-rustup"

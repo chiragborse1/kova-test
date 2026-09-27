@@ -115,7 +115,7 @@ def test_unreadable_status_still_serves_a_running_state(progress):
 # Stands in for `kova update`, and reports the stage that was on screen
 # while it ran -- the update child is the only thing that can observe the
 # window's state at the exact moment of the longest wait in the hand-off.
-FAKE_HERMES = """#!/usr/bin/env bash
+FAKE_Kova = """#!/usr/bin/env bash
 # The hand-off probes `update --help` for --keep-stash support before the
 # real update call; answer it without consuming a counted call so the
 # exits.N mapping below still refers to actual update attempts.
@@ -135,7 +135,7 @@ def _run_handoff(tmp_path, exits: dict[int, int]) -> list[dict]:
     install_root = tmp_path / "kova-agent"
     (install_root / "venv" / "bin").mkdir(parents=True)
     kova = install_root / "venv" / "bin" / "kova"
-    kova.write_text(FAKE_HERMES)
+    kova.write_text(FAKE_Kova)
     kova.chmod(0o755)
 
     capture = tmp_path / "seen"

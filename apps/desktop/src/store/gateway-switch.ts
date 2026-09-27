@@ -39,7 +39,7 @@ import { clearTranscriptTails } from '@/store/transcript-tail-cache'
 // (wipe → re-dial, use-gateway-boot softSwitch) or a Sessions-switcher source
 // change (store/connections selectConnection). Lets the boot hook suppress the
 // backend-exit toast, keeps the cold-boot CONNECTING overlay from resurrecting
-// when startHermes re-emits boot progress, and tells the resume path that a
+// when startKova re-emits boot progress, and tells the resume path that a
 // "session not found" mid-switch means "retry once things settle", not "gone".
 export const $gatewaySwitching = atom(false)
 

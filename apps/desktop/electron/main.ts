@@ -1012,7 +1012,7 @@ const DESKTOP_WINDOW_STATE_PATH = path.join(app.getPath('userData'), 'window-sta
 const DESKTOP_BACKEND_OWNERSHIP_PATH = path.join(app.getPath('userData'), 'backend-ownership.json')
 const DESKTOP_MANAGED_SSH_RECOVERY_PATH = path.join(app.getPath('userData'), 'managed-ssh-update-recovery.json')
 // active-profile.json records which Kova profile the desktop launches its
-// local backend as. When set, startHermes() passes `kova --profile <name>
+// local backend as. When set, startKova() passes `kova --profile <name>
 // dashboard …`, which deterministically pins KOVA_HOME (see
 // _apply_profile_override in kova_cli/main.py) and bypasses the sticky
 // ~/.kova/active_profile file. Unset (null) preserves the legacy behavior:
@@ -1605,16 +1605,16 @@ const backendDialClaims = new BackendDialClaims()
 // backend-exit toast so an intentional kill doesn't look like a crash.
 let softRehomeInProgress = false
 // Primary-slot bookkeeping for the exit supervisor (#112344). `primaryStartsInFlight`
-// counts startHermes() calls that have not settled; `primaryRecoverySuppressed`
+// counts startKova() calls that have not settled; `primaryRecoverySuppressed`
 // is set by every intentional invalidate of the slot and cleared by the next
-// startHermes(), so the dying child's stale exit never respawns behind a
+// startKova(), so the dying child's stale exit never respawns behind a
 // re-home, a quit, or a latched boot failure.
 let primaryStartsInFlight = 0
 let primaryRecoverySuppressed = false
 const primaryExitRecovery = createBackendExitRecoveryLatch()
 // Additional per-profile backends, keyed by profile name. The PRIMARY backend
 // (the desktop's launch profile) stays managed by backendConnectionState +
-// startHermes(); this pool only holds EXTRA profile
+// startKova(); this pool only holds EXTRA profile
 // backends spawned lazily when a session belongs to a different profile. A user
 // with no named profiles never populates this map, so their experience is
 // byte-for-byte the single-backend behavior.
@@ -1828,7 +1828,7 @@ const RENDERER_RELOAD_WINDOW_MS = 60_000
 const RENDERER_RELOAD_MAX = 3
 const rendererReloadTimesRef: { current: number[] } = { current: [] }
 // Latched bootstrap failure: when the first-launch install fails, we hold
-// onto the error so subsequent startHermes() calls (e.g. the renderer's
+// onto the error so subsequent startKova() calls (e.g. the renderer's
 // ensureGatewayOpen retrying after the WS won't open) return the same error
 // instead of re-running install.ps1 in a hot loop. Cleared explicitly by
 // the renderer's "Reload and retry" path or by quitting the app.
@@ -3563,7 +3563,7 @@ function resolveCheckoutUpdateStrategy(): UpdaterStrategy {
 
     emitUpdateProgress,
     rememberLog,
-    startHermes,
+    startKova,
     stopBackendsForUpdate,
     repairMacUpdaterHelper,
     preflightStateDb: async (home: string, log: (message: string) => void): Promise<void> => {
@@ -3657,7 +3657,7 @@ async function restoreBundledBackend(): Promise<void> {
   }
 
   backendStartFailure = null
-  await startHermes()
+  await startKova()
 }
 
 // Set to true when the desktop is about to quit so a detached swap/install/
@@ -5182,7 +5182,7 @@ async function ensureRuntime(
 
       bootstrapError.isBootstrapFailure = true
       bootstrapError.failedStage = bootstrapResult.failedStage || null
-      // Latch the failure so subsequent startHermes() calls return this
+      // Latch the failure so subsequent startKova() calls return this
       // same error without re-running install.ps1.  Cleared by the
       // kova:bootstrap:reset IPC (renderer's "Reload and retry").
       bootstrapFailure = bootstrapError
@@ -6389,15 +6389,15 @@ async function buildReadinessHealthProbe(baseUrl, authMode, token) {
 }
 
 // Boot-time readiness for a remote connection object. For a Kova Cloud agent
-// whose own session cookie has expired, `waitForHermes` ends in the terminal
+// whose own session cookie has expired, `waitForKova` ends in the terminal
 // reauth error even though the portal session that can silently re-mint that
 // cookie is still live: the per-agent cascade (`cloudAgentSilentSignIn`) was
 // only ever driven by the settings UI, never by boot, so every relaunch needed
 // a manual "Use gateway" click. Run the cascade once and retry once; anything
 // that is not that exact case surfaces unchanged.
-async function waitForRemoteHermes(remote) {
+async function waitForRemoteKova(remote) {
   try {
-    await waitForHermes(remote.baseUrl, remote.token, undefined, remote.authMode, remote.headers)
+    await waitForKova(remote.baseUrl, remote.token, undefined, remote.authMode, remote.headers)
   } catch (error) {
     if (!shouldAttemptCloudBootCascade(remote, error)) {
       throw error
@@ -6417,11 +6417,11 @@ async function waitForRemoteHermes(remote) {
       throw error
     }
 
-    await waitForHermes(remote.baseUrl, remote.token, undefined, remote.authMode, remote.headers)
+    await waitForKova(remote.baseUrl, remote.token, undefined, remote.authMode, remote.headers)
   }
 }
 
-async function waitForHermes(
+async function waitForKova(
   baseUrl: string,
   token: string | null | undefined,
   signal?: AbortSignal,
@@ -7406,7 +7406,7 @@ function getOauthSessionForUrl(url, { connectionId = '', pendingAuthMode = '', p
 // cookies.get() on a fresh cold start can resolve BEFORE the jar has finished
 // hydrating from disk and return an empty array — even though the user is
 // signed in. That false-negative used to make hasLiveOauthSession() report
-// "not signed in", which on the initial boot path (startHermes → the renderer's
+// "not signed in", which on the initial boot path (startKova → the renderer's
 // single-shot boot() with no retry) surfaced as the "Kova couldn't start"
 // OAuth overlay that vanishes the instant the user clicks Retry.
 //
@@ -10226,7 +10226,7 @@ async function bootstrapSshConnectionInner(profile, sshConfig, reuseToken, sourc
       forward: (localPort, remotePort) => ssh.forward(localPort, remotePort),
       cancelForward: (localPort, remotePort) => ssh.cancelForward(localPort, remotePort),
       pickLocalPort,
-      waitForHermes: (baseUrl, token) => waitForHermes(baseUrl, token, lease.signal, 'token'),
+      waitForKova: (baseUrl, token) => waitForKova(baseUrl, token, lease.signal, 'token'),
       probeReuseProof: sshProbeReuseProof,
       adoptServedToken: adoptServedDashboardToken,
       rememberLog: sshRememberLog,
@@ -10305,7 +10305,7 @@ async function bootstrapSshConnectionInner(profile, sshConfig, reuseToken, sourc
           metadata.registryConnectionId ||
           (typeof source === 'string' && source.startsWith('registry:') ? source.slice('registry:'.length) : ''),
         // Never infer primary ownership from a non-composite scope key: legacy
-        // per-profile pools also use bare keys. Only startHermes' explicit call
+        // per-profile pools also use bare keys. Only startKova' explicit call
         // site may label a registry-qualified SSH scope as the primary backend.
         primaryRegistryScope: metadata.primaryRegistryScope === true
       })
@@ -10558,7 +10558,7 @@ function registryPrimaryIsRemote() {
 // True when the PRIMARY profile's backend resolves to a remote/cloud host —
 // i.e. resolveRemoteBackend(primaryProfileKey()) would return a descriptor
 // rather than null. Mirrors that function's precedence (per-profile override →
-// env → global) so a startHermes() failure can be classified as remote (never
+// env → global) so a startKova() failure can be classified as remote (never
 // latch — transient, must stay retryable) vs local (latch to break install
 // loops) BEFORE the throwing resolve/mint runs.
 function primaryBackendIsRemote() {
@@ -10685,7 +10685,7 @@ async function testDesktopConnectionConfig(input: any = {}) {
             kovaVersion = inspection.version
             supported = inspection.supported
           } else {
-            kovaPath = await remoteLifecycle.locateHermes(ssh, sshConfig.remoteKovaPath || '')
+            kovaPath = await remoteLifecycle.locateKova(ssh, sshConfig.remoteKovaPath || '')
             kovaVersion = await remoteLifecycle.probeKovaVersion(ssh, kovaPath)
             supported = await remoteLifecycle.remoteSupportsSshOwnership(ssh, kovaPath)
           }
@@ -10757,7 +10757,7 @@ async function testDesktopConnectionConfig(input: any = {}) {
       token = decryptDesktopSecret(block.token)
     }
   } else {
-    const remote = (await resolveRemoteBackend(key)) || (await startHermes())
+    const remote = (await resolveRemoteBackend(key)) || (await startKova())
     baseUrl = remote.baseUrl
     token = remote.token
     authMode = normAuthMode(remote.authMode)
@@ -10823,7 +10823,7 @@ function resetKovaConnectionState({ soft = false }: { soft?: boolean } = {}): vo
   backendStartFailure = null
   remoteReauthFailure = null
   remoteLiveness.clear()
-  // The next startHermes() re-reads active-profile.json for its launch profile.
+  // The next startKova() re-reads active-profile.json for its launch profile.
   primaryProfilePin.clear()
   invalidatePrimaryConnection()
 
@@ -10842,7 +10842,7 @@ function invalidatePrimaryConnection() {
 
 // Re-home the primary backend: reset connection state, then wait for the live
 // dashboard process to actually exit (SIGKILL after 5s) so the next
-// startHermes() spawns fresh instead of racing the dying one. Shared by the
+// startKova() spawns fresh instead of racing the dying one. Shared by the
 // connection-config and profile switch flows.
 async function teardownPrimaryBackendAndWait({ soft = false }: { soft?: boolean } = {}): Promise<void> {
   const stopping = backendConnectionState.stopProcess(localBackendLifecycle.stop)
@@ -10891,7 +10891,7 @@ function broadcastConnectionsChanged(payload: { connectionId: string; reason: 'r
 }
 
 // The profile the primary (window) backend was actually LAUNCHED as. Pinned by
-// startHermes() and cleared when the primary is torn down; while a primary is
+// startKova() and cleared when the primary is torn down; while a primary is
 // live this must NOT follow active-profile.json (see primary-profile-pin.ts).
 const primaryProfilePin = new PrimaryProfilePin()
 
@@ -10954,7 +10954,7 @@ async function ensureBackend(
   const route = resolveProfileBackendRoute(key, routeOpts)
 
   if (route.backend === 'primary') {
-    const connection = await startHermes()
+    const connection = await startKova()
     setWslBridgeProfileState(key, connection.mode !== 'remote')
 
     // A shared backend still owes the caller its profile scope, so renderer-side
@@ -11386,7 +11386,7 @@ async function connectRegistryBackend(
     source.headers
   )
 
-  await waitForRemoteHermes(connection)
+  await waitForRemoteKova(connection)
   poolEntry.remoteBaseUrl = connection.baseUrl
 
   // Remote/cloud backends live on another host too — disable the WSL path
@@ -11466,7 +11466,7 @@ async function restoreManagedPrimarySshBackend(source, profile, correlationId) {
   backendConnectionState.invalidate()
 
   try {
-    return await startHermes()
+    return await startKova()
   } finally {
     if (managedPrimaryRestoreOwners.get(source.id)?.correlationId === correlationId) {
       managedPrimaryRestoreOwners.delete(source.id)
@@ -11660,7 +11660,7 @@ async function openManagedSshUpdateTransport(
       }
     }
 
-    const kovaPath = await remoteLifecycle.locateHermes(ssh, config.remoteKovaPath || '')
+    const kovaPath = await remoteLifecycle.locateKova(ssh, config.remoteKovaPath || '')
     const kovaHome = await remoteLifecycle.probeRemoteKovaHome(ssh)
 
     return {
@@ -11724,10 +11724,10 @@ async function drainManagedSshScope(scope) {
         // exact token first; only recreate the forward when cancellation was
         // confirmed, avoiding a duplicate-bind attempt that masks recovery.
         if (!forwardClosed) {
-          await waitForHermes(`http://127.0.0.1:${state.localPort}`, scope.reuseToken, undefined, 'token')
+          await waitForKova(`http://127.0.0.1:${state.localPort}`, scope.reuseToken, undefined, 'token')
         } else {
           await state.ssh.forward(state.localPort, state.remotePort)
-          await waitForHermes(`http://127.0.0.1:${state.localPort}`, scope.reuseToken, undefined, 'token')
+          await waitForKova(`http://127.0.0.1:${state.localPort}`, scope.reuseToken, undefined, 'token')
         }
 
         scope.forwardRestored = true
@@ -12012,7 +12012,7 @@ function teardownFailedLocalBackend(poolKey: string, entry: any): Promise<void> 
 }
 
 // Spawn an additional dashboard backend pinned to a named profile. Mirrors the
-// local-spawn portion of startHermes() but without the boot-progress UI,
+// local-spawn portion of startKova() but without the boot-progress UI,
 // bootstrap, or remote handling (those belong to the primary backend only).
 // `opts.forceLocal` skips remote resolution entirely (the registry 'local'
 // entry means THIS machine regardless of the v1 routing table); `opts.poolKey`
@@ -12055,7 +12055,7 @@ async function runPoolBackendStart(
   profileDeletionGate.assertCanStart(profile)
 
   if (remote) {
-    await waitForRemoteHermes(remote)
+    await waitForRemoteKova(remote)
 
     // Recorded on the entry so revalidation can probe this descriptor without
     // awaiting connectionPromise, which may still be pending for a sibling.
@@ -12305,7 +12305,7 @@ async function runPoolBackendStart(
   entry.port = port
 
   const baseUrl = `http://127.0.0.1:${port}`
-  await Promise.race([waitForHermes(baseUrl, token), startFailed])
+  await Promise.race([waitForKova(baseUrl, token), startFailed])
   assertPoolEntryStillOwned(poolKey, entry, backendPool, localBackendLifecycle.signal)
   ready = true
 
@@ -12571,7 +12571,7 @@ async function prepareProfileRenameRequest(request) {
       mainWindow?.reload()
     },
     restartPrimaryBackend: async () => {
-      await startHermes()
+      await startKova()
     },
     teardownPoolBackendAndWait,
     teardownPrimaryBackendAndWait,
@@ -12606,7 +12606,7 @@ function startAttachedBackendMonitor(attached: AttachedBackend) {
   stopAttachedBackendMonitor()
 
   attachedBackendMonitor = setInterval(() => {
-    void waitForHermes(attached.baseUrl, attached.token, undefined, 'token', {}, { alreadyBound: true }).catch(() => {
+    void waitForKova(attached.baseUrl, attached.token, undefined, 'token', {}, { alreadyBound: true }).catch(() => {
       stopAttachedBackendMonitor()
       rememberLog(`[attach] attached backend on ${attached.baseUrl} (pid ${attached.pid}) is gone; recovering`)
       invalidatePrimaryConnection()
@@ -12657,7 +12657,7 @@ function hostBackendAttachDeps() {
         record,
         {
           home: os.homedir(),
-          lockDir: process.env.KOVA_GATEWAY_LOCK_DIR,
+          lockDir: process.env.Kova_Gateway_LOCK_DIR,
           platform: process.platform,
           stateHome: process.env.XDG_STATE_HOME
         },
@@ -12672,7 +12672,7 @@ function hostBackendAttachDeps() {
     // port is a dead record (a hard-killed backend leaves both the record and
     // its published token behind), not one still starting.
     waitForReady: (baseUrl: string, token: string) =>
-      waitForHermes(baseUrl, token, undefined, 'token', {}, { alreadyBound: true })
+      waitForKova(baseUrl, token, undefined, 'token', {}, { alreadyBound: true })
   }
 }
 
@@ -12731,7 +12731,7 @@ function releaseHostSpawnReservation() {
   hostSpawnReservation = null
 }
 
-function startHermes({ supervisorRecovery = false }: { supervisorRecovery?: boolean } = {}): Promise<
+function startKova({ supervisorRecovery = false }: { supervisorRecovery?: boolean } = {}): Promise<
   Awaited<ReturnType<typeof backendConnectionState.getPromise>>
 > {
   primaryRecoverySuppressed = false
@@ -12788,7 +12788,7 @@ function reportPrimaryRecoveryCrashLoop(code: number | null, signal: string | nu
 const firstLine = (text: string): string => (text || '').split('\n').find(Boolean) || ''
 
 function runPrimaryRecoverySpawn(code: number | null, signal: string | null) {
-  startHermes({ supervisorRecovery: true }).catch(respawnError => {
+  startKova({ supervisorRecovery: true }).catch(respawnError => {
     rememberLog(`[supervisor] backend respawn failed: ${firstLine(respawnError.message)}`)
 
     // Terminal boot failures still own their existing recovery UI. Only a
@@ -12802,8 +12802,8 @@ function runPrimaryRecoverySpawn(code: number | null, signal: string | null) {
       return
     }
 
-    // releaseStart (startHermes) already ran: same-promise reaction order, so
-    // hasPendingStart is false here. See the ordering contract in startHermes.
+    // releaseStart (startKova) already ran: same-promise reaction order, so
+    // hasPendingStart is false here. See the ordering contract in startKova.
     if (primaryExitRecovery.retryAfterFailedStart(primaryRecoveryState())) {
       rememberLog('[supervisor] backend respawn failed before ready; retrying within crash-loop budget')
       runPrimaryRecoverySpawn(code, signal)
@@ -12871,7 +12871,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
   localBackendLifecycle.assertCanStart()
 
   // Latched-failure short-circuit: once bootstrap has failed in this
-  // process, every subsequent startHermes() call re-throws the same error
+  // process, every subsequent startKova() call re-throws the same error
   // without re-running install.ps1. This prevents the renderer's
   // ensureGatewayOpen retries (and any other getConnection callers) from
   // restarting a 5-10 minute install loop while the user is still reading
@@ -12882,7 +12882,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
   // its "Sign in" button clickable, instead of re-driving boot on every retry.
   //
   // Deliberately silent: this runs on every proxied request while a failure is
-  // latched (ensureBackend -> startHermes), so a log line here would flood the
+  // latched (ensureBackend -> startKova), so a log line here would flood the
   // bounded rememberLog ring and evict the lines that explain the original
   // failure. The supervisor logs the refusal once in runPrimaryRecoverySpawn.
   const latched = latchedBootFailure()
@@ -12923,7 +12923,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
   // kova:profile:remember landing mid-startup becomes the NEXT boot's
   // preference instead of splitting routing identity from the launch
   // argument. (The pin below still honors a live primary — but a primary
-  // being live means startHermes never got here.)
+  // being live means startKova never got here.)
   const { argvProfile: activeProfile, routingProfile: primaryProfile } = resolveLaunchProfile(readActiveDesktopProfile)
 
   // Pin the routing table to the profile this primary actually boots as; a
@@ -12947,7 +12947,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
       backendConnectionState.assertCurrentAttempt(connectionAttempt)
 
       await advanceBootProgress('backend.remote', `Connecting to remote Kova backend at ${remote.baseUrl}`, 24)
-      await waitForRemoteHermes(remote)
+      await waitForRemoteKova(remote)
 
       // Second async boundary: the health probe itself can outlive the
       // attempt. A late success here must not publish a stale descriptor.
@@ -12985,7 +12985,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
 
     const token = crypto.randomBytes(32).toString('base64url')
     // Pin the desktop's chosen profile via the global --profile flag. A launch
-    // override is persisted into active-profile.json before startHermes, so
+    // override is persisted into active-profile.json before startKova, so
     // Kova.exe --profile <name> and kova -p <name> desktop both land here.
     // Null (no stored preference, no launch flag) keeps the legacy bare serve
     // so the child still follows the sticky active_profile file.
@@ -13233,9 +13233,9 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
       rememberLog(formatBackendExitLine('Kova backend exited', code, signal, primaryOutputTail))
 
       // The current primary child is gone; release its routing pin so the
-      // next startHermes() re-reads active-profile.json instead of re-pinning
+      // next startKova() re-reads active-profile.json instead of re-pinning
       // the dead child's profile (#108417). Supervisor respawns go through
-      // startHermes, which makes a fresh decision — a respawn cannot inherit
+      // startKova, which makes a fresh decision — a respawn cannot inherit
       // a pin from a process that no longer exists.
       primaryProfilePin.clear()
 
@@ -13276,7 +13276,7 @@ async function runKovaStart({ supervisorRecovery = false }: { supervisorRecovery
     const baseUrl = `http://127.0.0.1:${port}`
     await advanceBootProgress('backend.wait', 'Waiting for Kova backend to become ready', 90)
     backendConnectionState.assertCurrentAttempt(connectionAttempt)
-    await Promise.race([waitForHermes(baseUrl, token), backendStartFailed])
+    await Promise.race([waitForKova(baseUrl, token), backendStartFailed])
     backendConnectionState.assertCurrentAttempt(connectionAttempt)
     backendReady = true
     // The host now has a bound, registered backend: the next launcher will
@@ -15206,7 +15206,7 @@ function createWindow() {
   // shared (backendConnectionState), so the renderer's getConnection() joins
   // this in-flight boot instead of duplicating it; early boot-progress events
   // the renderer misses are recovered by its getBootProgress() pull on mount.
-  const startup = defaultRoute ? connectDesktopProfileRoute(defaultRoute) : startHermes()
+  const startup = defaultRoute ? connectDesktopProfileRoute(defaultRoute) : startKova()
   startup.catch(error => rememberLog(error.stack || error.message))
 
   mainWindow.webContents.once('did-finish-load', () => {
@@ -15252,7 +15252,7 @@ async function connectDesktopProfileRoute(
   }
 
   // Every republish carries LIVE window state (#102451): the backend pool entry
-  // (and the getWindowState() snapshot startHermes baked into it) outlives
+  // (and the getWindowState() snapshot startKova baked into it) outlives
   // reloads, reconnects and sleep/wake, so a reply built only from the cached
   // descriptor overwrites the renderer's live fullscreen flag with the
   // mint-time snapshot. Reading the caller's state HERE keeps registry-scoped,
@@ -15603,7 +15603,7 @@ ipcMain.handle('kova:backend:recycle', async (_event, profile) => {
 })
 ipcMain.handle('kova:bootstrap:reset', async () => {
   // Renderer's "Reload and retry" path. Clear the latched failure and
-  // reset connection state so the next startHermes() call restarts the
+  // reset connection state so the next startKova() call restarts the
   // full backend flow (including a fresh runBootstrap pass).
   rememberLog('[bootstrap] reset requested by renderer; clearing latched failure')
   await teardownPrimaryBackendAndWait()
@@ -15627,7 +15627,7 @@ ipcMain.handle('kova:bootstrap:repair', async (): Promise<{ ok: boolean; bundled
     return { ok: false, error: 'bundled-immutable' }
   }
 
-  // Forceful repair: force the next startHermes() through the full installer
+  // Forceful repair: force the next startKova() through the full installer
   // (refreshing a broken/partial venv) and clear any latched failure + live
   // connection. The renderer reloads afterwards to re-drive the boot flow.
   //
@@ -15665,7 +15665,7 @@ ipcMain.handle('kova:bootstrap:repair', async (): Promise<{ ok: boolean; bundled
   // The guard may decide the install is healthy enough that a restart
   // (without touching the venv) is the right answer. Translate that into
   // the existing flag: if the guard said "soft restart", we skip the
-  // "bypass active runtime" path inside startHermes() and fall through
+  // "bypass active runtime" path inside startKova() and fall through
   // to the normal restart branch, which just kills the current child
   // and respawns it against the same venv. See #74874 — this is what
   // breaks the infinite reinstall loop the user hit.
@@ -15923,7 +15923,7 @@ ipcMain.handle('kova:connections:test', async (_event, id) => {
   let testHeaders = {}
 
   if (entry.kind === 'local') {
-    const local = await startHermes()
+    const local = await startKova()
     baseUrl = local.baseUrl
     token = local.token
     authMode = normAuthMode(local.authMode)
@@ -16576,7 +16576,7 @@ ipcMain.handle('kova:connection-config:oauth-login', async (_event, rawUrl, rawO
 
       nativeAccessTokenCoordinator.storeTokens(baseUrl, tokens)
       // Confirmed sign-in — release the reauth latch so the next
-      // startHermes() re-dials instead of replaying the stale rejection.
+      // startKova() re-dials instead of replaying the stale rejection.
       remoteReauthFailure = null
 
       return { ok: true, baseUrl, connected: true, connectionId: loginConnectionId || undefined }
@@ -18705,14 +18705,14 @@ if (!isPrimaryInstance) {
   // Hard-exit, not app.quit(): the before-quit teardown coordinator defers a
   // plain quit (event.preventDefault + async backend shutdown), and in that
   // window `ready` still fires — the lock-losing instance then runs the full
-  // startup (shortcut registration, createWindow → startHermes), whose
+  // startup (shortcut registration, createWindow → startKova), whose
   // reapOrphans() SIGTERMs the running instance's live backend (#87295).
   // app.exit() terminates immediately, before `ready`, so a second launch
   // routes into the running window and never touches backend machinery.
   app.exit(0)
 } else {
   // Cold-start --profile must win over the stored preference before
-  // startHermes() reads active-profile.json. Only the instance that will
+  // startKova() reads active-profile.json. Only the instance that will
   // boot writes: a second launch must not retarget the running app. A missing
   // or invalid flag is a no-op, so the stored profile stays.
   try {
@@ -18820,7 +18820,7 @@ app.whenReady().then(() => {
   mainProcessLagWatchdog.start()
   f12Blocked = readPersistedDisableF12()
   // Seed this before the first window exists: a picker can open before
-  // startHermes() finishes resolving the configured backend.
+  // startKova() finishes resolving the configured backend.
   const primaryProfile = primaryProfileKey()
 
   setActiveGatewayProfile(primaryProfile)

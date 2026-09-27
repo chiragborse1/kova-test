@@ -45,7 +45,7 @@ export interface CheckoutStrategyDeps {
 
   emitUpdateProgress: (payload: { stage: string; message: string; percent: number | null }) => void
   rememberLog: (chunk: unknown) => void
-  startHermes: () => Promise<unknown>
+  startKova: () => Promise<unknown>
   stopBackendsForUpdate: () => Promise<void>
   repairMacUpdaterHelper: (updater: string) => void | Promise<void>
   preflightStateDb: (kovaHome: string, rememberLog: (chunk: string) => void) => void | Promise<void>
@@ -349,7 +349,7 @@ export function createCheckoutStrategy(deps: CheckoutStrategyDeps): UpdaterStrat
 
       deps.rememberLog(`[updates] hand-off not viable, aborting quit: ${handoffOutcome.message}`)
       deps.emitUpdateProgress({ stage: 'error', message, percent: null })
-      deps.startHermes().catch(() => {})
+      deps.startKova().catch(() => {})
 
       return { ok: false, error: 'updater-spawn-failed', message }
     }

@@ -24,7 +24,7 @@ export interface CatalogPlugin {
   /** URL segment of the author page (/plugins/by/<slug>); one per maintainer. */
   maintainerSlug?: string;
   subdir?: string;
-  requiresHermes?: string;
+  requiresKova?: string;
   platforms?: string[];
   capabilities?: PluginCapabilities;
   docsUrl?: string;

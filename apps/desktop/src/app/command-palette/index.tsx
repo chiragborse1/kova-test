@@ -971,7 +971,7 @@ function CommandPaletteBody({ onExited }: { onExited: () => void }) {
             icon: Download,
             id: 'cc-update-kova',
             keywords: ['update', 'upgrade', 'kova', 'version', 'system', 'restart'],
-            label: cc.updateHermes,
+            label: cc.updateKova,
             run: () => requestActiveUpdate()
           },
           {

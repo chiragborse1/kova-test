@@ -420,7 +420,7 @@ export const esOverrides = {
         'El servicio que ejecuta tus chats se cerró de forma inesperada. Reinícialo para continuar; tus chats y ajustes están a salvo.',
       backgroundExitedDuringStartup: 'Kova se detuvo justo después de iniciarse.',
       backendStopped: 'Kova dejó de funcionar en segundo plano',
-      restartHermes: 'Reiniciar Kova',
+      restartKova: 'Reiniciar Kova',
       openLogs: 'Abrir registros',
       desktopBootFailed: 'Kova no pudo iniciarse',
       gatewayConnectionLost: 'Kova perdió la conexión',
@@ -497,7 +497,7 @@ export const esOverrides = {
       'Esta aplicación de Kova es más antigua que el backend al que está conectada y puede no funcionar correctamente. Actualiza la aplicación para alinearlos.',
     updateDesktopApp: 'Actualizar aplicación',
     installMethodUnsupportedTitle: 'Método de instalación no compatible',
-    updateHermes: 'Actualizar Kova',
+    updateKova: 'Actualizar Kova',
     updateReadyTitle: 'Actualización lista',
     updateReadyMessage: count => `${count} ${count === 1 ? 'cambio nuevo disponible' : 'cambios nuevos disponibles'}.`,
     updateReadyMessageUnknown: 'Hay una nueva actualización disponible.',
@@ -533,7 +533,7 @@ export const esOverrides = {
       restartKovaFailed: 'No se pudo reiniciar Kova'
     },
     actions: {
-      restartHermes: 'Reiniciar Kova',
+      restartKova: 'Reiniciar Kova',
       openKeys: 'Abrir Claves',
       openGateways: 'Abrir Gateways',
       openMaintenance: 'Abrir Mantenimiento'
@@ -1538,7 +1538,7 @@ export const esOverrides = {
     uninstallSection: {
       dangerZone: 'Zona de peligro',
       checkingInstalled: 'Comprobando lo que está instalado…',
-      uninstallHermes: 'Desinstalar Kova',
+      uninstallKova: 'Desinstalar Kova',
       chooseHowMuch:
         'Elige cuánto quieres quitar. La app se cierra para terminar; vuelve a abrir el instalador cuando quieras para volver.',
       confirmUninstall: 'Confirmar desinstalación',
@@ -3136,7 +3136,7 @@ export const esOverrides = {
     sharedGatewayRestartConfirm: 'Reiniciar todo',
     sharedGatewayRestarted: (count: number) =>
       `Gateway compartido reiniciado (${count} ${count === 1 ? 'bot' : 'bots'})`,
-    updateHermes: 'Actualizar Kova',
+    updateKova: 'Actualizar Kova',
     reloadWindow: 'Recargar ventana',
     actionRunning: 'en ejecución',
     actionDone: 'listo',

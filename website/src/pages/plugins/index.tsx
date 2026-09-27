@@ -272,7 +272,7 @@ function PluginCard({
               <span className={styles.metaLabel}>Pinned</span>
               <span
                 className={styles.metaValue}
-                title={plugin.requiresHermes ? `${plugin.sha} · requires kova ${plugin.requiresHermes}` : plugin.sha}
+                title={plugin.requiresKova ? `${plugin.sha} · requires kova ${plugin.requiresKova}` : plugin.sha}
               >
                 <a
                   href={pinUrl(plugin)}
@@ -283,10 +283,10 @@ function PluginCard({
                 >
                   <code>{plugin.version ? `${plugin.version} @ ${plugin.shaShort}` : plugin.shaShort}</code> ↗
                 </a>
-                {plugin.requiresHermes && (
+                {plugin.requiresKova && (
                   <>
                     <span aria-hidden="true" className={styles.cardDatesSep}> · </span>
-                    <code>kova {plugin.requiresHermes}</code>
+                    <code>kova {plugin.requiresKova}</code>
                   </>
                 )}
               </span>

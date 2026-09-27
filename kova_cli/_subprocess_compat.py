@@ -88,7 +88,7 @@ def harden_git_argv(args: Sequence[str]) -> list[str]:
 IS_WINDOWS = sys.platform == "win32"
 
 # Private launcher-to-child metadata. This is diagnostic state, not user config.
-_WINDOWS_GATEWAY_BREAKAWAY_ENV = "_KOVA_GATEWAY_BREAKAWAY"
+_WINDOWS_GATEWAY_BREAKAWAY_ENV = "_Kova_Gateway_BREAKAWAY"
 
 
 def split_command_line(line: str) -> list[str]:

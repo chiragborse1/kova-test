@@ -96,7 +96,7 @@ it.each(['gui', 'lite', 'full'] as const)(
       </I18nProvider>
     )
     const zh: (typeof TRANSLATIONS)['zh']['settings']['uninstallSection'] = TRANSLATIONS.zh.settings.uninstallSection
-    await screen.findByText(zh.uninstallHermes)
+    await screen.findByText(zh.uninstallKova)
     fireEvent.click(screen.getByRole('button', { name: new RegExp(zh.options[mode].title) }))
     expect(screen.getByText(zh.confirmBody(zh.options[mode].consequence))).toBeTruthy()
     expect(run).not.toHaveBeenCalled()

@@ -471,7 +471,7 @@ def create_wrapper_script(name: str, target: Optional[str] = None) -> Optional[P
     wrapper_path = _wrapper_path(canon)
     try:
         if sys.platform == "win32":
-            wrapper_path.write_text(f"@echo off\r\nhermes -p {profile} %*\r\n", encoding="utf-8")
+            wrapper_path.write_text(f"@echo off\r\nkova -p {profile} %*\r\n", encoding="utf-8")
         else:
             kova_exe = shutil.which("kova") or "kova"
             wrapper_path.write_text(f'#!/bin/sh\nexec {shlex.quote(kova_exe)} -p {profile} "$@"\n', encoding="utf-8")
@@ -2256,9 +2256,9 @@ def _atomic_write_json(path: Path, data: dict) -> bool:
 
 def _migrate_honcho_profile_host(old_name: str, new_name: str, new_dir: Path) -> None:
     """Rename Honcho host blocks for a renamed profile without changing peers."""
-    old_host = f"hermes_{old_name}"
+    old_host = f"kova_{old_name}"
     legacy_old_host = f"kova.{old_name}"
-    new_host = f"hermes_{new_name}"
+    new_host = f"kova_{new_name}"
     candidates = [
         new_dir / "honcho.json", _get_default_kova_home() / "honcho.json", Path.home() / ".honcho" / "config.json"
     ]
@@ -2286,7 +2286,7 @@ def _migrate_honcho_profile_host(old_name: str, new_name: str, new_dir: Path) ->
             continue
         block = hosts[source_host]
         if isinstance(block, dict) and "aiPeer" not in block:
-            block["aiPeer"] = old_name  # source_host is ``hermes_<old>`` or legacy ``kova.<old>``
+            block["aiPeer"] = old_name  # source_host is ``kova_<old>`` or legacy ``kova.<old>``
         hosts[new_host] = hosts.pop(source_host)
         if _atomic_write_json(path, raw):
             print(f"✓ Honcho host updated: {source_host} → {new_host}")

@@ -11,7 +11,7 @@ import {
   setApiRequestProfile,
   speakText,
   transcribeAudio,
-  updateHermes
+  updateKova
 } from './kova'
 
 // Contract: every backend-targeted action helper must carry the active gateway
@@ -54,7 +54,7 @@ describe('backend action helpers are profile-scoped', () => {
 
     void getStatus()
     void restartGateway()
-    void updateHermes()
+    void updateKova()
     void checkKovaUpdate()
     void getActionStatus('gateway-restart')
 

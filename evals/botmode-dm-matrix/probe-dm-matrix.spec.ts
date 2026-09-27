@@ -38,7 +38,7 @@ test.beforeAll(async () => {
   fs.mkdirSync(bin)
   fs.writeFileSync(path.join(bin, 'kova'), `#!/bin/sh\ncd ${repo}\nexec ${python} -m kova_cli.main "$@"\n`, { mode: 0o755 })
   if (process.env.BOT_DM_SERVICE_PATH === '1') {
-    fs.writeFileSync(path.join(bin, 'kova'), `#!/bin/sh\nprintf 'WRONG_PATH_HERMES invoked: %s\\n' "$*" >> ${path.join(evidence, 'wrong-path.log')}\nprintf 'old launcher rejects --query-file\\n' >&2\nexit 2\n`, { mode: 0o755 })
+    fs.writeFileSync(path.join(bin, 'kova'), `#!/bin/sh\nprintf 'WRONG_PATH_Kova invoked: %s\\n' "$*" >> ${path.join(evidence, 'wrong-path.log')}\nprintf 'old launcher rejects --query-file\\n' >&2\nexit 2\n`, { mode: 0o755 })
   }
   env = buildAppEnv(sandbox, { HOME: sandbox.root, KOVA_DESKTOP_PYTHON: python,
     KOVA_DESKTOP_HERMES: path.join(bin, 'kova'), PATH: `${bin}:${process.env.PATH}`,

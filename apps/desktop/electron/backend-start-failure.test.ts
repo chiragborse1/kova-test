@@ -34,7 +34,7 @@ test('never latches a supervisor-owned respawn failure (it has its own bounded c
 })
 
 test('latches a CONFIRMED remote reauth failure so the overlay stays clickable', () => {
-  // Without this the non-latching remote path re-runs startHermes on every
+  // Without this the non-latching remote path re-runs startKova on every
   // getConnection/api call, re-emits running:true, and the overlay hides
   // itself — the "Sign in" button flickers away before it can be clicked.
   assert.equal(shouldLatchRemoteReauthFailure({ attemptedRemote: true, isReauth: true }), true)
@@ -75,7 +75,7 @@ test('a CONFIRMED reauth rejection is never auto-retried (missing capability, no
 })
 
 test('unsigned OAuth latches and is never auto-retried; a bare needsOauthLogin hint still retries', () => {
-  // Production composition in startHermes: isReauth = isReauthRequiredError(error).
+  // Production composition in startKova: isReauth = isReauthRequiredError(error).
   // A bare `{ needsOauthLogin: true }` is the IPC-shaped hint, not a confirmed
   // rejection; gatewayTicketFailure tags a confirmed 401/403 with
   // isReauthRequired itself (#95701, see remote-reauth-latch.test.ts).

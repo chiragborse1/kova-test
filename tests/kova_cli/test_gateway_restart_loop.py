@@ -1,7 +1,7 @@
 """Tests for gateway restart-loop defenses (#30719).
 
 Covers:
-- Defense 1: gateway stop/restart refuse when _KOVA_GATEWAY=1
+- Defense 1: gateway stop/restart refuse when _Kova_Gateway=1
 - Defense 2: cron create rejects prompts containing gateway lifecycle commands
 - _contains_gateway_lifecycle_command pattern matching
 """
@@ -265,7 +265,7 @@ class TestGatewayLifecyclePattern:
         # (unbalanced quote), the per-physical-line fallback must still SCAN
         # the content — a lifecycle command alongside an unbalanced quote
         # must remain blocked, never waved through.
-        text = 'echo "unbalanced\nhermes gateway restart'
+        text = 'echo "unbalanced\nkova gateway restart'
         assert _contains_gateway_lifecycle_command(text), f"Should match: {text!r}"
 
     @pytest.mark.parametrize("text", [
@@ -298,9 +298,9 @@ class TestGatewayLifecyclePattern:
 
     @pytest.mark.parametrize("text", [
         # Executable heredoc (shell consumer) must stay blocked.
-        "bash <<EOF\nhermes gateway restart\nEOF",
+        "bash <<EOF\nkova gateway restart\nEOF",
         # Unquoted delimiter = expansion-capable = fail open to scanning.
-        "cat > /tmp/x <<EOF\nhermes gateway restart\nEOF",
+        "cat > /tmp/x <<EOF\nkova gateway restart\nEOF",
     ])
     def test_non_inert_heredocs_still_scanned(self, text):
         assert _contains_gateway_lifecycle_command(text), f"Should match: {text!r}"
@@ -389,7 +389,7 @@ class TestCronCreateLifecycleBlock:
         monkeypatch.setattr("cron.jobs.JOBS_FILE", tmp_path / "cron" / "jobs.json")
         monkeypatch.setattr("cron.jobs.OUTPUT_DIR", tmp_path / "cron" / "output")
 
-    def test_block_kova_gateway_restart(self, capsys):
+    def test_block_Kova_Gateway_restart(self, capsys):
         args = Namespace(
             cron_command="create",
             schedule="30m",
@@ -412,12 +412,12 @@ class TestCronCreateLifecycleBlock:
 
     def test_block_script_with_lifecycle_command(self, tmp_path, capsys, monkeypatch):
         # A no_agent job whose script IS the job (the issue's real abuse path:
-        # restart_kova_gateway_once.sh). The script must live under
+        # restart_Kova_Gateway_once.sh). The script must live under
         # KOVA_HOME/scripts so the scheduler — and the guard — resolve it.
         monkeypatch.setenv("KOVA_HOME", str(tmp_path / ".kova"))
         scripts_dir = tmp_path / ".kova" / "scripts"
         scripts_dir.mkdir(parents=True)
-        (scripts_dir / "restart.sh").write_text("#!/usr/bin/env bash\nhermes gateway restart\n", encoding="utf-8")
+        (scripts_dir / "restart.sh").write_text("#!/usr/bin/env bash\nkova gateway restart\n", encoding="utf-8")
         args = Namespace(
             cron_command="create",
             schedule="1h",
@@ -476,7 +476,7 @@ class TestGatewaySelfTargetingGuard:
         # fire. Prove control reaches the real stop path (rather than driving
         # real signal delivery, which would trip the live-system guard) by
         # short-circuiting the first downstream call with a sentinel.
-        monkeypatch.delenv("_KOVA_GATEWAY", raising=False)
+        monkeypatch.delenv("_Kova_Gateway", raising=False)
         import kova_cli.gateway as gw
 
         class _Reached(Exception):
@@ -497,7 +497,7 @@ class TestGatewaySelfTargetingGuard:
 # ---------------------------------------------------------------------------
 
 class TestTerminalToolGatewayLifecycleGuard:
-    """terminal_tool must refuse gateway lifecycle commands when _KOVA_GATEWAY=1.
+    """terminal_tool must refuse gateway lifecycle commands when _Kova_Gateway=1.
 
     Issue #37453: systemctl --user restart kova-gateway runs as a child of the
     gateway process.  When systemd delivers SIGTERM the gateway kills its own
@@ -568,7 +568,7 @@ class TestTerminalToolGatewayLifecycleGuard:
         import tools.terminal_tool as tt
 
         script = tmp_path / "delayed-ops.sh"
-        script.write_text("#!/usr/bin/env bash\nsleep 45\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/usr/bin/env bash\nsleep 45\nkova gateway restart\n", encoding="utf-8")
         self._patch_env(monkeypatch, self._make_fake_env(), inside_gateway=True)
 
         result = json.loads(tt.terminal_tool(command=f"/bin/bash {script}"))
@@ -652,7 +652,7 @@ class TestTerminalToolGatewayLifecycleGuard:
     def test_cli_agent_session_not_blocked_by_inherited_env(
         self, monkeypatch
     ):
-        """#92560: CLI/TUI agent sessions inherit _KOVA_GATEWAY=1 from the
+        """#92560: CLI/TUI agent sessions inherit _Kova_Gateway=1 from the
         gateway but are NOT the gateway supervisor.  The env gate must not
         fire for them — only for the actual gateway process (PID-file owner).
         """
@@ -667,12 +667,12 @@ class TestTerminalToolGatewayLifecycleGuard:
                 calls.append(cmd)
                 return {"output": "", "returncode": 0}
 
-        # Simulate a CLI agent session: _KOVA_GATEWAY=1 is in the
+        # Simulate a CLI agent session: _Kova_Gateway=1 is in the
         # environment (inherited from the gateway), but
         # _is_supervised_gateway_process() returns False because the
         # process does not own the gateway PID file.
         self._patch_env(monkeypatch, _FakeEnv(), inside_gateway=False)
-        monkeypatch.setenv("_KOVA_GATEWAY", "1")
+        monkeypatch.setenv("_Kova_Gateway", "1")
         monkeypatch.setattr(
             tt, "_check_all_guards", lambda cmd, env, **kwargs: {"approved": True}
         )
@@ -702,7 +702,7 @@ class TestTerminalToolGatewayLifecycleGuard:
         import tools.terminal_tool as tt
 
         script = tmp_path / "relative.sh"
-        script.write_text("#!/usr/bin/env bash\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/usr/bin/env bash\nkova gateway restart\n", encoding="utf-8")
 
         class _FakeEnv:
             env = {}
@@ -721,7 +721,7 @@ class TestTerminalToolGatewayLifecycleGuard:
         import tools.terminal_tool as tt
 
         script = tmp_path / "delayed.sh"
-        script.write_text("#!/usr/bin/env bash\nhermes gateway stop\n", encoding="utf-8")
+        script.write_text("#!/usr/bin/env bash\nkova gateway stop\n", encoding="utf-8")
         script.chmod(0o700)
         self._patch_env(monkeypatch, self._make_fake_env(), inside_gateway=True)
 
@@ -744,7 +744,7 @@ class TestTerminalToolGatewayLifecycleGuard:
         import tools.terminal_tool as tt
 
         script = tmp_path / "options.sh"
-        script.write_text("#!/usr/bin/env bash\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/usr/bin/env bash\nkova gateway restart\n", encoding="utf-8")
         self._patch_env(monkeypatch, self._make_fake_env(), inside_gateway=True)
 
         result = json.loads(tt.terminal_tool(
@@ -777,7 +777,7 @@ class TestTerminalToolGatewayLifecycleGuard:
         import tools.terminal_tool as tt
 
         inner = tmp_path / "inner.sh"
-        inner.write_text("#!/usr/bin/env bash\nhermes gateway restart\n", encoding="utf-8")
+        inner.write_text("#!/usr/bin/env bash\nkova gateway restart\n", encoding="utf-8")
         outer = tmp_path / "outer.sh"
         outer.write_text("#!/usr/bin/env bash\n/bin/bash inner.sh\n", encoding="utf-8")
 
@@ -891,7 +891,7 @@ class TestLifecycleGuardModule:
             contains_gateway_lifecycle_command_or_referenced_script,
         )
         script = tmp_path / "padded.sh"
-        script.write_bytes(b"#!/usr/bin/env bash\n# pad\x00\nhermes gateway restart\n")
+        script.write_bytes(b"#!/usr/bin/env bash\n# pad\x00\nkova gateway restart\n")
         assert (
             contains_gateway_lifecycle_command_or_referenced_script(f"bash {script}")
             is True
@@ -909,7 +909,7 @@ class TestLifecycleGuardModule:
             contains_gateway_lifecycle_command_or_referenced_script,
         )
         script = tmp_path / "padded_noshebang.sh"
-        script.write_bytes(b"# ok\n# pad\x00\nhermes gateway restart\n")
+        script.write_bytes(b"# ok\n# pad\x00\nkova gateway restart\n")
         assert (
             contains_gateway_lifecycle_command_or_referenced_script(f"bash {script}")
             is True
@@ -960,7 +960,7 @@ class TestLifecycleGuardModule:
     def test_script_with_command_raises(self, tmp_path, monkeypatch):
         from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
         script = tmp_path / "restart.sh"
-        script.write_text("#!/usr/bin/env bash\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/usr/bin/env bash\nkova gateway restart\n", encoding="utf-8")
         with pytest.raises(GatewayLifecycleBlocked):
             check_gateway_lifecycle("clean prompt", str(script))
 
@@ -986,7 +986,7 @@ class TestLifecycleGuardModule:
         decode with errors='replace' so the scan always sees the command."""
         from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
         script = tmp_path / "weird.bin"
-        script.write_bytes(b"\xfehermes gateway restart\xff")
+        script.write_bytes(b"\xfekova gateway restart\xff")
         with pytest.raises(GatewayLifecycleBlocked):
             check_gateway_lifecycle("", str(script))
 
@@ -1074,7 +1074,7 @@ class TestLifecycleGuardModule:
         from cron.lifecycle_guard import GatewayLifecycleBlocked, check_gateway_lifecycle
         script = tmp_path / "wrapper.sh"
         script.write_text("#!/usr/bin/env bash\n./deploy.sh\n", encoding="utf-8")
-        (tmp_path / "deploy.sh").write_text("#!/usr/bin/env bash\nhermes gateway stop\n", encoding="utf-8")
+        (tmp_path / "deploy.sh").write_text("#!/usr/bin/env bash\nkova gateway stop\n", encoding="utf-8")
         with pytest.raises(GatewayLifecycleBlocked):
             check_gateway_lifecycle("daily ops", str(script))
 
@@ -1339,7 +1339,7 @@ class TestDotSourceIsScannedLikeSource:
     @pytest.fixture
     def helper(self, tmp_path):
         script = tmp_path / "helper.sh"
-        script.write_text("#!/bin/sh\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/bin/sh\nkova gateway restart\n", encoding="utf-8")
         return script
 
     @pytest.mark.parametrize("form", [". {path}", "source {path}"])
@@ -1395,7 +1395,7 @@ class TestTransparentWrapperPrefixes:
     @pytest.fixture
     def helper(self, tmp_path):
         script = tmp_path / "helper.sh"
-        script.write_text("#!/bin/sh\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/bin/sh\nkova gateway restart\n", encoding="utf-8")
         return script
 
     @pytest.mark.parametrize("prefix", [
@@ -1489,7 +1489,7 @@ class TestTransparentWrapperPrefixes:
         Peeling is additive precisely so it cannot swallow the reference the
         un-peeled read finds."""
         script = tmp_path / name
-        script.write_text("#!/bin/sh\nhermes gateway restart\n", encoding="utf-8")
+        script.write_text("#!/bin/sh\nkova gateway restart\n", encoding="utf-8")
         assert self._scan(f"./{name}", cwd=str(tmp_path)) is True
         assert self._scan(str(script), cwd=str(tmp_path)) is True
 
@@ -1518,7 +1518,7 @@ class TestRelativePathDoesNotDisableDataExemption:
         "grep -rn 'kova gateway restart' ./logs",
         "rg 'kova gateway restart' ../archive",
         "grep -c 'systemctl stop kova-gateway' ./var/log/syslog",
-        "sqlite3 ./stats.db \"SELECT restart_reason FROM kova_gateway_restarts\"",
+        "sqlite3 ./stats.db \"SELECT restart_reason FROM Kova_Gateway_restarts\"",
     ])
     def test_relative_path_operands_keep_the_exemption(self, command):
         assert self._scan(command) is False
@@ -1687,7 +1687,7 @@ class TestTerminalToolGatewayLifecycleGuardRemote:
             def execute(self, command, **kwargs):
                 calls.append(command)
                 if "head -c" in command and "/remote/workspace/remote.sh" in command:
-                    return {"output": "#!/usr/bin/env bash\nhermes gateway restart\n", "returncode": 0}
+                    return {"output": "#!/usr/bin/env bash\nkova gateway restart\n", "returncode": 0}
                 return {"output": "", "returncode": 0}
 
         fake_env = _RemoteEnv()
@@ -1755,7 +1755,7 @@ class TestLifecycleGuardDataArgumentExemption:
         "journalctl -u kova-gateway --grep 'systemctl restart kova-gateway'",
         # SQL with stop/restart column/value words but no command shape.
         'sqlite3 stats.db "SELECT stop_time, restart_reason FROM '
-        'kova_gateway_restarts"',
+        'Kova_Gateway_restarts"',
         "psql -c \"SELECT count(*) FROM events WHERE action IN "
         "('stop','restart') AND service LIKE '%gateway%'\"",
     ])

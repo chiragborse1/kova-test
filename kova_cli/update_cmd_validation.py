@@ -37,7 +37,7 @@ def _critical_module_import_failures(
         # A missing *third-party* module means deps aren't installed, not a skewed checkout;
         # only our own packages count. Roots come from kova_constants so the user hint can't drift.
         "        missing = (getattr(exc, 'name', '') or '').split('.')[0]\n"
-        "        if missing in %r or missing.startswith('hermes_') or %r:\n"
+        "        if missing in %r or missing.startswith('kova_') or %r:\n"
         "            failures.append((name, type(exc).__name__, str(exc)))\n"
         "    except ImportError as exc:\n"
         "        failures.append((name, type(exc).__name__, str(exc)))\n"

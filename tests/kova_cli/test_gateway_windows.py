@@ -13,7 +13,7 @@ import kova_cli.gateway_windows as gateway_windows
 import kova_cli.setup as setup
 
 
-_BREAKAWAY_MARKER = "_KOVA_GATEWAY_BREAKAWAY"
+_BREAKAWAY_MARKER = "_Kova_Gateway_BREAKAWAY"
 
 
 def test_exec_schtasks_decodes_ansi_output_under_utf8_mode(monkeypatch):
@@ -49,7 +49,7 @@ def test_exec_schtasks_round_trips_non_ascii_task_argument_live(monkeypatch):
     character, queried from a UTF-8-mode interpreter: the template/live comparison in
     `scheduled_task_drift` needs the exact characters back (#116193)."""
     monkeypatch.setattr(gateway_windows.locale, "getpreferredencoding", lambda *a, **k: "utf-8")
-    task = f"Hermes_Test_{os.getpid()}"
+    task = f"Kova_Test_{os.getpid()}"
     # schtasks stores /TR in the system ANSI code page, so the marker must be representable THERE:
     # ë is one byte in every Western ACP but is destroyed ("?") on cp936/932/949 hosts, and a CJK
     # literal fails the other way on cp1252 (#119845). Derive it from the live ACP; skip only when
@@ -163,7 +163,7 @@ def test_spawn_detached_marks_primary_breakaway_success(monkeypatch, tmp_path, c
     monkeypatch.setattr(
         gateway_windows,
         "_build_gateway_argv",
-        lambda home=None: (argv, cwd, {"KOVA_GATEWAY_DETACHED": "1"}),
+        lambda home=None: (argv, cwd, {"Kova_Gateway_DETACHED": "1"}),
     )
     monkeypatch.setattr("kova_cli.config.get_kova_home", lambda: tmp_path)
     monkeypatch.setattr(gateway_windows.subprocess, "Popen", fake_popen)
@@ -204,7 +204,7 @@ def test_spawn_detached_warns_and_marks_no_breakaway_fallback(
         lambda home=None: (
             argv,
             cwd,
-            {"KOVA_GATEWAY_DETACHED": "1", "SECRET_SENTINEL": "do-not-log"},
+            {"Kova_Gateway_DETACHED": "1", "SECRET_SENTINEL": "do-not-log"},
         ),
     )
     monkeypatch.setattr("kova_cli.config.get_kova_home", lambda: tmp_path)
@@ -368,7 +368,7 @@ def test_gateway_vbs_script_is_console_less(monkeypatch):
     assert "kova_cli.main" in content
     assert "gateway run" in content
     assert ", 0, False" in content  # hidden window, detached/async
-    for var in ("KOVA_HOME", "PYTHONIOENCODING", "KOVA_GATEWAY_DETACHED", "VIRTUAL_ENV", "PYTHONPATH"):
+    for var in ("KOVA_HOME", "PYTHONIOENCODING", "Kova_Gateway_DETACHED", "VIRTUAL_ENV", "PYTHONPATH"):
         assert var in content
     assert "--profile" in content and "work" in content
     assert content.endswith("\r\n")
@@ -689,7 +689,7 @@ def test_reconcile_scheduled_task_reregisters_only_on_drift(monkeypatch, tmp_pat
 def _arrange_uninstalled_start(monkeypatch):
     """start() with no Scheduled Task / Startup entry; returns (install_calls, spawn_count)."""
     installs, spawns = [], []
-    monkeypatch.delenv("KOVA_GATEWAY_INSTALL_START_ON_LOGIN", raising=False)
+    monkeypatch.delenv("Kova_Gateway_INSTALL_START_ON_LOGIN", raising=False)
     monkeypatch.delenv("KOVA_NONINTERACTIVE", raising=False)
     monkeypatch.setattr(gateway_windows, "_assert_windows", lambda: None)
     monkeypatch.setattr(gateway_windows, "_print_start_attestation_warning", lambda: None)
@@ -756,7 +756,7 @@ def test_start_without_tty_starts_the_gateway_but_never_installs_login_persisten
 
 def test_start_on_tty_hands_both_answers_to_install_and_honours_the_env_opt_out(monkeypatch):
     """Yes → one install() carrying start_now+start_on_login (install spawns; start() must not spawn
-    again). KOVA_GATEWAY_INSTALL_START_ON_LOGIN=0 → no question, no install, a plain start."""
+    again). Kova_Gateway_INSTALL_START_ON_LOGIN=0 → no question, no install, a plain start."""
     installs, spawns = _arrange_uninstalled_start(monkeypatch)
     monkeypatch.setattr(setup, "is_interactive_stdin", lambda: True)
     monkeypatch.setattr(setup, "prompt_yes_no", lambda *a, **k: True)
@@ -765,7 +765,7 @@ def test_start_on_tty_hands_both_answers_to_install_and_honours_the_env_opt_out(
     assert installs == [{"force": False, "start_now": True, "start_on_login": True}] and spawns == []
 
     installs.clear()
-    monkeypatch.setenv("KOVA_GATEWAY_INSTALL_START_ON_LOGIN", "0")
+    monkeypatch.setenv("Kova_Gateway_INSTALL_START_ON_LOGIN", "0")
     monkeypatch.setattr(setup, "prompt_yes_no", lambda *a, **k: pytest.fail("env override must skip the prompt"))
     gateway_windows.start()
     assert installs == [] and spawns == [1]

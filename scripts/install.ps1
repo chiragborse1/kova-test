@@ -1038,7 +1038,7 @@ function Stage-Config {
     Write-Ok "config prepared in $KovaHome"
 }
 
-function Invoke-InstalledHermes([string[]]$CommandArgs) {
+function Invoke-InstalledKova([string[]]$CommandArgs) {
     # Load the helper from its text, not its path. Under `irm | iex` this
     # installer runs as a string that execution policy never checks, but
     # dot-sourcing a .ps1 from disk is a file load. The default Restricted
@@ -1055,13 +1055,13 @@ function Invoke-InstalledHermes([string[]]$CommandArgs) {
 
 function Stage-Setup {
     if ($NonInteractive) { return }
-    Invoke-InstalledHermes @('setup')
+    Invoke-InstalledKova @('setup')
 }
 
 function Stage-Gateway {
     if ($NonInteractive) { return }
     # Setup installs the service when it handles the gateway; ask only if it did not.
-    Invoke-InstalledHermes @('gateway', 'install', '--if-missing')
+    Invoke-InstalledKova @('gateway', 'install', '--if-missing')
 }
 
 function Stage-Desktop {

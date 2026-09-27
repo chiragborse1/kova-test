@@ -889,9 +889,9 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
     expect($desktopBoot.get().error).toBeNull()
   })
 
-  it('INITIAL boot against a dead VPS: getConnection hangs (waitForHermes) → app sits in the connecting combo, then fails', async () => {
+  it('INITIAL boot against a dead VPS: getConnection hangs (waitForKova) → app sits in the connecting combo, then fails', async () => {
     // The report's actual path: a fresh launch pointed at an unreachable VPS.
-    // startHermes()'s remote branch awaits waitForHermes() for 45s before it
+    // startKova()'s remote branch awaits waitForKova() for 45s before it
     // throws, so the renderer's `await desktop.getConnection()` stays pending
     // that whole window. During it: gatewayState is still 'idle' (connect was
     // never reached) and boot.error is null → connecting=true → the fullscreen
@@ -916,7 +916,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
     expect($desktopBoot.get().error).toBeNull()
     // ^ connecting === true here → fullscreen CONNECTING, no Settings.
 
-    // After ~45s waitForHermes gives up and getConnection rejects → boot()
+    // After ~45s waitForKova gives up and getConnection rejects → boot()
     // catch → failDesktopBoot → the BootFailureOverlay recovery surface.
     await act(async () => {
       rejectConn(new Error('Kova backend did not become ready: timeout'))
@@ -1769,7 +1769,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
 
   it('a getConnection() that hangs on INITIAL boot rejects on its own after the reconnect-attempt timeout, not only when main eventually gives up (#93454)', async () => {
     // boot()'s getConnection() had no bound of its own — only main's own
-    // eventual timeout (e.g. waitForHermes, ~45s) ever settled it. A wedge
+    // eventual timeout (e.g. waitForKova, ~45s) ever settled it. A wedge
     // that main never resolves (not even a rejection) must not hang
     // "Starting Kova…" forever; the renderer needs to own its own bound
     // here too, same as attemptReconnect() and softSwitch().
@@ -2186,7 +2186,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
 
   it('FIX #82679: a transient remote boot failure self-heals — the next attempt rebuilds the dropped connection', async () => {
     // The reported class: the app relaunches (or wakes) against a registered
-    // SSH/HTTP remote whose transport dropped. startHermes() rejects with a
+    // SSH/HTTP remote whose transport dropped. startKova() rejects with a
     // transient transport error ("Could not verify the existing SSH backend"),
     // main tags the boot progress `retryable`, and — before the fix — the app
     // parked on "Desktop boot failed" until the user re-entered the exact same
@@ -2355,7 +2355,7 @@ describe('useGatewayBoot remote reconnect loop (real hook, fake socket)', () => 
   })
 
   it('a failed cold boot keeps its recovery surface while main replays cold-boot progress behind it (#112899)', async () => {
-    // Main keeps startHermes() available after the renderer's boot concluded
+    // Main keeps startKova() available after the renderer's boot concluded
     // in failure; any later getConnection() caller re-enters it and replays
     // `backend.resolve` (running:true — hides BootFailureOverlay) then
     // `backend.remote` (error:null — the store's late-progress guard only

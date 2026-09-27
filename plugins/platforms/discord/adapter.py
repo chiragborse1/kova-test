@@ -644,12 +644,12 @@ def _build_allowed_mentions(extra: Optional[dict] = None):
 
 def _discord_ready_timeout_seconds() -> float:
     """Return the Discord ready wait timeout during gateway startup."""
-    raw = os.getenv("KOVA_GATEWAY_PLATFORM_CONNECT_TIMEOUT", "").strip()
+    raw = os.getenv("Kova_Gateway_PLATFORM_CONNECT_TIMEOUT", "").strip()
     if raw:
         try:
             return max(0.0, float(raw))
         except ValueError:
-            logger.warning("Ignoring invalid KOVA_GATEWAY_PLATFORM_CONNECT_TIMEOUT=%r", raw)
+            logger.warning("Ignoring invalid Kova_Gateway_PLATFORM_CONNECT_TIMEOUT=%r", raw)
     return 30.0
 
 
@@ -1901,7 +1901,7 @@ class DiscordAdapter(DiscordMediaMixin, BasePlatformAdapter):
         """Deadline for flushing pending text batches during shutdown: strictly below the gateway's
         per-adapter disconnect budget so its outer ``wait_for`` can't cancel the flush first."""
         budget = 5.0  # mirrors gateway _ADAPTER_DISCONNECT_TIMEOUT_SECS_DEFAULT
-        raw = os.getenv("KOVA_GATEWAY_ADAPTER_DISCONNECT_TIMEOUT", "").strip()
+        raw = os.getenv("Kova_Gateway_ADAPTER_DISCONNECT_TIMEOUT", "").strip()
         if raw:
             try:
                 parsed = float(raw)

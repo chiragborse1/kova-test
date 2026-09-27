@@ -28,7 +28,7 @@ if ($GithubEnv) {
         # Rust homes must stay explicit when a later child isolates HOME.
         if ($name -notin @('CARGO_HOME', 'RUSTUP_HOME') -and
             $before.ContainsKey($name) -and $before[$name] -ceq $after[$name]) { continue }
-        $delimiter = 'hermes_' + [Guid]::NewGuid().ToString('N')
+        $delimiter = 'kova_' + [Guid]::NewGuid().ToString('N')
         [IO.File]::AppendAllText($GithubEnv, "$name<<$delimiter`n$($after[$name])`n$delimiter`n", $utf8)
     }
 }

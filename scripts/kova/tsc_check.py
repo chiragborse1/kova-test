@@ -136,7 +136,7 @@ def main() -> int:
     print("\nNo new type errors introduced by this branch.")
     if len(mine) < len(base):
         print(f"(and {len(base) - len(mine)} fewer than upstream, because the "
-              f"rebrand removed the Hermes-specific branches)")
+              f"rebrand removed the Kova-specific branches)")
     return 0
 
 

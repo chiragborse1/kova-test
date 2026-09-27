@@ -1,4 +1,4 @@
 [console_scripts]
-hermes = hermes_cli.main:main
-hermes-acp = acp_adapter.entry:main
-hermes-agent = agent.legacy_cli:main
+kova = kova_cli.main:main
+kova-acp = acp_adapter.entry:main
+kova-agent = agent.legacy_cli:main

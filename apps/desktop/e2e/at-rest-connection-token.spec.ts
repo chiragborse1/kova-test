@@ -320,7 +320,7 @@ function expectOwnerOnlyMode(filePath: string, why: string): void {
  * hermetic). This is also a real user situation rather than an artificial one:
  * the boot-failure overlay's own recovery affordance is "Connection settings",
  * i.e. pointing the app at a remote gateway is exactly what a user does from
- * this state. BOOT_FAKE_ERROR short-circuits startHermes() *before* remote
+ * this state. BOOT_FAKE_ERROR short-circuits startKova() *before* remote
  * resolution, so no launch ever dials the fake gateway on its own.
  */
 async function launchAgainst(sandbox: Sandbox): Promise<{ app: ElectronApplication; page: Page }> {

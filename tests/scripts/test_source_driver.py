@@ -93,22 +93,22 @@ $exe = Join-Path $root '.kova/bin/kova.exe'
 $cmd = Join-Path $root '.kova/bin/kova.cmd'
 New-Item -ItemType Directory -Path (Split-Path $legacy), (Split-Path $exe) -Force | Out-Null
 Set-Content $legacy 'legacy'
-if ((Get-SourceHermes $root) -ne $legacy) { throw 'legacy fallback' }
+if ((Get-SourceKova $root) -ne $legacy) { throw 'legacy fallback' }
 Set-Content $cmd 'cmd'
-if ((Get-SourceHermes $root) -ne $cmd) { throw 'published cmd' }
+if ((Get-SourceKova $root) -ne $cmd) { throw 'published cmd' }
 Set-Content $exe 'exe'
-if ((Get-SourceHermes $root) -ne $exe) { throw 'exe precedence' }
+if ((Get-SourceKova $root) -ne $exe) { throw 'exe precedence' }
 Remove-Item $legacy
-if ((Get-SourceHermes $root) -ne $exe) { throw 'requires legacy venv' }
+if ((Get-SourceKova $root) -ne $exe) { throw 'requires legacy venv' }
 Remove-Item $exe, $cmd
 $refused = $false
-try { Get-SourceHermes $root } catch { $refused = $true }
+try { Get-SourceKova $root } catch { $refused = $true }
 if (-not $refused) { throw 'missing command accepted' }
 Set-Content $legacy 'stale legacy'
 New-Item -ItemType Directory -Path (Join-Path $root 'pm') | Out-Null
 Set-Content (Join-Path $root 'pm/lock.json') '{}'
 $refused = $false
-try { Get-SourceHermes $root } catch { $refused = $true }
+try { Get-SourceKova $root } catch { $refused = $true }
 if (-not $refused) { throw 'missing PM launcher accepted' }
 Write-Output 'selection verified'
 ''', encoding="utf-8")

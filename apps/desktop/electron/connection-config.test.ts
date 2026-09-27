@@ -1519,7 +1519,7 @@ test('OAuth ticket-mint 401 stays on the reauth path (never Cloud-down)', () => 
   assert.equal((wrapped as any).statusCode, 401)
 })
 
-test('FIX #95701: a confirmed 401/403 ticket rejection is tagged isReauthRequired so startHermes latches it', () => {
+test('FIX #95701: a confirmed 401/403 ticket rejection is tagged isReauthRequired so startKova latches it', () => {
   for (const statusCode of [401, 403]) {
     const source = Object.assign(new Error(`${statusCode}: rejected`), { statusCode })
     const wrapped = gatewayTicketFailure(source, 'auth copy', 'transport copy') as any

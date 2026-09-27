@@ -10,7 +10,7 @@
  *   2. stale PID rejection — recycled PID must not pass as a running gateway
  *   3. fallback behavior — single-profile installs and missing files are no-ops
  *   4. remote-boot path — verified by code review (the migration is moved to the
- *      top of startHermes() in main.ts, before primaryProfileKey() is read); the
+ *      top of startKova() in main.ts, before primaryProfileKey() is read); the
  *      pure decision logic that the function relies on is covered below.
  */
 

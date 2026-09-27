@@ -395,7 +395,7 @@ class TestCtxHasPlugin:
                 del sys._m2_probe
 
 
-class TestRequiresHermes:
+class TestRequiresKova:
     def test_gate_reads_the_running_code_version_not_dist_metadata(self, monkeypatch):
         """Compatibility gates use the running code's base release version."""
         from kova_cli import plugins_manifest

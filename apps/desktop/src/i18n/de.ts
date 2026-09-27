@@ -416,7 +416,7 @@ export const deOverrides = {
       backgroundExited: 'Der Kova-Hintergrundprozess wurde beendet.',
       backgroundExitedDuringStartup: 'Der Kova-Hintergrundprozess wurde während des Starts beendet.',
       backendStopped: 'Backend gestoppt',
-      restartHermes: 'Kova neu starten',
+      restartKova: 'Kova neu starten',
       openLogs: 'Logs öffnen',
       desktopBootFailed: 'Desktop-Start fehlgeschlagen',
       gatewayConnectionLost: 'Verbindung zum Gateway verloren',
@@ -497,7 +497,7 @@ export const deOverrides = {
       'Diese Kova-App ist älter als das verbundene Backend und funktioniert möglicherweise nicht richtig. Aktualisieren Sie die App, um beide abzugleichen.',
     updateDesktopApp: 'App aktualisieren',
     installMethodUnsupportedTitle: 'Nicht unterstützte Installationsmethode',
-    updateHermes: 'Kova aktualisieren',
+    updateKova: 'Kova aktualisieren',
     updateReadyTitle: 'Update bereit',
     updateReadyMessage: count => `${count} neue Änderung${count === 1 ? '' : 'en'} verfügbar.`,
     updateReadyMessageUnknown: 'Ein neues Update ist verfügbar.',
@@ -533,7 +533,7 @@ export const deOverrides = {
       restartKovaFailed: 'Kova konnte nicht neu gestartet werden'
     },
     actions: {
-      restartHermes: 'Kova neu starten',
+      restartKova: 'Kova neu starten',
       openKeys: 'Schlüssel öffnen',
       openGateways: 'Gateways öffnen',
       openMaintenance: 'Wartung öffnen'
@@ -1538,7 +1538,7 @@ export const deOverrides = {
     uninstallSection: {
       dangerZone: 'Gefahrenzone',
       checkingInstalled: 'Installierte Komponenten werden geprüft…',
-      uninstallHermes: 'Kova deinstallieren',
+      uninstallKova: 'Kova deinstallieren',
       chooseHowMuch:
         'Wählen Sie, wie viel entfernt werden soll. Die App wird zum Abschluss geschlossen; Sie können das Installationsprogramm jederzeit erneut öffnen, um zurückzukehren.',
       confirmUninstall: 'Deinstallation bestätigen',
@@ -3143,7 +3143,7 @@ export const deOverrides = {
     sharedGatewayRestartDescription: bots => `Alle Bots auf diesem Gerät verbinden sich neu: ${bots}`,
     sharedGatewayRestartConfirm: 'Alle neu starten',
     sharedGatewayRestarted: count => `Gemeinsames Gateway neu gestartet (${count} ${count === 1 ? 'Bot' : 'Bots'})`,
-    updateHermes: 'Kova aktualisieren',
+    updateKova: 'Kova aktualisieren',
     reloadWindow: 'Fenster neu laden',
     actionRunning: 'läuft',
     actionDone: 'fertig',

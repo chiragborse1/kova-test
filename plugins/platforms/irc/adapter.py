@@ -279,7 +279,7 @@ class IRCAdapter(BasePlatformAdapter):
             self._registration_event.set()
             if params:
                 self._current_nick = params[0]  # server may confirm our nick
-        elif command == "433":  # ERR_NICKNAMEINUSE — retry: hermes_, kova_1, kova_2...
+        elif command == "433":  # ERR_NICKNAMEINUSE — retry: kova_, kova_1, kova_2...
             if suffix_match := re.search(r"_(\d+)$", self._current_nick):
                 self._current_nick = f"{self.nickname.rstrip('_0123456789')}_{int(suffix_match.group(1)) + 1}"
             else:

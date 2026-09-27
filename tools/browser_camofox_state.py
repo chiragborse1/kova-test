@@ -24,7 +24,7 @@ def get_camofox_identity(task_id: Optional[str] = None) -> Dict[str, str]:
     scope_root = str(get_camofox_state_dir())
     user_digest = uuid.uuid5(uuid.NAMESPACE_URL, f"camofox-user:{scope_root}").hex[:10]
     session_digest = uuid.uuid5(uuid.NAMESPACE_URL, f"camofox-session:{scope_root}:{task_id or 'default'}").hex[:16]
-    return {"user_id": f"hermes_{user_digest}", "session_key": f"task_{session_digest}"}
+    return {"user_id": f"kova_{user_digest}", "session_key": f"task_{session_digest}"}
 
 
 # ---- BEGIN PLUGIN-COMPAT (revert-scheduled; see COMPAT_MANIFEST.md) ----

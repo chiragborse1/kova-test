@@ -59,16 +59,16 @@ concurrent-log-handler==0.9.29
 agent-client-protocol==0.9.0
 
 [all]
-hermes-agent[cron]
-hermes-agent[pty]
-hermes-agent[mcp]
-hermes-agent[uvloop]
-hermes-agent[homeassistant]
-hermes-agent[sms]
-hermes-agent[acp]
-hermes-agent[google]
-hermes-agent[web]
-hermes-agent[youtube]
+kova-agent[cron]
+kova-agent[pty]
+kova-agent[mcp]
+kova-agent[uvloop]
+kova-agent[homeassistant]
+kova-agent[sms]
+kova-agent[acp]
+kova-agent[google]
+kova-agent[web]
+kova-agent[youtube]
 
 [anthropic]
 anthropic==0.87.0
@@ -239,18 +239,18 @@ python-telegram-bot[webhooks]==22.8
 
 [termux]
 python-telegram-bot[webhooks]==22.8
-hermes-agent[cron]
-hermes-agent[mcp]
-hermes-agent[honcho]
-hermes-agent[acp]
+kova-agent[cron]
+kova-agent[mcp]
+kova-agent[honcho]
+kova-agent[acp]
 
 [termux-all]
-hermes-agent[termux]
-hermes-agent[google]
-hermes-agent[homeassistant]
-hermes-agent[sms]
-hermes-agent[web]
-hermes-agent[pty]
+kova-agent[termux]
+kova-agent[google]
+kova-agent[homeassistant]
+kova-agent[sms]
+kova-agent[web]
+kova-agent[pty]
 
 [trace-upload]
 huggingface-hub==1.24.0

@@ -147,12 +147,12 @@ export const en: Translations = {
     starting: "Starting",
     startedInBackground: "Started in background — check logs for progress",
     stopped: "Stopped",
-    updateHermes: "Update Kova",
+    updateKova: "Update Kova",
     updateKovaConfirmMessage:
       "This runs kova update and restarts the gateway when it finishes. Active sessions keep their prompt cache until then.",
     updateKovaConfirmNow: "Update now",
     updateKovaConfirmTitle: "Update Kova?",
-    updatingHermes: "Updating Kova…",
+    updatingKova: "Updating Kova…",
     waitingForOutput: "Waiting for output…",
   },
 

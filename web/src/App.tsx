@@ -945,7 +945,7 @@ function SidebarSystemActions({
   const navigate = useNavigate();
   const { activeAction, isBusy, isRunning, pendingAction, runAction } =
     useSystemActions();
-  const canUpdateHermes = status?.can_update_kova === true;
+  const canUpdateKova = status?.can_update_kova === true;
   // Served by the shared multiplexer: a restart blips every bot on this device — say which.
   const sharedGateway = sharedGatewayProfiles(status);
   const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
@@ -999,12 +999,12 @@ function SidebarSystemActions({
       spin: true,
     },
   ];
-  if (canUpdateHermes) {
+  if (canUpdateKova) {
     items.push({
       action: "update",
       icon: Download,
-      label: t.status.updateHermes,
-      runningLabel: t.status.updatingHermes,
+      label: t.status.updateKova,
+      runningLabel: t.status.updatingKova,
       spin: false,
     });
   }
@@ -1109,7 +1109,7 @@ function SidebarSystemActions({
       onCancel={() => setUpdateConfirmOpen(false)}
       onConfirm={confirmUpdate}
       open={updateConfirmOpen}
-      title={t.status.updateKovaConfirmTitle ?? `${t.status.updateHermes}?`}
+      title={t.status.updateKovaConfirmTitle ?? `${t.status.updateKova}?`}
     />
     </>
   );

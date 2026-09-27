@@ -28,13 +28,13 @@ export function within(root, candidate) {
 export function smokeEnvironment(inherited, home, userData) {
   /** @type {Record<string, string>} */
   const clean = {};
-  const keepHermes = new Set(['KOVA_TEST_INSTALL_REF', 'KOVA_TEST_INSTALL_REPO']);
+  const keepKova = new Set(['KOVA_TEST_INSTALL_REF', 'KOVA_TEST_INSTALL_REPO']);
   for (const [key, value] of Object.entries(inherited)) {
     const name = key.toUpperCase();
     if (!value || /(?:KEY|TOKEN|SECRET|PASSWORD|CREDENTIAL)/.test(name)
         || /^(?:PYTHON|VIRTUAL_ENV|CONDA|NODE_|NPM_|ELECTRON_|VITE_|UV_|PM_)/.test(name)
         || /^(?:OPENAI|ANTHROPIC|OPENROUTER|OLLAMA|GEMINI|GROQ|XAI)_/.test(name)
-        || (name.startsWith('KOVA_') && !keepHermes.has(name))
+        || (name.startsWith('KOVA_') && !keepKova.has(name))
         || ['INIT_CWD', 'TERMINAL_CWD', 'LD_PRELOAD', 'DYLD_INSERT_LIBRARIES', 'SSH_AUTH_SOCK', 'SSH_ASKPASS', 'GIT_ASKPASS'].includes(name)) {
       continue;
     }

@@ -130,7 +130,7 @@ function gatewayTicketFailure(error, authMessage, transportMessage) {
     // cookie path only sees a 401/403 after the gateway's transparent AT/RT
     // rotation has already failed, and the native-bearer path only after
     // mintGatewayWsTicket's forced /auth/native/refresh has. Nothing will
-    // change until the user signs in, so tag it the way startHermes latches
+    // change until the user signs in, so tag it the way startKova latches
     // (isReauthRequiredError): the boot is marked non-retryable and the
     // overlay's Sign in button stops flickering away under the renderer's
     // transient-boot retry loop (#95701).

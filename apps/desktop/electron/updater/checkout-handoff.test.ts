@@ -43,7 +43,7 @@ function handoffFixture(remote: boolean): { root: string; deps: CheckoutStrategy
     remoteGatewayActive: (): boolean => remote,
     emitUpdateProgress: vi.fn(),
     rememberLog: vi.fn(),
-    startHermes: vi.fn(async (): Promise<void> => {}),
+    startKova: vi.fn(async (): Promise<void> => {}),
     stopBackendsForUpdate: async (): Promise<void> => {},
     repairMacUpdaterHelper: (): void => {},
     preflightStateDb: (): void => {},

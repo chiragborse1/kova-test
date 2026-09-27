@@ -1317,7 +1317,7 @@ class TestEnvWriteDenylist:
             "KOVA_REDACT_SECRETS",
             "KOVA_INTERACTIVE",
             "KOVA_EXEC_ASK",
-            "KOVA_GATEWAY_SESSION",
+            "Kova_Gateway_SESSION",
             "KOVA_CRON_SESSION",
             "KOVA_SINGLE_QUERY_SESSION",
             "KOVA_SESSION_KEY",
@@ -1404,10 +1404,10 @@ class TestEnvWriteDenylist:
         ("key", "expected"),
         [
             ("Path", "PATH"),
-            ("Hermes_Yolo_Mode", "KOVA_YOLO_MODE"),
-            ("Hermes_Optional_Mcps", "KOVA_OPTIONAL_MCPS"),
-            ("Hermes_Copilot_Acp_Command", "KOVA_COPILOT_ACP_COMMAND"),
-            ("Hermes_Copilot_Acp_Args", "KOVA_COPILOT_ACP_ARGS"),
+            ("Kova_Yolo_Mode", "KOVA_YOLO_MODE"),
+            ("Kova_Optional_Mcps", "KOVA_OPTIONAL_MCPS"),
+            ("Kova_Copilot_Acp_Command", "KOVA_COPILOT_ACP_COMMAND"),
+            ("Kova_Copilot_Acp_Args", "KOVA_COPILOT_ACP_ARGS"),
         ],
     )
     def test_windows_policy_names_are_case_insensitive(self, key, expected):
@@ -1432,10 +1432,10 @@ class TestEnvWriteDenylist:
     @pytest.mark.parametrize(
         "protected_key",
         [
-            "Hermes_Yolo_Mode",
-            "Hermes_Optional_Mcps",
-            "Hermes_Copilot_Acp_Command",
-            "Hermes_Copilot_Acp_Args",
+            "Kova_Yolo_Mode",
+            "Kova_Optional_Mcps",
+            "Kova_Copilot_Acp_Command",
+            "Kova_Copilot_Acp_Args",
         ],
     )
     def test_windows_writer_rejects_mixed_case_protected_name(self, protected_key):

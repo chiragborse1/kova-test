@@ -20,7 +20,7 @@ import {
   isForwardBindCollision,
   isLockfileSkew,
   listRemoteKovaProfiles,
-  locateHermes,
+  locateKova,
   LOCKFILE_SCHEMA_VERSION,
   lockfilePath,
   openForward,
@@ -315,12 +315,12 @@ test('listRemoteKovaProfiles rejects a hostile KOVA_HOME', async () => {
   )
 })
 
-test('locateHermes prefers the explicit profile path when executable', async () => {
+test('locateKova prefers the explicit profile path when executable', async () => {
   const ssh = fakeSsh([[/\[ -x .*\/opt\/kova/, 'OK']])
-  assert.equal(await locateHermes(ssh, '/opt/kova'), '/opt/kova')
+  assert.equal(await locateKova(ssh, '/opt/kova'), '/opt/kova')
 })
 
-test('locateHermes throws (no silent fallback) when an EXPLICIT path is not executable', async () => {
+test('locateKova throws (no silent fallback) when an EXPLICIT path is not executable', async () => {
   // command -v WOULD find a different install, but an explicit path must not
   // silently fall back to it — that is the "connected to the wrong kova" bug.
   const ssh = fakeSsh([
@@ -329,7 +329,7 @@ test('locateHermes throws (no silent fallback) when an EXPLICIT path is not exec
   ])
 
   await assert.rejects(
-    () => locateHermes(ssh, '/bad/path/kova'),
+    () => locateKova(ssh, '/bad/path/kova'),
     (err: any) => {
       assert.equal(err.kind, 'kova-not-found')
       assert.match(err.message, /\/bad\/path\/kova/)
@@ -339,16 +339,16 @@ test('locateHermes throws (no silent fallback) when an EXPLICIT path is not exec
   )
 })
 
-test('locateHermes falls back to the login-shell command -v probe', async () => {
+test('locateKova falls back to the login-shell command -v probe', async () => {
   const ssh = fakeSsh([
     [/command -v kova/, '/home/u/.local/bin/kova\n'],
     [/\[ -x .*\.local\/bin\/kova/, 'OK']
   ])
 
-  assert.equal(await locateHermes(ssh, ''), '/home/u/.local/bin/kova')
+  assert.equal(await locateKova(ssh, ''), '/home/u/.local/bin/kova')
 })
 
-test('locateHermes preserves an installer wrapper instead of resolving its interpreter', async () => {
+test('locateKova preserves an installer wrapper instead of resolving its interpreter', async () => {
   // install.sh venv mode writes: exec "$KOVA_BIN" "$KOVA_ENTRYPOINT" "$@",
   // where $KOVA_BIN is the venv python. The old canonicalization returned
   // that interpreter, so `<python> --version` printed "Python x.y.z" and
@@ -362,14 +362,14 @@ test('locateHermes preserves an installer wrapper instead of resolving its inter
     [/python3 -c/, '/home/u/.kova/kova-agent/venv/bin/python\n']
   ])
 
-  assert.equal(await locateHermes(ssh, ''), '/home/u/.local/bin/kova')
+  assert.equal(await locateKova(ssh, ''), '/home/u/.local/bin/kova')
   assert.ok(
     !ssh.calls.some(cmd => cmd.includes('python3 -c')),
-    'locateHermes must not shell out to a python3 parser to rewrite the launcher'
+    'locateKova must not shell out to a python3 parser to rewrite the launcher'
   )
 })
 
-test('locateHermes returns an explicit remoteKovaPath unchanged', async () => {
+test('locateKova returns an explicit remoteKovaPath unchanged', async () => {
   // The override half of #74411: an explicit remoteKovaPath pointing at a
   // wrapper was also canonicalized to its interpreter, so overriding to
   // ~/.local/bin/kova changed nothing for affected users.
@@ -378,29 +378,29 @@ test('locateHermes returns an explicit remoteKovaPath unchanged', async () => {
     [/python3 -c/, '/home/u/.kova/kova-agent/venv/bin/python\n']
   ])
 
-  assert.equal(await locateHermes(ssh, '~/.local/bin/kova'), '~/.local/bin/kova')
+  assert.equal(await locateKova(ssh, '~/.local/bin/kova'), '~/.local/bin/kova')
   assert.ok(!ssh.calls.some(cmd => cmd.includes('python3 -c')), 'an explicit remoteKovaPath must never be rewritten')
 })
 
-test('locateHermes falls back to ~/.local/bin/kova when the login-shell probe misses', async () => {
+test('locateKova falls back to ~/.local/bin/kova when the login-shell probe misses', async () => {
   // ~/.local/bin is the non-root installer's command location (scripts/install.sh).
   const ssh = fakeSsh([
     [/command -v kova/, ''],
     [/\[ -x .*\.local\/bin\/kova/, 'OK']
   ])
 
-  assert.equal(await locateHermes(ssh, ''), '~/.local/bin/kova')
+  assert.equal(await locateKova(ssh, ''), '~/.local/bin/kova')
 })
 
-test('locateHermes tries the conventional venv path last', async () => {
+test('locateKova tries the conventional venv path last', async () => {
   const ssh = fakeSsh([[/\[ -x .*venv\/bin\/kova/, 'OK']])
-  assert.equal(await locateHermes(ssh, ''), '~/.kova/kova-agent/venv/bin/kova')
+  assert.equal(await locateKova(ssh, ''), '~/.kova/kova-agent/venv/bin/kova')
 })
 
-test('locateHermes throws a kova-not-found error with an install hint', async () => {
+test('locateKova throws a kova-not-found error with an install hint', async () => {
   const ssh = fakeSsh([]) // nothing is executable
   await assert.rejects(
-    () => locateHermes(ssh, ''),
+    () => locateKova(ssh, ''),
     (err: any) => {
       assert.equal(err.kind, 'kova-not-found')
       assert.match(err.message, /install/i)
@@ -410,13 +410,13 @@ test('locateHermes throws a kova-not-found error with an install hint', async ()
   )
 })
 
-test('locateHermes uses a login shell for the command -v probe', async () => {
+test('locateKova uses a login shell for the command -v probe', async () => {
   const ssh = fakeSsh([
     [/command -v kova/, '/x/kova'],
     [/\[ -x/, 'OK']
   ])
 
-  await locateHermes(ssh, '')
+  await locateKova(ssh, '')
   assert.ok(
     ssh.calls.some(c => /bash -lc/.test(c)),
     'must probe in a login shell (PATH pitfall)'
@@ -974,7 +974,7 @@ function connectDeps(ssh, over: any = {}) {
     forward: async () => {},
     cancelForward: async () => {},
     pickLocalPort: async () => 50001,
-    waitForHermes: async () => {},
+    waitForKova: async () => {},
     probeReuseProof: async () => 'authenticated-ok',
     adoptServedToken: async (_baseUrl, spawn) => spawn || 'served-token',
     rememberLog: () => {},
@@ -2009,7 +2009,7 @@ test('connect() post-spawn cleanup that cannot prove ownership keeps the origina
     connect(
       connectDeps(ssh, {
         platform: { os: 'Linux', arch: 'x86_64' },
-        waitForHermes: async () => {
+        waitForKova: async () => {
           throw boot
         }
       })

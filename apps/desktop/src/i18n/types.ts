@@ -497,7 +497,7 @@ export interface Translations {
       backgroundExited: string
       backgroundExitedDuringStartup: string
       backendStopped: string
-      restartHermes: string
+      restartKova: string
       openLogs: string
       desktopBootFailed: string
       gatewayConnectionLost: string
@@ -571,7 +571,7 @@ export interface Translations {
     desktopOutOfDateMessage: string
     updateDesktopApp: string
     installMethodUnsupportedTitle: string
-    updateHermes: string
+    updateKova: string
     updateReadyTitle: string
     updateReadyMessage: (count: number) => string
     updateReadyMessageUnknown: string
@@ -603,7 +603,7 @@ export interface Translations {
       restartKovaFailed: string
     }
     actions: {
-      restartHermes: string
+      restartKova: string
       openKeys: string
       openGateways: string
       openMaintenance: string
@@ -1071,7 +1071,7 @@ export interface Translations {
     uninstallSection: {
       dangerZone: string
       checkingInstalled: string
-      uninstallHermes: string
+      uninstallKova: string
       chooseHowMuch: string
       confirmUninstall: string
       confirmBody: (what: string) => string
@@ -2394,7 +2394,7 @@ export interface Translations {
     sharedGatewayRestartDescription: (bots: string) => string
     sharedGatewayRestartConfirm: string
     sharedGatewayRestarted: (count: number) => string
-    updateHermes: string
+    updateKova: string
     reloadWindow: string
     actionRunning: string
     actionDone: string

@@ -7,7 +7,7 @@
  * cascade (main.ts `cloudAgentSilentSignIn`): open the agent's protected root in
  * the shared OAuth partition, let the portal auto-approve, and the agent's own
  * session cookie lands with no prompt. That cascade was only ever driven by the
- * settings UI ("Use gateway"). The boot path went straight to `waitForHermes`,
+ * settings UI ("Use gateway"). The boot path went straight to `waitForKova`,
  * so once the agent cookie expired the WS-ticket mint answered 401, the app
  * reported "not signed in" and latched reauth, even though the portal session
  * it needed to recover was still live. Every relaunch needed a manual click.
@@ -25,7 +25,7 @@ export interface CloudBootCascadeCandidate {
 }
 
 /**
- * True when a failed `waitForHermes` for `remote` should be followed by one
+ * True when a failed `waitForKova` for `remote` should be followed by one
  * silent per-agent sign-in and a single retry, rather than surfacing the
  * reauth error immediately. Requires all of:
  *

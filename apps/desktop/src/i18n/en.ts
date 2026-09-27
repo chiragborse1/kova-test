@@ -464,7 +464,7 @@ export const en: Translations = {
         'The service that runs your chats closed unexpectedly. Restart it to keep going — your chats and settings are safe.',
       backgroundExitedDuringStartup: 'Kova stopped right after it started.',
       backendStopped: 'Kova stopped working in the background',
-      restartHermes: 'Restart Kova',
+      restartKova: 'Restart Kova',
       openLogs: 'Open logs',
       desktopBootFailed: "Kova couldn't start",
       gatewayConnectionLost: 'Kova lost its connection',
@@ -550,7 +550,7 @@ export const en: Translations = {
       'This Kova app is older than the backend it is connected to and may not work correctly. Update the app to align them.',
     updateDesktopApp: 'Update app',
     installMethodUnsupportedTitle: 'Unsupported install method',
-    updateHermes: 'Update Kova',
+    updateKova: 'Update Kova',
     updateReadyTitle: 'Update ready',
     updateReadyMessage: count => `${count} new change${count === 1 ? '' : 's'} available.`,
     updateReadyMessageUnknown: 'A new update is available.',
@@ -585,7 +585,7 @@ export const en: Translations = {
       restartKovaFailed: "Couldn't restart Kova"
     },
     actions: {
-      restartHermes: 'Restart Kova',
+      restartKova: 'Restart Kova',
       openKeys: 'Open Keys',
       openGateways: 'Open Gateways',
       openMaintenance: 'Open Maintenance'
@@ -1289,7 +1289,7 @@ export const en: Translations = {
     uninstallSection: {
       dangerZone: 'Danger zone',
       checkingInstalled: 'Checking what’s installed…',
-      uninstallHermes: 'Uninstall Kova',
+      uninstallKova: 'Uninstall Kova',
       chooseHowMuch:
         'Choose how much to remove. The app closes to finish the job; reopen the installer any time to come back.',
       confirmUninstall: 'Confirm uninstall',
@@ -2814,7 +2814,7 @@ export const en: Translations = {
     sharedGatewayRestartDescription: bots => `All bots on this device reconnect: ${bots}`,
     sharedGatewayRestartConfirm: 'Restart all',
     sharedGatewayRestarted: count => `Shared gateway restarted (${count} ${count === 1 ? 'bot' : 'bots'})`,
-    updateHermes: 'Update Kova',
+    updateKova: 'Update Kova',
     reloadWindow: 'Reload window',
     actionRunning: 'running',
     actionDone: 'done',

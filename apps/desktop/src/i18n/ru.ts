@@ -250,7 +250,7 @@ export const ru = defineLocale({
       'Это приложение Kova старше подключённого бэкенда и может работать некорректно. Обновите приложение, чтобы они совпали.',
     updateDesktopApp: 'Обновить приложение',
     installMethodUnsupportedTitle: 'Неподдерживаемый способ установки',
-    updateHermes: 'Обновить Kova',
+    updateKova: 'Обновить Kova',
     updateReadyTitle: 'Обновление готово',
     updateReadyMessage: count =>
       `Доступно ${count} ${count % 10 === 1 && count % 100 !== 11 ? 'новое изменение' : count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 12 || count % 100 > 14) ? 'новых изменения' : 'новых изменений'}.`,
@@ -1984,7 +1984,7 @@ export const ru = defineLocale({
     sharedGatewayRestartDescription: bots => `Все боты на этом устройстве переподключатся: ${bots}`,
     sharedGatewayRestartConfirm: 'Перезапустить все',
     sharedGatewayRestarted: count => `Общий шлюз перезапущен (ботов: ${count})`,
-    updateHermes: 'Обновить Kova',
+    updateKova: 'Обновить Kova',
     reloadWindow: 'Перезагрузить окно',
     actionRunning: 'выполняется',
     actionDone: 'готово',
