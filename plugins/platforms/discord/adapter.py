@@ -384,7 +384,7 @@ def _format_privileged_intents_guidance(*, needs_members: bool) -> str:
             "Fix: https://discord.com/developers/applications → your application "
             "→ Bot → Privileged Gateway Intents → enable the intent(s) listed "
             "above → Save Changes, then restart the gateway.",
-            "Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord",
+            "Docs: https://kova-agent.neuralstudio.in/docs/user-guide/messaging/discord",
         ]
     )
     return "\n".join(lines)
@@ -7181,7 +7181,7 @@ def interactive_setup() -> None:
         "  - Message Content Intent (required — without it Discord rejects the connection)",
         "  - Server Members Intent (required if you use usernames or role allowlists)",
         "Save Changes in the Developer Portal before starting the gateway.",
-        "Docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/discord",
+        "Docs: https://kova-agent.neuralstudio.in/docs/user-guide/messaging/discord",
     )
     token = _prompt_discord_bot_token(prompt)
     if not token:

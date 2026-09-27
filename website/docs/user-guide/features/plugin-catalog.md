@@ -45,7 +45,7 @@ same reviewed commit this page describes.
 ### Published browse data
 
 The website and Desktop read the same generated CDN snapshot:
-[`https://hermes-agent.nousresearch.com/docs/api/plugins.json`](https://hermes-agent.nousresearch.com/docs/api/plugins.json).
+[`https://kova-agent.neuralstudio.in/docs/api/plugins.json`](https://kova-agent.neuralstudio.in/docs/api/plugins.json).
 Desktop fetches it through
 `https://openkova.github.io/kova-agent/docs/api/plugins.json`; the public
 docs alias serves the same data. The docs build reads `plugin-catalog/*.yaml`
@@ -236,7 +236,7 @@ unreviewed name index. Install such plugins by `owner/repo` or Git URL instead
 ### Live refresh
 
 The docs build publishes the catalog as one JSON document
-(`https://hermes-agent.nousresearch.com/docs/api/plugin-catalog.json`).
+(`https://kova-agent.neuralstudio.in/docs/api/plugin-catalog.json`).
 `search`/`install`/`update` fetch it at most every six hours and cache it under
 `~/.kova/cache/`, so new entries and removals reach installed clients without
 updating Kova. Offline, the cached copy is used for up to 24 hours, then the

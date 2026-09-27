@@ -52,7 +52,7 @@ _KEY_URL = "https://www.perplexity.ai/account/api"
 # OpenCode, plus Perplexity's integration header. No per-user identifier and no separate
 # request; the call already carries the user's own API key.
 _HEADERS = {
-    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
+    "HTTP-Referer": "https://kova-agent.neuralstudio.in",
     "X-Title": "Kova Agent",
     "User-Agent": f"KovaAgent/{get_version_info().base_version}",
     "X-Pplx-Integration": "kova-agent",

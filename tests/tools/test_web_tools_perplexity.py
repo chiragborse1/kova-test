@@ -21,7 +21,7 @@ def _assert_kova_identity_headers(headers):
     plus Perplexity's integration header."""
     from kova_cli.version_info import get_version_info
 
-    assert headers["HTTP-Referer"] == "https://hermes-agent.nousresearch.com"
+    assert headers["HTTP-Referer"] == "https://kova-agent.neuralstudio.in"
     assert headers["X-Title"] == "Kova Agent"
     assert headers["User-Agent"] == f"KovaAgent/{get_version_info().base_version}"
     assert headers["X-Pplx-Integration"] == "kova-agent"

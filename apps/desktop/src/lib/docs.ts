@@ -4,4 +4,4 @@
  * (bundled installs with a damaged payload) and any future doc links point
  * at the same place.
  */
-export const DESKTOP_DOCS_URL = 'https://hermes-agent.nousresearch.com/docs/user-guide/desktop'
+export const DESKTOP_DOCS_URL = 'https://kova-agent.neuralstudio.in/docs/user-guide/desktop'

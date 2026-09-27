@@ -52,7 +52,7 @@ Pick the row that matches your goal:
 
 ## 1. Install Kova Agent
 ### With the Kova Desktop installer on macOS or Windows (recommended)
-To easily install the command-line and desktop applications, [download the Kova Desktop installer](https://hermes-agent.nousresearch.com/) from our website and run it.
+To easily install the command-line and desktop applications, [download the Kova Desktop installer](https://kova-agent.neuralstudio.in/) from our website and run it.
 
 ### Without Kova Desktop:
 For a command-line only install without Kova Desktop, run:

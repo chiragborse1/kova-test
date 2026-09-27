@@ -2,7 +2,7 @@
 
 Set via `kova model` (picker) or `kova setup`. 35+ provider profiles ship as
 plugins under `plugins/model-providers/`; user plugins of the same name override.
-Full docs: https://hermes-agent.nousresearch.com/docs/integrations/providers
+Full docs: https://kova-agent.neuralstudio.in/docs/integrations/providers
 
 ### Providers
 

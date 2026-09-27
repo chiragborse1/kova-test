@@ -13,7 +13,7 @@ When the manifest is unreachable (offline, network blocked, hosting failure), Ko
 ## Live manifest URL
 
 ```
-https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
+https://kova-agent.neuralstudio.in/docs/api/model-catalog.json
 ```
 
 Published on every merge to `main` via the existing `deploy-site.yml` GitHub Pages pipeline. The source of truth lives in the repo at `website/static/api/model-catalog.json`.
@@ -76,7 +76,7 @@ The Desktop, TUI and dashboard pickers (`model.options`) build each provider's r
 ```yaml
 model_catalog:
   enabled: true
-  url: https://hermes-agent.nousresearch.com/docs/api/model-catalog.json
+  url: https://kova-agent.neuralstudio.in/docs/api/model-catalog.json
   ttl_minutes: 20
   providers: {}
 ```

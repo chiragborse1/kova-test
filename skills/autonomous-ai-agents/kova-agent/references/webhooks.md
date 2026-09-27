@@ -83,7 +83,7 @@ kova webhook subscribe todoist-kova \
   --deliver telegram --deliver-chat-id "12345"
 ```
 
-Full filter syntax: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/webhooks#payload-filters
+Full filter syntax: https://kova-agent.neuralstudio.in/docs/user-guide/messaging/webhooks#payload-filters
 
 ### List subscriptions
 ```bash

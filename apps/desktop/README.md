@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://github.com/chiragborse1/kova-test/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-kova--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
+  <a href="https://kova-agent.neuralstudio.in/docs/"><img src="https://img.shields.io/badge/Docs-kova--agent.neuralstudio.in-FFD700?style=for-the-badge" alt="Documentation"></a>
   <a href="https://discord.gg/OpenKova"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
   <a href="https://github.com/chiragborse1/kova-test/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
@@ -41,7 +41,7 @@ It builds and launches the GUI against your existing install — same config, ke
 
 ### Prebuilt installers
 
-Prebuilt installers are built and distributed via [the Kova Desktop website.](https://hermes-agent.nousresearch.com/).
+Prebuilt installers are built and distributed via [the Kova Desktop website.](https://kova-agent.neuralstudio.in/).
 
 ---
 
@@ -258,7 +258,7 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\kova\kova-agent\venv"
 ## Community
 
 - 💬 [Discord](https://discord.gg/OpenKova)
-- 📖 [Documentation](https://hermes-agent.nousresearch.com/docs/)
+- 📖 [Documentation](https://kova-agent.neuralstudio.in/docs/)
 - 🐛 [Issues](https://github.com/chiragborse1/kova-test/issues)
 
 ---

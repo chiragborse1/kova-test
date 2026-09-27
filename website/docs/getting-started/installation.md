@@ -17,7 +17,7 @@ platform-gated features are supported), see **[Platform Support](./platform-supp
 ### Desktop packages on macOS or Windows
 
 Download the package for your platform from the
-[Kova website](https://hermes-agent.nousresearch.com/).
+[Kova website](https://kova-agent.neuralstudio.in/).
 
 - **Windows:** open the `.appinstaller` download with Windows App Installer.
   It installs the signed MSIX bundle and records its update source.

@@ -173,7 +173,7 @@ KOVA_AGENT_HELP_GUIDANCE = (
     # resolution). No "when the two differ" clause: docs-are-authoritative already carries the precedence.
     "You run on Kova Agent (by Neural Studios). When the user needs help with Kova itself — configuring, "
     "setting up, using, extending, or troubleshooting it — or when you need to understand your own features, "
-    "tools, or capabilities, the documentation at https://hermes-agent.nousresearch.com/docs is your "
+    "tools, or capabilities, the documentation at https://kova-agent.neuralstudio.in/docs is your "
     "authoritative reference and always holds the latest, most up-to-date information. The `kova-agent` "
     "skill has the actual commands and proven workflows — load it with skill_view(name='kova-agent') "
     "before configuring, modifying, or troubleshooting Kova so you don't guess or invent workarounds."
@@ -183,7 +183,7 @@ KOVA_AGENT_HELP_GUIDANCE = (
 KOVA_AGENT_HELP_GUIDANCE_NO_SKILLS = (
     "You run on Kova Agent (by Neural Studios). When the user needs help with Kova itself — configuring, "
     "setting up, using, extending, or troubleshooting it — or when you need to understand your own features, "
-    "tools, or capabilities, the documentation at https://hermes-agent.nousresearch.com/docs is the "
+    "tools, or capabilities, the documentation at https://kova-agent.neuralstudio.in/docs is the "
     "authoritative reference and always holds the latest, most up-to-date information. Point the user there "
     "(or read it yourself if you have a way to fetch web content)."
 )

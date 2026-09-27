@@ -1,7 +1,7 @@
 # Configuration, Toolsets & Voice
 
 Edit with `kova config edit` or `kova config set section.key value`.
-Full reference: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+Full reference: https://kova-agent.neuralstudio.in/docs/user-guide/configuration
 
 ### Config Sections (most-used keys)
 

@@ -24,7 +24,7 @@ from tools.skills_hub_sources import BrowseShSource, LobeHubSource, UrlSource, W
 # Log-record parity with the origin module.
 logger = logging.getLogger("tools.skills_hub")
 
-KOVA_INDEX_URL = "https://hermes-agent.nousresearch.com/docs/api/skills-index.json"
+KOVA_INDEX_URL = "https://kova-agent.neuralstudio.in/docs/api/skills-index.json"
 KOVA_INDEX_TTL = 6 * 3600  # 6 hours
 
 

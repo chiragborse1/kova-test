@@ -53,7 +53,7 @@ description: "与 Kova Agent 的第一次对话——从安装到开始聊天，
 
 ### 在 macOS 或 Windows 上使用 Kova Desktop 安装器（推荐）
 
-如需同时安装命令行与桌面应用，请从我们的官网[下载 Kova Desktop 安装器](https://hermes-agent.nousresearch.com/)并运行。
+如需同时安装命令行与桌面应用，请从我们的官网[下载 Kova Desktop 安装器](https://kova-agent.neuralstudio.in/)并运行。
 
 ### 不使用 Kova Desktop：
 

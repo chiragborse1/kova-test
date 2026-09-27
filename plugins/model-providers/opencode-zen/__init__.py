@@ -14,7 +14,7 @@ from providers.base import ProviderProfile
 # Attribution headers (same values as OpenRouter / Vercel / Fireworks); via
 # default_headers so they survive model switches and credential rotation.
 _ATTRIBUTION_HEADERS = {
-    "HTTP-Referer": "https://hermes-agent.nousresearch.com",
+    "HTTP-Referer": "https://kova-agent.neuralstudio.in",
     "X-Title": "Kova Agent",
     "User-Agent": f"KovaAgent/{get_version_info().base_version}",
 }

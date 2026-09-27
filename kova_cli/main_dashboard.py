@@ -597,7 +597,7 @@ def _maybe_setup_dashboard_auth_interactively(args) -> None:
             "    kova dashboard register\n"
             "  It provisions a Nous Portal OAuth client and writes "
             "KOVA_DASHBOARD_OAUTH_CLIENT_ID into ~/.kova/.env for you.\n"
-            "  Docs: https://hermes-agent.nousresearch.com/docs/"
+            "  Docs: https://kova-agent.neuralstudio.in/docs/"
             "user-guide/features/web-dashboard#authentication-gated-mode"
         )
         sys.exit(0)
