@@ -2731,7 +2731,7 @@ requires-dist = [
 
 [[package]]
 name = "kova-agent"
-version = "0.0.0"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "certifi", marker = "python_full_version >= '3.14'" },
