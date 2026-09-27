@@ -72,8 +72,8 @@ Outputs (30 files):
   apps/bootstrap-installer/public/kova-mark.png   256x256 squircle mark (light)
   website/static/img/logo.png                     1772x1799 girl alone, transparent (light)
   website/static/img/logo-dark.png                1772x1799 girl alone, transparent (dark)
-  website/static/img/nous-logo.png                150x150 on white (opaque)
-  website/static/img/nous-logo-dark.png           150x150 on #0d1117 (opaque)
+  website/static/img/kova-logo.png                150x150 on white (opaque)
+  website/static/img/kova-logo-dark.png           150x150 on #0d1117 (opaque)
   website/static/img/favicon-16x16.png            16x16
   website/static/img/favicon-32x32.png            32x32
   website/static/img/apple-touch-icon.png         180x180
@@ -169,8 +169,8 @@ CHECK_SIZES: dict[str, tuple[str, tuple[int, int]]] = {
     "apps/bootstrap-installer/public/kova-mark.png": ("PNG", (256, 256)),
     "website/static/img/logo.png": ("PNG", (1772, 1799)),
     "website/static/img/logo-dark.png": ("PNG", (1772, 1799)),
-    "website/static/img/nous-logo.png": ("PNG", (150, 150)),
-    "website/static/img/nous-logo-dark.png": ("PNG", (150, 150)),
+    "website/static/img/kova-logo.png": ("PNG", (150, 150)),
+    "website/static/img/kova-logo-dark.png": ("PNG", (150, 150)),
     "website/static/img/favicon-16x16.png": ("PNG", (16, 16)),
     "website/static/img/favicon-32x32.png": ("PNG", (32, 32)),
     "website/static/img/apple-touch-icon.png": ("PNG", (180, 180)),
@@ -207,8 +207,8 @@ TARGETS: list[tuple[str, str, object]] = [
     ("apps/bootstrap-installer/public/kova-mark.png", "girl_light", 256),
     ("website/static/img/logo.png", "logo", None),
     ("website/static/img/logo-dark.png", "logo_dark", None),
-    ("website/static/img/nous-logo.png", "png_white", 150),
-    ("website/static/img/nous-logo-dark.png", "png_dark_white", 150),
+    ("website/static/img/kova-logo.png", "png_white", 150),
+    ("website/static/img/kova-logo-dark.png", "png_dark_white", 150),
     ("website/static/img/favicon-16x16.png", "png", 16),
     ("website/static/img/favicon-32x32.png", "png", 32),
     ("website/static/img/apple-touch-icon.png", "png", 180),
