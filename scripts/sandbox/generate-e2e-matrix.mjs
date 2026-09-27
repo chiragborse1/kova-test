@@ -141,7 +141,7 @@ function startLabel(from, to) {
 export const SPEC = {
   windows: {
     install: [
-      // irm https://kova.nousresearch.com/install.ps1 | iex
+      // irm https://raw.githubusercontent.com/chiragborse1/kova-test/main/scripts/install.ps1 | iex
       { method: 'installer-script' },
       // The same one-liner with -IncludeDesktop: builds Kova.exe AND
       // registers Start Menu / Desktop shortcuts, so it is a second real
