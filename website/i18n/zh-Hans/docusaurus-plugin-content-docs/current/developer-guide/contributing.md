@@ -90,7 +90,7 @@ npm ci --prefix website
 npm run build:fast --prefix website
 ```
 
-图标从 `assets/nous-girl-*.svg` 和 `assets/backgrounds/` 生成。
+图标从 `assets/kova/kova-mark-*.svg` 和 `assets/backgrounds/` 生成。
 `node scripts/generate-icons.mjs` 使用 Kova 运行时 Python（`KOVA_PYTHON`，否则为 PATH 上的 `python`）渲染图标：Pillow 和 resvg-py 是核心依赖。不要提交生成的 PNG/ICO/ICNS 文件。
 
 ### 运行测试

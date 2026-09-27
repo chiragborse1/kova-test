@@ -188,7 +188,7 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
           dist = desktop / 'kova-desktop/dist'
           launcher = desktop / 'icons/hicolor/1024x1024/apps/kova.png'
           for path in [launcher, dist / 'apple-touch-icon.png',
-                       dist / 'nous-girl.png', dist / 'nous-girl-dark.png',
+                       dist / 'kova-mark.png', dist / 'kova-mark-dark.png',
                        Path('${self'.packages.web}/favicon.ico')]:
               with Image.open(path) as image:
                   image.load()

@@ -93,8 +93,8 @@ website/
 assets/
 !assets/
 assets/*
-!assets/nous-girl-black.svg
-!assets/nous-girl-white.svg
+!assets/kova/kova-mark-black.svg
+!assets/kova/kova-mark-white.svg
 !assets/backgrounds/
 !assets/backgrounds/**
 infographic/

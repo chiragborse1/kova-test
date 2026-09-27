@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Generate every app icon in the repo from the nous-girl art + platform backgrounds.
+"""Generate every app icon in the repo from the Kova mark + platform backgrounds.
 
 Usage (from repo root):
     node scripts/generate-icons.mjs           # write
     node scripts/generate-icons.mjs --check   # verify structure
 
 Sources of truth — two axes, composed per target:
-  Girl art (vector):  assets/nous-girl-black.svg  (black positive space)
-                      assets/nous-girl-white.svg  (white positive space)
+  Mark art (vector):  assets/kova/kova-mark-black.svg  (black positive space)
+                      assets/kova/kova-mark-white.svg  (white positive space)
                       straight from the Nous brand kit (Inkscape exports,
                       5487^2 viewBox, one path each).
 
@@ -62,14 +62,14 @@ Outputs (30 files):
   apps/desktop/assets/appx/Square150x150Logo.png      150x150 squircle
   apps/desktop/assets/appx/*-dark.png                 dark-appearance logos
   apps/desktop/public/apple-touch-icon.png            1024x1024 squircle
-  apps/desktop/public/nous-girl.png                   256x256 squircle, black girl (light mark)
-  apps/desktop/public/nous-girl-dark.png              256x256 squircle, white girl (dark mark)
+  apps/desktop/public/kova-mark.png                   256x256 squircle, black mark (light)
+  apps/desktop/public/kova-mark-dark.png              256x256 squircle, white mark (dark)
   apps/bootstrap-installer/src-tauri/icons/32x32.png       32x32
   apps/bootstrap-installer/src-tauri/icons/128x128.png     128x128
   apps/bootstrap-installer/src-tauri/icons/128x128@2x.png  256x256
   apps/bootstrap-installer/src-tauri/icons/icon.ico        16,32,64,128,256
   apps/bootstrap-installer/src-tauri/icons/icon.icns       16..1024
-  apps/bootstrap-installer/public/nous-girl.png   256x256 squircle mark (light)
+  apps/bootstrap-installer/public/kova-mark.png   256x256 squircle mark (light)
   website/static/img/logo.png                     1772x1799 girl alone, transparent (light)
   website/static/img/logo-dark.png                1772x1799 girl alone, transparent (dark)
   website/static/img/nous-logo.png                150x150 on white (opaque)
@@ -118,16 +118,22 @@ BORDER_FRACTION = 0.0407747197
 # Portrait boxes fitted to the reference at equal visible tile width, with
 # uniform scaling about the tile center followed by an up-left translation.
 # Keep their y coordinate: bottom anchoring would undo the registration.
+# The mark is a centred geometric glyph, so it is framed on a centred box
+# rather than the old portrait framing (which was fitted to a character
+# illustration). The 1024 grid matches the mark art, and the 0.72 side keeps
+# the ring of negative space the glyph needs to stay legible at 16px.
 GIRL_BOXES = {
-    "squircle-light.svg": (72.149433, 104.703674, 872.767801, 872.767801),
-    "squircle-dark.svg": (72.149433, 104.703674, 872.767801, 872.767801),
-    # Mac: the girl scaled 1.12x about the plate center; the plate stays on the
-    # 824 grid, but a white tile with a ring reads small beside full-color peers.
-    "squircle-mac-light.svg": (122.43, 144.84, 786.83, 786.83),
-    "squircle-mac-dark.svg": (122.43, 144.84, 786.83, 786.83),
+    "squircle-light.svg": (143.36, 143.36, 737.28, 737.28),
+    "squircle-dark.svg": (143.36, 143.36, 737.28, 737.28),
+    # Mac plates sit on the 824 grid; inset further so the glyph does not
+    # crowd the plate edge.
+    "squircle-mac-light.svg": (185.0, 185.0, 654.0, 654.0),
+    "squircle-mac-dark.svg": (185.0, 185.0, 654.0, 654.0),
 }
-# The brand-kit SVG canvas (both girl svgs share this viewBox).
-GIRL_VIEWBOX = 5487.0615
+# The brand-mark SVG canvas (both mark svgs share this viewBox).
+# assets/kova/kova-mark-{black,white}.svg are authored on a 1024 grid by
+# scripts/kova/make_mark.py, matching the squircle grid the backgrounds use.
+GIRL_VIEWBOX = 1024.0
 
 # Target sizes for --check's structural verification: relpath -> (format, size)
 CHECK_SIZES: dict[str, tuple[str, tuple[int, int]]] = {
@@ -142,12 +148,12 @@ CHECK_SIZES: dict[str, tuple[str, tuple[int, int]]] = {
     "apps/desktop/assets/appx/Square150x150Logo.png": ("PNG", (150, 150)),
     "apps/desktop/assets/appx/Square150x150Logo-dark.png": ("PNG", (150, 150)),
     "apps/desktop/public/apple-touch-icon.png": ("PNG", (1024, 1024)),
-    "apps/desktop/public/nous-girl.png": ("PNG", (256, 256)),
-    "apps/desktop/public/nous-girl-dark.png": ("PNG", (256, 256)),
+    "apps/desktop/public/kova-mark.png": ("PNG", (256, 256)),
+    "apps/desktop/public/kova-mark-dark.png": ("PNG", (256, 256)),
     "apps/bootstrap-installer/src-tauri/icons/32x32.png": ("PNG", (32, 32)),
     "apps/bootstrap-installer/src-tauri/icons/128x128.png": ("PNG", (128, 128)),
     "apps/bootstrap-installer/src-tauri/icons/128x128@2x.png": ("PNG", (256, 256)),
-    "apps/bootstrap-installer/public/nous-girl.png": ("PNG", (256, 256)),
+    "apps/bootstrap-installer/public/kova-mark.png": ("PNG", (256, 256)),
     "website/static/img/logo.png": ("PNG", (1772, 1799)),
     "website/static/img/logo-dark.png": ("PNG", (1772, 1799)),
     "website/static/img/nous-logo.png": ("PNG", (150, 150)),
@@ -178,14 +184,14 @@ TARGETS: list[tuple[str, str, object]] = [
     ("apps/desktop/public/apple-touch-icon.png", "png", 1024),
     # The dev-run Dock icon (app.dock.setIcon): same mac grid as the icns.
     ("apps/desktop/assets/icon-mac.png", "png_mac", 1024),
-    ("apps/desktop/public/nous-girl.png", "girl_light", 256),
-    ("apps/desktop/public/nous-girl-dark.png", "girl_dark", 256),
+    ("apps/desktop/public/kova-mark.png", "girl_light", 256),
+    ("apps/desktop/public/kova-mark-dark.png", "girl_dark", 256),
     ("apps/bootstrap-installer/src-tauri/icons/32x32.png", "png", 32),
     ("apps/bootstrap-installer/src-tauri/icons/128x128.png", "png", 128),
     ("apps/bootstrap-installer/src-tauri/icons/128x128@2x.png", "png", 256),
     ("apps/bootstrap-installer/src-tauri/icons/icon.ico", "ico", [16, 32, 64, 128, 256]),
     ("apps/bootstrap-installer/src-tauri/icons/icon.icns", "icns", None),
-    ("apps/bootstrap-installer/public/nous-girl.png", "girl_light", 256),
+    ("apps/bootstrap-installer/public/kova-mark.png", "girl_light", 256),
     ("website/static/img/logo.png", "logo", None),
     ("website/static/img/logo-dark.png", "logo_dark", None),
     ("website/static/img/nous-logo.png", "png_white", 150),
@@ -207,7 +213,7 @@ class IconArt:
         assets = source / "assets"
         self.colors = colors
         self.commit = commit
-        self.girls = {color: assets / f"nous-girl-{color}.svg" for color in ("black", "white")}
+        self.girls = {color: assets / "kova" / f"kova-mark-{color}.svg" for color in ("black", "white")}
         self.backgrounds = assets / "backgrounds"
         self.paths: dict[str, str] = {}
         self.bboxes: dict[str, tuple[float, float, float, float]] = {}
@@ -598,8 +604,8 @@ def cmd_check(source: Path, out: Path) -> int:
     for rel in (
         "apps/desktop/assets/icon.png",
         "apps/desktop/assets/icon-dark.png",
-        "apps/desktop/public/nous-girl.png",
-        "apps/desktop/public/nous-girl-dark.png",
+        "apps/desktop/public/kova-mark.png",
+        "apps/desktop/public/kova-mark-dark.png",
         "apps/desktop/public/apple-touch-icon.png",
     ):
         path = out / rel
