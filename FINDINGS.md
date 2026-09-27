@@ -186,3 +186,56 @@ VERIFICATION NOTES
   two low-contrast slots on the first attempt - banner_dim 2.34:1 and
   session_border 1.60:1, both under the 2.8 soft floor. Lifted the hexes
   rather than relaxing the test. 22 passed.
+
+=====================================================================
+BRAND MARK + ICON PIPELINE
+=====================================================================
+
+THE MARK
+  assets/kova/kova-mark-{black,white}.svg - three thick arc segments
+  120 deg apart orbiting a solid core. Reads as a camera iris / aperture.
+  scripts/kova/make_mark.py generates both variants plus PNG previews
+  from one geometry definition, so they cannot drift.
+
+  Tuning was done against RENDERED output, not source numbers. At the
+  first-pass ring (330/250) the arms read as thin slivers beside the
+  core once composited on the squircle; the ring is now 330/226 (104
+  thick) with the core 118 -> 96, and sweep 30 -> 34 deg. Verified in
+  the light and dark 256px marks and at 32px, where the gaps between the
+  arms are what keep it legible instead of collapsing into a blob.
+
+FOUR REAL PIPELINE BUGS FOUND (all by rendering, not by reading)
+
+  1. The generator lifts art with a regex taking only the FIRST
+     self-closing <path>. The first mark used 3 paths + a circle, so two
+     arms vanished from every generated icon. The glyph is now a single
+     path element with four subpaths.
+
+  2. Arc sweep flags were inverted. SVG's y axis points down, so
+     increasing angle is sweep-flag 0; the generator hardcoded 1/0. That
+     drew the arms the long way round the circle.
+
+  3. GIRL_VIEWBOX was 5487.0615 - the old character art's canvas. It
+     normalises the rasterised alpha bbox back into SVG units, so the
+     1024-grid mark would have been scaled 10.7x. Now 1024.
+
+  4. drag_bottom_nodes() stretches the artwork's lowest nodes down so a
+     portrait stands on the plate. A centred glyph has no bottom edge;
+     it dragged the lower arm out of the tile. Now opt-in (JOIN_BOTTOM).
+
+  Also switched xMidYMax -> xMidYMid (ART_ALIGN): portraits are
+  bottom-anchored, a centred glyph is not.
+
+VERIFICATION
+  generate_icons.py --check   : all 36 targets generate + pass
+  scripts/kova/check_mark.py : 1 path element, 3 arms on r=330/226,
+                                core anchored at its top point
+  10/10 WCAG AA contrast pairs : pass
+  3953 tracked .ts/.tsx       : 4 errors, all pre-existing upstream
+
+  There is still no SVG rasteriser on this machine (cairosvg needs a
+  native cairo that is not installed), so the mark is validated
+  numerically rather than by round-tripping through an SVG renderer.
+  resvg-py IS available and is what generate_icons.py uses, so the
+  pipeline itself renders for real - it was the composition step, not
+  rasterisation, that was broken.
