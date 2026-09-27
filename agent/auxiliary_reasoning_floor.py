@@ -79,7 +79,7 @@ def remember_reasoning_floor(
     _FLOORED_ROUTES.add((_route_key(provider, base_url), str(rejected_kwargs.get("model") or "")))
 
 
-_NOUS_PROVIDERS = {"nous", "nous-portal", "openkova"}
+_NOUS_PROVIDERS = {"nous", "nous-portal", "nousresearch", "openkova"}
 
 
 def _catalog_marks_mandatory(provider: Optional[str], base_url: Optional[str], model: Optional[str]) -> bool:

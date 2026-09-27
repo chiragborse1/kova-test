@@ -502,7 +502,7 @@ def _merge_nous_portal_messages_extra_body(agent, anthropic_kwargs: dict) -> dic
     """Merge Portal ``tags`` / ``session_id`` onto an Anthropic Messages kwargs dict.
     The Nous profile is only consulted by the OpenAI-wire transport; ``session_id``
     only — never ``provider_preferences`` (an OpenAI-wire routing object)."""
-    if getattr(agent, "provider", None) not in {"nous", "nous-portal", "openkova"}:
+    if getattr(agent, "provider", None) not in {"nous", "nous-portal", "nousresearch", "openkova"}:
         return anthropic_kwargs
     try:
         from providers import get_provider_profile
@@ -1875,7 +1875,7 @@ def _fallback_api_mode_resolved(agent, fb_provider: str, fb_model: str, fb_base_
         # (minimax, qwen) and chat_completions models behind one provider; the primary /model path
         # already re-derives per model — the fallback wire must agree (#102148).
         return opencode_model_api_mode(opencode_family, fb_model)
-    if fb_provider in {"nous", "nous-portal", "openkova"}:
+    if fb_provider in {"nous", "nous-portal", "nousresearch", "openkova"}:
         # Portal is dual-wire: anthropic/* must land on /v1/messages (the swap rebuilds the native client).
         from kova_cli.providers import nous_api_mode
         return nous_api_mode(fb_model)

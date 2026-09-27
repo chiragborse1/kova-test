@@ -1684,7 +1684,7 @@ def _nous_api_mode(provider: str, model: str, api_key: str) -> str:
 _PROVIDER_API_MODE_OVERRIDES: dict[str, Any] = {
     **dict.fromkeys(("copilot", "github-copilot"), _copilot_api_mode),
     **dict.fromkeys(("opencode-zen", "opencode-go", "opencode"), _opencode_api_mode),
-    **dict.fromkeys(("nous", "nous-portal", "openkova"), _nous_api_mode)}
+    **dict.fromkeys(("nous", "nous-portal", "nousresearch", "openkova"), _nous_api_mode)}
 
 
 def model_derived_api_mode(provider: str, model: str, api_key: str = "") -> Optional[str]:

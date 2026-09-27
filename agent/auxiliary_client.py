@@ -6448,7 +6448,7 @@ def _contains_profile_reasoning_fields(value: Any) -> bool:
     )
 
 
-_NOUS_PROVIDER_NAMES = frozenset({"nous", "nous-portal", "openkova"})
+_NOUS_PROVIDER_NAMES = frozenset({"nous", "nous-portal", "nousresearch", "openkova"})
 
 
 def _nous_on_messages_wire(provider_norm: str, model: str) -> bool:

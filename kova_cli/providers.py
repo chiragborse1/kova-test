@@ -377,7 +377,7 @@ def determine_api_mode(provider: str, base_url: str = "", model: str = "") -> st
     mandated = host_mandated_api_mode(base_url)
     if mandated is not None:
         return mandated
-    if (provider or "").strip().lower() in {"nous", "nous-portal", "openkova"}:
+    if (provider or "").strip().lower() in {"nous", "nous-portal", "nousresearch", "openkova"}:
         return nous_api_mode(model)
     pdef = get_provider(provider)
     if pdef is not None:

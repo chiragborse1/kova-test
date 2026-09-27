@@ -245,7 +245,7 @@ def refresh_reasoning_caps_async(provider: Optional[str]) -> None:
     rejects. Called from the conversation loop's reasoning_mandatory recovery so the profile guard
     is right again on the next request; no-op for providers without a catalog.
     """
-    src = {"nous": _NOUS_CAPS, "nous-portal": _NOUS_CAPS, "openkova": _NOUS_CAPS,
+    src = {"nous": _NOUS_CAPS, "nous-portal": _NOUS_CAPS, "nousresearch": _NOUS_CAPS, "openkova": _NOUS_CAPS,
            "openrouter": _OPENROUTER_CAPS}.get(str(provider or "").strip().lower())
     if src is not None:
         _warm_reasoning_caps_async(lambda: _fetch_caps(src, force=True))
