@@ -118,17 +118,30 @@ BORDER_FRACTION = 0.0407747197
 # Portrait boxes fitted to the reference at equal visible tile width, with
 # uniform scaling about the tile center followed by an up-left translation.
 # Keep their y coordinate: bottom anchoring would undo the registration.
+#: Whether the artwork is stretched down to meet the tile border. True for
+#: portrait framing (a subject standing on the plate); False for the Kova
+#: mark, which is a centred glyph that must keep its exact proportions.
+JOIN_BOTTOM = False
+
+#: How the artwork sits inside its box. Portraits are bottom-anchored so a
+#: figure stands on the plate; a centred glyph is centred in both axes.
+ART_ALIGN = "xMidYMid"
+
 # The mark is a centred geometric glyph, so it is framed on a centred box
 # rather than the old portrait framing (which was fitted to a character
 # illustration). The 1024 grid matches the mark art, and the 0.72 side keeps
 # the ring of negative space the glyph needs to stay legible at 16px.
+# The art's alpha bbox is 660x572 (a 3-fold glyph is not square), and `meet`
+# fits the LARGER dimension to the box, so the box side sets the on-tile size.
+# 620 leaves a comfortable margin inside the 245-radius squircle: the mark
+# reads as a mark rather than filling the tile edge to edge.
 GIRL_BOXES = {
-    "squircle-light.svg": (143.36, 143.36, 737.28, 737.28),
-    "squircle-dark.svg": (143.36, 143.36, 737.28, 737.28),
+    "squircle-light.svg": (202.0, 202.0, 620.0, 620.0),
+    "squircle-dark.svg": (202.0, 202.0, 620.0, 620.0),
     # Mac plates sit on the 824 grid; inset further so the glyph does not
     # crowd the plate edge.
-    "squircle-mac-light.svg": (185.0, 185.0, 654.0, 654.0),
-    "squircle-mac-dark.svg": (185.0, 185.0, 654.0, 654.0),
+    "squircle-mac-light.svg": (232.0, 232.0, 560.0, 560.0),
+    "squircle-mac-dark.svg": (232.0, 232.0, 560.0, 560.0),
 }
 # The brand-mark SVG canvas (both mark svgs share this viewBox).
 # assets/kova/kova-mark-{black,white}.svg are authored on a 1024 grid by
@@ -375,15 +388,20 @@ def compose_svg(art: IconArt, girl: str, bg: str) -> str:
     inner = "".join(ET.tostring(child, encoding="unicode") for child in background)
     clip = ET.tostring(silhouette, encoding="unicode")
     box = GIRL_BOXES[bg]
-    portrait = ET.fromstring(girl_layer(art, girl, box, align="xMidYMax"))
+    portrait = ET.fromstring(girl_layer(art, girl, box, align=ART_ALIGN))
     _, y, portrait_width, portrait_height = box
     _, by, bw, bh = girl_bbox(art, girl)
     scale = min(portrait_width / bw, portrait_height / bh)
     join_bottom = geometry["y"] + geometry["height"] - thickness + 10
-    drag_bottom_nodes(
-        portrait[0], cutoff=by + bh * 0.97, band=bh * 0.02,
-        distance=max(0.0, join_bottom - (y + portrait_height)) / scale,
-    )
+    if JOIN_BOTTOM:
+        # Portrait framing: stretch the artwork's lowest nodes down so the
+        # subject stands on the plate. The Kova mark is a centred geometric
+        # glyph with no bottom edge to stretch, and forcing this on it drags
+        # the lower arc out of the tile - so it is opt-in.
+        drag_bottom_nodes(
+            portrait[0], cutoff=by + bh * 0.97, band=bh * 0.02,
+            distance=max(0.0, join_bottom - (y + portrait_height)) / scale,
+        )
     # Keep the fitted viewBox fixed, but let edited nodes reach into the border.
     portrait.set("overflow", "visible")
     badge = f"  {commit_layer(art.commit, bg)}\n" if art.commit else ""
