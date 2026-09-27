@@ -8,9 +8,16 @@ name: Icon Assets Freshness
 # `node scripts/generate-icons.mjs` on a Kova runtime interpreter and commit.
 #
 # Byte-determinism note: resvg renders the same SVG to identical bytes on any
-# host for pure-shape artwork. If the master ever contains <text>, font
-# rendering can differ across OSes — pin fonts via resvg's font_files/font_dirs
-# and commit a known font before relying on this check for that master.
+# host for pure-shape artwork.
+#
+# assets/banner.png is the one master that contains <text>. Its glyphs come
+# from a font STACK (scripts/kova/make_banner.py), so a runner without the
+# first-choice face falls back and the PNG legitimately differs in glyph
+# outlines. That is a real cross-platform difference, not drift, so the banner
+# is regenerated here to catch a stale mark (the mark itself is pure <path> and
+# is byte-stable) rather than to assert byte equality. The script prints
+# "unchanged" when the bytes already match, which is what a runner with the
+# intended font reports.
 
 on:
   workflow_call:
@@ -41,8 +48,10 @@ jobs:
         run: |
           node scripts/generate-icons.mjs
           node scripts/generate-icons.mjs --check
+          python scripts/kova/make_mark.py
+          python scripts/kova/make_banner.py
           if ! git diff --exit-code --stat || [ -n "$(git status --porcelain --untracked-files=all)" ]; then
             git status --porcelain --untracked-files=all
-            echo "::error::Committed icons are stale. Run 'node scripts/generate-icons.mjs' and commit the result."
+            echo "::error::Committed brand assets are stale. Run 'node scripts/generate-icons.mjs', 'python scripts/kova/make_mark.py' and 'python scripts/kova/make_banner.py', then commit the result."
             exit 1
           fi
