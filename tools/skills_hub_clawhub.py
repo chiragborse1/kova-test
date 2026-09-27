@@ -58,6 +58,13 @@ def _first_str(*values: Any) -> Optional[str]:
     return next((v for v in values if isinstance(v, str) and v), None)
 
 
+#: Wall-clock budget for the OFFLINE catalog walk (max_items=0). Interactive
+#: browse keeps CATALOG_WALK_BUDGET_SECONDS (12 s); the index builder gets a
+#: window long enough to build a real index but short enough to finish inside
+#: the docs deploy's 30-minute job. See _load_catalog_index.
+CATALOG_INDEX_WALK_BUDGET_SECONDS = 900
+
+
 class ClawHubSource(GuardedFetchMixin, SkillSource):
     """ClawHub (clawhub.ai) HTTP API. Every skill is community trust — the ClawHavoc
     incident (341 malicious skills, Feb 2026) showed their vetting is insufficient."""
@@ -316,7 +323,18 @@ class ClawHubSource(GuardedFetchMixin, SkillSource):
         # rail against an infinite-cursor loop, normally ended by nextCursor=None.
         # Wall-clock budget applies to interactive browse only: the index builder
         # (max_items=0) must walk everything or it trips the deploy health floor.
-        deadline = time.monotonic() + self.CATALOG_WALK_BUDGET_SECONDS if max_items > 0 else None
+        # Measured: ~11 s per 200-skill page against the live API, so 750
+        # pages is up to ~2.3 h. The offline builder had NO deadline, so a
+        # docs deploy that triggered it was killed at the job's 30-minute
+        # timeout after spending 26 of those minutes paging. Give the offline
+        # walk a budget too: ~15 min is ~80 pages / ~16k skills, comfortably
+        # past the 1,500 validate_index requires, and it still marks the walk
+        # `partial` so a truncated result is never cached.
+        budget = (
+            self.CATALOG_WALK_BUDGET_SECONDS if max_items > 0
+            else CATALOG_INDEX_WALK_BUDGET_SECONDS
+        )
+        deadline = time.monotonic() + budget
         partial = False
         fetch_failures = 0
         for _ in range(750):
