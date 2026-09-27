@@ -648,7 +648,7 @@ def _scan_quarantined(c: Console, q_path: Path, bundle, meta, identifier: str):
 
 _INSTALL_PANELS = {
     "official": (
-        "[bold bright_cyan]This is an official optional skill maintained by Nous Research.[/]\n\n"
+        "[bold bright_cyan]This is an official optional skill maintained by Kova.[/]\n\n"
         "It ships with kova-agent but is not activated by default.\n"
         "Installing will copy it to your skills directory where the agent can use it.\n\n",
         "Official Skill", "bright_cyan"),

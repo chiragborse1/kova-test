@@ -175,15 +175,33 @@ def _baked_banner_state() -> Optional[dict]:
     return {"upstream": baked, "local": baked, "ahead": 0} if baked else None
 
 
+#: The remote this product publishes to. Used for the update/banner
+#: comparison so a dev checkout reports against its own history.
+_RELEASE_REMOTE = "kova-test"
+
+
+def _release_remote() -> str:
+    """Remote name for this project, falling back to `origin` if absent."""
+    remotes = source_check._git_stdout(["remote"], cwd=_resolve_repo_dir() or Path(".")) or ""
+    names = {line.strip() for line in remotes.splitlines() if line.strip()}
+    return _RELEASE_REMOTE if _RELEASE_REMOTE in names else "origin"
+
+
 def _compute_git_banner_state(repo_dir: Optional[Path] = None) -> Optional[dict]:
     repo_dir = repo_dir or _resolve_repo_dir()
     if repo_dir is None:
         return _baked_banner_state()
-    upstream, local = (source_check._git_stdout(["rev-parse", "--short=8", rev], cwd=repo_dir) for rev in ("origin/main", "HEAD"))
+    # Compare against THIS project's remote, not whatever `origin` happens to
+    # point at. A checkout whose origin is a different project would otherwise
+    # report a meaningless "upstream <sha> (+N carried commits)" against a
+    # history it has no relationship to.
+    base = _release_remote()
+    upstream, local = (source_check._git_stdout(["rev-parse", "--short=8", rev], cwd=repo_dir)
+                       for rev in (f"{base}/main", "HEAD"))
     if not upstream or not local:
-        # Live-git lookup failed (e.g. shallow clone without origin/main).
+        # Live-git lookup failed (e.g. shallow clone, or no release remote).
         return _baked_banner_state()
-    ahead = source_check._git_count(["rev-list", "--count", "origin/main..HEAD"], cwd=repo_dir) or 0
+    ahead = source_check._git_count(["rev-list", "--count", f"{base}/main..HEAD"], cwd=repo_dir) or 0
     return {"upstream": upstream, "local": local, "ahead": max(ahead, 0)}
 
 

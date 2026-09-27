@@ -1,5 +1,5 @@
 {
-  description = "Kova Agent - AI agent framework by Nous Research";
+  description = "Kova Agent - AI agent framework by Neural Studios";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
