@@ -81,6 +81,22 @@ export const defaultTheme: DashboardTheme = {
   terminalBackground: "#000000",
 };
 
+export const kovaTheme: DashboardTheme = {
+  name: "kova",
+  label: "Kova Violet",
+  description: "Violet accent on a near-black canvas — the Kova brand identity",
+  palette: {
+    ...webPresetFromShared(THEME_PRESET_PALETTES.kova),
+    noiseOpacity: 0.85,
+  },
+  typography: DEFAULT_TYPOGRAPHY,
+  layout: {
+    ...DEFAULT_LAYOUT,
+    radius: "0.625rem",
+  },
+  terminalBackground: "#0b0910",
+};
+
 export const midnightTheme: DashboardTheme = {
   name: "midnight",
   label: "Midnight",
@@ -244,6 +260,7 @@ export const defaultLargeTheme: DashboardTheme = {
 };
 
 export const BUILTIN_THEMES: Record<string, DashboardTheme> = {
+  kova: kovaTheme,
   default: defaultTheme,
   "default-large": defaultLargeTheme,
   "nous-blue": nousBlueTheme,

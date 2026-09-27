@@ -52,9 +52,12 @@ export const DEFAULT_TYPOGRAPHY: DesktopThemeTypography = { fontSans: SYSTEM_SAN
  * family, authored in OKLCH-friendly steps so the light and dark palettes
  * share one hue rather than drifting.
  *
- * `#6d3bf5` is the light-mode brand accent (5.9:1 on `#fbfafc`); dark lifts
- * to `#9d7bff` to clear AA against `#0b0910`. Terminal palettes are tuned to
- * the same ramp so the embedded shell matches the app chrome.
+ * `#6d3bf5` is the light-mode brand accent, measured at 5.61:1 on the
+ * `#fbfafc` background; dark lifts to `#9d7bff` for 6.33:1 against `#0b0910`.
+ * Both clear WCAG AA, and scripts/kova/check_contrast.py asserts every pair
+ * in the palette so a future tweak cannot quietly regress legibility.
+ * Terminal palettes are tuned to the same ramp so the embedded shell matches
+ * the app chrome.
  */
 export const kovaTheme: DesktopTheme = {
   name: 'kova',

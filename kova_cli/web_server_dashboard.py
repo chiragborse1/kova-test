@@ -239,6 +239,7 @@ def mount_spa(application: FastAPI):
 
 # Built-in themes — label + description only; colors live in web/src/themes/presets.ts.
 _BUILTIN_DASHBOARD_THEMES = [
+    {"name": "kova",          "label": "Kova Violet",       "description": "Violet accent on a near-black canvas — the Kova brand identity"},
     {"name": "default",       "label": "Kova Teal",         "description": "Classic dark teal — the canonical Kova look"},
     {"name": "default-large", "label": "Kova Teal (Large)", "description": "Kova Teal with bigger fonts and roomier spacing"},
     {"name": "nous-blue",     "label": "Nous Blue",           "description": "Light mode — vivid Nous-blue accents on cream canvas"},
