@@ -26,6 +26,10 @@ OLD = "github.com/kova-agent"
 PATTERN = re.compile(re.escape(OLD) + r"(?P<path>(?:\.git)?(?:/[^\s\"'<>),;]*)?)")
 
 SKIP_DIRS = ("node_modules/", ".venv/", "_salvage/", "_regression/",
+             # This directory and FINDINGS.md necessarily CONTAIN the patterns
+             # being searched for, so a --check run would otherwise always
+             # report itself as drift.
+             "scripts/kova/", "FINDINGS.md",
              "website/build/", "website/.docusaurus/", "dist/")
 BINARY_EXT = (".png", ".jpg", ".jpeg", ".ico", ".icns", ".webp", ".gif",
               ".woff", ".woff2", ".ttf", ".tflite", ".whl", ".jar", ".zip",

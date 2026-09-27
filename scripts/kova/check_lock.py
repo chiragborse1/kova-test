@@ -25,11 +25,11 @@ print("added  :", sorted(added) or "none")
 print("removed:", sorted(removed) or "none")
 print("version changes:", {k: (po[k], pn[k]) for k in changed} or "none")
 print()
-renamed = added == {"kova-agent"} and removed == {"kova-agent"}
+renamed = added == {"kova-agent"} and removed == {"hermes-agent"}
 ok = renamed and not changed
 if ok:
     print("LOCKFILE CLEAN: 330 -> 330 packages, no version changes.")
-    print("The only difference is the project's own name: kova-agent -> kova-agent.")
+    print("The only difference is the project's own name: hermes-agent -> kova-agent.")
 else:
     print("UNEXPECTED CHANGES - review before committing:")
     if not renamed: print("  the add/remove sets are not the expected rename")
