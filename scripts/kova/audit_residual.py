@@ -37,7 +37,10 @@ ALLOWED = [
     (r"Hermest|shermesa|40hermes|pass:hermeslocal|ksimback-hermesatlas", "test fixture strings"),
 ]
 
-EXCLUDE = [":(exclude)scripts/kova/*", ":(exclude)FINDINGS.md"]
+# The project's own notes necessarily quote the strings they discuss, so
+# they are excluded for the same reason the tooling is.
+EXCLUDE = [":(exclude)scripts/kova/*", ":(exclude)FINDINGS.md",
+           ":(exclude)RUNNING.md", ":(exclude)QUICKSTART.md"]
 TOKEN = re.compile(r"[A-Za-z0-9_.:@/-]*[Hh][Ee][Rr][Mm][Ee][Ss][A-Za-z0-9_.:@/-]*")
 
 
