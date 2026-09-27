@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   check-freshness:
-    if: github.repository == 'kova-agent'
+    if: github.repository == 'chiragborse1/kova-test'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: trusted-automation

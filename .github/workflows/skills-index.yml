@@ -17,8 +17,9 @@ permissions:
 
 jobs:
   build-index:
-    # Only run on the upstream repository, not on forks
-    if: github.repository == 'kova-agent'
+    # Only run in Kova's own repository. A fork must not publish a skills
+    # index or burn this repository's GitHub API quota from its own PRs.
+    if: github.repository == 'chiragborse1/kova-test'
     runs-on: ubuntu-latest
     # Critical path (Sep 2026): clawhub walk ∥ github taps ~8 min, then skills.sh
     # resolve ~6 min, then a bounded 8 min owner enrichment. 15 min cancelled every
