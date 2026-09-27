@@ -693,7 +693,7 @@ Like the Linux systemd service, each `KOVA_HOME` directory gets its own launchd 
 ### Windows (Task Scheduler)
 
 ```powershell
-kova gateway install               # Register the Hermes_Gateway Scheduled Task (runs at logon)
+kova gateway install               # Register the Kova_Gateway Scheduled Task (runs at logon)
 kova gateway start                 # Start the gateway hidden, without a console window
 kova gateway stop                  # Drain and stop the service
 kova gateway status                # Check status, including registration drift

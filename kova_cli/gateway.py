@@ -1788,7 +1788,7 @@ def _reap_unsupervised_gateway_orphans(extra_exclude: set | None = None) -> bool
             from kova_cli.gateway_windows import get_task_name  # profile-aware task name
             _task_name = get_task_name()
         except Exception:
-            _task_name = "Hermes_Gateway"
+            _task_name = "Kova_Gateway"
         if _windows_scheduled_task_supervises(_task_name):
             return False
 

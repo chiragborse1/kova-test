@@ -574,7 +574,7 @@ class DingTalkAdapter(BasePlatformAdapter):
             token = await self._get_access_token()
             if not token:
                 return None
-            out_track_id, models = f"hermes_{uuid.uuid4().hex[:12]}", dingtalk_card_models
+            out_track_id, models = f"kova_{uuid.uuid4().hex[:12]}", dingtalk_card_models
             is_group = str(getattr(message, "conversation_type", "1")) == "2"
             sender_staff_id = getattr(message, "sender_staff_id", "") or ""
             create_request = models.CreateCardRequest(

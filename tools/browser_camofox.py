@@ -271,7 +271,7 @@ def _get_session(task_id: Optional[str]) -> Dict[str, Any]:
         if identity is None and _managed_persistence_enabled(camofox_cfg):
             identity = get_camofox_identity(task_id)
         if identity is None:
-            identity = {"user_id": f"hermes_{uuid.uuid4().hex[:10]}", "session_key": f"task_{task_id[:16]}"}
+            identity = {"user_id": f"kova_{uuid.uuid4().hex[:10]}", "session_key": f"task_{task_id[:16]}"}
             managed, adopt = False, False
         else:
             managed, adopt = True, _flag("CAMOFOX_ADOPT_EXISTING_TAB", camofox_cfg, "adopt_existing_tab")

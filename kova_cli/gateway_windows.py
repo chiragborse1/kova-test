@@ -52,7 +52,7 @@ _ACCESS_DENIED_PATTERN = re.compile(rf"({_ACCESS_DENIED_WORDS})", re.IGNORECASE)
 # shell exits. Dict (not bare bool) so the flag is mutable without ``global``.
 _LAST_SPAWN_BREAKAWAY_FALLBACK: dict = {"fallback": False}
 
-_TASK_NAME_DEFAULT = "Hermes_Gateway"
+_TASK_NAME_DEFAULT = "Kova_Gateway"
 _TASK_DESCRIPTION = "Kova Agent Gateway - Messaging Platform Integration"
 _TASK_LOGON_DELAY = "PT30S"
 _TASK_RESTART_INTERVAL = "PT1M"
@@ -479,7 +479,7 @@ def _atomic_write(path: Path, content: str, tmp: Path) -> None:
 
     The staging file is removed even when the rename fails: the Startup-folder caller stages
     inside the Startup folder itself, and Windows opens every file there at login — a leftover
-    ``Hermes_Gateway.tmp`` pops up in Notepad after every sign-in (#114093).
+    ``Kova_Gateway.tmp`` pops up in Notepad after every sign-in (#114093).
     """
     try:
         tmp.write_text(content, encoding="utf-8", newline="")
@@ -936,14 +936,14 @@ def install(
 
     task_name = get_task_name()
     script_path = _write_task_script()
-    # A pre-fix install that failed its Startup-folder swap left `Hermes_Gateway.tmp` there, and the
+    # A pre-fix install that failed its Startup-folder swap left `Kova_Gateway.tmp` there, and the
     # Scheduled Task path below never touches that folder — sweep it so a re-run clears the debris.
     try:
         _startup_staging_path().unlink(missing_ok=True)
     except OSError:
         pass
     if force:
-        # Pre-suffix strays (task ``Hermes_Gateway``, Startup ``Hermes_Gateway.vbs``) are unreachable by
+        # Pre-suffix strays (task ``Kova_Gateway``, Startup ``Kova_Gateway.vbs``) are unreachable by
         # the current names, so a plain reconcile never heals them (#116157).
         from kova_cli.gateway_windows_legacy import remove_legacy_launchers
         remove_legacy_launchers()

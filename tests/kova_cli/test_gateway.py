@@ -908,7 +908,7 @@ class TestWindowsScheduledTaskSupervisorGuard:
 
         for state, expected in states.items():
             monkeypatch.setattr(gateway, "_windows_scheduled_task_state", lambda name, s=state: s)
-            assert gateway._windows_scheduled_task_supervises("Hermes_Gateway") is expected, state
+            assert gateway._windows_scheduled_task_supervises("Kova_Gateway") is expected, state
 
 
 
