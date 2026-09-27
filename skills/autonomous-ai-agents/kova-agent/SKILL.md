@@ -8,7 +8,7 @@ platforms: [linux, macos, windows]
 metadata:
   kova:
     tags: [kova, setup, configuration, multi-agent, spawning, cli, gateway, bots, bot-mode, features, themes, skins, desktop-plugins, tui-widgets, petdex, development]
-    homepage: https://github.com/kova-agent
+    homepage: https://github.com/chiragborse1/kova-test
     related_skills: [claude-code, codex, opencode]
 ---
 
@@ -38,7 +38,7 @@ Good verification targets, cheapest first:
 
 - **Every shipped feature, one line each: https://kova-agent.openkova.com/docs/llms.txt.** Start here for any "can Kova do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`, or `curl -s https://kova-agent.openkova.com/docs/llms.txt` when web tools are off. The whole documentation set in one file is at `/docs/llms-full.txt`.
 - CLI commands: `kova --help`, `kova <command> --help`, and `kova_cli/main.py`
-- Source tree: https://github.com/kova-agent
+- Source tree: https://github.com/chiragborse1/kova-test
 
 Never answer "Kova can't do that" from memory. Kova ships far more than this skill body describes, and the index exists so a negative answer is always checkable.
 

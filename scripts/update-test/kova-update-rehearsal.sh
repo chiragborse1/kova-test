@@ -29,7 +29,7 @@
 
 set -euo pipefail
 
-OFFICIAL_HTTPS="https://github.com/kova-agent.git"
+OFFICIAL_HTTPS="https://github.com/chiragborse1/kova-test.git"
 OFFICIAL_SSH="git@github.com:kova-agent.git"
 DEFAULT_SOURCE="https://github.com/ethernet8023/kova-agent.git"
 

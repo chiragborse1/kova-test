@@ -434,7 +434,7 @@ def openrouter_asker(api_key: Optional[str] = None, model: str = OPENROUTER_JEV_
         body = json.dumps({"model": model, "state": state, "questions": questions}).encode()
         req = urllib.request.Request(url, data=body, headers={
             "Authorization": f"Bearer {key}", "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/kova-agent", "X-Title": "kova compaction eval",
+            "HTTP-Referer": "https://github.com/chiragborse1/kova-test", "X-Title": "kova compaction eval",
         })
         try:
             with urllib.request.urlopen(req, timeout=timeout) as r:

@@ -177,7 +177,7 @@ async function locateHermes(ssh, remoteKovaPath) {
     //   - version checking: `<python> --version` printed "Python x.y.z" instead of
     //     the Kova version, and
     //   - capability probing: `<python> serve --help` failed entirely.
-    // See https://github.com/kova-agent/issues/74411
+    // See https://github.com/chiragborse1/kova-test/issues/74411
     return candidate
   }
 

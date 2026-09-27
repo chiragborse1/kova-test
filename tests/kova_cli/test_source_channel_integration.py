@@ -394,7 +394,7 @@ def test_tagless_zip_apply_uses_pinned_source_archive(source, monkeypatch, dirty
         assert (source.root / "notes.txt").read_text() == "do not remove"
     else:
         update_cmd._cmd_update_impl(source.parser.parse_args(["update"]), False)
-        assert urls == [f"https://github.com/kova-agent/archive/{source.commits[1]}.zip"]
+        assert urls == [f"https://github.com/chiragborse1/kova-test/archive/{source.commits[1]}.zip"]
         assert (source.root / "content.txt").read_text() == "published"
         assert completed[0]["expected_sha"] == source.commits[1]
         assert completed[0]["channel_retirement"]["destination"] == "stable"

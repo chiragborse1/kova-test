@@ -69,7 +69,7 @@ def test_canary_tag_order_and_remote_selection(release_repo):
 def test_github_repo_parsed_from_ssh_and_https_urls(tmp_path, release_repo):
     urls = {
         "fork": "git@github.com:ethernet8023/kova-agent.git",
-        "origin": "https://github.com/kova-agent",
+        "origin": "https://github.com/chiragborse1/kova-test",
         "gitlab": "git@gitlab.com:someone/elsewhere.git",
     }
     for name, url in urls.items():

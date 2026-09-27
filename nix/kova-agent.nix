@@ -346,7 +346,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   meta = with lib; {
     description = "AI agent with advanced tool-calling capabilities";
-    homepage = "https://github.com/kova-agent";
+    homepage = "https://github.com/chiragborse1/kova-test";
     mainProgram = "kova";
     license = licenses.mit;
     platforms = platforms.unix;

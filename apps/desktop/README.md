@@ -1,10 +1,10 @@
 # Kova Desktop ☤
 
 <p align="center">
-  <a href="https://github.com/kova-agent/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
+  <a href="https://github.com/chiragborse1/kova-test/releases"><img src="https://img.shields.io/badge/Download-macOS%20%C2%B7%20Windows%20%C2%B7%20Linux-FFD700?style=for-the-badge" alt="Download"></a>
   <a href="https://kova-agent.openkova.com/docs/"><img src="https://img.shields.io/badge/Docs-kova--agent.openkova.com-FFD700?style=for-the-badge" alt="Documentation"></a>
   <a href="https://discord.gg/OpenKova"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/kova-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://github.com/chiragborse1/kova-test/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
 </p>
 
 **The native desktop app for [Kova Agent](../../README.md) — the self-improving AI agent from [Nous Research](https://openkova.com).** Same agent, same skills, same memory as the CLI and gateway, in a polished native window — chat with streaming tool output, side-by-side previews, a file browser, voice, and settings, no terminal required. Available for **macOS, Windows, and Linux**.
@@ -259,7 +259,7 @@ Remove-Item -Recurse -Force "$env:LOCALAPPDATA\kova\kova-agent\venv"
 
 - 💬 [Discord](https://discord.gg/OpenKova)
 - 📖 [Documentation](https://kova-agent.openkova.com/docs/)
-- 🐛 [Issues](https://github.com/kova-agent/issues)
+- 🐛 [Issues](https://github.com/chiragborse1/kova-test/issues)
 
 ---
 

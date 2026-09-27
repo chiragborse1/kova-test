@@ -60,7 +60,7 @@ $script:BoundParams = $PSBoundParameters
 # Under iex, script scope is the caller's session and outlives a run; start
 # each run without the previous run's answer (see Set-LauncherUserPath).
 $script:BinDirOnCallerPath = $null
-$RepoUrl = if ($env:KOVA_REPO_URL) { $env:KOVA_REPO_URL } else { "https://github.com/kova-agent.git" }
+$RepoUrl = if ($env:KOVA_REPO_URL) { $env:KOVA_REPO_URL } else { "https://github.com/chiragborse1/kova-test.git" }
 
 # --- BEGIN GENERATED: bootstrap pins (scripts/gen-bootstrap-pins.py) ---
 # Derived from pm/lock.json. DO NOT EDIT BY HAND:

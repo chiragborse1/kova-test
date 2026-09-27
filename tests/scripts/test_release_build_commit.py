@@ -128,9 +128,9 @@ def test_commit_build_dispatch_is_repository_independent(fixture_repo):
     assert dispatches == [expected]
     assert 'disposable' not in result.stdout.lower()
     # The upstream URL used to select a different command shape; it no longer does.
-    git(repo, 'remote', 'set-url', 'origin', 'https://github.com/kova-agent.git')
+    git(repo, 'remote', 'set-url', 'origin', 'https://github.com/chiragborse1/kova-test.git')
     result, calls = invoke('--build-commit', tip, '--publish',
-                           extra={'PROBE_UPSTREAM_URL': 'https://github.com/kova-agent.git'})
+                           extra={'PROBE_UPSTREAM_URL': 'https://github.com/chiragborse1/kova-test.git'})
     assert result.returncode == 0, result.stderr
     dispatches = [call for call in calls if call[1:3] == ['workflow', 'run']]
     assert dispatches == [['gh', 'workflow', 'run', 'desktop-bundled-release.yml',

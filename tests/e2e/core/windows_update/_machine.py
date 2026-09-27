@@ -72,8 +72,8 @@ UPDATE_TIMEOUT = 1200.0
 CMD_TIMEOUT = 300.0
 GATEWAY_READY_TIMEOUT = 240.0
 CANONICAL_URLS = (
-    "https://github.com/kova-agent.git",
-    "https://github.com/kova-agent",
+    "https://github.com/chiragborse1/kova-test.git",
+    "https://github.com/chiragborse1/kova-test",
     "git@github.com:kova-agent.git",
 )
 NEXT_MARKER = ".kova-e2e-next"

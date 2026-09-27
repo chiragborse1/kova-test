@@ -6,7 +6,7 @@ scope for vulnerability reports.
 
 ## 1. Reporting a Vulnerability
 
-Report privately via [GitHub Security Advisories](https://github.com/kova-agent/security/advisories/new)
+Report privately via [GitHub Security Advisories](https://github.com/chiragborse1/kova-test/security/advisories/new)
 or **security@openkova.com**. Do not open public issues for
 security vulnerabilities. **Kova Agent does not operate a bug
 bounty program.**

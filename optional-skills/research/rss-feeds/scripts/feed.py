@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 
-USER_AGENT = "kova-agent/1.0 (rss-feeds skill; +https://github.com/kova-agent)"
+USER_AGENT = "kova-agent/1.0 (rss-feeds skill; +https://github.com/chiragborse1/kova-test)"
 TIMEOUT = 20
 NS = {
     "atom": "http://www.w3.org/2005/Atom",

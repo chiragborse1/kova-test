@@ -20,7 +20,7 @@ _ORPHAN_RESCUE_REF_MAX_AGE_DAYS = 30
 
 _GIT_TEXT_KW = dict(capture_output=True, text=True, encoding="utf-8", errors="replace")
 _BAR = "=" * 68
-_UPSTREAM_ADD_CMD = "git remote add upstream https://github.com/kova-agent.git"
+_UPSTREAM_ADD_CMD = "git remote add upstream https://github.com/chiragborse1/kova-test.git"
 
 
 def _git_ok(git_cmd, args, cwd, **kw) -> bool:
@@ -230,12 +230,12 @@ def _print_parked_branch_kept_notice(current_branch: str, target_branch: str, un
 
 
 OFFICIAL_REPO_URLS = {
-    "https://github.com/kova-agent.git",
+    "https://github.com/chiragborse1/kova-test.git",
     "git@github.com:kova-agent.git",
-    "https://github.com/kova-agent",
+    "https://github.com/chiragborse1/kova-test",
     "git@github.com:kova-agent",
 }
-OFFICIAL_REPO_URL = "https://github.com/kova-agent.git"
+OFFICIAL_REPO_URL = "https://github.com/chiragborse1/kova-test.git"
 SKIP_UPSTREAM_PROMPT_FILE = ".skip_upstream_prompt"
 
 
@@ -321,7 +321,7 @@ def _offer_upstream_remote(git_cmd: list[str], cwd: Path, *, assume_yes: bool, i
     if not _add_upstream_remote(git_cmd, cwd):
         print("  ✗ Failed to add upstream remote. Skipping upstream sync.")
         return False
-    print("  ✓ Added upstream: https://github.com/kova-agent.git")
+    print("  ✓ Added upstream: https://github.com/chiragborse1/kova-test.git")
     return True
 
 
@@ -405,7 +405,7 @@ _FETCH_FAILURE_RULES = (
     # key (or lack of one) was the cause (#82169).
     (lambda s: "Permission denied (publickey)" in s or "Host key verification failed" in s,
      "✗ SSH authentication failed — check your SSH key is added to GitHub, or switch"
-     " `origin` to HTTPS: `git remote set-url origin https://github.com/kova-agent.git`."),
+     " `origin` to HTTPS: `git remote set-url origin https://github.com/chiragborse1/kova-test.git`."),
 )
 
 

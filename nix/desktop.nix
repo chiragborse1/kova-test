@@ -201,7 +201,7 @@ stdenv.mkDerivation {
 
   meta = with lib; {
     description = "Native Electron desktop shell for Kova Agent";
-    homepage = "https://github.com/kova-agent";
+    homepage = "https://github.com/chiragborse1/kova-test";
     license = licenses.mit;
     platforms = platforms.unix;
     mainProgram = "kova-desktop";

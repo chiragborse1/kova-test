@@ -1,7 +1,7 @@
 """Regression test: set_runtime_main() must pass base_url/api_key/api_mode
 so that _resolve_auto_route() can route custom: providers in Step 1.
 
-Fixes https://github.com/kova-agent/issues/34777
+Fixes https://github.com/chiragborse1/kova-test/issues/34777
 """
 
 

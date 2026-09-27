@@ -27,13 +27,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kova-agent.git"
+    "url": "git+https://github.com/chiragborse1/kova-test.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kova-agent/issues"
+    "url": "https://github.com/chiragborse1/kova-test/issues"
   },
-  "homepage": "https://github.com/kova-agent#readme",
+  "homepage": "https://github.com/chiragborse1/kova-test#readme",
   "devDependencies": {
     "@eslint/js": "9.39.5",
     "eslint-plugin-perfectionist": "5.10.0",

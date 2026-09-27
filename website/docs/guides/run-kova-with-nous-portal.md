@@ -235,7 +235,7 @@ The Portal catalog draws on OpenRouter's model list (300+) plus models served th
 /model openai/o1-2025-12-17
 ```
 
-If a model is genuinely unavailable, [open an issue](https://github.com/kova-agent/issues) — most gaps are routing config we can update.
+If a model is genuinely unavailable, [open an issue](https://github.com/chiragborse1/kova-test/issues) — most gaps are routing config we can update.
 
 ### Billing not appearing on my Portal account
 

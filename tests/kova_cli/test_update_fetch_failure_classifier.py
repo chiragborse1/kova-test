@@ -15,7 +15,7 @@ RATE_LIMIT_STDERR = (
     "fatal: expected flush after ref listing"
 )
 CURL_429_STDERR = (
-    "fatal: unable to access 'https://github.com/kova-agent.git/':"
+    "fatal: unable to access 'https://github.com/chiragborse1/kova-test.git/':"
     " The requested URL returned error: 429"
 )
 
@@ -76,7 +76,7 @@ class TestClassifyFetchFailure:
             "fatal: Could not read from remote repository."
         )
         assert "SSH authentication failed" in msg
-        assert "https://github.com/kova-agent.git" in msg
+        assert "https://github.com/chiragborse1/kova-test.git" in msg
 
     def test_ssh_host_key_failure_reports_ssh_auth(self):
         msg = update_cmd._classify_fetch_failure(

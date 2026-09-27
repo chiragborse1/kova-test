@@ -80,7 +80,7 @@ def _connect_error_detail(exc: BaseException) -> str:
         return (
             f"{text} — macOS Local Network Privacy is blocking this launchd gateway from the LAN. "
             "Run `kova gateway install` to regenerate the launchd job, then `kova gateway restart`. "
-            "https://github.com/kova-agent/issues/71206"
+            "https://github.com/chiragborse1/kova-test/issues/71206"
         )
     return text
 

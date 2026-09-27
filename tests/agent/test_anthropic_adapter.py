@@ -1355,7 +1355,7 @@ class TestConvertToolsToAnthropicDedup:
 
     Anthropic rejects requests with duplicate tool names.  This guard converts
     a hard failure into a warning log.  See:
-    https://github.com/kova-agent/issues/18478
+    https://github.com/chiragborse1/kova-test/issues/18478
     """
 
     def _make_openai_tool(self, name: str) -> dict:
@@ -1811,7 +1811,7 @@ def test_oauth_system_prompt_sanitizer_preserves_docs_url():
                     "Kova Agent by Nous Research uses kova-agent skills. "
                     "Docs: https://kova-agent.openkova.com/docs ; "
                     "interpreter ~/.kova/kova-agent/venv/bin/python ; "
-                    "source github.com/kova-agent ; mail kova-agent@example.com ; "
+                    "source github.com/chiragborse1/kova-test ; mail kova-agent@example.com ; "
                     "skill_view(name='kova-agent') ; kova-agent's docs ; built by kova-agent."
                 ),
             },
@@ -1829,7 +1829,7 @@ def test_oauth_system_prompt_sanitizer_preserves_docs_url():
     # Paths and repo slugs are addresses too: a subagent told to run
     # ``~/.kova/claude-code/venv/bin/python`` fails on a file that does not exist.
     assert "~/.kova/kova-agent/venv/bin/python" in system_text
-    assert "github.com/kova-agent" in system_text
+    assert "github.com/chiragborse1/kova-test" in system_text
     assert "kova-agent@example.com" in system_text
     assert "skill_view(name='kova-agent')" in system_text  # a quoted slug is an identifier
     assert "built by claude-code." in system_text  # a sentence-final dot is prose

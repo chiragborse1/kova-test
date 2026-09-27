@@ -44,7 +44,7 @@ writing the same home while either version performs migrations.
 ## 2. Clone an independent checkout
 
 ```bash
-git clone https://github.com/kova-agent.git
+git clone https://github.com/chiragborse1/kova-test.git
 cd kova-agent
 ```
 

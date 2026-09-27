@@ -15,7 +15,7 @@ Kova isn't just a CLI tool. You can import `AIAgent` directly and use it program
 Clone Kova and prepare its source environment through PM. The Bash recipe is:
 
 ```bash
-git clone https://github.com/kova-agent.git
+git clone https://github.com/chiragborse1/kova-test.git
 cd kova-agent
 source ./activate
 ```

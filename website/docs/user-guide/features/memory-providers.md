@@ -73,7 +73,7 @@ The legacy `kova honcho setup` command still works (it now redirects to `kova me
 
 **Headless / remote machines:** for cloud auth on a box without a browser (SSH, remote VM), pick **device** at the wizard's auth-method prompt. The CLI prints a short code and a verification link; open the link in a browser on any other machine, approve, and setup completes — no API key copy-paste. The wizard defaults to this option automatically when it detects no usable local browser.
 
-**Config:** `$KOVA_HOME/honcho.json` (profile-local) or `~/.honcho/config.json` (global). Resolution order: `$KOVA_HOME/honcho.json` > `~/.kova/honcho.json` > `~/.honcho/config.json`. See the [config reference](https://github.com/kova-agent/blob/main/plugins/memory/honcho/README.md) and the [Honcho integration guide](https://docs.honcho.dev/v3/guides/integrations/kova).
+**Config:** `$KOVA_HOME/honcho.json` (profile-local) or `~/.honcho/config.json` (global). Resolution order: `$KOVA_HOME/honcho.json` > `~/.kova/honcho.json` > `~/.honcho/config.json`. See the [config reference](https://github.com/chiragborse1/kova-test/blob/main/plugins/memory/honcho/README.md) and the [Honcho integration guide](https://docs.honcho.dev/v3/guides/integrations/kova).
 
 <details>
 <summary>Full config reference</summary>
@@ -275,7 +275,7 @@ Off-gateway these keys do nothing. `kova memory setup` only prompts for them whe
 
 </details>
 
-See the [config reference](https://github.com/kova-agent/blob/main/plugins/memory/honcho/README.md) and [Honcho integration guide](https://docs.honcho.dev/v3/guides/integrations/kova).
+See the [config reference](https://github.com/chiragborse1/kova-test/blob/main/plugins/memory/honcho/README.md) and [Honcho integration guide](https://docs.honcho.dev/v3/guides/integrations/kova).
 
 
 ---

@@ -385,7 +385,7 @@ def test_embedded_revision_keeps_https_ref_advertisement_recovery(installation, 
     monkeypatch.setattr(subprocess, "run", advertise)
     assert check_for_updates(home=home)["behind"] == 0
     assert len(probes) == 1
-    assert "https://github.com/kova-agent.git" in probes[0][0]
+    assert "https://github.com/chiragborse1/kova-test.git" in probes[0][0]
     assert probes[0][1]["stdin"] == subprocess.DEVNULL
     assert probes[0][1]["env"]["GIT_TERMINAL_PROMPT"] == "0"
 
@@ -414,7 +414,7 @@ def test_official_ssh_healing_uses_public_https_without_retargeting_forks(instal
     from kova_cli.source_check import check_for_updates
     root, linked, home, base, head, responses, requests, git = installation
     git("remote", "set-url", "origin", f"git@github.com:{repository}.git")
-    git("config", f"url.{root.as_uri()}.insteadOf", "https://github.com/kova-agent.git")
+    git("config", f"url.{root.as_uri()}.insteadOf", "https://github.com/chiragborse1/kova-test.git")
     monkeypatch.setenv("GIT_SSH_COMMAND", "false")
     branch_file = home / "desktop-update.json"
     branch_file.write_text(json.dumps({"branch": "deleted"}))

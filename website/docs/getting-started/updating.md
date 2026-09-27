@@ -352,7 +352,7 @@ You no longer need to wrap `kova update` in `screen` or `tmux` to survive a term
 kova --version
 ```
 
-Compare against the latest release at the [GitHub releases page](https://github.com/kova-agent/releases).
+Compare against the latest release at the [GitHub releases page](https://github.com/chiragborse1/kova-test/releases).
 
 ### Updating from Messaging Platforms
 

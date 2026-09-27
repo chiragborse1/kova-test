@@ -1,6 +1,6 @@
 """Tests that Camofox browser sends Authorization header when CAMOFOX_API_KEY is set.
 
-Regression test for https://github.com/kova-agent/issues/20476
+Regression test for https://github.com/chiragborse1/kova-test/issues/20476
 """
 
 import json

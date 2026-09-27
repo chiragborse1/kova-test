@@ -172,7 +172,7 @@ class OpenRouterVideoGenProvider(VideoGenProvider):
 
     def _headers(self, api_key: str) -> Dict[str, str]:
         return {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
-                "HTTP-Referer": "https://github.com/kova-agent", "X-Title": "Kova Agent"}
+                "HTTP-Referer": "https://github.com/chiragborse1/kova-test", "X-Title": "Kova Agent"}
 
     def _session(self) -> Any:
         import requests

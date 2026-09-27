@@ -105,7 +105,7 @@ When the gateway withdraws a question (timeout, interrupt, answered from another
 
 ### Pi-style RPC mapping
 
-Every command in the Pi-mono RPC spec ([issue #360](https://github.com/kova-agent/issues/360)) has a TUI-gateway equivalent:
+Every command in the Pi-mono RPC spec ([issue #360](https://github.com/chiragborse1/kova-test/issues/360)) has a TUI-gateway equivalent:
 
 | Pi command | Kova equivalent |
 |------------|-------------------|

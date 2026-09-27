@@ -127,7 +127,7 @@ describe('VersionDetails', () => {
 
     await waitFor(() => {
       expect(openExternal).toHaveBeenCalledWith(
-        'https://github.com/kova-agent/commit/d233b6d7a9c5b79288e48dfb3b29e2ead106ac73'
+        'https://github.com/chiragborse1/kova-test/commit/d233b6d7a9c5b79288e48dfb3b29e2ead106ac73'
       )
     })
     expect($previewTabs.get()).toHaveLength(0)

@@ -129,7 +129,7 @@ tail -f ~/.kova/logs/update.log
 kova --version
 ```
 
-与 [GitHub releases 页面](https://github.com/kova-agent/releases) 上的最新版本进行比较。
+与 [GitHub releases 页面](https://github.com/chiragborse1/kova-test/releases) 上的最新版本进行比较。
 
 ### 从消息平台更新
 

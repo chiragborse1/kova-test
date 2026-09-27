@@ -20,7 +20,7 @@ set -u
 # hygiene can't break the locked sync the way it used to before pm owned it.
 export UV_NO_CONFIG=1
 
-REPO_URL="${KOVA_REPO_URL:-https://github.com/kova-agent.git}"
+REPO_URL="${KOVA_REPO_URL:-https://github.com/chiragborse1/kova-test.git}"
 BRANCH="main"
 INSTALL_COMMIT=""
 INSTALL_DIR="${KOVA_INSTALL_DIR:-}"

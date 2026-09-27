@@ -386,7 +386,7 @@ file bridge, background jobs with no human channel) fail closed. Private keys,
 
 When set, `write_file` and `patch` may only target paths inside the listed directory prefix(es). Anything outside is **hard-blocked** — not routed through dangerous-command approval.
 
-- Set automatically in the [official Docker image](https://github.com/kova-agent) (`KOVA_WRITE_SAFE_ROOT=/opt/data`)
+- Set automatically in the [official Docker image](https://github.com/chiragborse1/kova-test) (`KOVA_WRITE_SAFE_ROOT=/opt/data`)
 - Supports multiple roots separated by `:` on Unix or `;` on Windows
 - **Do not add to `~/.kova/.env` casually.** If you set it to a project directory, the agent cannot write to `~/.kova/cron/jobs.json`, profile skills, or other Kova state outside that prefix
 
@@ -524,7 +524,7 @@ docker exec -u kova kova-agent kova pairing approve telegram ABC12DEF
 If you already ran the command as root and the user is still unauthorized,
 restart the container — the entrypoint will fix ownership on the next start.
 
-[i10270]: https://github.com/kova-agent/issues/10270
+[i10270]: https://github.com/chiragborse1/kova-test/issues/10270
 :::
 
 **Storage:** Pairing data is stored in `~/.kova/pairing/` with per-platform JSON files:

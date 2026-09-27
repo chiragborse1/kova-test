@@ -224,7 +224,7 @@ If you've worked through this guide and the issue persists:
 
 1. Run the job with `kova cron run <job_id>` (fires on next gateway tick) and watch for errors in the chat output
 2. Check `~/.kova/logs/agent.log` for scheduler messages and `~/.kova/logs/errors.log` for warnings
-3. Open an issue at [github.com/kova-agent](https://github.com/kova-agent) with:
+3. Open an issue at [github.com/chiragborse1/kova-test](https://github.com/chiragborse1/kova-test) with:
    - The job ID and schedule
    - The delivery target
    - What you expected vs. what happened

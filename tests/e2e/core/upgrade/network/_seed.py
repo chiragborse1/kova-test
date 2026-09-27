@@ -8,7 +8,7 @@ own; each cell then publishes a NEW upstream commit (or a new release record), s
 a real fetch, checkout and rebuild, never the "already current" branch.
 
 After the seed the sandbox loses the ``insteadOf`` rewrite: the checkout's origin is the official
-``https://github.com/kova-agent.git`` again, and inside the namespace the only way
+``https://github.com/chiragborse1/kova-test.git`` again, and inside the namespace the only way
 to reach it is the test's proxy, which routes ``github.com`` to a git smart-HTTP server over the
 same bare origin. The partial clone (``--filter=tree:0``) makes every lazy tree/blob fetch of the
 checkout cross that proxy too.

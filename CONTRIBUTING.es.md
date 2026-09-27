@@ -566,7 +566,7 @@ test(tools): añadir tests unitarios para file_operations
 
 ## Reportar Issues
 
-- Usa [GitHub Issues](https://github.com/kova-agent/issues)
+- Usa [GitHub Issues](https://github.com/chiragborse1/kova-test/issues)
 - Incluye: SO, versión de Python, versión de Kova (`kova --version`), traza de error completa
 - Incluye pasos para reproducir
 - Verifica los issues existentes antes de crear duplicados

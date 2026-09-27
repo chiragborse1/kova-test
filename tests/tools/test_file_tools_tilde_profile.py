@@ -11,7 +11,7 @@ The fix adds ``_expand_tilde()`` which delegates to
 ``kova_constants.get_subprocess_home()`` — the same policy the terminal tool
 uses for subprocess environments.
 
-See: https://github.com/kova-agent/issues/48552
+See: https://github.com/chiragborse1/kova-test/issues/48552
 """
 
 import os

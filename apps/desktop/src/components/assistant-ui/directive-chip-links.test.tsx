@@ -8,7 +8,7 @@ import { DirectiveContent } from './directive-text'
 
 const desktopWindow = window as unknown as { kovaDesktop?: Window['kovaDesktop'] }
 
-const PR_URL = 'https://github.com/kova-agent/pull/107950'
+const PR_URL = 'https://github.com/chiragborse1/kova-test/pull/107950'
 
 function installDesktopBridge() {
   const openExternal = vi.fn().mockResolvedValue(undefined)

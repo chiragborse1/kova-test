@@ -13,7 +13,7 @@ required_credential_files:
 metadata:
   kova:
     tags: [Google, Gmail, Calendar, Drive, Sheets, Docs, Contacts, Email, OAuth]
-    homepage: https://github.com/kova-agent
+    homepage: https://github.com/chiragborse1/kova-test
     related_skills: [himalaya]
 ---
 

@@ -2,7 +2,7 @@
 
 Renders any content as colored ASCII character video. Audio, video, images, text, or pure math in, MP4/GIF/PNG sequence out. Full RGB color per character cell, 1080p 24fps default. No GPU.
 
-Built for [Kova Agent](https://github.com/kova-agent). Usable in any coding agent. Canonical source lives here; synced to [`kova-agent/skills/creative/ascii-video`](https://github.com/kova-agent/tree/main/skills/creative/ascii-video) via PR.
+Built for [Kova Agent](https://github.com/chiragborse1/kova-test). Usable in any coding agent. Canonical source lives here; synced to [`kova-agent/skills/creative/ascii-video`](https://github.com/chiragborse1/kova-test/tree/main/skills/creative/ascii-video) via PR.
 
 ## What this is
 
