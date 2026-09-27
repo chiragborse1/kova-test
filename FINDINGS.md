@@ -317,3 +317,76 @@ COLLECTION
   (pwd/termios/fcntl are Unix-only and cannot exist on Windows; CI runs
   the suite on Linux). The rebrand introduced ZERO new collection
   failures.
+
+=====================================================================
+INVENTED-INFRASTRUCTURE SWEEP (final)
+=====================================================================
+
+The rebrand applied two blanket rules that were right for branding and
+wrong for anything that has to RESOLVE:
+
+  nousresearch.com  -> openkova.com
+  github.com/NousResearch -> github.com/kova-agent
+
+Neither target exists. Verified live, not assumed:
+
+  https://openkova.com
+    HTTP 200 - but the page is
+    "OpenKova.com for sale | Spaceship.com"
+    A domain squatter's parking page.
+
+  https://kova-agent.openkova.com
+    DNS NXDOMAIN. Does not resolve at all.
+
+So 921 references across 351 files were pointing users, OAuth clients
+and the docs site at a parking page or at nothing.
+
+WHAT WAS ACTUALLY BROKEN
+  347 files   docs links, README badges, install instructions
+  212 refs    portal.openkova.com - including the billing URL in
+              agent/billing_links.py and the "out of credits" message
+              shown to a user mid-conversation
+   28 files   website pages linking the portal
+   18 files   tests asserting the portal host
+  oauth       client-metadata.json client_id + logo_uri 404'd.
+              client_id is the OAuth client's identity, so the dynamic
+              client registration at login could not complete.
+
+A SECOND PASS caught what the first missed: after rewriting
+openkova.com -> nousresearch.com, the subdomain was still wrong.
+kova-agent.nousresearch.com is also NXDOMAIN, because the rebrand had
+renamed the subdomain along with the product. Only the original
+hermes-agent.nousresearch.com serves /docs/ and /install.sh.
+
+FINAL HOST MAP (all verified HTTP 200)
+  openkova.com                -> nousresearch.com
+  portal.openkova.com         -> portal.nousresearch.com
+  kova-agent.openkova.com     -> hermes-agent.nousresearch.com
+  kova-agent.nousresearch.com -> hermes-agent.nousresearch.com
+  openkova.github.io          -> nousresearch.github.io
+
+There is no Kova-hosted infrastructure, and inventing another name
+would repeat the same bug, so links point at what actually serves the
+content until Kova runs its own.
+
+THIRD PASS: the same rule damaged an IDENTIFIER
+  The Nous provider accepts three spellings. Upstream's third was
+  "nousresearch" (the org name); the rename turned it into "openkova"
+  in all nine places the alias set is written. A config saying
+  `provider = nousresearch` stopped matching. Both spellings are now
+  accepted - the original so existing configs work, "openkova" because
+  this tree already shipped it.
+
+  Same class as the misaki URL: a rule that is correct for our own repo
+  and wrong for anything that merely CONTAINS the org's name.
+
+  Verified: all four spellings resolve; provider tests 74 passed.
+
+CHECKS THAT NOW RUN
+  scripts/kova/check_lock.py        lock refresh moved no versions
+  scripts/kova/check_mark.py        mark geometry
+  scripts/kova/check_contrast.py    WCAG AA on the palette
+  scripts/kova/audit_hosts.py       every host the repo references
+  scripts/kova/fix_repo_urls.py     --check finds 0 product files
+  scripts/kova/fix_hostnames.py     --check finds 0 files
+  scripts/kova/fix_provider_alias.py --check finds 0 files
