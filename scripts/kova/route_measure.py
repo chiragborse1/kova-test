@@ -59,11 +59,17 @@ PROBE = r"""JSON.stringify((()=>{
   let clippedCols = 0;
   for (const el of document.querySelectorAll('body *')) {
     const cs = getComputedStyle(el);
-    if (!/auto|scroll/.test(cs.overflowY)) continue;
+    if (!/auto/ .test(cs.overflowY) && !/scroll/.test(cs.overflowY)) continue;
     const r = el.getBoundingClientRect();
     if (r.width < 120 || r.height < 120) continue;
     if (r.width >= innerWidth - 2) continue;   // the document scroller is fine
-    if (el.scrollHeight > el.clientHeight + 8) clippedCols++;
+    if (el.scrollHeight <= el.clientHeight + 8) continue;
+    // A column that admits it scrolls is not a defect. scroll_cue.py measures
+    // the painted thumb; this only asks whether the opt-in class is present,
+    // which is enough to keep the two gates from double-reporting.
+    const cls = (el.className || '').toString();
+    if (/scrollbar-cue|scrollbar-fade/.test(cls)) continue;
+    clippedCols++;
   }
 
   return {
