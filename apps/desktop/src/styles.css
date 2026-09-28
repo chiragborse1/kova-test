@@ -501,7 +501,17 @@
     --dt-accent: var(--theme-accent-soft);
     --dt-accent-foreground: var(--ui-text-primary);
     --dt-border: var(--ui-stroke-secondary);
-    --dt-input: var(--ui-stroke-primary);
+    /* The input FIELD fill, not its border. This was --ui-stroke-primary,
+       which is an ACCENT-mixed token - so every text field in the app came
+       out carrying the brand hue. Measured live on the catalog search: a
+       1509x42 field painted rgb(194,177,243) at 5.9% with an accent border,
+       next to 51 accent switches. A search box is a well, not a control that
+       needs to advertise itself; the accent belongs on focus, which the
+       ring and border already carry.
+
+       A neutral lift off the surface it sits on, so the well reads as
+       recessed-in without dragging the brand colour along. */
+    --dt-input: var(--ui-bg-elevated);
     /* THE single knob for input-field borders: the resting alpha (% of the ring
        color). Hover doubles it; focus/open go full. 0% = invisible at rest. */
     --dt-input-border: 7%;
