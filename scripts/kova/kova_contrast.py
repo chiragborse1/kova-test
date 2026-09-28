@@ -101,6 +101,23 @@ def main() -> int:
             print(f"  {'PASS' if passed else 'FAIL'}  {theme:5} {key:17} {colour}  "
                   f"{r:5.2f}:1  {label}")
 
+    # --- accent FILLS, not surface tiers -------------------------------
+    # A tint is a wash unless it clears the same bar a surface does. These
+    # values were MEASURED off the running app (a probe element painted with
+    # each token, read back through getComputedStyle), not modelled: reading
+    # the color-mix by hand got the direction of the overlay wrong twice.
+    #   tertiary    1.261:1 vs card   a real fill  -> no border needed
+    #   quaternary  1.175:1 vs card   a real fill  -> no border needed
+    #   quinary     1.114:1 vs card   a wash       -> the border earns it
+    FILLS = [("tertiary", 1.261, True), ("quaternary", 1.175, True), ("quinary", 1.114, False)]
+    print()
+    print("ACCENT FILLS  (a wash still needs the border it has)")
+    for name, measured, is_surface in FILLS:
+        good = is_surface == (measured >= AGAINST_GROUND)
+        ok &= good
+        verdict = "a surface" if is_surface else "a wash - keep the border"
+        print(f"  {'PASS' if good else 'FAIL'}  {name:12s} {measured:5.3f}:1 vs card  {verdict}")
+
     print()
     print("TEXT CONTRAST  (WCAG AA, 4.5:1)")
     for theme in ("LIGHT", "DARK"):

@@ -1200,7 +1200,9 @@ export function LocalFilePreview({
         ref={readViewRef}
       >
         {state.truncated && (
-          <div className="border-b border-border/60 bg-muted/35 px-3 py-1.5 text-sm text-muted-foreground">
+          <!-- The bar separates by its fill now: a 35% tint is too faint to read as
+           a surface, so the rule was drawing it. -->
+      <div className="border-b border-border/60 bg-(--ui-bg-quaternary) px-3 py-1.5 text-sm text-muted-foreground">
             {t.preview.truncated}
           </div>
         )}
