@@ -45,11 +45,17 @@ NO_PROSE_OK = {"session-import", "starmap"}
 PROBE = r"""JSON.stringify((()=>{
   const cvs = document.createElement('canvas').getContext('2d');
   let worst = 0, worstW = 0, txt = '';
-  for (const p of document.querySelectorAll('p, li, td')) {
+  for (const p of document.querySelectorAll('p, li, td, dd, h1, h2, h3, h4')) {
     const t = (p.textContent || '').trim();
-    if (t.length < 120) continue;
+    if (t.length < 70) continue;
     const s = getComputedStyle(p), r = p.getBoundingClientRect();
     if (r.width < 200) continue;
+    if (r.bottom < 0 || r.top > innerHeight) continue;
+    // Leaf text only. A wrapper's width is its CONTAINER's, not its text's,
+    // and counting wrappers put phantom 900px runs in the report.
+    let leaf = true;
+    for (const c of p.children) { if ((c.textContent || '').trim().length >= t.length) leaf = false; }
+    if (!leaf) continue;
     cvs.font = s.fontWeight + ' ' + s.fontSize + ' ' + s.fontFamily;
     const adv = cvs.measureText('abcdefghijklmnopqrstuvwxyz').width / 26;
     const cpl = Math.round(r.width / adv);
