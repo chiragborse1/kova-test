@@ -81,6 +81,42 @@ as literal `rgba`, not `color-mix(… , transparent)`: mixing black with
 than slowing them — a 200ms slide is still motion, and the reason the
 preference exists is that there should be none.
 
+## The surface ladder, and why it decides everything else
+
+A designed interface separates layers with **surface tone**. Where the tones
+are too close, every element needs a border to be visible — and a border on
+every element is the "grid of boxes" look. **The boxes are a symptom; the
+surfaces are the disease.**
+
+Kova's ladder, measured against the ground it sits on:
+
+| tier        | dark     | vs ground | vs the tier below |
+|-------------|----------|-----------|-------------------|
+| background  | `#0b0910`| —         | —                 |
+| sidebar     | `#191424`| 1.10      | 1.10              |
+| card        | `#201b38`| 1.20      | 1.09              |
+| muted       | `#272246`| 1.32      | 1.10              |
+| elevated    | `#2e2853`| 1.45      | 1.10              |
+| popover     | `#332c5b`| 1.56      | 1.18              |
+
+Two rules, and they are the whole discipline:
+
+1. **A tier clears ~1.15 against the ground.** Below that a surface is
+   invisible on its own, and the code will reach for a border to draw it.
+2. **A tier clears ~1.06 against the tier below it.** A surface has to be
+   distinct from what it sits *on*, not only from the canvas.
+
+Before this ladder every tier sat at 1.03–1.15, i.e. under rule 1 across the
+board — which is why the app was outlined rather than toned.
+
+The ladder is solved for contrast along the existing violet hue, not picked.
+Light inverts the direction (it darkens away from `#fbfafc`); same rules.
+
+**Text still has to pass.** Raising surface contrast must not cost text
+contrast — that is the trade this change usually gets wrong. Checked: body
+text is 10.6–17.7:1 and muted text 4.3–6.7:1 on every tier, in both themes.
+`scripts/kova/check_contrast.py` should keep asserting this.
+
 ## Information architecture
 
 - **Chat is the home surface.** The transcript and composer stay primary; tools,
