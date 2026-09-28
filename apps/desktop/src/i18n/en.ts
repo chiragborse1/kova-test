@@ -3561,11 +3561,9 @@ export const en: Translations = {
       agents: 'Agents',
       starmap: 'Memory graph',
       'command-center': 'Command center',
-      'session-import': 'Import a session'
+      'session-import': 'Import a session',
+      more: 'More',
     },
-    // Label for the second sidebar nav group - the destinations that are
-    // "what Kova is made of" rather than "what Kova does".
-    manageGroup: 'Manage',
     searchAria: 'Search sessions',
     searchPlaceholder: 'Search sessions…',
     clearSearch: 'Clear search',

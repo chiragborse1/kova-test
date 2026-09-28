@@ -3949,9 +3949,9 @@ export const frOverrides = {
       agents: 'Agents',
       starmap: 'Graphe mémoire',
       'command-center': 'Centre de commande',
-      'session-import': 'Importer une session'
+      'session-import': 'Importer une session',
+      more: 'Plus',
     },
-    manageGroup: 'Gérer',
     searchAria: 'Rechercher des sessions',
     searchPlaceholder: 'Rechercher des sessions…',
     clearSearch: 'Effacer la recherche',

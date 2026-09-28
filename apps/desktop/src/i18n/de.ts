@@ -3939,9 +3939,9 @@ export const deOverrides = {
       agents: 'Agenten',
       starmap: 'Speicher-Graph',
       'command-center': 'Zentrale',
-      'session-import': 'Session importieren'
+      'session-import': 'Session importieren',
+      more: 'Mehr',
     },
-    manageGroup: 'Verwalten',
     searchAria: 'Sessions durchsuchen',
     searchPlaceholder: 'Sessions durchsuchen…',
     clearSearch: 'Suche löschen',

@@ -3929,9 +3929,9 @@ export const esOverrides = {
       agents: 'Agentes',
       starmap: 'Gráfico de memoria',
       'command-center': 'Centro de control',
-      'session-import': 'Importar sesión'
+      'session-import': 'Importar sesión',
+      more: 'Más',
     },
-    manageGroup: 'Gestionar',
     searchAria: 'Buscar sesiones',
     searchPlaceholder: 'Buscar sesiones…',
     clearSearch: 'Limpiar búsqueda',

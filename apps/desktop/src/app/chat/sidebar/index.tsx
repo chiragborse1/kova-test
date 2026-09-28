@@ -22,6 +22,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { Tip, TipKeybindLabel } from '@/components/ui/tooltip'
 import { useContributions } from '@/contrib/react/use-contributions'
 import { useI18n } from '@/i18n'
@@ -307,6 +313,19 @@ const SIDEBAR_NAV: SidebarNavItem[] = [
 // row added to either group lands on the right side of the divider.
 const MANAGE_NAV_FROM = SIDEBAR_NAV.findIndex(item => item.id === 'webhooks')
 
+// The second group collapses to one "More" row, the way OpenClaw's Control UI
+// does it (ui/src/app-navigation.ts, `sidebarMoreRoutes`). Eleven rows cost
+// 339px - 37% of a 925px window - and the session search sits below all of
+// them, so every row added here is taken from the session list. OpenClaw keeps
+// a small pinned zone and puts the rest behind one row; that is the same trade
+// and it costs one line instead of six.
+//
+// Collapsed by default rather than by tier, because the fix has to hold in
+// Simple mode too: the space is the problem in both. A user who wants one of
+// them in the open promotes it with the existing sidebarNav.prefs `order`
+// contribution, which already exists and needs no new plumbing.
+const MORE_NAV_ID = 'more'
+
 // Two modes via the `compact` height variant (styles.css):
 //   tall    → each section is shrink-0, capped, its own scroller; Sessions is flex-1.
 //   compact → COMPACT_FLAT drops the caps so the whole stack scrolls as one.
@@ -511,6 +530,26 @@ export function ChatSidebar({
     () => applySidebarNavPrefs([...SIDEBAR_NAV, ...contributedNav].filter(shownInMode(interfaceMode)), navPrefs),
     [contributedNav, interfaceMode, navPrefs]
   )
+
+  // The second group's rows go behind one "More" row (see MORE_NAV_ID). The
+  // split is by index into the SAME array the divider uses, so the label, the
+  // collapsed set and the open set can never disagree about where the halves
+  // are - the bug a hand-maintained pair of id lists would eventually have.
+  const primaryNav = useMemo(() => {
+    const manageIds = new Set(
+      SIDEBAR_NAV.slice(MANAGE_NAV_FROM).map(item => item.id as string)
+    )
+
+    return {
+      // A contributed row arrives after the core list, so slicing by INDEX
+      // swept every plugin's nav row into the overflow - which is the opposite
+      // of what contributing one is for. Split on membership of the collapsed
+      // core group instead, so a plugin row is always visible and a core row a
+      // preference reordered forward stays open too.
+      open: navItems.filter(item => !manageIds.has(item.id as string)),
+      more: navItems.filter(item => manageIds.has(item.id as string))
+    }
+  }, [navItems])
 
   const panesFlipped = useStore($panesFlipped)
   const grouping = useStore($sidebarGrouping)
@@ -1658,20 +1697,7 @@ export function ChatSidebar({
         <SidebarGroup className="shrink-0 p-0 pb-2 pt-[calc(var(--titlebar-height)+0.375rem)]">
           <SidebarGroupContent>
             <SidebarMenu className="gap-px">
-              {navItems.map((item, navIndex) => {
-                // The label belongs BETWEEN the two groups, so it renders as a
-                // sibling of the row rather than as one. Returning it here would
-                // swallow the first manage row.
-                const groupLabel =
-                  navIndex === MANAGE_NAV_FROM ? (
-                    <SidebarGroupLabel
-                      className="h-5 px-2 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-quaternary)"
-                      data-tour="sidebar-nav-manage"
-                    >
-                      {s.manageGroup}
-                    </SidebarGroupLabel>
-                  ) : null
-
+              {(primaryNav.more.length > 0 ? primaryNav.open : navItems).map(item => {
                 const isInteractive = Boolean(item.action) || Boolean(item.route)
 
                 // `useLocation()` is inside the app's HashRouter, so `pathname` is
@@ -1779,9 +1805,7 @@ export function ChatSidebar({
                 // New session + route-backed pages can open in a split —
                 // right-click for the directional "Open in split" submenu.
                 return (
-                  <>
-                    {groupLabel}
-                    <SidebarMenuItem key={item.id}>
+                  <SidebarMenuItem key={item.id}>
                     {isNewSession || item.route ? (
                       <ContextMenu>
                         <ContextMenuTrigger asChild>{button}</ContextMenuTrigger>
@@ -1802,10 +1826,39 @@ export function ChatSidebar({
                     ) : (
                       button
                     )}
-                    </SidebarMenuItem>
-                  </>
+                  </SidebarMenuItem>
                 )
               })}
+              {primaryNav.more.length > 0 && (
+                <SidebarMenuItem>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton
+                        className="flex h-7 w-full justify-start gap-2 rounded-md border border-transparent px-2 text-left text-md font-medium text-(--ui-text-secondary) transition-colors fast ease-out [-webkit-app-region:no-drag] hover:bg-(--ui-control-hover-background) hover:text-foreground hover:transition-none data-[state=open]:bg-(--ui-control-hover-background) data-[state=open]:text-foreground"
+                        data-testid="sidebar-nav-more"
+                        data-tour="sidebar-nav-more"
+                      >
+                        <Codicon
+                          className="size-4 shrink-0 text-[color-mix(in_srgb,currentColor_72%,transparent)]"
+                          name="more"
+                        />
+                        <span className="min-w-0 truncate">{s.nav.more}</span>
+                        <span className="ml-auto text-xs tabular-nums text-(--ui-text-tertiary)">
+                          {primaryNav.more.length}
+                        </span>
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      {primaryNav.more.map(moreItem => (
+                        <DropdownMenuItem key={moreItem.id} onSelect={() => onNavigate(moreItem)}>
+                          <moreItem.icon className="size-4 shrink-0 text-[color-mix(in_srgb,currentColor_72%,transparent)]" />
+                          {s.nav[moreItem.id] ?? moreItem.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
