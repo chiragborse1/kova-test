@@ -581,7 +581,22 @@
     --sticky-human-top: 0.23rem;
     --file-tree-row-height: 1.375rem;
 
-    --composer-width: 100%;
+    /* The reading measure, and the ONE width the conversation column shares.
+       Prose was inheriting the window: the thread rendered 1713px of body text
+       at 13px, which measures 267 characters per line - roughly three times the
+       45-90 a person can actually track, and the single biggest reason the app
+       read as unfinished. The composer input was worse at 233.
+
+       68ch is the measure at the app's 13px conversation size (~490px): long
+       enough to hold a clause, short enough that the eye returns to the left
+       edge without losing the line. `ch` tracks the real font, so this stays
+       correct if the conversation size is ever retuned; the px equivalent is
+       kept beside it as the fallback for engines without ch on a custom prop.
+
+       Thread, composer, dock and intro all read this one token, so the column
+       cannot drift apart between them again. */
+    --conversation-measure: 68ch;
+    --composer-width: min(var(--conversation-measure), 100%);
     --composer-control-size: 1.5rem;
     --composer-control-primary-size: 1.625rem;
     --composer-control-gap: 0.25rem;
