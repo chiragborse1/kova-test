@@ -3933,8 +3933,15 @@ export const deOverrides = {
       capabilities: 'Fähigkeiten',
       messaging: 'Messaging',
       artifacts: 'Artefakte',
-      cron: 'Geplante Jobs'
+      cron: 'Geplante Jobs',
+      webhooks: 'Webhooks',
+      profiles: 'Profile',
+      agents: 'Agenten',
+      starmap: 'Speicher-Graph',
+      'command-center': 'Zentrale',
+      'session-import': 'Session importieren'
     },
+    manageGroup: 'Verwalten',
     searchAria: 'Sessions durchsuchen',
     searchPlaceholder: 'Sessions durchsuchen…',
     clearSearch: 'Suche löschen',

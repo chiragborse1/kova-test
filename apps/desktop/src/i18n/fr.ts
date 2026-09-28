@@ -3943,8 +3943,15 @@ export const frOverrides = {
       capabilities: 'Capacités',
       messaging: 'Messagerie',
       artifacts: 'Artefacts',
-      cron: 'Tâches planifiées'
+      cron: 'Tâches planifiées',
+      webhooks: 'Webhooks',
+      profiles: 'Profils',
+      agents: 'Agents',
+      starmap: 'Graphe mémoire',
+      'command-center': 'Centre de commande',
+      'session-import': 'Importer une session'
     },
+    manageGroup: 'Gérer',
     searchAria: 'Rechercher des sessions',
     searchPlaceholder: 'Rechercher des sessions…',
     clearSearch: 'Effacer la recherche',

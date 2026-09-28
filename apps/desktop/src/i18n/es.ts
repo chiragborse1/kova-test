@@ -3923,8 +3923,15 @@ export const esOverrides = {
       capabilities: 'Capacidades',
       messaging: 'Mensajería',
       artifacts: 'Artefactos',
-      cron: 'Tareas programadas'
+      cron: 'Tareas programadas',
+      webhooks: 'Webhooks',
+      profiles: 'Perfiles',
+      agents: 'Agentes',
+      starmap: 'Gráfico de memoria',
+      'command-center': 'Centro de control',
+      'session-import': 'Importar sesión'
     },
+    manageGroup: 'Gestionar',
     searchAria: 'Buscar sesiones',
     searchPlaceholder: 'Buscar sesiones…',
     clearSearch: 'Limpiar búsqueda',

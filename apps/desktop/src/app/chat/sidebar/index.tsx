@@ -17,6 +17,7 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem
@@ -138,12 +139,18 @@ import { $sidebarSessionRankIds } from '@/store/sidebar-sort'
 
 import {
   type AppView,
+  AGENTS_ROUTE,
   ARTIFACTS_ROUTE,
   CAPABILITIES_ROUTE,
+  COMMAND_CENTER_ROUTE,
   CRON_ROUTE,
   MESSAGING_ROUTE,
+  PROFILES_ROUTE,
+  SESSION_IMPORT_ROUTE,
   SIDEBAR_NAV_AREA,
-  type SidebarNavContribution
+  type SidebarNavContribution,
+  STARMAP_ROUTE,
+  WEBHOOKS_ROUTE
 } from '../../routes'
 import type { SidebarNavItem } from '../../types'
 import { type NewSessionSplitHandler, startNewSessionDrag } from '../new-session-drag'
@@ -242,8 +249,63 @@ const SIDEBAR_NAV: SidebarNavItem[] = [
     route: CRON_ROUTE,
     keybindActionId: 'nav.cron',
     tier: 'advanced'
+  },
+  // The second group. Every row here is a whole page the app can navigate to,
+  // and before this list the only ways to reach them were the command palette
+  // or a statusbar chip that ships hidden - `reachability.py` is the gate, and
+  // it fails if a core route has no entry point in the chrome.
+  //
+  // Split out rather than appended above, because that group is "what Kova
+  // does" and this is "what Kova is made of". Eleven undifferentiated rows read
+  // as a word list; two labelled groups read as a map.
+  {
+    id: 'webhooks',
+    label: '',
+    icon: props => <Codicon name="globe" {...props} />,
+    route: WEBHOOKS_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'profiles',
+    label: '',
+    icon: props => <Codicon name="organization" {...props} />,
+    route: PROFILES_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'agents',
+    label: '',
+    icon: props => <Codicon name="server-process" {...props} />,
+    route: AGENTS_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'starmap',
+    label: '',
+    icon: props => <Codicon name="type-hierarchy-sub" {...props} />,
+    route: STARMAP_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'command-center',
+    label: '',
+    icon: props => <Codicon name="dashboard" {...props} />,
+    route: COMMAND_CENTER_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'session-import',
+    label: '',
+    icon: props => <Codicon name="cloud-download" {...props} />,
+    route: SESSION_IMPORT_ROUTE,
+    tier: 'advanced'
   }
 ]
+
+// Index of the first row of the second group, so the render can put a label
+// between the halves. Counted from the array above rather than hardcoded, so a
+// row added to either group lands on the right side of the divider.
+const MANAGE_NAV_FROM = SIDEBAR_NAV.findIndex(item => item.id === 'webhooks')
 
 // Two modes via the `compact` height variant (styles.css):
 //   tall    → each section is shrink-0, capped, its own scroller; Sessions is flex-1.
@@ -1596,16 +1658,37 @@ export function ChatSidebar({
         <SidebarGroup className="shrink-0 p-0 pb-2 pt-[calc(var(--titlebar-height)+0.375rem)]">
           <SidebarGroupContent>
             <SidebarMenu className="gap-px">
-              {navItems.map(item => {
+              {navItems.map((item, navIndex) => {
+                // The label belongs BETWEEN the two groups, so it renders as a
+                // sibling of the row rather than as one. Returning it here would
+                // swallow the first manage row.
+                const groupLabel =
+                  navIndex === MANAGE_NAV_FROM ? (
+                    <SidebarGroupLabel
+                      className="h-5 px-2 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-quaternary)"
+                      data-tour="sidebar-nav-manage"
+                    >
+                      {s.manageGroup}
+                    </SidebarGroupLabel>
+                  ) : null
+
                 const isInteractive = Boolean(item.action) || Boolean(item.route)
 
-                const active =
-                  (item.id === 'capabilities' && currentView === 'capabilities') ||
-                  (item.id === 'messaging' && currentView === 'messaging') ||
-                  (item.id === 'artifacts' && currentView === 'artifacts') ||
-                  (item.id === 'cron' && currentView === 'cron') ||
-                  // Contributed rows light up at their own route.
-                  (currentView === 'extension' && Boolean(item.route) && pathname === item.route)
+                // `useLocation()` is inside the app's HashRouter, so `pathname` is
+                // the in-app route here (window.location.pathname is always "/").
+                // Compare the row's OWN route rather than naming ids in a chain:
+                // the old chain listed four of them by hand, so every nav row added
+                // since silently stopped lighting up.
+                // The highlight follows currentView, not the raw path: focusing a
+                // session tile reports 'chat' while the path is still /kanban, and
+                // the nav has to stand down then - the tile is the current thing,
+                // not the page behind it.
+                //
+                // The route compare replaces a hand-written chain of four ids, so a
+                // row added since no longer silently fails to light up.
+                // `useLocation()` is inside the app's HashRouter, so `pathname` is
+                // the in-app route; window.location.pathname is always "/".
+                const active = currentView !== 'chat' && Boolean(item.route) && pathname === item.route
 
                 const isNewSession = item.id === 'new-session'
 
@@ -1696,7 +1779,9 @@ export function ChatSidebar({
                 // New session + route-backed pages can open in a split —
                 // right-click for the directional "Open in split" submenu.
                 return (
-                  <SidebarMenuItem key={item.id}>
+                  <>
+                    {groupLabel}
+                    <SidebarMenuItem key={item.id}>
                     {isNewSession || item.route ? (
                       <ContextMenu>
                         <ContextMenuTrigger asChild>{button}</ContextMenuTrigger>
@@ -1717,7 +1802,8 @@ export function ChatSidebar({
                     ) : (
                       button
                     )}
-                  </SidebarMenuItem>
+                    </SidebarMenuItem>
+                  </>
                 )
               })}
             </SidebarMenu>

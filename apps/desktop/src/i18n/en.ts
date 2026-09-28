@@ -3555,8 +3555,17 @@ export const en: Translations = {
       capabilities: 'Capabilities',
       messaging: 'Messaging',
       artifacts: 'Artifacts',
-      cron: 'Scheduled jobs'
+      cron: 'Scheduled jobs',
+      webhooks: 'Webhooks',
+      profiles: 'Profiles',
+      agents: 'Agents',
+      starmap: 'Memory graph',
+      'command-center': 'Command center',
+      'session-import': 'Import a session'
     },
+    // Label for the second sidebar nav group - the destinations that are
+    // "what Kova is made of" rather than "what Kova does".
+    manageGroup: 'Manage',
     searchAria: 'Search sessions',
     searchPlaceholder: 'Search sessions…',
     clearSearch: 'Clear search',

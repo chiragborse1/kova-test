@@ -2984,6 +2984,9 @@ export interface Translations {
     }
     profileRail: string
     nav: Record<string, string>
+    /** Label for the second sidebar nav group - the destinations that are
+     *  "what Kova is made of" rather than "what Kova does". */
+    manageGroup: string
     searchAria: string
     searchPlaceholder: string
     clearSearch: string
