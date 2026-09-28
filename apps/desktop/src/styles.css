@@ -637,9 +637,9 @@
     --theme-mix-card: 38%;
     --theme-mix-elevated: 46%;
     --theme-mix-bubble: 46%;
-    --theme-neutral-chrome: #0d0d0e;
-    --theme-neutral-sidebar: #0a0a0b;
-    --theme-neutral-card: #161618;
+    --theme-neutral-chrome: #0d0d0d;
+    --theme-neutral-sidebar: #0a0a0a;
+    --theme-neutral-card: #161616;
 
     /* Dark-only accent palette overrides. */
     --ui-red: #e75e78;
