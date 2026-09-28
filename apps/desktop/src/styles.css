@@ -153,14 +153,23 @@
 
   --spacing-mul: var(--dt-spacing-mul, 1);
 
-  --radius-xs: calc(var(--radius-scalar) * 0.125rem);
-  --radius-sm: calc(var(--radius-scalar) * 0.5rem);
-  --radius-md: calc(var(--radius-scalar) * 0.625rem);
-  --radius-lg: calc(var(--radius-scalar) * 0.75rem);
-  --radius-xl: calc(var(--radius-scalar) * 1rem);
-  --radius-2xl: calc(var(--radius-scalar) * 1.5rem);
-  --radius-3xl: calc(var(--radius-scalar) * 2rem);
-  --radius-4xl: calc(var(--radius-scalar) * 2.5rem);
+  /* Kova's shape scale. Authored per step, not a global multiplier: the small
+     end must stay tight for a 20px control while the large end needs real
+     softness for a card, and no single scalar lands both. A ~1.4x progression
+     is what reads as one family.
+
+     This replaces a global 0.2x compression that collapsed the whole scale to
+     0.4-8px - the reason the product read as a grid of hard rectangles.
+     --radius-scalar survives for the xs step and for the web dashboard, so
+     removing it later cannot silently flatten every surface again. */
+  --radius-xs: calc(var(--radius-scalar) * 0.1875rem);
+  --radius-sm: 0.3125rem;
+  --radius-md: 0.4375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

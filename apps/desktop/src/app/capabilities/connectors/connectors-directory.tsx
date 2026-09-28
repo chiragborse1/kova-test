@@ -197,7 +197,12 @@ function Group({
         {group.id === 'off' ? <Note>{copy.offNote}</Note> : null}
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      {/* One surface per group, not one box per row. The rows inside are flat
+          and separate with whitespace; the hairline lives here. */}
+      <div
+        className="grid gap-0.5 rounded-xl border border-(--ui-stroke-tertiary)
+          bg-(--ui-bg-elevated) p-1.5 sm:grid-cols-2 sm:gap-x-1.5"
+      >
         {group.cards.map(card => {
           const key = cardKey(card)
 

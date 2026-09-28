@@ -80,10 +80,13 @@ export function ConnectorRowCard({
   return (
     <div
       className={cn(
-        'relative flex items-center gap-3 rounded-lg border p-3 transition-colors duration-100',
+        // Flat row, not a box. A card per row turned one list into 65 bordered
+        // rectangles; the group's own hairline (parent <ul>) carries the
+        // structure instead. See DESIGN.md "Flat, not boxed".
+        'relative flex items-center gap-3 rounded-lg p-3 transition-colors duration-100',
         selected
-          ? 'border-(--theme-primary) bg-(--ui-row-active-background)'
-          : 'border-(--ui-stroke-quaternary) bg-(--ui-bg-elevated) hover:bg-(--chrome-action-hover)'
+          ? 'bg-(--ui-row-active-background) shadow-[inset_0_0_0_1px_var(--theme-primary)]'
+          : 'hover:bg-(--chrome-action-hover)'
       )}
       data-connector={card.slug}
       data-slot="connector-row-card"
