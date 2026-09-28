@@ -34,7 +34,11 @@
      object on the page had a coloured box around it, which is the same
      complaint as the radius collapse, one level up. */
   --catalog-edge: 8%;
-  border-color: color-mix(in srgb, var(--catalog-accent) var(--catalog-edge), var(--ui-stroke-tertiary));
+  /* No resting border. The fill clears 1.21:1 against the canvas, so a
+     border here is an outline standing in for a surface that already
+     works - the same mistake as the 1.03:1 ladder this replaced.
+     The accent now lives only in the tint. */
+  border-color: transparent;
   background:
     radial-gradient(
       140% 100% at calc(var(--catalog-rest-x) + (var(--catalog-x) - var(--catalog-rest-x)) * var(--catalog-follow))
@@ -63,9 +67,12 @@
 }
 
 [data-catalog-card]:hover {
-  /* Matches the selected-option treatment (`border-primary ring-2 ring-primary/20`). */
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  /* The card lifts onto the next tier rather than growing an outline. The
+     border used to carry hover, which is why it was there at all; now the
+     surface ladder carries depth and the fill can carry the state. The ring
+     stays as a secondary cue for anyone who tracks the edge. */
+  background-color: var(--ui-bg-elevated);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-primary) 28%, transparent);
 }
 
 /* Uniform alternative to Masonry: same column tracks, cards in a row share one

@@ -70,7 +70,11 @@ export function CatalogCard({ entry, action, onOpen, onCategory, onTag, onSearch
   return (
     <article
       className={cn(
-        'group relative flex min-w-0 flex-col overflow-hidden rounded-lg border',
+        // No `border`: the card separates by its FILL now that the surface
+        // ladder carries depth. The accent lives in the tint. An outline
+        // here would be a box drawn to compensate for a surface that no
+        // longer needs one.
+        'group relative flex min-w-0 flex-col overflow-hidden rounded-lg',
         CARD_ACCENT
       )}
       data-catalog-card
