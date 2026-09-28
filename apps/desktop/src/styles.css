@@ -176,8 +176,22 @@
   --leading-snug: var(--ui-leading-snug);
   --leading-normal: var(--ui-leading-normal);
   --leading-relaxed: var(--ui-leading-relaxed);
-  /* Kova's spatial rhythm, on the same names Tailwind uses for spacing so
-     `p-3` means the same thing as `--ui-space-3`. */
+  /* Kova's spatial rhythm, on the names Tailwind uses for spacing, so that a
+     step MEANS something rather than being whatever the author typed.
+
+     The values are Tailwind's own 4px-grid steps. An earlier version of this
+     scale declared its own 8-step rhythm and aliased `--spacing-N` onto it,
+     which quietly rewrote every `p-N`/`h-N`/`gap-N`/`m-N` in the product:
+     `h-7` became 48px ("empty-state breathing room") and `h-8`..`h-10` fell
+     back to Tailwind's defaults, so the scale ran 24, 32, 48, 32, 36, 40 -
+     `h-7` TALLER than `h-10`. Nothing errored. The sidebar's nav rows ask for
+     `h-7` and rendered 48px tall, which left one session row visible in a
+     925px window.
+
+     `scripts/kova/spacing_scale.py` fails if any step stops being strictly
+     larger than the one before it, which is the only property a scale needs
+     to be usable as one. If you want a named rhythm, give it NEW names
+     (`--ui-gap-row` etc.) and leave `--spacing-*` alone. */
   --spacing-0: var(--ui-space-0);
   --spacing-1: var(--ui-space-1);
   --spacing-2: var(--ui-space-2);
@@ -2062,9 +2076,9 @@ body.guest-pointer-lock :is(webview, iframe) {
   --ui-space-2: 0.5rem;    /*  8px  icon to label, row padding      */
   --ui-space-3: 0.75rem;   /* 12px  between rows in a list          */
   --ui-space-4: 1rem;      /* 16px  card padding                    */
-  --ui-space-5: 1.5rem;    /* 24px  between groups                  */
-  --ui-space-6: 2rem;      /* 32px  page gutter                     */
-  --ui-space-7: 3rem;      /* 48px  empty-state breathing room      */
+  --ui-space-5: 1.25rem;   /* 20px  a control's own height           */
+  --ui-space-6: 1.5rem;    /* 24px  between groups                  */
+  --ui-space-7: 1.75rem;   /* 28px  a dense row: sidebar nav, tabs  */
 
   /* ── Kova's elevation ───────────────────────────────────────────────────
      Three steps, because the app has exactly three floating surfaces:
