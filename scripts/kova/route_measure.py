@@ -124,7 +124,12 @@ def main():
 
         print("  %-16s %-8s %8s %7d  %s" % (name, path, d["cpl"], d["clippedCols"], note))
 
-        if d["cpl"] > 120:
+        # Readable is 45-90. ui_audit.py's 120 is a smoke alarm for a surface
+        # that was catastrophically wrong (the transcript used to be 267); on a
+        # surface that is merely uncapped, 107 reads as "probably fine" - and
+        # that is how a missing cap survived two turns of being called a
+        # judgment call. Trip above 95.
+        if d["cpl"] > 95:
             bad.append("%s (%s): %d chars per line in a %dpx column - %s"
                        % (sym, path, d["cpl"], d["w"], d["txt"]))
         if d["clippedCols"]:

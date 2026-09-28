@@ -182,7 +182,14 @@ export function DetailColumn({
   return (
     <main className="flex min-h-0 flex-col overflow-hidden">
       <div className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
-        <div className="mx-auto max-w-2xl space-y-5 px-5 py-4">{children}</div>
+        <div className="mx-auto max-w-2xl space-y-5 px-5 py-4">
+          {/* max-w-2xl is a LAYOUT cap - it stops the pane sprawling on an
+              ultrawide. It is not a reading cap: a 12px caption in 672px
+              measured 107 chars per line, where 68ch of that same font is
+              403px. Cap the PROSE, so controls, tables and rows keep the
+              width the layout wants and only the text is reined in. */}
+          <div className="max-w-[min(var(--conversation-measure),100%)]">{children}</div>
+        </div>
       </div>
       {footer && (
         <div className="mx-auto w-full max-w-2xl shrink-0 px-5 pb-3 pt-1.5 text-right text-sm text-muted-foreground/50">
