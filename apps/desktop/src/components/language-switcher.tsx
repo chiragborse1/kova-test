@@ -172,7 +172,7 @@ function LanguageCommand({
               value={code}
             >
               <span className="min-w-0 flex-1 truncate">{meta.name}</span>
-              <span className="font-mono text-[0.65rem] uppercase text-(--ui-text-tertiary)">{code}</span>
+              <span className="font-mono text-sm uppercase text-(--ui-text-tertiary)">{code}</span>
               <CommandItemCheck checked={selected} />
             </CommandItem>
           )

@@ -35,11 +35,11 @@ export function ContextUsagePanel({ breakdown, loading, usage }: ContextUsagePan
   const segmentTotal = categories.reduce((sum, category) => sum + category.tokens, 0) || contextUsed || 1
 
   return (
-    <div className="flex w-72 flex-col gap-3 p-3 text-[0.75rem]" data-slot="context-usage-panel">
+    <div className="flex w-72 flex-col gap-3 p-3 text-base" data-slot="context-usage-panel">
       <div className="flex items-baseline justify-between gap-2">
         <p className="font-medium text-foreground">{copy.title}</p>
 
-        <span className="text-[0.6875rem] text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           {copy.tokenSummary(
             `${usage.context_estimated ? '~' : ''}${compactNumber(contextUsed)}`,
             compactNumber(contextMax)
@@ -47,7 +47,7 @@ export function ContextUsagePanel({ breakdown, loading, usage }: ContextUsagePan
         </span>
       </div>
 
-      <p className="text-[0.6875rem] text-foreground">
+      <p className="text-sm text-foreground">
         {usage.context_estimated ? '~' : ''}
         {copy.percentFull(contextPercent)}
       </p>
@@ -68,9 +68,9 @@ export function ContextUsagePanel({ breakdown, loading, usage }: ContextUsagePan
         ))}
       </ul>
 
-      {loading && !categories.length && <p className="text-[0.6875rem] text-muted-foreground">{copy.loading}</p>}
+      {loading && !categories.length && <p className="text-sm text-muted-foreground">{copy.loading}</p>}
 
-      {!loading && !categories.length && <p className="text-[0.6875rem] text-muted-foreground">{copy.empty}</p>}
+      {!loading && !categories.length && <p className="text-sm text-muted-foreground">{copy.empty}</p>}
     </div>
   )
 }

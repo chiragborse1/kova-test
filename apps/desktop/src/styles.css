@@ -162,6 +162,40 @@
      0.4-8px - the reason the product read as a grid of hard rectangles.
      --radius-scalar survives for the xs step and for the web dashboard, so
      removing it later cannot silently flatten every surface again. */
+  /* Kova's type ramp, exposed so components reference a scale step rather
+     than a number. The px values are in the token definitions above. */
+  --text-2xs: var(--ui-type-2xs);
+  --text-xs: var(--ui-type-xs);
+  --text-sm: var(--ui-type-sm);
+  --text-base: var(--ui-type-base);
+  --text-md: var(--ui-type-md);
+  --text-lg: var(--ui-type-lg);
+  --text-xl: var(--ui-type-xl);
+  --text-2xl: var(--ui-type-2xl);
+  --leading-tight: var(--ui-leading-tight);
+  --leading-snug: var(--ui-leading-snug);
+  --leading-normal: var(--ui-leading-normal);
+  --leading-relaxed: var(--ui-leading-relaxed);
+  /* Kova's spatial rhythm, on the same names Tailwind uses for spacing so
+     `p-3` means the same thing as `--ui-space-3`. */
+  --spacing-0: var(--ui-space-0);
+  --spacing-1: var(--ui-space-1);
+  --spacing-2: var(--ui-space-2);
+  --spacing-3: var(--ui-space-3);
+  --spacing-4: var(--ui-space-4);
+  --spacing-5: var(--ui-space-5);
+  --spacing-6: var(--ui-space-6);
+  --spacing-7: var(--ui-space-7);
+  /* Elevation and motion. */
+  --shadow-popover: var(--ui-elev-popover);
+  --shadow-dialog: var(--ui-elev-dialog);
+  --shadow-sheet: var(--ui-elev-sheet);
+  --duration-instant: var(--ui-duration-instant);
+  --duration-fast: var(--ui-duration-fast);
+  --duration-slow: var(--ui-duration-slow);
+  --ease-standard: var(--ui-ease-standard);
+  --ease-entrance: var(--ui-ease-entrance);
+  --ease-exit: var(--ui-ease-exit);
   --radius-xs: calc(var(--radius-scalar) * 0.1875rem);
   --radius-sm: 0.3125rem;
   --radius-md: 0.4375rem;
@@ -1944,6 +1978,70 @@ body.guest-pointer-lock :is(webview, iframe) {
 /* Dock glow intensity scale — dimmer in light mode (the primary glow reads
    much stronger over a light backdrop), full strength in dark mode. */
 :root {
+  /* ── Kova's type ramp ───────────────────────────────────────────────────
+     A designed type scale, not a list of sizes. 4px grid, 1.2 ratio, and a
+     CUIRED step: a strict ramp has no 12px, and a dense tool needs both 12
+     (UI chrome) and 13 (conversation body). A scale that cannot express the
+     sizes the product actually uses is a scale nobody follows.
+     The live app showed 10 distinct sizes, two of them one-decimal
+     accidents (10.2px, 13.9px) - the symptom of surfaces picking numbers. */
+  --ui-type-2xs: 0.5625rem;   /*  9px  a tick, a badge count        */
+  --ui-type-xs: 0.625rem;     /* 10px  metadata, timestamps        */
+  --ui-type-sm: 0.6875rem;     /* 11px  secondary UI, tool output   */
+  --ui-type-base: 0.75rem;     /* 12px  UI body - the default       */
+  --ui-type-md: 0.8125rem;     /* 13px  conversation body            */
+  --ui-type-lg: 0.9375rem;     /* 15px  card titles                 */
+  --ui-type-xl: 1.125rem;      /* 18px  page titles                 */
+  --ui-type-2xl: 1.375rem;     /* 22px  the empty-state wordmark    */
+  /* Line heights pair with the size, so leading is never a guess. */
+  --ui-leading-tight: 1.2;
+  --ui-leading-snug: 1.35;
+  --ui-leading-normal: 1.5;
+  --ui-leading-relaxed: 1.65;
+
+  /* ── Kova's spatial rhythm ──────────────────────────────────────────────
+     A 4px grid with named steps. The live app used six gap values
+     (0,1,2,4,6,8) with nothing tying them together, so density was an
+     accident of whoever wrote the class. Named steps make density a choice. */
+  --ui-space-0: 0;
+  --ui-space-1: 0.25rem;   /*  4px  inside a control               */
+  --ui-space-2: 0.5rem;    /*  8px  icon to label, row padding      */
+  --ui-space-3: 0.75rem;   /* 12px  between rows in a list          */
+  --ui-space-4: 1rem;      /* 16px  card padding                    */
+  --ui-space-5: 1.5rem;    /* 24px  between groups                  */
+  --ui-space-6: 2rem;      /* 32px  page gutter                     */
+  --ui-space-7: 3rem;      /* 48px  empty-state breathing room      */
+
+  /* ── Kova's elevation ───────────────────────────────────────────────────
+     Three steps, because the app has exactly three floating surfaces:
+     a popover, a dialog, and a sheet. Two cannot express that ordering;
+     four would be a scale nobody reaches for. A shadow is not decoration
+     here - it is the only cue that says "this is above that". */
+  --ui-elev-popover:
+    0 1px 2px -1px color-mix(in srgb, #000 22%, transparent),
+    0 4px 12px -4px color-mix(in srgb, #000 26%, transparent);
+  --ui-elev-dialog:
+    0 2px 4px -2px color-mix(in srgb, #000 26%, transparent),
+    0 12px 32px -8px color-mix(in srgb, #000 34%, transparent);
+  --ui-elev-sheet:
+    0 -2px 8px -4px color-mix(in srgb, #000 26%, transparent),
+    0 -16px 40px -12px color-mix(in srgb, #000 38%, transparent);
+  /* A surface in the page is not floating, so it has no shadow. Only an
+     edge or a fill change. That is the whole point of the flat rule. */
+  --ui-elev-none: none;
+
+  /* ── Kova's motion ──────────────────────────────────────────────────────
+     Three durations and two curves. Every one collapses under
+     prefers-reduced-motion rather than merely slowing: a 200ms slide is
+     still motion, and the point of the preference is that there is none. */
+  --ui-duration-instant: 0ms;
+  --ui-duration-fast: 120ms;
+  --ui-duration-base: 200ms;
+  --ui-duration-slow: 320ms;
+  --ui-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ui-ease-entrance: cubic-bezier(0, 0, 0.2, 1);
+  --ui-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
   --dock-glow-scale: 0.55;
   /* Unfocused chat surface (multi-pane): a pane the user isn't in recedes so
      the focused conversation reads as the one being worked in. Light needs a
@@ -3790,4 +3888,17 @@ html[data-hud-window] [data-slot='popover-content'] {
 
 [data-hud-shell] [data-slot='composer-bounds'] *::-webkit-scrollbar {
   display: none;
+}
+
+/* Reduced motion: collapse, do not slow. A 200ms slide is still motion, and
+   the reason the preference exists is that there should be none. The shell's
+   own pause switch (data-renderer-animations-paused) is separate and stays
+   where it was. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ui-duration-instant: 0ms;
+    --ui-duration-fast: 0ms;
+    --ui-duration-base: 0ms;
+    --ui-duration-slow: 0ms;
+  }
 }

@@ -166,7 +166,7 @@ export function CatalogDetail({
         ) : null
       )}
 
-      <p className="text-[0.65rem] leading-relaxed text-(--ui-text-quaternary)">{c.installHint}</p>
+      <p className="text-sm leading-relaxed text-(--ui-text-quaternary)">{c.installHint}</p>
 
       {related.length > 0 && (
         <section className="space-y-2">

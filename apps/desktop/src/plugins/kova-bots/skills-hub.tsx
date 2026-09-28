@@ -156,9 +156,9 @@ export function HubSkillsSection({ bot, onInstalled }: HubSkillsSectionProps) {
   return (
     <div className="grid gap-1.5 border-t border-(--ui-stroke-secondary) pt-2">
       <div className="flex items-baseline justify-between gap-2">
-        <div className="text-[0.7rem] font-medium text-(--ui-text-secondary)">{b.tools.skillsHub}</div>
+        <div className="text-sm font-medium text-(--ui-text-secondary)">{b.tools.skillsHub}</div>
         <Button
-          className="text-[0.65rem] text-(--ui-text-quaternary) hover:text-(--ui-text-secondary)"
+          className="text-sm text-(--ui-text-quaternary) hover:text-(--ui-text-secondary)"
           onClick={() => setBrowseHub(v => !v)}
           size="inline"
           variant="text"
@@ -197,7 +197,7 @@ export function HubSkillsSection({ bot, onInstalled }: HubSkillsSectionProps) {
               title={b.tools.skillsHub}
             />
           </div>
-          <div className="px-1 text-[0.65rem] leading-4 text-(--ui-text-quaternary)">
+          <div className="px-1 text-sm leading-4 text-(--ui-text-quaternary)">
             {installing ? h.installStarted(installing) : `${h.pickerHint} ${b.tools.resizeHint}`}
           </div>
         </div>
@@ -224,9 +224,9 @@ export function HubSkillsSection({ bot, onInstalled }: HubSkillsSectionProps) {
           {searching ? h.searching : h.search}
         </Button>
       </div>
-      {searching ? <div className="px-1 text-[0.65rem] text-(--ui-text-quaternary)">{b.tools.searchHint}</div> : null}
+      {searching ? <div className="px-1 text-sm text-(--ui-text-quaternary)">{b.tools.searchHint}</div> : null}
       {results === null ? null : results.length === 0 ? (
-        <div className="px-1 py-1.5 text-[0.7rem] text-(--ui-text-quaternary)">{h.noResults}</div>
+        <div className="px-1 py-1.5 text-sm text-(--ui-text-quaternary)">{h.noResults}</div>
       ) : (
         <div
           className="overflow-y-auto overscroll-contain"
@@ -240,11 +240,11 @@ export function HubSkillsSection({ bot, onInstalled }: HubSkillsSectionProps) {
                 <div className="min-w-0 flex-1">
                   <div className="truncate font-medium">{r.name}</div>
                   {r.description ? (
-                    <div className="truncate text-[0.65rem] text-(--ui-text-quaternary)">{r.description}</div>
+                    <div className="truncate text-sm text-(--ui-text-quaternary)">{r.description}</div>
                   ) : null}
                 </div>
                 {installed[r.name] ? (
-                  <span className="shrink-0 text-[0.65rem] text-(--ui-text-tertiary)">✓ {h.installed}</span>
+                  <span className="shrink-0 text-sm text-(--ui-text-tertiary)">✓ {h.installed}</span>
                 ) : (
                   <Button
                     aria-label={b.tools.installHint(r.name)}

@@ -132,7 +132,7 @@ function KindBadge({ kind }: { kind: PackageKind }) {
   const p = t.skills.plugins
 
   return (
-    <span className="inline-flex items-center gap-1 rounded border border-(--ui-stroke-tertiary) px-1.5 py-px text-[0.65rem] text-(--ui-text-tertiary)">
+    <span className="inline-flex items-center gap-1 rounded border border-(--ui-stroke-tertiary) px-1.5 py-px text-sm text-(--ui-text-tertiary)">
       {kind !== 'desktop' && <Package aria-hidden className="size-3" />}
       {kind !== 'agent' && <Monitor aria-hidden className="size-3" />}
       {kind === 'both' ? p.kindBoth : kind === 'agent' ? p.kindAgent : p.kindDesktop}
@@ -419,7 +419,7 @@ function PackageRow({
             />
           ) : pkg.desktopMissing ? (
             <Tip label={remoteBackend ? p.desktopHalfRemoteTip : p.desktopHalfPendingTip}>
-              <span className="text-[0.65rem] text-(--ui-text-tertiary)">
+              <span className="text-sm text-(--ui-text-tertiary)">
                 {remoteBackend ? p.desktopHalfRemote : p.desktopHalfPending}
               </span>
             </Tip>
@@ -433,7 +433,7 @@ function PackageRow({
             <>
               {agent.update_available && (
                 <Button
-                  className="h-5 px-1.5 text-[0.65rem]"
+                  className="h-5 px-1.5 text-sm"
                   disabled={busy}
                   onClick={() => onAgentUpdate(agent)}
                   size="xs"
@@ -462,7 +462,7 @@ function PackageRow({
             <Tip label={desktop.packageOrigin?.repo ? p.installAgentHereTip(scopeLabel) : p.installAgentHereNoOrigin}>
               <span>
                 <Button
-                  className="h-5 px-1.5 text-[0.65rem]"
+                  className="h-5 px-1.5 text-sm"
                   disabled={!desktop.packageOrigin?.repo}
                   onClick={() => installAgentHalfHere(desktop, scope)}
                   size="xs"
