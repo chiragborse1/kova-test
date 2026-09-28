@@ -372,14 +372,14 @@ export function SubagentRow({ node, depth = 0, nowMs }: { node: SubagentNode; de
         <span className="flex min-w-0 flex-1 flex-col gap-0.5">
           <span
             className={cn(
-              'wrap-anywhere text-md font-medium leading-[1.1rem] text-foreground/90 transition-colors group-hover:text-foreground',
+              'wrap-anywhere text-md font-medium leading-lg text-foreground/90 transition-colors group-hover:text-foreground',
               running && 'shimmer text-foreground/65'
             )}
           >
             {node.goal}
           </span>
           {subtitle.length > 0 ? (
-            <FadeText className="text-sm leading-[1.05rem] text-muted-foreground/65">
+            <FadeText className="text-sm leading-lg text-muted-foreground/65">
               {subtitle.join(' · ')}
             </FadeText>
           ) : null}

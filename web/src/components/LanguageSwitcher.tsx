@@ -150,7 +150,7 @@ function LanguageSwitcherOptions({
             aria-selected={selected}
             className={cn(
               "w-full text-left px-3 py-1.5 flex items-center gap-2 cursor-pointer",
-              "font-sans text-display text-xs tracking-[0.08em]",
+              "font-sans text-display text-xs tracking-wide",
               "hover:bg-accent hover:text-accent-foreground transition-colors",
               selected ? "font-semibold text-foreground" : "text-muted-foreground",
             )}

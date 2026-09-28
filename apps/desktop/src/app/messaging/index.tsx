@@ -864,7 +864,7 @@ function PlatformDetail({
       {hiddenCount > 0 && (
         <section>
           <button
-            className="flex w-full items-center justify-between gap-2 py-0.5 text-left text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-colors hover:text-foreground"
+            className="flex w-full items-center justify-between gap-2 py-0.5 text-left text-sm font-semibold uppercase tracking-caps text-muted-foreground transition-colors hover:text-foreground"
             onClick={() => setShowAdvanced(value => !value)}
             type="button"
           >
@@ -1034,7 +1034,7 @@ function MessagingField({
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h4 className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{children}</h4>
+  return <h4 className="text-sm font-semibold uppercase tracking-caps text-muted-foreground">{children}</h4>
 }
 
 function PlatformHint({ platform }: { platform: MessagingPlatformInfo }) {

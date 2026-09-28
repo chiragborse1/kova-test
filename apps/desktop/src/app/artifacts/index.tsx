@@ -522,7 +522,7 @@ function ArtifactImageCard({ artifact, failedImage, onImageError, onOpenChat }: 
 
       <div className="space-y-1.5 p-2">
         <div className="min-w-0">
-          <div className="mb-0.5 flex items-center gap-1 text-xs uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+          <div className="mb-0.5 flex items-center gap-1 text-xs uppercase tracking-wide text-(--ui-text-tertiary)">
             <FileImage className="size-3" />
             {kindLabel}
           </div>
@@ -691,7 +691,7 @@ function ArtifactTable({
 
   return (
     <table className="w-full min-w-176 table-fixed text-left text-[length:var(--conversation-caption-font-size)]">
-      <thead className="border-b border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) text-xs uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+      <thead className="border-b border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) text-xs uppercase tracking-wide text-(--ui-text-tertiary)">
         <tr>
           {ARTIFACT_COLUMNS.map(col => (
             <th className={cn(col.width(filter), 'px-2.5 py-1.5 font-medium')} key={col.id}>

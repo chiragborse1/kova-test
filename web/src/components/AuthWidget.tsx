@@ -91,7 +91,7 @@ export function AuthWidget({ className }: AuthWidgetProps) {
     return (
       <div
         className={cn(
-          "flex flex-col gap-1 px-5 py-2 text-[0.65rem] tracking-[0.05em] text-muted-foreground/70",
+          "flex flex-col gap-1 px-5 py-2 text-xs tracking-wide text-muted-foreground/70",
           className,
         )}
         role="status"
@@ -114,7 +114,7 @@ export function AuthWidget({ className }: AuthWidgetProps) {
     return (
       <div
         className={cn(
-          "h-9 px-5 py-2 text-[0.65rem] text-muted-foreground/40",
+          "h-9 px-5 py-2 text-xs text-muted-foreground/40",
           className,
         )}
         aria-busy="true"
@@ -139,7 +139,7 @@ export function AuthWidget({ className }: AuthWidgetProps) {
         "flex shrink-0 items-center justify-between gap-2",
         "px-5 py-2",
         "border-t border-current/10",
-        "text-[0.65rem] tracking-[0.05em]",
+        "text-xs tracking-wide",
         className,
       )}
       role="status"

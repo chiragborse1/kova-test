@@ -227,7 +227,7 @@ export function MaintenancePanel() {
 
         {share && Object.keys(share.urls).length > 0 && (
           <div className="mt-2 rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) p-3">
-            <div className="mb-1.5 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="mb-1.5 text-sm font-semibold uppercase tracking-caps text-muted-foreground">
               {mm.debugShareLinks}
             </div>
             {Object.entries(share.urls).map(([key, url]) => (
@@ -252,7 +252,7 @@ export function MaintenancePanel() {
 
         {actionStatus && (
           <div className="mt-2">
-            <div className="mb-1.5 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="mb-1.5 flex items-center gap-2 text-sm font-semibold uppercase tracking-caps text-muted-foreground">
               {mm.viewLog}
               {actionStatus.running && <span className="normal-case tracking-normal">{mm.running}</span>}
             </div>
@@ -348,7 +348,7 @@ export function MaintenancePanel() {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-1.5 text-xs font-medium uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+    <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
       {children}
     </div>
   )

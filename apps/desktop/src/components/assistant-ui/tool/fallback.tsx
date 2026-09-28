@@ -105,7 +105,7 @@ const TOOL_HEADER_GLYPH_WRAP_CLASS = cn(SCAFFOLD_GLYPH_CLASS, 'self-center')
 // Glass-style section label that sits above any pre/JSON/output block.
 // Lowercase tracking + tiny size so it reads as a quiet field label rather
 // than a chrome heading. Used for "stdout", "stderr", "Search results", etc.
-const TOOL_SECTION_LABEL_CLASS = 'mb-1 text-sm font-medium uppercase tracking-[0.08em] text-(--ui-text-tertiary)'
+const TOOL_SECTION_LABEL_CLASS = 'mb-1 text-sm font-medium uppercase tracking-wide text-(--ui-text-tertiary)'
 
 // Inset scroll surface for any detail body. The expanded tool row owns the
 // border; the payload itself is just clipped raw text.
@@ -681,7 +681,7 @@ function ToolEntry({ part }: ToolEntryProps) {
                   {detailSections.body && (
                     <pre
                       className={cn(
-                        'max-h-56 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-sm leading-[1.55] text-(--ui-text-secondary)',
+                        'max-h-56 overflow-auto whitespace-pre-wrap wrap-anywhere font-mono text-sm leading-relaxed text-(--ui-text-secondary)',
                         detailSections.summary && 'mt-1.5'
                       )}
                     >

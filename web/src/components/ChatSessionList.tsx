@@ -208,7 +208,7 @@ export function ChatSessionList({
               <span className="w-full truncate text-sm font-medium">
                 {rowLabel(s, t.sessions.untitledSession)}
               </span>
-              <span className="flex w-full items-center gap-1.5 text-[0.6875rem] text-text-tertiary">
+              <span className="flex w-full items-center gap-1.5 text-sm text-text-tertiary">
                 <span>{timeAgo(s.last_active)}</span>
                 {s.message_count > 0 && (
                   <>

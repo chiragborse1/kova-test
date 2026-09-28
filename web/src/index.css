@@ -187,6 +187,27 @@ code { font-size: 0.875rem; }
      progression; 5/7/10/14 is.
      `calc(var(--theme-radius) - 4px)` was the old form and produced exactly
      that: 2/8/10/14. */
+  /* Kova's type ramp - the same steps the desktop app uses, so `text-sm`
+     is 11px in both products rather than 11px here and 14px there. The
+     dashboard had stock Tailwind sizes behind these names, which meant the
+     same token meant two different things depending on the app. */
+  --text-2xs: 0.5625rem;
+  --text-xs: 0.625rem;
+  --text-sm: 0.6875rem;
+  --text-base: 0.75rem;
+  --text-md: 0.8125rem;
+  --text-lg: 0.9375rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.375rem;
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.65;
+  --tracking-none: 0;
+  --tracking-tight: 0.01em;
+  --tracking-wide: 0.04em;
+  --tracking-caps: 0.12em;
+
   --radius-sm: max(0px, calc(var(--theme-radius) - 2px));
   --radius-md: var(--theme-radius);
   --radius-lg: calc(var(--theme-radius) + 3px);

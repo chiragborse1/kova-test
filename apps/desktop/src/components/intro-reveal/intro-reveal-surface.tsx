@@ -84,7 +84,7 @@ export function IntroRevealSurface() {
       <BrandClose ref={brandRef} />
 
       <button
-        className="absolute bottom-6 right-7 text-base uppercase tracking-[0.24em] text-white/40 transition-colors hover:text-white/80"
+        className="absolute bottom-6 right-7 text-base uppercase tracking-caps text-white/40 transition-colors hover:text-white/80"
         onClick={skip}
         style={{ fontFamily: "'Collapse', sans-serif" }}
         type="button"
@@ -163,7 +163,7 @@ function HeroChat({ frame, viewportRef }: HeroChatProps) {
                 {done ? '✓' : SPINNER[frame.tick % SPINNER.length]}
               </span>
               <span
-                className="text-sm font-bold uppercase tracking-[0.18em] text-white/55"
+                className="text-sm font-bold uppercase tracking-caps text-white/55"
                 style={{ fontFamily: "'Collapse', sans-serif" }}
               >
                 {row.label}
@@ -319,7 +319,7 @@ function ViewportNode({ frame, viewportRef }: HeroChatProps) {
         }}
       >
         <div
-          className="flex items-center justify-between px-3 pt-2.5 text-2xs uppercase tracking-[0.2em] text-white/30"
+          className="flex items-center justify-between px-3 pt-2.5 text-2xs uppercase tracking-caps text-white/30"
           style={{ fontFamily: "'Collapse', sans-serif" }}
         >
           <span className="flex items-center gap-1.5">

@@ -126,7 +126,7 @@ function TokenBar({
         {segments.map((s, i) => (
           <div
             key={i}
-            className="relative flex items-center transition-all duration-300"
+            className="relative flex items-center transition-all duration-slow"
             style={{
               backgroundColor: `color-mix(in srgb, ${s.color} 70%, transparent)`,
               width: `${(s.value / total) * 100}%`,

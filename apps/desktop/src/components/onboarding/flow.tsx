@@ -279,7 +279,7 @@ function ConfirmingModelPanel({
         )}
       >
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="font-mono text-xs uppercase tracking-caps text-muted-foreground">
             {t.onboarding.defaultModel}
           </span>
           {freeTier === true && (

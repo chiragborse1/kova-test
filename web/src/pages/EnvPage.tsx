@@ -1073,7 +1073,7 @@ function EnvCategoryCard({
               type="button"
               onClick={() => setShowAll((open) => !open)}
               aria-expanded={showAll}
-              className="shrink-0 cursor-pointer border-0 bg-transparent p-0 font-mondwest text-xs tracking-[0.08em] text-text-secondary transition-colors hover:text-foreground"
+              className="shrink-0 cursor-pointer border-0 bg-transparent p-0 font-mondwest text-xs tracking-wide text-text-secondary transition-colors hover:text-foreground"
             >
               {showAll ? t.env.showLess : t.env.showMore}
             </button>

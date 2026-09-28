@@ -120,7 +120,7 @@ export function DecodedLabel({ leaving, text }: { leaving?: boolean; text: strin
   return (
     <span
       className={cn(
-        'inline-flex items-center font-mono text-xs font-semibold uppercase tracking-[0.28em] tabular-nums text-primary transition slow ease-out',
+        'inline-flex items-center font-mono text-xs font-semibold uppercase tracking-caps tabular-nums text-primary transition slow ease-out',
         leaving ? 'translate-y-2 opacity-0 saturate-0' : 'translate-y-0 opacity-100 saturate-100'
       )}
     >
@@ -161,7 +161,7 @@ export function HackeryButton({
     >
       <span className="text-primary/40 transition-colors group-hover:text-primary">[</span>
       {loading ? <Loader2 className="size-3 animate-spin" /> : null}
-      <span className="-mr-[0.25em] pl-[0.25em] tracking-[0.25em]">{label}</span>
+      <span className="-mr-[0.25em] pl-[0.25em] tracking-caps">{label}</span>
       <span className="text-primary/40 transition-colors group-hover:text-primary">]</span>
     </button>
   )

@@ -28,7 +28,7 @@ export function SideAgents({ active, side, tick }: SideAgentsProps) {
       }}
     >
       <div
-        className="mb-3 flex items-center gap-2 text-base uppercase tracking-[0.18em] text-white/50"
+        className="mb-3 flex items-center gap-2 text-base uppercase tracking-caps text-white/50"
         style={{ fontFamily: "'Collapse', sans-serif" }}
       >
         <span

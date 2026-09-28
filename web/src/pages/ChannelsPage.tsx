@@ -913,7 +913,7 @@ function WhatsAppOnboardingPanel({
 
         <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
           <div className="grid gap-1.5">
-            <span className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+            <span className="text-xs uppercase tracking-caps text-muted-foreground">
               Mode
             </span>
             <div className="flex flex-wrap gap-2">
@@ -1365,7 +1365,7 @@ function TelegramOnboardingPanel({
 
                 <div className="grid gap-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                    <span className="text-xs uppercase tracking-caps text-muted-foreground">
                       Allowed users
                     </span>
                     {detectedOwnerId && allowedIds.includes(detectedOwnerId) && (

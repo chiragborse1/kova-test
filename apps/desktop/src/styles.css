@@ -196,6 +196,10 @@
   --ease-standard: var(--ui-ease-standard);
   --ease-entrance: var(--ui-ease-entrance);
   --ease-exit: var(--ui-ease-exit);
+  --tracking-none: var(--ui-tracking-none);
+  --tracking-tight: var(--ui-tracking-tight);
+  --tracking-wide: var(--ui-tracking-wide);
+  --tracking-caps: var(--ui-tracking-caps);
   --radius-xs: calc(var(--radius-scalar) * 0.1875rem);
   --radius-sm: 0.3125rem;
   --radius-md: 0.4375rem;
@@ -1998,6 +2002,15 @@ body.guest-pointer-lock :is(webview, iframe) {
   --ui-leading-snug: 1.35;
   --ui-leading-normal: 1.5;
   --ui-leading-relaxed: 1.65;
+  /* Absolute leadings, for type whose leading is a fixed relationship to a
+     size step rather than a ratio. A 9px terminal line at 0.85rem and a 13px
+     body at 1.1rem are different relationships, so no single ratio covers
+     both without breaking when the size changes. */
+  --ui-leading-2xs: 0.8125rem;
+  --ui-leading-xs: 0.9375rem;
+  --ui-leading-sm: 1.0625rem;
+  --ui-leading-md: 1.125rem;
+  --ui-leading-lg: 1.4375rem;
 
   /* ── Kova's spatial rhythm ──────────────────────────────────────────────
      A 4px grid with named steps. The live app used six gap values
@@ -2029,6 +2042,25 @@ body.guest-pointer-lock :is(webview, iframe) {
   /* A surface in the page is not floating, so it has no shadow. Only an
      edge or a fill change. That is the whole point of the flat rule. */
   --ui-elev-none: none;
+
+  /* ── Kova's letter-spacing ───────────────────────────────────────────────
+     The scale most interfaces forget they have. The app used 18 different em
+     values across 87 sites, from 0.02em (a timer, where uneven digit widths
+     are visible) to 0.42em (the wordmark). A label at 0.06 beside one at
+     0.08 is a difference nobody chose.
+
+     Four steps, by what the tracking is FOR - not by size:
+       none   body and UI text; tracking changes the texture of text you read
+       tight  dense metadata where letters must not collide
+       wide   small uppercase labels and section eyebrows
+       caps   display type, where wide tracking IS the point
+
+     0.12em is where the mass of the app already sits, so the scale is
+     anchored on real usage rather than on a theory. */
+  --ui-tracking-none: 0;
+  --ui-tracking-tight: 0.01em;
+  --ui-tracking-wide: 0.04em;
+  --ui-tracking-caps: 0.12em;
 
   /* ── Kova's motion ──────────────────────────────────────────────────────
      Three durations and two curves. Every one collapses under
