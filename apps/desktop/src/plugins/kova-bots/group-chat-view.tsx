@@ -726,6 +726,38 @@ export function GroupChatWorkspace({ group, members, onBack, visible = true }: G
   // composer. Matches the 1:1 chat's drop affordance.
   const [dragOver, setDragOver] = useState(false)
 
+  // A drag can end WITHOUT the element ever seeing dragleave: the user drags
+  // off the window, drops somewhere the page cannot handle (another app, the
+  // desktop), or presses Escape to abort. In every one of those cases the
+  // browser fires dragend at the SOURCE and stops sending drag events to us,
+  // so `dragOver` stays true and the dropzone stays painted - a full-window
+  // 2px dashed accent border with no droppable payload under it. Confirmed
+  // live: it rendered at opacity 1, visibility visible, isConnected, and the
+  // label text was empty because the i18n bundle had not resolved it.
+  // dragend and Escape are the only two signals that survive a cancelled drag,
+  // so listen to both. A window-level dragend covers every drag source,
+  // including ones outside this component.
+  useEffect(() => {
+    if (!dragOver) {
+      return
+    }
+
+    const onDragEnd = () => setDragOver(false)
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setDragOver(false)
+      }
+    }
+
+    window.addEventListener('dragend', onDragEnd)
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      window.removeEventListener('dragend', onDragEnd)
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [dragOver])
+
   const dropFiles = (event: DragEvent<HTMLDivElement>) => {
     const files = [...(event.dataTransfer?.files || [])]
     setDragOver(false)
@@ -1332,7 +1364,7 @@ export function GroupChatWorkspace({ group, members, onBack, visible = true }: G
     >
       {dragOver ? (
         <div
-          className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center border-2 border-dashed border-(--ui-accent) text-sm font-medium text-(--ui-accent)"
+          className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center border border-dashed border-(--ui-stroke-primary) bg-(--ui-accent)/[0.04] text-sm font-medium text-(--ui-accent)"
           key={'dropzone'}
         >
           {replyThread ? b.group.dropToThread : b.group.dropToRoom}
