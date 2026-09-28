@@ -278,7 +278,7 @@ function ConnectedProviderRow({
   const showHint = !canDisconnect && !terminalDisconnect
 
   return (
-    <div className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-[6px] transition-colors hover:bg-(--ui-control-hover-background)">
+    <div className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-md transition-colors hover:bg-(--ui-control-hover-background)">
       <RowButton
         className="min-w-0 px-3 py-2.5 text-left"
         onClick={() => (terminalDisconnect ? onTerminalDisconnect(provider) : onSelect(provider))}
@@ -367,7 +367,7 @@ function LocalEndpointRow({ onOpen }: { onOpen: (reason: null | string) => void 
 
   return (
     <RowButton
-      className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-[6px] px-3 py-2.5 text-left transition-colors hover:bg-(--ui-control-hover-background)"
+      className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-(--ui-control-hover-background)"
       onClick={() => onOpen(null)}
     >
       <div className="flex min-w-0 flex-col gap-0.5">
