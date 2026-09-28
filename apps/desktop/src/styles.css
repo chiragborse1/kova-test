@@ -1616,6 +1616,22 @@ body.guest-pointer-lock :is(webview, iframe) {
     background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 40%, transparent);
   }
 
+  /* A scroll container whose overflow is PART of its content needs a
+     persistent cue. The global rule above hides every scrollbar until hover,
+     which is right for a list you are already dragging and wrong for a
+     filter rail: the capabilities facets held 1100px of rows in a 783px box,
+     the scrollbar only appeared on hover, and the rail therefore read as
+     ending at its last visible row. Someone filtering by tag needs to know
+     tags exist BEFORE they move the pointer.
+     */
+  .scrollbar-cue::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 22%, transparent);
+  }
+
+  .scrollbar-cue:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 34%, transparent);
+  }
+
   /* Hover marquee: a truncated line that scrolls its overflow into view while
      hovered. Opt-in via .hover-marquee + an inner .hover-marquee-inner; the
      JS side measures the overflow on pointerenter and sets --marquee-d (and

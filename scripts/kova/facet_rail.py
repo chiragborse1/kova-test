@@ -64,13 +64,22 @@ PROBE = r"""JSON.stringify((()=>{
     sections.push({ label: t, y: Math.round(el.getBoundingClientRect().top) });
   }
 
-  // Does anything LOOK scrollable? A visible, non-fading scrollbar is the
-  // affordance; a hidden one is not.
-  const style = getComputedStyle(scroller);
+  // Does anything LOOK scrollable? Checking `overflow-y: scroll` is not the
+  // test: this app hides every scrollbar until hover, so a rail can be
+  // scrollable and still read as ending at its last visible row. What matters
+  // is whether a thumb is actually painted, which is what the caller sees.
+  const thumbRule = [...document.styleSheets]
+    .flatMap(sheet => { try { return [...sheet.cssRules]; } catch { return []; } })
+    .flatMap(rule => (rule.cssRules ? [...rule.cssRules] : [rule]))
+    .filter(rule => rule.selectorText && /scrollbar-thumb/.test(rule.selectorText))
+    .find(rule => {
+      try { return scroller.matches(rule.selectorText.replace(/::.*/, '')); } catch { return false; }
+    });
+  const thumbColour = thumbRule ? thumbRule.style.backgroundColor || thumbRule.style.background : '';
   const scrollbarVisible =
     scroller.offsetWidth - scroller.clientWidth > 0 &&
-    !/hidden/.test(style.scrollbarWidth) &&
-    style.overflowY === 'scroll';
+    Boolean(thumbColour) &&
+    !/transparent|rgba\(0, 0, 0, 0\)/.test(thumbColour);
 
   return {
     found: true,
