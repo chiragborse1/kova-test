@@ -381,11 +381,19 @@ def main():
         # popular-queries era.
         "skills.sh": 10000,
         "lobehub": 100,
-        # ClawHub had 49,698+ skills as of May 2026 — anything under 20k means
-        # pagination broke or the API surface changed.  Fail loudly rather
-        # than ship a degenerate index (we shipped 200/50000 silently for
-        # weeks because the floor was 50).
-        "clawhub": 20000,
+        # ClawHub's catalog is ~50k, but a COMPLETE walk measures ~2,650 s and
+        # the docs deploy's job is killed at 30 min, so the offline build walks to
+        # a wall-clock budget instead (CATALOG_INDEX_WALK_BUDGET_SECONDS in
+        # tools/skills_hub_clawhub.py) and yields ~18.8 skills/s. Measured on
+        # the live API: 902 s -> 16,921 skills.
+        #
+        # The floor is therefore what that budget reliably clears with margin,
+        # not the full catalog. It still catches a collapsed or broken tap,
+        # which lands in the hundreds - we shipped 200/50,000 silently for
+        # weeks when the floor was 50.
+        #
+        # Raise it only together with the budget: the two are one decision.
+        "clawhub": 16000,
         "official": 50,
         "github": 30,        # collapsed across all GitHub taps
         "browse-sh": 50,

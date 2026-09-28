@@ -62,7 +62,7 @@ def _first_str(*values: Any) -> Optional[str]:
 #: browse keeps CATALOG_WALK_BUDGET_SECONDS (12 s); the index builder gets a
 #: window long enough to build a real index but short enough to finish inside
 #: the docs deploy's 30-minute job. See _load_catalog_index.
-CATALOG_INDEX_WALK_BUDGET_SECONDS = 900
+CATALOG_INDEX_WALK_BUDGET_SECONDS = 1100
 
 
 class ClawHubSource(GuardedFetchMixin, SkillSource):
