@@ -48,6 +48,7 @@ import { BILLING_VIEWS, BillingSettings, type BillingSubView } from './billing'
 import { deriveBillingView, useBillingState, useSubscriptionState } from './billing/use-billing-state'
 import { ConfigSettings } from './config-settings'
 import { SECTIONS } from './constants'
+import { bandFor, bandRank } from './settings-rail-bands'
 import { GatewaySettings } from './gateway-settings'
 import { KeybindSettings } from './keybind-settings'
 import { KEYS_VIEWS, KeysSettings, type KeysView } from './keys-settings'
@@ -228,6 +229,12 @@ export function SettingsView({ onClose, onConfigSaved, onMainModelChanged }: Set
     }
   }
 
+  // The band KEY and the sort order live in ./settings-rail-bands so the rule
+  // can be tested without a DOM, and so the table and the sort cannot drift
+  // apart. Only the LABEL lives here, because it needs the active locale.
+  const bandLabel = (key: string | null): string | undefined =>
+    key ? t.settings.bands[key as keyof typeof t.settings.bands] : undefined
+
   const navGroups: OverlayNavGroup[] = useMemo(
     () =>
       (
@@ -393,7 +400,21 @@ export function SettingsView({ onClose, onConfigSaved, onMainModelChanged }: Set
             onSelect: () => setActiveView('about')
           }
         ] as OverlayNavGroup[]
-      ).map(group => {
+      )
+        // Grouping has to REORDER, not just label. In source order the bands
+        // interleave - Advanced sits between Browser and Notifications, Tools &
+        // Keys sits between Keyboard Shortcuts and Sessions - so labelling alone
+        // drew 13 headings for 22 rows: a list of interruptions rather than a
+        // map. Sort into contiguous bands first, keeping the author's order
+        // WITHIN each band, then label only where the band actually changes.
+        .map((group, index) => ({ group, index, band: bandFor(group.id) }))
+        .sort((a, b) => bandRank(a.band) - bandRank(b.band) || a.index - b.index)
+        .map(({ group, band }, index, all) => {
+          const previous = index > 0 ? all[index - 1].band : null
+
+          return { ...group, bandLabel: band !== previous ? bandLabel(band) : undefined }
+        })
+        .map(group => {
         const view = group.id as SettingsViewId
         const children = settingsSubpages(view)
 

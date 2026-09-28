@@ -766,6 +766,16 @@ export interface Translations {
       notifications: string
       vault: string
     }
+    /** Band headings for the Settings rail; the first band is unlabelled. */
+    bands: {
+      bandDevice: string
+      bandSecurity: string
+      bandAgents: string
+      bandConnections: string
+      bandAccount: string
+      bandSystem: string
+    }
+
     plugins: {
       title: string
       blurb: string

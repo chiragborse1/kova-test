@@ -172,6 +172,21 @@ export interface OverlayNavGroup extends OverlayNavLink {
   /** Visual break before this group — a spacer on the rail, a separator in
    *  the dropdown. */
   gapBefore?: boolean
+  /**
+   * Band heading drawn above this row, and above the rows that follow until
+   * the next heading.
+   *
+   * OpenClaw's settings design doc states the rule this follows: "Sections
+   * are typography, not chrome. Grouping comes from whitespace + a small
+   * uppercase heading — never a card header." A 22-row rail with no banding
+   * asks the reader to already know which of 22 names belongs to the thing
+   * they are after; `Providers`, `Gateways`, `Tools & Keys` and
+   * `Passwords & Logins` are all credentials and nothing on screen says so.
+   *
+   * A row with no heading continues the band above it, so the first band
+   * costs no vertical space and needs no label.
+   */
+  bandLabel?: string
 }
 
 // Data-driven pane nav: one model renders a persistent left rail on wide
@@ -217,6 +232,20 @@ export function OverlayNav({ footer, groups }: { footer?: ReactNode; groups: Ove
           return (
             <Fragment key={group.id}>
               {group.gapBefore && <div aria-hidden className="h-2" />}
+              {group.bandLabel && (
+                // A heading, not a card: uppercase, quiet, and OUTSIDE any
+                // surface. `role="presentation"` keeps it out of the tab order
+                // and out of the accessibility tree as a landmark - it labels
+                // the rows below it visually, and each row already carries its
+                // own accessible name.
+                <div
+                  className="px-2 pb-1 pt-3 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-quaternary)"
+                  data-nav-group-label=""
+                  role="presentation"
+                >
+                  {group.bandLabel}
+                </div>
+              )}
               <div className="relative">
                 <OverlayNavItem
                   active={group.active}

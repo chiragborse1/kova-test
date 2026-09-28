@@ -846,7 +846,17 @@ export const frOverrides = {
       about: 'À propos',
       billing: 'Facturation',
       notifications: 'Notifications',
-      vault: 'Mots de passe et identifiants'
+      vault: 'Mots de passe et identifiants',
+    },
+    // Band headings for the Settings rail. The first band is unlabelled
+    // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
+    bands: {
+      bandDevice: 'Cet appareil',
+      bandSecurity: 'Sécurité et données',
+      bandAgents: 'Agents et modèles',
+      bandConnections: 'Connexions',
+      bandAccount: 'Compte',
+      bandSystem: 'Système',
     },
     plugins: {
       title: 'Plugins du desktop',
