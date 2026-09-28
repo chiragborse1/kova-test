@@ -239,7 +239,7 @@ export function OverlayNav({ footer, groups }: { footer?: ReactNode; groups: Ove
                 // the rows below it visually, and each row already carries its
                 // own accessible name.
                 <div
-                  className="px-2 pb-1 pt-3 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-quaternary)"
+                  className="flex h-8 shrink-0 items-center px-2 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-quaternary)"
                   data-nav-group-label=""
                   role="presentation"
                 >
