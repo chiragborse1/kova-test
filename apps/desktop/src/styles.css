@@ -384,15 +384,31 @@
       var(--ui-accent) var(--theme-fill-quinary-accent-mix),
       color-mix(in srgb, var(--ui-base) 3%, transparent)
     );
+    /* Row states lift toward the SURFACE, not toward the accent.
+       These used to mix the accent against `color-mix(base N%, transparent)`,
+       which is a bug twice over: alpha interpolates, so the second colour is
+       mostly-transparent and the row composites over whatever is behind it
+       rather than over the sidebar; and the result carried the accent hue, so
+       the selected session was a violet block. Measured live at
+       rgb(157,123,255) at 12.6% - saturation 0.48 on a neutral sidebar.
+
+       The reference does the opposite and does it plainly: its selected row
+       is #212121 on an #181818 sidebar - a pure grey lift at 1.10:1, with no
+       colour in it at all. Selection is carried by the lift plus the
+       foreground weight, and the accent stays free for the composer ring and
+       the primary action.
+
+       Mixing against --ui-base (an opaque neutral) rather than `transparent`
+       also makes the result independent of what is painted underneath. */
     --ui-row-hover-background: color-mix(
       in srgb,
-      var(--ui-accent) var(--theme-row-hover-accent-mix),
-      color-mix(in srgb, var(--ui-base) 3%, transparent)
+      var(--ui-base) 4%,
+      var(--ui-bg-sidebar)
     );
     --ui-row-active-background: color-mix(
       in srgb,
-      var(--ui-accent) var(--theme-row-active-accent-mix),
-      color-mix(in srgb, var(--ui-base) 5%, transparent)
+      var(--ui-base) 9%,
+      var(--ui-bg-sidebar)
     );
     /* Open in a pane, but not the FOCUSED one: the active band at reduced
        strength, so every session on screen is marked and the one you're in
