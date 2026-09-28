@@ -41,7 +41,7 @@ function AlertDescription({ className, ...props }: React.ComponentProps<'div'>) 
   return (
     <div
       className={cn(
-        'col-start-2 grid justify-items-start gap-1 text-muted-foreground [&_p]:leading-relaxed',
+        'col-start-2 grid max-w-[min(var(--conversation-measure),100%)] justify-items-start gap-1 text-muted-foreground [&_p]:leading-relaxed',
         className
       )}
       data-slot="alert-description"
