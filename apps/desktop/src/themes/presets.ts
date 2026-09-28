@@ -48,14 +48,24 @@ export const DEFAULT_TYPOGRAPHY: DesktopThemeTypography = { fontSans: SYSTEM_SAN
  * Kova - the first-party default identity.
  *
  * Unlike `nous` (a GitHub-chrome fork carrying a blue accent), this preset
- * is Kova's own: a violet-leaning neutral ramp with a single purple accent
- * family, authored in OKLCH-friendly steps so the light and dark palettes
- * share one hue rather than drifting.
+ * is Kova's own: a fully NEUTRAL dark surface ramp carrying a single violet
+ * accent. The accent is spent once, on selection and the focus ring; every
+ * surface below it is a pure grey. The earlier dark ramp pushed each surface
+ * tier along the violet hue to buy contrast, which read as a purple-tinted
+ * app rather than a dark app with an accent - saturation on six planes at
+ * once is what made it feel like a colour scheme instead of a UI.
  *
- * `#6d3bf5` is the light-mode brand accent, measured at 5.61:1 on the
- * `#fbfafc` background; dark lifts to `#9d7bff` for 6.33:1 against `#0b0910`.
- * Both clear WCAG AA, and scripts/kova/check_contrast.py asserts every pair
- * in the palette so a future tweak cannot quietly regress legibility.
+ * The dark ground is `#0d0d0d`; the ladder climbs #1e1e1e -> #333333 -> #4a4a4a.
+ * Violet `#6d3bf5` is the light-mode brand accent at 5.61:1 on `#fbfafc`; dark
+ * lifts to `#9d7bff` for 6.21:1 against `#0d0d0d`. Both clear WCAG AA, and
+ * scripts/kova/kova_contrast.py asserts every pair in the palette so a future
+ * tweak cannot quietly regress legibility.
+ *
+ * NOTE the palette seeds are not the pixels: dark surfaces are
+ * `color-mix()`ed toward `--theme-neutral-*` in styles.css, so those mixing
+ * partners are themselves exact greys. A blue-cast neutral (`#161618`)
+ * re-tints every derived tier no matter how neutral the seed is.
+ *
  * Terminal palettes are tuned to the same ramp so the embedded shell matches
  * the app chrome.
  */
