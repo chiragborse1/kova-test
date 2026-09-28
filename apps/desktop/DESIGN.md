@@ -27,12 +27,12 @@ one-off at the call site.
 1. **Flat, not boxed.** No card-in-card, no divider borders inside a panel.
    Group with whitespace and a single hairline, never nested rounded boxes.
 2. **Borderless elevation for floating panels.** Overlays float on
-   `shadow-nous` + a `--stroke-nous` hairline, not thick framed boxes. In-panel
+   `shadow-dialog` + a `--stroke-nous` hairline, not thick framed boxes. In-panel
    structure may use token hairlines sparingly.
 3. **One primitive per concern.** One `Button`, one set of control variants,
    one `SearchField`, one `Loader`, one `ErrorState`. Migrate onto them; don't
    fork.
-4. **Tokens, not literals.** Reference CSS vars (`--ui-*`, `--shadow-nous`,
+4. **Tokens, not literals.** Reference CSS vars (`--ui-*`, `--ui-elev-*`,
    `--theme-*`), never raw hex / ad-hoc rgba in components.
 5. **Style lives in the primitive.** Variants and sizes own padding, radius,
    color, chrome. Call sites pass a `variant`/`size`, not `className` overrides
@@ -42,6 +42,44 @@ one-off at the call site.
    something.
 7. **Immediate feedback.** Direct manipulation updates the view first. Network
    or disk persistence reconciles afterward and rolls back visibly on failure.
+
+## The four scales
+
+A designed interface is built from four scales. Each has exactly one owner,
+and a value that is not on its scale is a decision nobody made. These live in
+`:root` in `styles.css`; the Tailwind aliases that expose them to utilities
+live in `@theme inline` right below, because `@theme` is consumed at build
+time and a token defined only there never reaches the browser.
+
+**Shape.** `xs 3px · sm 5 · md 7 · lg 10 · xl 14 · 2xl 18 · 3xl 24 · 4xl 32`
+— the `rounded-*` utilities. Authored per step, never a global multiplier: a
+single scalar cannot put both `xs` and `4xl` where a designed system wants
+them, because a small control needs a tight corner and a card needs
+softness. Anything over `4xl` is a squircle or a circle, not a scale step.
+
+**Type.** `2xs 9 · xs 10 · sm 11 · base 12 · md 13 · lg 15 · xl 18 · 2xl 22`,
+on a 4px grid and a 1.2 ratio, with a **cuired** step: a strict ramp has no
+12px, and this is a dense tool that needs 12 for UI chrome and 13 for
+conversation body. Pair with `--ui-leading-*` (tight/snug/normal/relaxed) so
+leading is never a separate guess. Display sizes (the empty-state wordmark)
+are deliberately off-ramp.
+
+**Space.** `--ui-space-0…7` on a 4px grid, aliased onto Tailwind's own
+`--spacing-*` so `p-3` means the same thing as `--ui-space-3`. Density
+becomes a choice instead of an accident of whoever wrote the class.
+
+**Elevation.** `popover · dialog · sheet · none` — three levels, because the
+app has exactly three floating surfaces. Two cannot express that ordering;
+four would be a scale nobody reaches for. **A shadow is not decoration: it is
+the only cue that says this is above that.** A surface *in* the page gets
+`none` and separates with an edge or a fill change instead. Write the colour
+as literal `rgba`, not `color-mix(… , transparent)`: mixing black with
+`transparent` interpolates alpha and yields a fully transparent shadow.
+
+**Motion.** `instant · fast 120ms · base 200ms · slow 320ms` and two curves.
+`prefers-reduced-motion: reduce` **collapses every duration to 0** rather
+than slowing them — a 200ms slide is still motion, and the reason the
+preference exists is that there should be none.
 
 ## Information architecture
 
@@ -83,7 +121,7 @@ Floating panels (base `Dialog`, route overlays, boot/install/update surfaces,
 model-picker, onboarding, prompt overlays, notifications) use:
 
 ```
-shadow-nous           /* downward-weighted, layered contact→ambient falloff */
+shadow-dialog         /* the surface floats above the page */
 border-(--stroke-nous) /* currentColor hairline, theme-adaptive */
 ```
 
@@ -91,8 +129,13 @@ Both are CSS vars in `src/styles.css` — tune in one place, everything inherits
 Don't add per-overlay `shadow-[…]` or `border-(--ui-stroke-secondary)`
 one-offs; if elevation needs to change, change the token.
 
-Menus and popovers use their own shared `shadow-md` +
-`--ui-stroke-secondary` primitive treatment. Every floating list —
+`shadow-nous` was the single elevation token before the scale landed and now
+names the dialog level, which is what it always described. Menus, tooltips and
+dropdowns use `shadow-popover` — one step up from the page, one step below a
+dialog. Every floating list — `DropdownMenu`, `Select`, and Popover + cmdk
+pickers (`<PopoverContent variant="menu">` + `<Command variant="menu">`) —
+paints through `src/components/ui/menu.ts`, so a list reads the same wherever
+it opens. Every floating list —
 `DropdownMenu`, `Select`, and Popover + cmdk pickers
 (`<PopoverContent variant="menu">` + `<Command variant="menu">`) — paints
 through `src/components/ui/menu.ts`, so a list reads the same wherever it
@@ -151,7 +194,7 @@ renderer and Electron's first window paint.
 | --- | --- |
 | `--ui-stroke-primary…quaternary` | hairlines, in descending strength |
 | `--ui-stroke-tertiary` | the default in-panel divider / list hairline — and every bordered surface in the transcript |
-| `--stroke-nous` | the overlay hairline (pairs with `shadow-nous`) |
+| `--stroke-nous` | the overlay hairline (pairs with `shadow-dialog`) |
 | `--ui-text-primary / -secondary / -tertiary` | text hierarchy |
 | `--ui-bg-quaternary` | soft control fill (secondary button) |
 | `--ui-widget-surface-background` | fill for inline chat widgets (`WIDGET_SHELL_CLASS`) |
@@ -170,7 +213,7 @@ do **not** pass `h-*`, `px-*`, `py-*`, or icon-size overrides.
 **Variants:** `default` (primary), `destructive`, `secondary` (soft fill —
 the default non-primary look), `outline` (transparent + 1px inset ring, no
 fill/shadow), `ghost`, `floating` (a control loose from any surface — opaque
-popover fill + `shadow-md`, hover lifts the glyph only), `link`, `text`
+popover fill + `shadow-popover`, hover lifts the glyph only), `link`, `text`
 (boxless quiet inline — "Cancel", "Clear"), `textStrong` (bold underlined
 inline affordance — "Change", "Open logs").
 `grip` is the quiet, fill-free drawer handle; pair it with size `grip` for a
@@ -572,14 +615,14 @@ The detailed state contract lives in the scoped
 - [ ] Reuse a primitive (`Button`, `SearchField`, `SegmentedControl`,
       `ListRow`, `Loader`, `ErrorState`, `LogView`, `ConfirmDialog`) instead of
       forking one?
-- [ ] Tokens (`--ui-*`, `shadow-nous`, `--stroke-nous`) — zero raw colors /
+- [ ] Tokens (`--ui-*`, `--ui-elev-*`, `--stroke-nous`) — zero raw colors /
       one-off shadows?
 - [ ] No `className` overriding a primitive's padding / size / radius / chrome?
 - [ ] Tips only where hover teaches something new (no kebab / menu-trigger
       tips; unlabeled chrome that needs discovery gets `<Tip>` + `aria-label`)?
 - [ ] No native `title=` on buttons?
 - [ ] Keybind hints on tipped buttons use `useKeybindHint` / `TipKeybindLabel`?
-- [ ] Overlay uses `shadow-nous` + `border-(--stroke-nous)`, no hard border?
+- [ ] Overlay uses `shadow-dialog` + `border-(--stroke-nous)`, no hard border?
 - [ ] Flat — no card-in-card, no gratuitous row dividers?
 - [ ] No automatic navigation, focus steal, or pane opening from background
       events?
