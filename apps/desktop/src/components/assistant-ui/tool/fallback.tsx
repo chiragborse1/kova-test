@@ -112,7 +112,11 @@ const TOOL_SECTION_LABEL_CLASS = 'mb-1 text-sm font-medium uppercase tracking-wi
 const TOOL_SECTION_SURFACE_CLASS =
   'max-h-20 max-w-full overflow-auto bg-transparent px-2 py-1.5 text-(--ui-text-secondary)'
 
-const TOOL_EXPANDED_SHELL_CLASS = 'rounded-sm border border-(--ui-stroke-tertiary)'
+// The shell separates by FILL now, not by an outline: a 25% tint is too
+// faint to read as a surface, so the border was doing the work the tier
+// should do. Tool widgets are objects in a transcript, so they keep a
+// surface - it just comes from the ladder.
+const TOOL_EXPANDED_SHELL_CLASS = 'rounded-lg bg-(--ui-bg-quaternary)'
 
 const TOOL_SECTION_PRE_CLASS = cn(TOOL_SECTION_SURFACE_CLASS, 'font-mono text-sm leading-relaxed')
 
@@ -651,7 +655,7 @@ function ToolEntry({ part }: ToolEntryProps) {
             <TerminalTranscript command={view.terminalCommand} exitCode={view.terminalExitCode} />
           )}
           {view.imageUrl && (
-            <div className="max-w-72 overflow-hidden rounded-sm border border-(--ui-stroke-tertiary)">
+            <div className="max-w-72 overflow-hidden rounded-lg bg-(--ui-bg-quaternary)">
               <MarkdownImage alt={copy.outputAlt} src={view.imageUrl} />
             </div>
           )}
