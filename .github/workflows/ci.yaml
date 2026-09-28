@@ -296,6 +296,14 @@ jobs:
   # Outputs ``needs-json`` — a compact ``{job_name: result}`` dict — so
   # the live comment poller can list failed jobs in the PR comment.
   # ─────────────────────────────────────────────────────────────────────
+  # `contributor-check` was removed in 5339ce959c (the upstream contributor map
+  # went away) but its name stayed in the `needs` below. GitHub rejects a
+  # workflow outright on a dangling `needs`, so ci.yaml - the only top-level
+  # pull_request carrier - never started, and with it none of the
+  # workflow_call sub-workflows. scripts/kova/workflows.py fails if any `needs`
+  # does not resolve, because nothing local can see this: tsc, eslint, vitest
+  # and every kova gate still pass while CI is dead.
+
   all-checks-pass:
     name: All required checks pass
     needs:
