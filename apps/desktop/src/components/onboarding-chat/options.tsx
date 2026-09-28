@@ -76,7 +76,7 @@ export function AccentSwatch({
 }) {
   const className = cn(
     // The border keeps the mono swatch visible when its colour matches the background.
-    'relative inline-flex size-9 items-center justify-center rounded-full border border-foreground/15 transition-transform duration-150',
+    'relative inline-flex size-9 items-center justify-center rounded-full border border-foreground/15 transition-transform fast',
     !active && 'hover:scale-105'
   )
 

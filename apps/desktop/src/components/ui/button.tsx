@@ -12,7 +12,7 @@ const TEXT_ACTION_ICON = '[&_.codicon]:no-underline [&_svg]:no-underline'
 // fixed heights — so they stay snug and scale with content. Only icon buttons
 // (inherently square) carry the shared 4px radius.
 const buttonVariants = cva(
-  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-sm text-xs leading-4 font-medium whitespace-nowrap shadow-none transition-all duration-100 outline-none focus-visible:border-ring focus-visible:ring-[0.1875rem] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-default disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+  "inline-flex shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-sm text-xs leading-4 font-medium whitespace-nowrap shadow-none transition-all fast outline-none focus-visible:border-ring focus-visible:ring-[0.1875rem] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-default disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
   {
     variants: {
       variant: {
@@ -32,9 +32,9 @@ const buttonVariants = cva(
         grip: 'bg-transparent text-(--ui-text-tertiary) transition-colors hover:text-(--ui-text-secondary) focus-visible:text-(--ui-text-primary)',
         // A control floating free of any surface (fan-menu discs, detached
         // chips): the menu/popover treatment — opaque popover fill + the
-        // shared `shadow-md` ring-and-drop. Hover only lifts the glyph; a fill
+        // shared `shadow-popover` ring-and-drop. Hover only lifts the glyph; a fill
         // change on a lone disc reads as a toggle flipping.
-        floating: 'bg-popover text-(--ui-text-secondary) shadow-md hover:text-(--ui-text-primary)',
+        floating: 'bg-popover text-(--ui-text-secondary) shadow-popover hover:text-(--ui-text-primary)',
         link: `text-primary underline-offset-4 decoration-current/20 hover:underline ${TEXT_ACTION_ICON}`,
         // Boxless inline-text action (no bg/border). Quiet by default — reads as
         // muted label text, underlines on hover (e.g. "Cancel", "Clear").

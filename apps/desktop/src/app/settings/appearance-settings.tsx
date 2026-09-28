@@ -139,7 +139,7 @@ function ThemePreview({ name, mode }: { name: string; mode: 'light' | 'dark' }) 
 
   return (
     <div
-      className="h-20 overflow-hidden rounded-xl border shadow-xs"
+      className="h-20 overflow-hidden rounded-xl border shadow-popover"
       style={{ backgroundColor: c.background, borderColor: c.border }}
     >
       <div className="flex h-full">

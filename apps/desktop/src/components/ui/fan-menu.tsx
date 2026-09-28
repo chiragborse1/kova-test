@@ -271,7 +271,7 @@ export function FanMenu({ direction = 'vertical', gap = 4, hint = true, hub, ite
         {hint ? (
           <Codicon
             className={cn(
-              'pointer-events-none absolute -top-px right-0 text-(--ui-text-quaternary) transition-opacity duration-100',
+              'pointer-events-none absolute -top-px right-0 text-(--ui-text-quaternary) transition-opacity fast',
               open && 'opacity-0'
             )}
             name="chevron-up"
@@ -381,7 +381,7 @@ const FanCluster = memo(function FanCluster({
             aria-label={item.label}
             aria-pressed={item.active}
             className={cn(
-              'absolute inset-0 rounded-full shadow-md',
+              'absolute inset-0 rounded-full shadow-popover',
               entered ? 'pointer-events-auto' : 'pointer-events-none'
             )}
             disabled={item.disabled}

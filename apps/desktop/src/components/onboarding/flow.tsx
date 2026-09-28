@@ -274,7 +274,7 @@ function ConfirmingModelPanel({
 
       <div
         className={cn(
-          'grid justify-items-center gap-1.5 transition duration-[360ms] ease-out',
+          'grid justify-items-center gap-1.5 transition slow ease-out',
           leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
         )}
       >
@@ -314,7 +314,7 @@ function ConfirmingModelPanel({
 
       <div
         className={cn(
-          'transition duration-[360ms] ease-out',
+          'transition slow ease-out',
           leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
         )}
       >

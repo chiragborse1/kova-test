@@ -77,7 +77,7 @@ export const GeneratedImage: FC<{ aspectRatio?: string; result?: unknown }> = ({
       >
         {canvasGone !== media.key && (
           <div
-            className={cn('absolute inset-0 transition-opacity duration-500 ease-out', loaded && 'opacity-0')}
+            className={cn('absolute inset-0 transition-opacity slow ease-out', loaded && 'opacity-0')}
             onTransitionEnd={() => loaded && setCanvasGone(media.key)}
           >
             <DiffusionCanvas />
@@ -93,7 +93,7 @@ export const GeneratedImage: FC<{ aspectRatio?: string; result?: unknown }> = ({
             <img
               alt="Generated image"
               className={cn(
-                'absolute inset-0 size-full object-contain opacity-0 transition-opacity duration-500 ease-out',
+                'absolute inset-0 size-full object-contain opacity-0 transition-opacity slow ease-out',
                 loaded && 'opacity-100'
               )}
               draggable={false}

@@ -721,7 +721,7 @@ export function ModelCatalogMenu({
                             >
                               <span className="h-1 w-14 overflow-hidden rounded-full bg-(--ui-bg-tertiary)">
                                 <span
-                                  className="block h-full rounded-full bg-primary transition-[width] duration-500"
+                                  className="block h-full rounded-full bg-primary transition-[width] slow"
                                   style={{ width: `${Math.max(2, loadProgress.percent)}%` }}
                                 />
                               </span>
@@ -928,7 +928,7 @@ function DownloadingModelRow({
           <span
             className={cn(
               'block h-full rounded-full',
-              paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] duration-500'
+              paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] slow'
             )}
             style={{ width: `${Math.max(2, percent ?? 0)}%` }}
           />

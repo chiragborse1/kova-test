@@ -51,7 +51,7 @@ export function DisclosureRow({
           // caret centres with the title, not the whole subtitle stack.
           <span
             className={cn(
-              'flex h-(--conversation-line-height) shrink-0 items-center justify-center transition-opacity duration-150',
+              'flex h-(--conversation-line-height) shrink-0 items-center justify-center transition-opacity fast',
               open
                 ? 'opacity-80'
                 : 'opacity-(--disclosure-caret-rest) group-hover/disclosure-row:opacity-80 group-focus-within/disclosure-row:opacity-80'

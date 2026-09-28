@@ -39,7 +39,7 @@ function MeterRow({ label, percent, value }: { label: string; percent: number | 
       {percent !== null && (
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-(--ui-bg-tertiary)">
           <div
-            className="h-full rounded-full bg-primary transition-[width] duration-500"
+            className="h-full rounded-full bg-primary transition-[width] slow"
             style={{ width: `${Math.max(1, Math.min(100, percent))}%` }}
           />
         </div>

@@ -284,7 +284,7 @@ export function SectionDropZone({ children, isSource, nested, onDropBot }: Secti
   return (
     <div
       className={cn(
-        'relative min-w-0 rounded-md transition-[background-color,box-shadow] duration-100',
+        'relative min-w-0 rounded-md transition-[background-color,box-shadow] fast',
         nested && 'ml-2.5 border-l border-(--ui-stroke-tertiary) pl-1',
         // While a drag is live, every valid target gets a faint outline so the
         // user can see where a drop is allowed before hovering one.

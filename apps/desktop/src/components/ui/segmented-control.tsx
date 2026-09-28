@@ -44,7 +44,7 @@ export function SegmentedControl<T extends string>({
             aria-pressed={active}
             className={cn(
               'flex items-center justify-center gap-1 rounded-sm px-2.5 py-0.5 text-sm font-medium transition-colors disabled:cursor-default',
-              active ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              active ? 'bg-background text-foreground shadow-popover' : 'text-muted-foreground hover:text-foreground'
             )}
             disabled={disabled}
             key={id}

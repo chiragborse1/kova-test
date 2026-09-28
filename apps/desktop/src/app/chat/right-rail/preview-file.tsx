@@ -132,7 +132,7 @@ export function PreviewEmptyState({
             {primaryAction && (
               <button
                 className={cn(
-                  'rounded-full border px-3.5 py-1.5 text-xs font-medium shadow-xs transition-colors disabled:cursor-default disabled:opacity-60',
+                  'rounded-full border px-3.5 py-1.5 text-xs font-medium shadow-popover transition-colors disabled:cursor-default disabled:opacity-60',
                   styles.primary
                 )}
                 disabled={primaryAction.disabled}
@@ -382,7 +382,7 @@ function MarkdownImage({ alt, src, ...rest }: ComponentProps<'img'>) {
   return (
     <img
       alt={alt ?? ''}
-      className="my-3 max-h-96 w-auto max-w-full rounded-lg border border-border object-contain shadow-sm"
+      className="my-3 max-h-96 w-auto max-w-full rounded-lg border border-border object-contain shadow-popover"
       src={src}
       {...rest}
     />
@@ -576,7 +576,7 @@ function EditControls({
         {t.common.cancel}
       </button>
       <button
-        className="flex items-center gap-1 rounded-md bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-xs transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="flex items-center gap-1 rounded-md bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-popover transition-opacity hover:opacity-90 disabled:opacity-50"
         disabled={!dirty || saving}
         onClick={onSave}
         type="button"
@@ -1134,7 +1134,7 @@ export function LocalFilePreview({
       <div className="flex h-full w-full items-center justify-center overflow-auto bg-transparent p-4">
         <img
           alt={target.label}
-          className="max-h-full max-w-full rounded-lg object-contain shadow-sm"
+          className="max-h-full max-w-full rounded-lg object-contain shadow-popover"
           draggable={false}
           src={state.dataUrl}
         />

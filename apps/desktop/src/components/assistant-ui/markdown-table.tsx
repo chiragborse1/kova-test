@@ -203,7 +203,7 @@ export function ResizableMarkdownTh({ children, className, ...props }: Component
         className="group/mdcol absolute inset-y-0 -end-1 z-10 w-2 cursor-col-resize select-none"
         data-md-col-handle
       >
-        <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-(--ui-stroke-secondary) opacity-0 transition-opacity duration-100 group-hover/mdcol:opacity-100 [[data-md-col-active]_&]:opacity-100" />
+        <span className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-(--ui-stroke-secondary) opacity-0 transition-opacity fast group-hover/mdcol:opacity-100 [[data-md-col-active]_&]:opacity-100" />
       </span>
     </th>
   )

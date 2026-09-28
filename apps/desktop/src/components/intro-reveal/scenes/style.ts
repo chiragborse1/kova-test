@@ -5,7 +5,7 @@ export const BLUE = '#4d8dff'
 export const BLUE_DIM = 'rgba(77, 141, 255, 0.55)'
 export const BLUE_FAINT = 'rgba(77, 141, 255, 0.4)'
 
-// One shadow for every floating surface. It follows --shadow-nous (single top
+// One shadow for every floating surface. It follows --shadow-dialog (single top
 // light, layered contact to ambient, x = 0, negative spread on each layer) at
 // lower opacity for the dark background, so cards do not cast black halos over
 // the frost.

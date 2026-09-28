@@ -1687,7 +1687,7 @@ export function upsertOptimisticSession(
 
   // A real row supersedes any unlisted-draft stub for the same id (first send
   // on a ⌘T tab lists it); drop the stub so the atom stays bounded. The
-  // lookup shadow-filter covers any path that lists without passing here.
+  // lookup shadow-dialog covers any path that lists without passing here.
   setUnlistedSessionOwnerRows(prev => (prev.some(s => s.id === id) ? prev.filter(s => s.id !== id) : prev))
 
   setSessions(prev => [session, ...prev.filter(s => s.id !== id)])

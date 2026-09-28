@@ -424,10 +424,10 @@ export function DesktopOnboardingOverlay({
     >
       <div
         className={cn(
-          'relative w-full max-w-[45rem] transition-all duration-500 ease-out',
+          'relative w-full max-w-[45rem] transition-all slow ease-out',
           bare
             ? ''
-            : 'overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) shadow-nous',
+            : 'overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) shadow-dialog',
           // Bare confirm screen orchestrates its own per-element exit; the
           // carded states use the simple lift/blur dissolve.
           leaving && !bare
@@ -490,7 +490,7 @@ function FreeTierReadyPanel({
 
       <div
         className={cn(
-          'grid justify-items-center gap-1.5 transition duration-[360ms] ease-out',
+          'grid justify-items-center gap-1.5 transition slow ease-out',
           leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
         )}
       >
@@ -508,7 +508,7 @@ function FreeTierReadyPanel({
 
       <div
         className={cn(
-          'grid justify-items-center gap-2 transition duration-[360ms] ease-out',
+          'grid justify-items-center gap-2 transition slow ease-out',
           leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
         )}
       >

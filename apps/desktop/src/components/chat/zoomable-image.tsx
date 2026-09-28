@@ -112,7 +112,7 @@ export function ImageLightbox({
         <div className="group/lightbox relative inline-block">
           <img
             alt={alt ?? ''}
-            className="block max-h-[calc(100vh-12rem)] max-w-[calc(100vw-12rem)] cursor-zoom-out select-auto rounded-lg object-contain shadow-2xl"
+            className="block max-h-[calc(100vh-12rem)] max-w-[calc(100vw-12rem)] cursor-zoom-out select-auto rounded-lg object-contain shadow-dialog"
             onClick={() => onOpenChange(false)}
             src={src}
           />
@@ -143,7 +143,7 @@ export function ImageActionButton({
     <button
       aria-label={saving ? copy.savingImage : copy.downloadImage}
       className={cn(
-        'absolute right-2 top-2 grid size-8 place-items-center rounded-full border border-border/70 bg-background/80 text-muted-foreground opacity-0 shadow-sm backdrop-blur transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 disabled:opacity-50',
+        'absolute right-2 top-2 grid size-8 place-items-center rounded-full border border-border/70 bg-background/80 text-muted-foreground opacity-0 shadow-popover backdrop-blur transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 disabled:opacity-50',
         className
       )}
       disabled={saving}

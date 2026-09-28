@@ -374,7 +374,7 @@ function LocalFoot({ advanced, cost }: PartProps) {
         <details className="group grid gap-2">
           <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-medium text-(--ui-text-primary)">
             <Codicon
-              className={cn('shrink-0 transition-transform duration-100 group-open:rotate-90')}
+              className={cn('shrink-0 transition-transform fast group-open:rotate-90')}
               name="chevron-right"
               size="0.75rem"
             />

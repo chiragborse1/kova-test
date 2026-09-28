@@ -64,8 +64,8 @@ export function CardFrame({
   return (
     <div
       className={cn(
-        'my-3 grid w-full min-w-0 max-w-md gap-4 duration-300 animate-in fade-in-0 slide-in-from-bottom-2',
-        done && 'opacity-75 transition-opacity duration-500'
+        'my-3 grid w-full min-w-0 max-w-md gap-4 slow animate-in fade-in-0 slide-in-from-bottom-2',
+        done && 'opacity-75 transition-opacity slow'
       )}
       data-onboarding-card
       inert={locked || undefined}
@@ -73,7 +73,7 @@ export function CardFrame({
       {children}
       <div className="flex justify-start">
         <Button
-          className={cn(done && 'scale-95 transition-transform duration-200')}
+          className={cn(done && 'scale-95 transition-transform base')}
           disabled={done || disabled || locked}
           onClick={onContinue}
           size="sm"
