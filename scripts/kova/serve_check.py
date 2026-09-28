@@ -31,6 +31,8 @@ MODULES = [
     "/src/app/settings/index.tsx",
     "/src/app/chat/sidebar/index.tsx",
     "/src/app/overlays/overlay-split-layout.tsx",
+    "/src/app/master-detail.tsx",
+    "/src/app/capabilities/catalog/catalog-browser.tsx",
     "/src/components/ui/sidebar.tsx",
     "/src/i18n/en.ts",
     "/src/styles.css",

@@ -151,11 +151,18 @@ export function MasterDetail({
   )
 }
 
+/**
+ * The list half of a master-detail page. Carries `scrollbar-cue` because the
+ * app hides every scrollbar until hover: right for a surface you are already
+ * dragging, wrong for a list whose overflow is content. Messaging holds 19
+ * platforms in a 740px box - 14 below the fold - and with no persistent
+ * affordance it reads as a list of 5.
+ */
 export function ListColumn({ children, header }: { children: ReactNode; header?: ReactNode }) {
   return (
     <aside className="flex min-h-0 flex-col p-2">
       {header}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">{children}</div>
+      <div className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">{children}</div>
     </aside>
   )
 }
@@ -174,7 +181,7 @@ export function DetailColumn({
 }) {
   return (
     <main className="flex min-h-0 flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
+      <div className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
         <div className="mx-auto max-w-2xl space-y-5 px-5 py-4">{children}</div>
       </div>
       {footer && (

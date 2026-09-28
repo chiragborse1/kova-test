@@ -361,7 +361,7 @@ export const CatalogBrowser = memo(function CatalogBrowser({
               <>
                 <div className="flex h-full min-h-0 flex-col px-3 pb-3" data-catalog-cards={kind}>
                   <div
-                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
+                    className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
                     data-catalog-scroll
                     key={`${filterKey}:${sort}:${deferredQuery}:${facets.installedOnly}`}
                   >
