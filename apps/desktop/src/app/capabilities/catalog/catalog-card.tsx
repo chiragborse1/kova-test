@@ -48,34 +48,30 @@ export function CatalogImage({ src, className }: { src: string; className?: stri
   )
 }
 
-// Shared classes, not per-card inline custom properties: identical declarations
-// let the style engine reuse computed styles across cards. catalog.css paints them.
-const CARD_ACCENTS = [
-  '[--catalog-accent:var(--ui-blue)]',
-  '[--catalog-accent:var(--ui-orange)]',
-  '[--catalog-accent:var(--ui-purple)]',
-  '[--catalog-accent:var(--ui-green)]',
-  '[--catalog-accent:var(--ui-red)]',
-  '[--catalog-accent:var(--ui-cyan)]',
-  '[--catalog-accent:var(--ui-yellow)]'
-]
+  // ONE accent, the brand violet, for every card.
+  //
+  // This was seven accents picked by ARRAY INDEX (accentIndex % 7), so a card's
+  // colour said only where it sat in the list - a blue card and a red card were
+  // the same object. Accent is now a property of the surface, and the
+  // pointer-following tint (catalog.css) is the thing that carries the
+  // interaction, which is what it was always good at.
+  const CARD_ACCENT = '[--catalog-accent:var(--theme-primary)]'
 
 interface CatalogCardProps {
   entry: CatalogEntry
   action: ReactNode
-  accentIndex: number
   onOpen: (entry: CatalogEntry) => void
   onCategory: (category: string) => void
   onTag: (tag: string) => void
   onSearch: (value: string) => void
 }
 
-export function CatalogCard({ entry, action, accentIndex, onOpen, onCategory, onTag, onSearch }: CatalogCardProps) {
+export function CatalogCard({ entry, action, onOpen, onCategory, onTag, onSearch }: CatalogCardProps) {
   return (
     <article
       className={cn(
         'group relative flex min-w-0 flex-col overflow-hidden rounded-lg border',
-        CARD_ACCENTS[accentIndex % CARD_ACCENTS.length]
+        CARD_ACCENT
       )}
       data-catalog-card
       data-entry-id={entry.id}

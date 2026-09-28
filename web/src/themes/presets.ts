@@ -92,7 +92,7 @@ export const kovaTheme: DashboardTheme = {
   typography: DEFAULT_TYPOGRAPHY,
   layout: {
     ...DEFAULT_LAYOUT,
-    radius: "0.625rem",
+    radius: "0.4375rem",
   },
   terminalBackground: "#0b0910",
 };

@@ -221,9 +221,8 @@ export const CatalogBrowser = memo(function CatalogBrowser({
     )
   }
 
-  const card = (entry: CatalogEntry, accentIndex: number) => (
+  const card = (entry: CatalogEntry) => (
     <CatalogCard
-      accentIndex={accentIndex}
       action={entryAction(entry)}
       entry={entry}
       key={entry.id}
@@ -389,7 +388,7 @@ export const CatalogBrowser = memo(function CatalogBrowser({
                             <Reel className="*:w-68" data-catalog-hover-group>
                               {section.entries
                                 .slice(0, SHELF_SIZE)
-                                .map((entry, index) => card(entry, sectionIndex * SHELF_SIZE + index))}
+                                .map((entry) => card(entry))}
                             </Reel>
                           </section>
                         ))}

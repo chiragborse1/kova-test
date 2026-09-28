@@ -30,7 +30,10 @@
   --catalog-rest-x: 0%;
   --catalog-rest-y: 100%;
   --catalog-tint: 10%;
-  --catalog-edge: 20%;
+  /* The accent tints the FILL; it does not outline the card. At 20% every
+     object on the page had a coloured box around it, which is the same
+     complaint as the radius collapse, one level up. */
+  --catalog-edge: 8%;
   border-color: color-mix(in srgb, var(--catalog-accent) var(--catalog-edge), var(--ui-stroke-tertiary));
   background:
     radial-gradient(
@@ -40,21 +43,23 @@
       transparent 70%
     )
     var(--ui-chat-bubble-background);
+  /* Fast for the edges the pointer drives, base for the surface, slow for
+     the pointer variables - which are position, not state, and should lag. */
   transition:
-    border-color 0.1s ease,
-    box-shadow 0.1s ease,
-    opacity 0.15s ease,
-    filter 0.15s ease,
-    --catalog-x 5s cubic-bezier(0.2, 0.8, 0.2, 1),
-    --catalog-y 5s cubic-bezier(0.2, 0.8, 0.2, 1),
-    --catalog-near 5s ease;
+    border-color var(--ui-duration-fast) var(--ui-ease-standard),
+    box-shadow var(--ui-duration-fast) var(--ui-ease-standard),
+    opacity var(--ui-duration-base) var(--ui-ease-standard),
+    filter var(--ui-duration-base) var(--ui-ease-standard),
+    --catalog-x var(--ui-duration-slow) var(--ui-ease-standard),
+    --catalog-y var(--ui-duration-slow) var(--ui-ease-standard),
+    --catalog-near var(--ui-duration-slow) var(--ui-ease-standard);
 }
 
 :root.dark [data-catalog-card] {
   --catalog-rest-x: 0%;
   --catalog-rest-y: 0%;
   --catalog-tint: 18%;
-  --catalog-edge: 24%;
+  --catalog-edge: 12%;
 }
 
 [data-catalog-card]:hover {
@@ -82,6 +87,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   [data-catalog-card] {
-    transition: border-color 0.1s ease, box-shadow 0.1s ease, opacity 0.15s ease, filter 0.15s ease;
+    /* Reduced motion: keep the state change, drop the movement. */
+    transition: border-color var(--ui-duration-instant) var(--ui-ease-standard),
+      box-shadow var(--ui-duration-instant) var(--ui-ease-standard),
+      opacity var(--ui-duration-instant) var(--ui-ease-standard),
+      filter var(--ui-duration-instant) var(--ui-ease-standard);
   }
 }
