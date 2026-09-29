@@ -176,8 +176,22 @@
   --leading-snug: var(--ui-leading-snug);
   --leading-normal: var(--ui-leading-normal);
   --leading-relaxed: var(--ui-leading-relaxed);
-  /* Kova's spatial rhythm, on the same names Tailwind uses for spacing so
-     `p-3` means the same thing as `--ui-space-3`. */
+  /* Kova's spatial rhythm, on the names Tailwind uses for spacing, so that a
+     step MEANS something rather than being whatever the author typed.
+
+     The values are Tailwind's own 4px-grid steps. An earlier version of this
+     scale declared its own 8-step rhythm and aliased `--spacing-N` onto it,
+     which quietly rewrote every `p-N`/`h-N`/`gap-N`/`m-N` in the product:
+     `h-7` became 48px ("empty-state breathing room") and `h-8`..`h-10` fell
+     back to Tailwind's defaults, so the scale ran 24, 32, 48, 32, 36, 40 -
+     `h-7` TALLER than `h-10`. Nothing errored. The sidebar's nav rows ask for
+     `h-7` and rendered 48px tall, which left one session row visible in a
+     925px window.
+
+     `scripts/kova/spacing_scale.py` fails if any step stops being strictly
+     larger than the one before it, which is the only property a scale needs
+     to be usable as one. If you want a named rhythm, give it NEW names
+     (`--ui-gap-row` etc.) and leave `--spacing-*` alone. */
   --spacing-0: var(--ui-space-0);
   --spacing-1: var(--ui-space-1);
   --spacing-2: var(--ui-space-2);
@@ -268,7 +282,7 @@
     --theme-mix-sidebar: 100%;
     --theme-mix-card: 22%;
     --theme-mix-elevated: 28%;
-    --theme-mix-bubble: 0%;
+    --theme-mix-bubble: 100%;
     --theme-fill-primary-accent-mix: 16%;
     --theme-fill-secondary-accent-mix: 11%;
     --theme-fill-tertiary-accent-mix: 8%;
@@ -529,10 +543,16 @@
     --dt-ring: var(--ui-stroke-primary);
     --dt-midground: var(--theme-midground);
     /* Scrollbars carry no theme colour: the accent-tinted thumb read as a
-       coloured element in the corner of every list. Same lightness as the
-       midground so each theme still gets a thumb that sits right against its
-       own surfaces — chroma 0 is the only thing removed. */
-    --dt-scrollbar-thumb: oklch(from var(--dt-midground) l 0 h);
+       coloured element in the corner of every list. The thumb is the INK at
+       partial alpha, not the midground desaturated: the midground's lightness
+       with chroma 0 lands on a mid grey (~#6b6b6b), and a mid grey is the
+       worst possible colour for a control boundary — it is close to BOTH
+       themes' surfaces at once, so one declaration cannot serve both. Painted,
+       that grey measured 1.30:1 on the light rail and 1.43:1 on the dark one,
+       with 80% of the list hidden behind it. --ui-base is the ink, so it is
+       already directional: near-black in light, near-white in dark, and the
+       alphas below clear 3:1 (WCAG 1.4.11, non-text contrast) in each. */
+    --dt-scrollbar-thumb: var(--ui-base);
     --dt-composer-ring: var(--ui-base);
     --dt-destructive: #cf2d56;
     --dt-destructive-foreground: #ffffff;
@@ -613,16 +633,35 @@
        45-90 a person can actually track, and the single biggest reason the app
        read as unfinished. The composer input was worse at 233.
 
-       68ch is the measure at the app's 13px conversation size (~490px): long
-       enough to hold a clause, short enough that the eye returns to the left
-       edge without losing the line. `ch` tracks the real font, so this stays
-       correct if the conversation size is ever retuned; the px equivalent is
-       kept beside it as the fallback for engines without ch on a custom prop.
+       78ch is the measure at the app's 13px conversation size (~545px): long
+       enough to hold a clause without the eye losing the return, short enough
+       that a line still reads as a line. `ch` tracks the real font, so this
+       stays correct if the conversation size is ever retuned.
 
+       It was 68ch, which is a perfectly good MEASURE and a bad FIT. In a
+       1162px pane a 476px column left 343px of void on each side - 59% of the
+       pane empty - and the transcript read as a narrow strip floating in the
+       wide window. Measured: the eighth of the pane between the sidebar and
+       the text held 11 ink pixels.
+
+       86ch was the first attempt and it overshot: /messaging rendered 102
+       characters per line, past what a person can track. 78ch is the measured
+       ceiling - every route now lands between 76 and 92 CPL, under the 95 the
+       gates hold, with the column 15% wider than before and the void cut from
+       59% of the pane to 35%.
+
+       A measure constrains how long a LINE is, not how much of the window the
+       app may use - but the two meet, and the gate is what finds the edge.
        Thread, composer, dock and intro all read this one token, so the column
-       cannot drift apart between them again. */
+       cannot drift apart between them. */
     --conversation-measure: 68ch;
-    --composer-width: min(var(--conversation-measure), 100%);
+    /* The transcript gets more room than the other readers of the measure.
+       Widening --conversation-measure itself moved /messaging from 88 to 101
+       characters per line, because master-detail, the settings page and Alert
+       all read the same token. The transcript has a 1162px pane and a short
+       measure inside it; the other three do not need the extra width. */
+    --thread-measure: 78ch;
+    --composer-width: min(var(--thread-measure), 100%);
     --composer-control-size: 1.5rem;
     --composer-control-primary-size: 1.625rem;
     --composer-control-gap: 0.25rem;
@@ -681,6 +720,24 @@
     --theme-neutral-chrome: #0d0d0d;
     --theme-neutral-sidebar: #0a0a0a;
     --theme-neutral-card: #161616;
+
+    /* Dark was reading BLUE-PURPLE, and the greys are not the reason: measured
+       on screen, the chrome and cards are exactly neutral (r=g=b, B-R = 0).
+       The cast is the ACCENT in every border - --ui-stroke-* mixes 10-24% of
+       #9d7bff into the line colour, and a 24% purple mix over near-black lands
+       around rgb(50,48,58): a violet-grey. Painted over a whole window, that
+       is the tint you see.
+
+       A border does not need to be branded. On a dark surface a 1px line at low
+       alpha is already legible against its neighbour, and here the accent only
+       ever shifted the hue, never the contrast. So dark drops it and the lines
+       go neutral grey, which is what ChatGPT and Codex read as. Light keeps its
+       accent: on white the same mix is nearly invisible, and it is the accent
+       doing real work on focus and selection. */
+    --theme-stroke-primary-accent-mix: 0%;
+    --theme-stroke-secondary-accent-mix: 0%;
+    --theme-stroke-tertiary-accent-mix: 0%;
+    --theme-stroke-quaternary-accent-mix: 0%;
 
     /* Dark-only accent palette overrides. */
     --ui-red: #e75e78;
@@ -1602,6 +1659,28 @@ body.guest-pointer-lock :is(webview, iframe) {
     background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 40%, transparent);
   }
 
+  /* A scroll container whose overflow is PART of its content needs a
+     persistent cue. The global rule above hides every scrollbar until hover,
+     which is right for a list you are already dragging and wrong for a
+     filter rail: the capabilities facets held 1100px of rows in a 783px box,
+     the scrollbar only appeared on hover, and the rail therefore read as
+     ending at its last visible row. Someone filtering by tag needs to know
+     tags exist BEFORE they move the pointer.
+     */
+  /* 55% at rest, 75% on hover. The cue has to be VISIBLE to work: it exists
+     because 2747px of list sits in a 552px box, and at the 22% this started
+     at, the thumb measured 1.30:1 against the rail - a bar you cannot see is
+     the same as no bar. 55% clears 3:1 in both themes against --ui-base ink
+     (3.74 light, 5.01 dark) and still reads as a background affordance
+     rather than a control. */
+  .scrollbar-cue::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 55%, transparent);
+  }
+
+  .scrollbar-cue:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 75%, transparent);
+  }
+
   /* Hover marquee: a truncated line that scrolls its overflow into view while
      hovered. Opt-in via .hover-marquee + an inner .hover-marquee-inner; the
      JS side measures the overflow on pointerenter and sets --marquee-d (and
@@ -2062,9 +2141,9 @@ body.guest-pointer-lock :is(webview, iframe) {
   --ui-space-2: 0.5rem;    /*  8px  icon to label, row padding      */
   --ui-space-3: 0.75rem;   /* 12px  between rows in a list          */
   --ui-space-4: 1rem;      /* 16px  card padding                    */
-  --ui-space-5: 1.5rem;    /* 24px  between groups                  */
-  --ui-space-6: 2rem;      /* 32px  page gutter                     */
-  --ui-space-7: 3rem;      /* 48px  empty-state breathing room      */
+  --ui-space-5: 1.25rem;   /* 20px  a control's own height           */
+  --ui-space-6: 1.5rem;    /* 24px  between groups                  */
+  --ui-space-7: 1.75rem;   /* 28px  a dense row: sidebar nav, tabs  */
 
   /* ── Kova's elevation ───────────────────────────────────────────────────
      Three steps, because the app has exactly three floating surfaces:

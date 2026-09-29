@@ -60,7 +60,11 @@ interface CatalogBrowserProps {
 const PAGE_SIZE = 60
 // The skills hub carries ~10k distinct tags; the rail is for browsing, search covers the tail.
 const TAG_LIMIT = 16
-// Discovery shelves preview a category; "See all" opens the full list. Every
+// The skills catalog carries ~200 categories. Uncapped, the rail held 1492px
+// of content in a 783px box and its scrollbar is not visible, so it read as
+// ending at "Web" - and the Tags section below it did not exist as far as
+// anyone could tell. Same trade as TAG_LIMIT, for the same reason.
+const CATEGORY_LIMIT = 12// Discovery shelves preview a category; "See all" opens the full list. Every
 // rendered card is restyled whenever a modal locks the page.
 const SHELF_SIZE = 6
 /** On: masonry lanes. Off: fallback grid whose rows share one height (`.catalog-grid`). */
@@ -278,8 +282,8 @@ export const CatalogBrowser = memo(function CatalogBrowser({
     <div className="@container/catalog flex h-full min-h-0 min-w-0" data-catalog={kind} ref={root}>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col @[48rem]/catalog:flex-row">
         <CatalogFilters
-          categories={catalogCategories(entries, kind)}
-          className="max-h-52 shrink-0 gap-0 pt-3 @[48rem]/catalog:max-h-none @[48rem]/catalog:w-48"
+          categories={catalogCategories(entries, kind, facets.categories, CATEGORY_LIMIT)}
+          className="scrollbar-cue max-h-52 shrink-0 gap-0 pt-3 @[48rem]/catalog:max-h-none @[48rem]/catalog:w-48"
           facets={facets}
           onCategory={filters.toggleCategory}
           onClear={clearFilters}
@@ -357,7 +361,7 @@ export const CatalogBrowser = memo(function CatalogBrowser({
               <>
                 <div className="flex h-full min-h-0 flex-col px-3 pb-3" data-catalog-cards={kind}>
                   <div
-                    className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
+                    className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]"
                     data-catalog-scroll
                     key={`${filterKey}:${sort}:${deferredQuery}:${facets.installedOnly}`}
                   >

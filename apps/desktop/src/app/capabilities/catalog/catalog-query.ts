@@ -16,21 +16,50 @@ export const EMPTY_FACETS: CatalogFacets = { sources: [], categories: [], tags: 
 
 export const catalogSources = (entries: CatalogEntry[]) => [...new Set(entries.map(entry => entry.source))]
 
-/** Category facet rows with counts; plugins follow the shared taxonomy order. */
-export function catalogCategories(entries: CatalogEntry[], kind: CatalogKind) {
+/**
+ * Category facet rows with counts; plugins follow the shared taxonomy order.
+ *
+ * `limit` caps the RAIL, exactly as `catalogTags` already caps tags: the
+ * rail is for browsing and the search above it covers the tail. Without it
+ * the skills catalog rendered 30 category rows - the last 8 of them starting
+ * at y=915 in a 925px window - and because the rail's scrollbar is not
+ * visible it read as ending at "Web". Anything selected is always kept, so a
+ * filter the user (or a deep link) already applied can never scroll out of
+ * reach and become impossible to clear.
+ */
+export function catalogCategories(
+  entries: CatalogEntry[],
+  kind: CatalogKind,
+  selected: readonly string[] = [],
+  limit = Number.POSITIVE_INFINITY
+) {
   const values = new Map<string, { label: string; count: number }>()
 
   for (const entry of entries) {
     values.set(entry.category, { label: entry.categoryLabel, count: (values.get(entry.category)?.count ?? 0) + 1 })
   }
 
+  let rows: ReadonlyArray<readonly [string, { label: string; count: number }]>
+
   if (kind === 'plugins') {
-    return PLUGIN_CATEGORY_ORDER.filter(key => values.has(key)).map(
+    rows = PLUGIN_CATEGORY_ORDER.filter(key => values.has(key)).map(
       key => [key, { ...values.get(key)!, label: PLUGIN_CATEGORIES[key].label }] as const
     )
+  } else {
+    rows = [...values].sort((a, b) => b[1].count - a[1].count)
   }
 
-  return [...values].sort((a, b) => b[1].count - a[1].count)
+  if (rows.length <= limit) {
+    return rows
+  }
+
+  // Keep the top `limit` by rank, then re-add anything selected that fell
+  // below the cut. Appended in the order they were selected so the list does
+  // not reshuffle as the user toggles.
+  const keep = new Set(rows.slice(0, limit).map(([value]) => value))
+  const restored = selected.filter(value => !keep.has(value) && values.has(value))
+
+  return [...rows.slice(0, limit), ...restored.map(value => [value, values.get(value)!] as const)]
 }
 
 /** The most common tags plus whatever is selected; search covers the long tail. */

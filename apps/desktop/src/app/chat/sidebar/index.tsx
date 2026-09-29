@@ -9,6 +9,12 @@ import { PlatformAvatar } from '@/app/messaging/platform-icon'
 import { Button } from '@/components/ui/button'
 import { Codicon } from '@/components/ui/codicon'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/components/ui/context-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { GlyphSpinner } from '@/components/ui/glyph-spinner'
 import { KbdGroup } from '@/components/ui/kbd'
 import { SearchField } from '@/components/ui/search-field'
@@ -137,13 +143,19 @@ import { applySidebarNavPrefs, SIDEBAR_NAV_PREFS_AREA } from '@/store/sidebar-na
 import { $sidebarSessionRankIds } from '@/store/sidebar-sort'
 
 import {
+  AGENTS_ROUTE,
   type AppView,
   ARTIFACTS_ROUTE,
   CAPABILITIES_ROUTE,
+  COMMAND_CENTER_ROUTE,
   CRON_ROUTE,
   MESSAGING_ROUTE,
+  PROFILES_ROUTE,
+  SESSION_IMPORT_ROUTE,
   SIDEBAR_NAV_AREA,
-  type SidebarNavContribution
+  type SidebarNavContribution,
+  STARMAP_ROUTE,
+  WEBHOOKS_ROUTE
 } from '../../routes'
 import type { SidebarNavItem } from '../../types'
 import { type NewSessionSplitHandler, startNewSessionDrag } from '../new-session-drag'
@@ -242,8 +254,76 @@ const SIDEBAR_NAV: SidebarNavItem[] = [
     route: CRON_ROUTE,
     keybindActionId: 'nav.cron',
     tier: 'advanced'
+  },
+  // The second group. Every row here is a whole page the app can navigate to,
+  // and before this list the only ways to reach them were the command palette
+  // or a statusbar chip that ships hidden - `reachability.py` is the gate, and
+  // it fails if a core route has no entry point in the chrome.
+  //
+  // Split out rather than appended above, because that group is "what Kova
+  // does" and this is "what Kova is made of". Eleven undifferentiated rows read
+  // as a word list; two labelled groups read as a map.
+  {
+    id: 'webhooks',
+    label: '',
+    icon: props => <Codicon name="globe" {...props} />,
+    route: WEBHOOKS_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'profiles',
+    label: '',
+    icon: props => <Codicon name="organization" {...props} />,
+    route: PROFILES_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'agents',
+    label: '',
+    icon: props => <Codicon name="server-process" {...props} />,
+    route: AGENTS_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'starmap',
+    label: '',
+    icon: props => <Codicon name="type-hierarchy-sub" {...props} />,
+    route: STARMAP_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'command-center',
+    label: '',
+    icon: props => <Codicon name="dashboard" {...props} />,
+    route: COMMAND_CENTER_ROUTE,
+    tier: 'advanced'
+  },
+  {
+    id: 'session-import',
+    label: '',
+    icon: props => <Codicon name="cloud-download" {...props} />,
+    route: SESSION_IMPORT_ROUTE,
+    tier: 'advanced'
   }
 ]
+
+// Index of the first row of the second group, so the render can put a label
+// between the halves. Counted from the array above rather than hardcoded, so a
+// row added to either group lands on the right side of the divider.
+const MANAGE_NAV_FROM = SIDEBAR_NAV.findIndex(item => item.id === 'webhooks')
+
+// The second group collapses to one "More" row, the way OpenClaw's Control UI
+// does it (ui/src/app-navigation.ts, `sidebarMoreRoutes`). Eleven rows cost
+// 339px - 37% of a 925px window - and the session search sits below all of
+// them, so every row added here is taken from the session list. OpenClaw keeps
+// a small pinned zone and puts the rest behind one row; that is the same trade
+// and it costs one line instead of six.
+//
+// Collapsed by default rather than by tier, because the fix has to hold in
+// Simple mode too: the space is the problem in both. A user who wants one of
+// them in the open promotes it with the existing sidebarNav.prefs `order`
+// contribution, which already exists and needs no new plumbing.
+const MORE_NAV_ID = 'more'
 
 // Two modes via the `compact` height variant (styles.css):
 //   tall    → each section is shrink-0, capped, its own scroller; Sessions is flex-1.
@@ -449,6 +529,26 @@ export function ChatSidebar({
     () => applySidebarNavPrefs([...SIDEBAR_NAV, ...contributedNav].filter(shownInMode(interfaceMode)), navPrefs),
     [contributedNav, interfaceMode, navPrefs]
   )
+
+  // The second group's rows go behind one "More" row (see MORE_NAV_ID). The
+  // split is by index into the SAME array the divider uses, so the label, the
+  // collapsed set and the open set can never disagree about where the halves
+  // are - the bug a hand-maintained pair of id lists would eventually have.
+  const primaryNav = useMemo(() => {
+    const manageIds = new Set(
+      SIDEBAR_NAV.slice(MANAGE_NAV_FROM).map(item => item.id as string)
+    )
+
+    return {
+      // A contributed row arrives after the core list, so slicing by INDEX
+      // swept every plugin's nav row into the overflow - which is the opposite
+      // of what contributing one is for. Split on membership of the collapsed
+      // core group instead, so a plugin row is always visible and a core row a
+      // preference reordered forward stays open too.
+      open: navItems.filter(item => !manageIds.has(item.id as string)),
+      more: navItems.filter(item => manageIds.has(item.id as string))
+    }
+  }, [navItems])
 
   const panesFlipped = useStore($panesFlipped)
   const grouping = useStore($sidebarGrouping)
@@ -1596,16 +1696,24 @@ export function ChatSidebar({
         <SidebarGroup className="shrink-0 p-0 pb-2 pt-[calc(var(--titlebar-height)+0.375rem)]">
           <SidebarGroupContent>
             <SidebarMenu className="gap-px">
-              {navItems.map(item => {
+              {(primaryNav.more.length > 0 ? primaryNav.open : navItems).map(item => {
                 const isInteractive = Boolean(item.action) || Boolean(item.route)
 
-                const active =
-                  (item.id === 'capabilities' && currentView === 'capabilities') ||
-                  (item.id === 'messaging' && currentView === 'messaging') ||
-                  (item.id === 'artifacts' && currentView === 'artifacts') ||
-                  (item.id === 'cron' && currentView === 'cron') ||
-                  // Contributed rows light up at their own route.
-                  (currentView === 'extension' && Boolean(item.route) && pathname === item.route)
+                // `useLocation()` is inside the app's HashRouter, so `pathname` is
+                // the in-app route here (window.location.pathname is always "/").
+                // Compare the row's OWN route rather than naming ids in a chain:
+                // the old chain listed four of them by hand, so every nav row added
+                // since silently stopped lighting up.
+                // The highlight follows currentView, not the raw path: focusing a
+                // session tile reports 'chat' while the path is still /kanban, and
+                // the nav has to stand down then - the tile is the current thing,
+                // not the page behind it.
+                //
+                // The route compare replaces a hand-written chain of four ids, so a
+                // row added since no longer silently fails to light up.
+                // `useLocation()` is inside the app's HashRouter, so `pathname` is
+                // the in-app route; window.location.pathname is always "/".
+                const active = currentView !== 'chat' && Boolean(item.route) && pathname === item.route
 
                 const isNewSession = item.id === 'new-session'
 
@@ -1720,6 +1828,36 @@ export function ChatSidebar({
                   </SidebarMenuItem>
                 )
               })}
+              {primaryNav.more.length > 0 && (
+                <SidebarMenuItem>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton
+                        className="flex h-7 w-full justify-start gap-2 rounded-md border border-transparent px-2 text-left text-md font-medium text-(--ui-text-secondary) transition-colors fast ease-out [-webkit-app-region:no-drag] hover:bg-(--ui-control-hover-background) hover:text-foreground hover:transition-none data-[state=open]:bg-(--ui-control-hover-background) data-[state=open]:text-foreground"
+                        data-testid="sidebar-nav-more"
+                        data-tour="sidebar-nav-more"
+                      >
+                        <Codicon
+                          className="size-4 shrink-0 text-[color-mix(in_srgb,currentColor_72%,transparent)]"
+                          name="more"
+                        />
+                        <span className="min-w-0 truncate">{s.nav.more}</span>
+                        <span className="ml-auto text-xs tabular-nums text-(--ui-text-tertiary)">
+                          {primaryNav.more.length}
+                        </span>
+                      </SidebarMenuButton>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      {primaryNav.more.map(moreItem => (
+                        <DropdownMenuItem key={moreItem.id} onSelect={() => onNavigate(moreItem)}>
+                          <moreItem.icon className="size-4 shrink-0 text-[color-mix(in_srgb,currentColor_72%,transparent)]" />
+                          {s.nav[moreItem.id] ?? moreItem.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

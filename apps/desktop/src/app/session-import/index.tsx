@@ -178,7 +178,7 @@ export function SessionImportView({ owner, onClose, onOpenSession }: SessionImpo
                 />
               )}
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-5">
+            <div className="scrollbar-cue min-h-0 flex-1 overflow-y-auto px-3 pb-5">
               {sessions.isPending && <Loader className="mx-auto my-12" label={copy.scanning} />}
               {sessions.isError && (
                 <ErrorState className="p-5" description={copy.scanHelp} title={copy.scanError}>

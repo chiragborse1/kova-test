@@ -908,7 +908,17 @@ export const en: Translations = {
       about: 'About',
       billing: 'Billing',
       notifications: 'Notifications',
-      vault: 'Passwords & Logins'
+      vault: 'Passwords & Logins',
+    },
+    // Band headings for the Settings rail. The first band is unlabelled
+    // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
+    bands: {
+      bandDevice: 'This device',
+      bandSecurity: 'Security & data',
+      bandAgents: 'Agents & models',
+      bandConnections: 'Connections',
+      bandAccount: 'Account',
+      bandSystem: 'System',
     },
     plugins: {
       title: 'Desktop plugins',
@@ -3555,7 +3565,14 @@ export const en: Translations = {
       capabilities: 'Capabilities',
       messaging: 'Messaging',
       artifacts: 'Artifacts',
-      cron: 'Scheduled jobs'
+      cron: 'Scheduled jobs',
+      webhooks: 'Webhooks',
+      profiles: 'Profiles',
+      agents: 'Agents',
+      starmap: 'Memory graph',
+      'command-center': 'Command center',
+      'session-import': 'Import a session',
+      more: 'More',
     },
     searchAria: 'Search sessions',
     searchPlaceholder: 'Search sessions…',

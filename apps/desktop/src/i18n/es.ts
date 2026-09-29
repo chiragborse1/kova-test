@@ -847,7 +847,17 @@ export const esOverrides = {
       about: 'Acerca de',
       billing: 'Facturación',
       notifications: 'Notificaciones',
-      vault: 'Contraseñas e inicios de sesión'
+      vault: 'Contraseñas e inicios de sesión',
+    },
+    // Band headings for the Settings rail. The first band is unlabelled
+    // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
+    bands: {
+      bandDevice: 'Este dispositivo',
+      bandSecurity: 'Seguridad y datos',
+      bandAgents: 'Agentes y modelos',
+      bandConnections: 'Conexiones',
+      bandAccount: 'Cuenta',
+      bandSystem: 'Sistema',
     },
     plugins: {
       title: 'Plugins de escritorio',
@@ -3923,7 +3933,14 @@ export const esOverrides = {
       capabilities: 'Capacidades',
       messaging: 'Mensajería',
       artifacts: 'Artefactos',
-      cron: 'Tareas programadas'
+      cron: 'Tareas programadas',
+      webhooks: 'Webhooks',
+      profiles: 'Perfiles',
+      agents: 'Agentes',
+      starmap: 'Gráfico de memoria',
+      'command-center': 'Centro de control',
+      'session-import': 'Importar sesión',
+      more: 'Más',
     },
     searchAria: 'Buscar sesiones',
     searchPlaceholder: 'Buscar sesiones…',
