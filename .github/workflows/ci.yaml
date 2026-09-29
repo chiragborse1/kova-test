@@ -17,8 +17,8 @@ name: CI
 on:
   workflow_dispatch:
     inputs:
-      js_runner:
-        description: 'Runner label for the JS & TS checks job. Leave blank for the default 32-core runner.'
+      runner:
+        description: 'Runner label for the PR-gating jobs. Leave blank for the standard-runner default.'
         required: false
         type: string
         default: ''
@@ -29,8 +29,8 @@ on:
         default: false
   workflow_call:
     inputs:
-      js_runner:
-        description: 'Runner label for the JS & TS checks job. Empty uses that workflow''s default (a 32-core runner, which is much faster but not available to every account).'
+      runner:
+        description: 'Runner label for the PR-gating jobs. Empty uses each workflow''s own default, a standard runner. A larger runner is much faster but shares a small pool, and a job that never gets one is indistinguishable from broken CI.'
         required: false
         type: string
         default: ''
@@ -136,7 +136,13 @@ jobs:
     needs: detect
     if: needs.detect.outputs.python == 'true'
     uses: ./.github/workflows/tests-os.yml
+
     with:
+      # Empty means "use that workflow's own default", which is a
+      # standard runner. A larger one is faster but shares a small
+      # pool, and a job that never gets a runner looks exactly like a
+      # broken workflow - which is how this repo sat dead for a day.
+      runner: ${{ inputs.runner }}
       # The Windows lane spawns the real desktop-update hand-off script
       # (tests/test_desktop_update_windows_*.py) only when that surface
       # changed; unit-level platforms("windows") tests always run.
@@ -155,12 +161,19 @@ jobs:
     needs: detect
     if: needs.detect.outputs.frontend == 'true'
     uses: ./.github/workflows/js-tests.yml
+
     with:
+      # Empty means "use that workflow's own default", which is a
+      # standard runner. A larger one is faster but shares a small
+      # pool, and a job that never gets a runner looks exactly like a
+      # broken workflow - which is how this repo sat dead for a day.
+      runner: ${{ inputs.runner }}
+
       # Empty string means "let js-tests use its own default". The 32-core
       # runner is much faster but is not available to every account, and a job
       # that never gets a runner is indistinguishable from a broken workflow -
       # which is how this repo sat dead for a day unnoticed.
-      runner: ${{ inputs.js_runner }}
+      runner: ${{ inputs.runner }}
   rust-tests:
     name: Rust tests
     needs: detect
@@ -169,6 +182,12 @@ jobs:
     if: needs.detect.outputs.rust == 'true'
     uses: ./.github/workflows/rust-tests.yml
 
+    with:
+      # Empty means "use that workflow's own default", which is a
+      # standard runner. A larger one is faster but shares a small
+      # pool, and a job that never gets a runner looks exactly like a
+      # broken workflow - which is how this repo sat dead for a day.
+      runner: ${{ inputs.runner }}
   bootstrap-installer:
     name: Bootstrap installer
     needs: detect
@@ -196,6 +215,12 @@ jobs:
     if: false
     uses: ./.github/workflows/e2e-desktop.yml
 
+    with:
+      # Empty means "use that workflow's own default", which is a
+      # standard runner. A larger one is faster but shares a small
+      # pool, and a job that never gets a runner looks exactly like a
+      # broken workflow - which is how this repo sat dead for a day.
+      runner: ${{ inputs.runner }}
   e2e-desktop-core:
     name: Desktop core E2E
     needs: detect
@@ -204,6 +229,12 @@ jobs:
     if: ${{ needs.detect.outputs.python_prod == 'true' || needs.detect.outputs.frontend == 'true' }}
     uses: ./.github/workflows/e2e-desktop-core.yml
 
+    with:
+      # Empty means "use that workflow's own default", which is a
+      # standard runner. A larger one is faster but shares a small
+      # pool, and a job that never gets a runner looks exactly like a
+      # broken workflow - which is how this repo sat dead for a day.
+      runner: ${{ inputs.runner }}
   e2e-desktop-update:
     name: Desktop update E2E
     needs: detect
@@ -214,6 +245,12 @@ jobs:
     if: ${{ needs.detect.outputs.python_prod == 'true' || needs.detect.outputs.frontend == 'true' }}
     uses: ./.github/workflows/e2e-desktop-update.yml
 
+    with:
+      # Empty means "use that workflow's own default", which is a
+      # standard runner. A larger one is faster but shares a small
+      # pool, and a job that never gets a runner looks exactly like a
+      # broken workflow - which is how this repo sat dead for a day.
+      runner: ${{ inputs.runner }}
   docs-site:
     name: Docs Site
     needs: detect
