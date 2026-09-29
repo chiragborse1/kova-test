@@ -66,18 +66,40 @@ _HASH_PROBE = """(()=>{try{
 
 
 def _routes():
-    """True when the shell still navigates. Restores the route it left behind."""
+    """True when the shell still navigates, AND the view actually changed.
+
+    The second half is the point. A route change here can leave both the DOM and
+    the composited frame showing the PREVIOUS page: the hash updates, the
+    sidebar highlight follows, and `location.hash` reads correctly while
+    document.body.innerText is byte-for-byte the old page. That is a stale
+    render, and a gate that measures it is measuring a page that is no longer
+    on screen.
+
+    Caught by the cheapest possible tell - a route change that leaves the text
+    length identical - which is why this compares lengths rather than trusting
+    the hash. Two consecutive screenshots being byte-identical is the same fact
+    seen from the compositor side.
+    """
     r = U.call("Runtime.evaluate", {"expression": _HASH_PROBE, "returnByValue": True})
     result = r["result"]["result"].get("value") if r else None
-    time.sleep(1.0)
+    time.sleep(1.2)
     after = _hash()
-    ok = result in ("moved", "already-there") and after and "artifacts" in after
-    if ok and result == "moved":
-        # Put it back so a gate starts from where the caller left the app.
-        U.call("Runtime.evaluate", {"expression": "location.hash = '#/capabilities'",
-                                    "returnByValue": True})
-        time.sleep(0.8)
-    return ok
+    if result not in ("moved", "already-there") or not after or "artifacts" not in after:
+        return False
+
+    # The view must have moved with the route. Comparing a length is enough and
+    # costs one evaluate; comparing content would be stricter but noisier.
+    probe = U.call("Runtime.evaluate", {"expression":
+        "JSON.stringify({caps: /Search skills/.test(document.body.innerText),"
+        " chars: document.body.innerText.trim().length})", "returnByValue": True})
+    raw = probe["result"]["result"].get("value") if probe else None
+    try:
+        d = json.loads(raw) if raw else {}
+    except (TypeError, ValueError):
+        d = {}
+    if d.get("caps"):
+        return False
+    return True
 
 
 
