@@ -45,6 +45,8 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ui_audit as U  # noqa: E402
 
+import app_alive  # noqa: E402
+
 ROUTES = [
     ("chat", "/#/20260927_231116_3cfc71"),
     ("capabilities", "/#/capabilities"),
@@ -164,6 +166,15 @@ def ev(expr):
 
 
 def main():
+    # A gate that measures a crashed renderer measures nothing. Proven: with the
+    # error boundary on screen this gate exited 0 claiming every container
+    # painted a scrollbar. Fail loudly instead.
+    try:
+        app_alive.alive()
+    except RuntimeError as exc:
+        print("  %s" % exc)
+        return 1
+
     bad = []
     # WCAG 1.4.11 non-text contrast. A thumb is a control boundary, so 3:1 -
     # not the 4.5:1 that text needs. This is the number the ORIGINAL gate could

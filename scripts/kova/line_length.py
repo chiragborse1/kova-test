@@ -38,6 +38,8 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import ui_audit as U  # noqa: E402
 
+import app_alive  # noqa: E402
+
 ROUTES = [
     ("transcript", "/#/20260927_231116_3cfc71"),
     ("messaging", "/#/messaging"),
@@ -96,6 +98,15 @@ def ev(expr):
 
 
 def main():
+    # Guards the same failure this gate shares with scroll_cue: an
+    # error boundary on screen is zero paragraphs, and zero
+    # paragraphs used to read as a perfect score.
+    try:
+        app_alive.alive()
+    except RuntimeError as exc:
+        print("  %s" % exc)
+        return 1
+
     bad = []
     print("  %-14s %5s %8s %7s %7s  %s" % ("route", "size", "column", "mean", "longest", "verdict"))
     for name, route in ROUTES:
