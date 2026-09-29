@@ -2,13 +2,23 @@ import { createClient, type Message, type Variant } from 'dbus-native'
 
 // Electron can construct a Linux Tray even when the desktop has no tray host
 // (notably stock GNOME). Never use that object alone as proof of a restore path.
+/**
+ * The uid for the default D-Bus socket path. `process.getuid` is POSIX-only
+ * and absent on Windows, where `getuid!()` type-checks but throws at runtime -
+ * which made merely IMPORTING this module fail there. Every other getuid call
+ * site in the electron main process guards with a typeof check; this one did not.
+ */
+function runtimeUid(): number {
+  return typeof process.getuid === 'function' ? process.getuid() : 0
+}
+
 export async function watchLinuxTrayHost(onLost: () => void): Promise<() => void> {
   const service = 'org.kde.StatusNotifierWatcher'
 
   const bus = createClient({
     busAddress:
       process.env.DBUS_SESSION_BUS_ADDRESS ||
-      `unix:path=${process.env.XDG_RUNTIME_DIR || `/run/user/${process.getuid!()}`}/bus`,
+      `unix:path=${process.env.XDG_RUNTIME_DIR || `/run/user/${runtimeUid()}`}/bus`,
     authMethods: ['EXTERNAL'],
     direct: true,
     timeout: 2000
