@@ -14,10 +14,10 @@ import './kanban.css'
 import {
   cn,
   Codicon,
-  type KovaPlugin,
   host,
   type KeybindContribution,
   KEYBINDS_AREA,
+  type KovaPlugin,
   PALETTE_AREA,
   type PaletteContribution,
   type RouteContribution,

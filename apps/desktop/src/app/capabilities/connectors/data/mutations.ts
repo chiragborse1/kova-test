@@ -1,8 +1,8 @@
 import type { ConnectionAnswer, ConnectorPolicyGetResult } from '@kova/shared'
 import { useCallback, useRef, useState } from 'react'
 
-import type { ProfileScope } from '@/kova'
 import { translateNow } from '@/i18n'
+import type { ProfileScope } from '@/kova'
 import { queryClient } from '@/lib/query-client'
 import { notifyError } from '@/store/notifications'
 

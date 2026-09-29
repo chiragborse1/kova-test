@@ -11,8 +11,8 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { saveKovaConfigRecord } from '@/kova'
 import { useI18n } from '@/i18n'
+import { saveKovaConfigRecord } from '@/kova'
 import { Check, Globe } from '@/lib/icons'
 import { notify, notifyError } from '@/store/notifications'
 import {

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ErrorBanner } from '@/components/ui/error-state'
 import { Input } from '@/components/ui/input'
+import { useI18n } from '@/i18n'
 import {
   applyTelegramOnboarding,
   cancelTelegramOnboarding,
@@ -13,7 +14,6 @@ import {
   type TelegramOnboardingApplyResponse,
   type TelegramOnboardingStartResponse
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { openExternalLink } from '@/lib/external-link'
 import { Check, ExternalLink, QrCode, Save, X } from '@/lib/icons'
 import { isSubmitEnter } from '@/lib/ime'

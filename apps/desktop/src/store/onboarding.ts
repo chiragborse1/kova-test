@@ -1,6 +1,7 @@
 import type { ModelOptionProvider } from '@kova/shared'
 import { atom } from 'nanostores'
 
+import { translateNow } from '@/i18n'
 import {
   cancelOAuthSession,
   getGlobalModelOptions,
@@ -13,7 +14,6 @@ import {
   submitOAuthCode,
   validateProviderCredential
 } from '@/kova'
-import { translateNow } from '@/i18n'
 import { isProviderSetupErrorMessage } from '@/lib/provider-setup-errors'
 import { evaluateRuntimeReadiness, type RuntimeReadinessResult } from '@/lib/runtime-readiness'
 import { ackFreeTierNotice, freeTierReadyPending, refreshFreeTierStatus, setFreeTierRoute } from '@/store/free-tier'

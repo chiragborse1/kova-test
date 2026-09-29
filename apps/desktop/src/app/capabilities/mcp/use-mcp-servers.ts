@@ -2,6 +2,7 @@ import { useStore } from '@nanostores/react'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { useI18n } from '@/i18n'
 import {
   getMcpCatalog,
   type KovaGateway,
@@ -12,7 +13,6 @@ import {
   profileScopeKey,
   saveMcpServers
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { completeMcpDesktopOAuth } from '@/lib/mcp-dashboard-oauth'
 import { probeCache, probeKey } from '@/lib/mcp-probe-cache'
 import { getServers, type McpServerEntry, type McpServers } from '@/lib/mcp-servers'

@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 
 import { PanelEmpty } from '@/app/overlays/panel'
 import { Button } from '@/components/ui/button'
-import { type ProfileScope, testMcpServer } from '@/kova'
 import { useI18n } from '@/i18n'
+import { type ProfileScope, testMcpServer } from '@/kova'
 import { PROBE_TTL_MS } from '@/lib/mcp-probe-cache'
 
 import { CONNECTOR_GC_TIME, pluginProbeQueryKey } from './data/keys'

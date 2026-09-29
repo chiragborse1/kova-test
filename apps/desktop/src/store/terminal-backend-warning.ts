@@ -1,5 +1,5 @@
-import { getTerminalBackends, selectTerminalBackend } from '@/kova'
 import { translateNow } from '@/i18n'
+import { getTerminalBackends, selectTerminalBackend } from '@/kova'
 import { notify, notifyError } from '@/store/notifications'
 import { requestRoute } from '@/store/recovery-requests'
 import type { TerminalBackendInfo } from '@/types/kova'

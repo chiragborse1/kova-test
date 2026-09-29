@@ -1,7 +1,7 @@
 import { compactNumber } from '@kova/shared'
 
-import { getUsageAnalytics, type McpTestResult, type ProfileScope } from '@/kova'
 import type { Translations } from '@/i18n'
+import { getUsageAnalytics, type McpTestResult, type ProfileScope } from '@/kova'
 import { estimateServerTokens, serverUsageCount } from '@/lib/mcp-cost'
 import { NEEDS_AUTH_RE } from '@/lib/mcp-probe-cache'
 import { type McpServerEntry, serverEnabled } from '@/lib/mcp-servers'
