@@ -147,6 +147,10 @@ PROBE = r"""JSON.stringify((()=>{
       contrast = Math.round(ratio(over(thumb, surf), surf) * 100) / 100;
     }
 
+    // Stamp the node so the scroll-diff pass can address the SAME element
+    // rather than re-querying by class and hoping the order matches.
+    el.setAttribute('data-cue-probe', String(out.length));
+
     out.push({
       clipped,
       boxH: Math.round(r.height),
@@ -165,6 +169,93 @@ def ev(expr):
     return r["result"]["result"].get("value") if r else None
 
 
+
+# ── Is a thumb actually PAINTED? ────────────────────────────────────────────
+# Declared colour and painted thumb are different claims, and only one of them
+# is what a person sees. The capabilities filter rail declares a 55% thumb,
+# reserves the same 7px classic gutter as the card list beside it, computes the
+# same colour - and paints NOTHING. It scrolls 285px. Reading the computed style
+# cannot tell those apart, which is why this gate stayed green over a
+# scrollbar nobody could see.
+#
+# The test that does distinguish them: hide the content, photograph the gutter,
+# scroll, photograph it again. A painted thumb MUST move. Rows behind it must
+# not, which is why the content is hidden first - otherwise the histogram diff
+# is dominated by the list scrolling past.
+#
+# This is a screenshot diff on purpose. An earlier attempt used
+# elementFromPoint and computed styles inside the page, which is the same class
+# of claim that already lied: it reports what the cascade says, not what is on
+# the screen.
+GUTTER_BAND = 10
+
+
+def _gutter_pixels(img, box, dpr):
+    from PIL import Image  # noqa: F401  (documents the dependency of fresh_shot)
+    import pixel_measure as PM
+    right = int((box["x"] + box["w"]) * dpr)
+    top = int(box["y"] * dpr)
+    bottom = min(img.height, int((box["y"] + box["h"]) * dpr))
+    if right <= 0 or bottom <= top:
+        return None
+    x0 = max(0, right - int(GUTTER_BAND * dpr))
+    return img.crop((x0, top, right, bottom))
+
+
+def paint_check(index, route_hash):
+    """True when the element's gutter changes when it scrolls."""
+    import pixel_measure as PM
+    try:
+        ev("location.hash=" + repr(route_hash))
+        time.sleep(2.0)
+        # Do NOT hide the content. Hiding it collapses the scroller -
+        # scrollHeight falls to clientHeight, scrollTop cannot move, and the
+        # diff is zero for every element including ones with a working thumb.
+        # That is how the first version of this check condemned the card list
+        # alongside the rail.
+        ev("""(()=>{const el=document.querySelector('[data-cue-probe="%s"]');
+          if(!el) return 0;
+          window.scrollTo(0,0);
+          el.scrollTop = 0;
+          return 1;})()""" % index)
+        time.sleep(0.4)
+        img, _ = PM.fresh_shot()
+        box = _box_of(index)
+        if box is None:
+            return None
+        before = _gutter_pixels(img, box, PM.viewport()["dpr"])
+        ev("""(()=>{const el=document.querySelector('[data-cue-probe="%s"]');
+          if(!el) return; el.scrollTop = Math.min(140, el.scrollHeight - el.clientHeight);})()""" % index)
+        time.sleep(1.2)
+        img2, _ = PM.fresh_shot()
+        after = _gutter_pixels(img2, box, PM.viewport()["dpr"])
+        ev("""(()=>{const el=document.querySelector('[data-cue-probe="%s"]');
+          if(!el) return; el.scrollTop = 0;})()""" % index)
+        time.sleep(0.6)
+        if before is None or after is None:
+            return None
+        a = before.tobytes()
+        b = after.tobytes()
+        if len(a) != len(b):
+            return True
+        # A painted thumb is a solid bar that moves with the track, so the
+        # reserved strip changes substantially. Measured on this app: a working
+        # thumb changes ~4800 bytes, a non-painted one changes 0.
+        diff = sum(1 for x, y in zip(a, b) if x != y)
+        return diff > 500
+    except Exception:
+        return None
+
+
+def _box_of(index):
+    raw = ev("""(()=>{const el=document.querySelector('[data-cue-probe="%s"]');
+      if(!el) return null; const r=el.getBoundingClientRect();
+      return JSON.stringify({x:r.x,y:r.y,w:r.width,h:r.height});})()""" % index)
+    try:
+        return json.loads(raw) if raw else None
+    except (TypeError, ValueError):
+        return None
+
 def main():
     # A gate that measures a crashed renderer measures nothing. Proven: with the
     # error boundary on screen this gate exited 0 claiming every container
@@ -180,8 +271,9 @@ def main():
     # not the 4.5:1 that text needs. This is the number the ORIGINAL gate could
     # not produce: it asked whether a rule existed, and a 1.30:1 thumb has a rule.
     MIN_CONTRAST = 3.0
-    print("  %-14s %8s %8s %8s  %6s  %8s  %s"
-          % ("route", "clipped", "box", "content", "marked", "contrast", "verdict"))
+    print("  %-14s %8s %8s %8s  %6s  %8s  %7s  %s"
+          % ("route", "clipped", "box", "content", "marked", "contrast", "painted",
+             "verdict"))
     for name, route in ROUTES:
         ev("location.hash=" + repr(route[1:]))
         time.sleep(2.5)
@@ -196,18 +288,26 @@ def main():
         if not rows:
             print("  %-14s %8s %8s %8s  (nothing clipping)" % (name, "-", "-", "-"))
             continue
-        for r in rows:
+        for idx, r in enumerate(rows):
             contrast = r.get("contrast")
-            if contrast is None:
+            # The decisive check. A declared thumb is a claim about the cascade;
+            # a painted one is a claim about the screen. The capabilities rail
+            # declares 55% and paints nothing, so it is asked to prove it.
+            painted = paint_check(idx, route[1:])
+            r["painted"] = painted
+            if painted is False:
+                verdict = "NOT PAINTED (declares a thumb, draws none)"
+            elif contrast is None:
                 verdict = "FAINT (no thumb painted at rest)"
             elif contrast < MIN_CONTRAST:
                 verdict = "FAINT %.2f:1 < %.1f" % (contrast, MIN_CONTRAST)
             else:
                 verdict = "ok %.2f:1" % contrast
-            print("  %-14s %8d %8d %8d  %6s  %8s  %s" % (
+            print("  %-14s %8d %8d %8d  %6s  %8s  %7s  %s" % (
                 name, r["clipped"], r["boxH"], r["contentH"],
                 "yes" if r["marked"] else "NO",
                 "-" if contrast is None else "%.2f" % contrast,
+                "?" if painted is None else ("yes" if painted else "NO"),
                 verdict))
             if not r["marked"]:
                 bad.append("%s: %dpx clipped in a %dpx box with no visible scrollbar (%s)"
@@ -221,6 +321,11 @@ def main():
                            "%.1f:1 a control boundary needs. The thumb is there and "
                            "still invisible (%s)"
                            % (name, contrast, MIN_CONTRAST, r["cls"][:44]))
+            if painted is False:
+                bad.append("%s: %dpx clipped and the element DECLARES a scrollbar "
+                           "thumb, but scrolling it changes nothing in the gutter - "
+                           "no thumb is painted, so the cue does not exist (%s)"
+                           % (name, r["clipped"], r["cls"][:44]))
 
     print()
     if bad:
