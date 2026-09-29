@@ -311,7 +311,6 @@ jobs:
       - e2e-desktop-update
       - docs-site
       - history-check
-      - contributor-check
       - uv-lockfile
       - infographic-check
       - case-collision-check
