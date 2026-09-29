@@ -238,14 +238,84 @@ def paint_check(index, route_hash):
         b = after.tobytes()
         if len(a) != len(b):
             return True
-        # A painted thumb is a solid bar that moves with the track, so the
-        # reserved strip changes substantially. Measured on this app: a working
-        # thumb changes ~4800 bytes, a non-painted one changes 0.
         diff = sum(1 for x, y in zip(a, b) if x != y)
-        return diff > 500
+        if diff > 500:
+            return True
+        # A zero diff means "no thumb moved" ONLY IF this browser paints
+        # scrollbars. Run the positive control before believing a negative.
+        return None if not _scrollbars_visible_here() else False
     except Exception:
         return None
 
+
+
+# Does THIS browser paint scrollbars at all?
+#
+# Headless Chrome does not. It reserves no gutter and paints nothing, so every
+# scroll-diff there is zero - and this check then reported a scrollbar "nobody
+# can see" on a perfectly healthy app, for three turns, with a full chain of
+# confident wrong hypotheses behind it.
+#
+# A reserved gutter is NOT the test: the app reserves 7px on every scroller and
+# still paints none. The only sound check is a positive control - a scroller
+# styled to be unmistakably opaque, measured the same way the suspects are. If
+# the control shows no moving thumb, the instrument cannot answer the question
+# and the check stands down instead of failing.
+_CONTROL_ID = "__scroll_cue_control"
+
+
+def _scrollbars_visible_here():
+    made = ev("""(()=>{
+      if (document.getElementById(%s)) return 'exists';
+      const d = document.createElement('div');
+      d.id = %s;
+      d.className = 'scrollbar-cue';
+      d.style.cssText = 'position:fixed;left:20px;top:20px;width:200px;height:260px;'
+        + 'overflow-y:scroll;z-index:99999;background:#fff;';
+      d.innerHTML = Array.from({length: 40}, (_, i) =>
+        '<p style="height:28px;margin:0">r' + i + '</p>').join('');
+      document.body.appendChild(d);
+      return 'built';
+    })()""" % (json.dumps(_CONTROL_ID), json.dumps(_CONTROL_ID)))
+    if made == "exists":
+        ev("document.getElementById(%s)?.remove()" % json.dumps(_CONTROL_ID))
+    time.sleep(0.8)
+    box = _box_of_by_id(_CONTROL_ID)
+    if box is None:
+        return False
+    import pixel_measure as PM
+    img, _ = PM.fresh_shot()
+    dpr = PM.viewport()["dpr"]
+    before = _strip(img, box, dpr)
+    ev("""(()=>{const el=document.getElementById(%s);
+      if(el) el.scrollTop = 200; return 1;})()""" % json.dumps(_CONTROL_ID))
+    time.sleep(1.0)
+    img2, _ = PM.fresh_shot()
+    after = _strip(img2, box, dpr)
+    ev("""(()=>{const el=document.getElementById(%s);
+      if(el){el.scrollTop=0; el.remove();} return 1;})()""" % json.dumps(_CONTROL_ID))
+    if before is None or after is None or len(before) != len(after):
+        return False
+    return sum(1 for x, y in zip(before, after) if x != y) > 500
+
+
+def _box_of_by_id(node_id):
+    raw = ev("""(()=>{const el=document.getElementById(%s); if(!el) return null;
+      const r=el.getBoundingClientRect();
+      return JSON.stringify({x:r.x,y:r.y,w:r.width,h:r.height});})()""" % json.dumps(node_id))
+    try:
+        return json.loads(raw) if raw else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _strip(img, box, dpr):
+    right = int((box["x"] + box["w"]) * dpr)
+    top = int(box["y"] * dpr)
+    bottom = min(img.height, int((box["y"] + box["h"]) * dpr))
+    if right <= 0 or bottom <= top:
+        return None
+    return img.crop((max(0, right - int(GUTTER_BAND * dpr)), top, right, bottom)).tobytes()
 
 def _box_of(index):
     raw = ev("""(()=>{const el=document.querySelector('[data-cue-probe="%s"]');
@@ -295,7 +365,9 @@ def main():
             # declares 55% and paints nothing, so it is asked to prove it.
             painted = paint_check(idx, route[1:])
             r["painted"] = painted
-            if painted is False:
+            if painted is None:
+                verdict = "not checked (this browser paints no scrollbars)"
+            elif painted is False:
                 verdict = "NOT PAINTED (declares a thumb, draws none)"
             elif contrast is None:
                 verdict = "FAINT (no thumb painted at rest)"
