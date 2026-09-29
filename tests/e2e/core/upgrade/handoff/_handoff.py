@@ -56,12 +56,18 @@ class Refs:
 
 
 @functools.cache
+# The N-1 tag glob is derived from kova_cli.update_channel.STABLE_TAG_RE:
+# a stable version is v<1-3 digits>.<minor>.<patch>, and a 4-digit major is a
+# CalVer label rather than a version. This used to be 'v20[0-9][0-9].*',
+# which cannot match a v1.x tag at all - when the product moved to 1.0.0
+# these tests silently stopped finding N-1 and failed with
+# 'fatal: No names found, cannot describe anything'.
 def refs() -> Refs:
     """HEAD and release N-1, resolved on first use (collection runs no git)."""
     head = I.head_sha()
     try:
         tag = os.environ.get("KOVA_E2E_UPGRADE_BASE") or I.git(
-            "describe", "--tags", "--match", "v20[0-9][0-9].*", "--abbrev=0", "HEAD~1", cwd=H.WORKTREE)
+            "describe", "--tags", "--match", "v[0-9]*.[0-9]*.[0-9]*", "--abbrev=0", "HEAD~1", cwd=H.WORKTREE)
         return Refs(head, tag, I.git("rev-parse", f"{tag}^{{commit}}", cwd=H.WORKTREE))
     except AssertionError:  # shallow checkout without tags
         return Refs(head, "", "")

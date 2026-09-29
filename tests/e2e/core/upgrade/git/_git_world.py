@@ -54,9 +54,15 @@ def reported_success(cp: subprocess.CompletedProcess) -> bool:
     return cp.returncode == 0 or SUCCESS in output(cp)
 
 
+# The N-1 tag glob is derived from kova_cli.update_channel.STABLE_TAG_RE:
+# a stable version is v<1-3 digits>.<minor>.<patch>, and a 4-digit major is a
+# CalVer label rather than a version. This used to be 'v20[0-9][0-9].*',
+# which cannot match a v1.x tag at all - when the product moved to 1.0.0
+# these tests silently stopped finding N-1 and failed with
+# 'fatal: No names found, cannot describe anything'.
 def n1_tag() -> str:
     """N-1: the newest release tag strictly before HEAD."""
-    return I.git("describe", "--tags", "--abbrev=0", "--match", "v20[0-9][0-9].*", "HEAD~1", cwd=H.WORKTREE)
+    return I.git("describe", "--tags", "--abbrev=0", "--match", "v[0-9]*.[0-9]*.[0-9]*", "HEAD~1", cwd=H.WORKTREE)
 
 
 def n1_base() -> str:
