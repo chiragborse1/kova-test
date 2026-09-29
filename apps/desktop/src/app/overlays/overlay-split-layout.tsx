@@ -238,8 +238,18 @@ export function OverlayNav({ footer, groups }: { footer?: ReactNode; groups: Ove
                 // and out of the accessibility tree as a landmark - it labels
                 // the rows below it visually, and each row already carries its
                 // own accessible name.
+                //
+                // SECONDARY, not quaternary. Quaternary (36% ink) is this app's
+                // metadata tier - versions, counts, hints, icons - and it is not
+                // a heading tier: measured against the rail it renders 2.22:1 in
+                // light and 2.96:1 in dark, so a band title that is the ONLY
+                // thing telling you which group of rows you are looking at
+                // reads as faint as the timestamps under it. Secondary is the
+                // quietest tier that still clears 4.5:1 in both themes
+                // (6.83:1 light, 8.02:1 dark). Tertiary passes in dark (4.95)
+                // and fails in light (3.64), so it is not the safe choice.
                 <div
-                  className="flex h-8 shrink-0 items-center px-2 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-quaternary)"
+                  className="flex h-8 shrink-0 items-center px-2 text-[0.6875rem] font-semibold tracking-caps text-(--ui-text-secondary)"
                   data-nav-group-label=""
                   role="presentation"
                 >
