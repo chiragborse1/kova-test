@@ -55,10 +55,6 @@ const channelRequest = channelBuildRequest()
 
 /** @typedef {import("app-builder-lib").Configuration} Configuration */
 
-const [owner, repo] = (process.env.GITHUB_REPOSITORY || 'kova-agent').split('/')
-if (!owner || !repo) {
-  throw new Error(`invalid GITHUB_REPOSITORY ${process.env.GITHUB_REPOSITORY}`)
-}
 const electronVersion = require('./package.json').devDependencies.electron
 if (!/^\d+\.\d+\.\d+$/.test(electronVersion)) {
   throw new Error(`invalid electron version ${electronVersion} in package.json`)
@@ -66,6 +62,31 @@ if (!/^\d+\.\d+\.\d+$/.test(electronVersion)) {
 
 const macFeed = channelRequest ? null : feedContract.darwinFeed(channel === 'canary' || channel === 'light-canary' ? 'canary' : 'stable', light)
 const publicUrl = feedContract.feedBaseUrl(process.env.CLOUDFLARE_R2_PUBLIC_URL)
+
+// GITHUB_REPOSITORY is `owner/repo`. It is ABSENT in a local `--dir` build and
+// in the update e2e sandbox, which both run with a stripped environment. The
+// fallback that used to sit here was the single string 'kova-agent' - no slash
+// in it - so `split('/')` left `repo` undefined and the next line threw
+// `invalid GITHUB_REPOSITORY undefined` for EVERY local build. That is what
+// failed the Desktop update E2E.
+//
+// The deeper problem was asking at all. `channel` is always set ("latest"), so
+// the old `publish` expression was never null: electron-builder always demanded
+// a publish target, and therefore always demanded owner/repo, out of a build
+// that never intended to publish. A repository is required only when there is
+// something to publish TO.
+const [owner, repo] = String(process.env.GITHUB_REPOSITORY || '').split('/')
+const hasRepo = Boolean(owner && repo)
+const publishing = Boolean(publicUrl) || hasRepo
+if (!hasRepo && publicUrl) {
+  // A feed URL with no repository falls through to the GitHub branch of the
+  // ternary below with `undefined` for both. That is a misconfiguration rather
+  // than a local build, so it is worth stopping.
+  throw new Error(
+    `CLOUDFLARE_R2_PUBLIC_URL is set but GITHUB_REPOSITORY is not; ` +
+    `expected "owner/repo", got ${JSON.stringify(process.env.GITHUB_REPOSITORY)}`
+  )
+}
 
 /** @satisfies {Configuration} */
 module.exports = {
@@ -91,13 +112,14 @@ module.exports = {
   // var (local, or a fork without the R2 vars) keep the github provider, which
   // is exactly today's behavior. The store build has no feed at all (the Store
   // owns its distribution and updates).
-  publish: channelRequest ? null : !channel
+  // A local build publishes nothing. A release build has a public feed URL and
+  // publishes to it; the GitHub target stays for a build that has a repository
+  // but no feed URL.
+  publish: channelRequest || !publishing
     ? null
-    : [
-        publicUrl
-          ? { provider: 'generic', url: publicUrl, channel }
-          : { provider: 'github', owner, repo, channel }
-      ],
+    : publicUrl
+      ? { provider: 'generic', url: publicUrl, channel }
+      : { provider: 'github', owner, repo, channel },
   extraMetadata: {
     name: appNamePascal,
     // Electron bootstrap reads package.productName before main.ts. Keep the
