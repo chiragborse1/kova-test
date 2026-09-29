@@ -211,3 +211,45 @@ if __name__ == "__main__":
             "%.2f %s" % (r["contrast"], "ok" if r["pass"] else "FAIL")
             if r["contrast"] is not None else "no glyph")
         print("  %-24s %s" % (r["t"][:24], state))
+
+
+def scrollbar_thumb(img, box, dpr, surface=None, band=10):
+    """Contrast of the painted scrollbar thumb in a scroller's gutter.
+
+    Sampled by SCANNING the gutter outward from the element's right edge and
+    keeping the strongest reading, not by cropping a guessed width. Two earlier
+    attempts guessed 14px and got it wrong twice: the real gutter is
+    `offsetWidth - clientWidth` (7px here), so a 14px crop was half list content
+    and the content's colours won the modal-colour vote - reporting 1.1:1 for a
+    thumb the frame plainly shows.
+
+    The scan makes the number independent of exactly where the thumb sits
+    inside the reserved band, which is the thing being guessed at.
+    """
+    right = int((box["x"] + box["w"]) * dpr)
+    top = int(box["y"] * dpr)
+    bottom = min(img.height, int((box["y"] + box["h"]) * dpr))
+    if right <= 0 or bottom <= top:
+        return None
+    if surface is None:
+        # The surface is the dominant colour of the first column in, which is
+        # the list's own background rather than whatever the crop happens to hit.
+        col = list(img.crop((right - int(2 * dpr), top, right, bottom)).getdata())
+        surface = Counter(col).most_common(1)[0][0]
+    best = 0.0
+    glyph = None
+    for off in range(0, band + 2):
+        gx1 = right - int(off * dpr)
+        gx0 = gx1 - max(1, int(dpr))
+        if gx0 < 0:
+            break
+        col = list(img.crop((gx0, top, gx1, bottom)).getdata())
+        rest = [p for p in col
+                if abs(p[0] - surface[0]) + abs(p[1] - surface[1]) + abs(p[2] - surface[2]) > 12]
+        if not rest:
+            continue
+        th = max(Counter(rest).most_common(5), key=lambda kv: ratio(kv[0], surface))[0]
+        r = ratio(th, surface)
+        if r > best:
+            best, glyph = r, th
+    return {"contrast": round(best, 2), "glyph": glyph, "surface": surface}
