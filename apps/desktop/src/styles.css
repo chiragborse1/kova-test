@@ -543,10 +543,16 @@
     --dt-ring: var(--ui-stroke-primary);
     --dt-midground: var(--theme-midground);
     /* Scrollbars carry no theme colour: the accent-tinted thumb read as a
-       coloured element in the corner of every list. Same lightness as the
-       midground so each theme still gets a thumb that sits right against its
-       own surfaces — chroma 0 is the only thing removed. */
-    --dt-scrollbar-thumb: oklch(from var(--dt-midground) l 0 h);
+       coloured element in the corner of every list. The thumb is the INK at
+       partial alpha, not the midground desaturated: the midground's lightness
+       with chroma 0 lands on a mid grey (~#6b6b6b), and a mid grey is the
+       worst possible colour for a control boundary — it is close to BOTH
+       themes' surfaces at once, so one declaration cannot serve both. Painted,
+       that grey measured 1.30:1 on the light rail and 1.43:1 on the dark one,
+       with 80% of the list hidden behind it. --ui-base is the ink, so it is
+       already directional: near-black in light, near-white in dark, and the
+       alphas below clear 3:1 (WCAG 1.4.11, non-text contrast) in each. */
+    --dt-scrollbar-thumb: var(--ui-base);
     --dt-composer-ring: var(--ui-base);
     --dt-destructive: #cf2d56;
     --dt-destructive-foreground: #ffffff;
@@ -1624,12 +1630,18 @@ body.guest-pointer-lock :is(webview, iframe) {
      ending at its last visible row. Someone filtering by tag needs to know
      tags exist BEFORE they move the pointer.
      */
+  /* 55% at rest, 75% on hover. The cue has to be VISIBLE to work: it exists
+     because 2747px of list sits in a 552px box, and at the 22% this started
+     at, the thumb measured 1.30:1 against the rail - a bar you cannot see is
+     the same as no bar. 55% clears 3:1 in both themes against --ui-base ink
+     (3.74 light, 5.01 dark) and still reads as a background affordance
+     rather than a control. */
   .scrollbar-cue::-webkit-scrollbar-thumb {
-    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 22%, transparent);
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 55%, transparent);
   }
 
   .scrollbar-cue:hover::-webkit-scrollbar-thumb {
-    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 34%, transparent);
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 75%, transparent);
   }
 
   /* Hover marquee: a truncated line that scrolls its overflow into view while
