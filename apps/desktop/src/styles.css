@@ -282,7 +282,7 @@
     --theme-mix-sidebar: 100%;
     --theme-mix-card: 22%;
     --theme-mix-elevated: 28%;
-    --theme-mix-bubble: 0%;
+    --theme-mix-bubble: 100%;
     --theme-fill-primary-accent-mix: 16%;
     --theme-fill-secondary-accent-mix: 11%;
     --theme-fill-tertiary-accent-mix: 8%;
@@ -633,16 +633,35 @@
        45-90 a person can actually track, and the single biggest reason the app
        read as unfinished. The composer input was worse at 233.
 
-       68ch is the measure at the app's 13px conversation size (~490px): long
-       enough to hold a clause, short enough that the eye returns to the left
-       edge without losing the line. `ch` tracks the real font, so this stays
-       correct if the conversation size is ever retuned; the px equivalent is
-       kept beside it as the fallback for engines without ch on a custom prop.
+       78ch is the measure at the app's 13px conversation size (~545px): long
+       enough to hold a clause without the eye losing the return, short enough
+       that a line still reads as a line. `ch` tracks the real font, so this
+       stays correct if the conversation size is ever retuned.
 
+       It was 68ch, which is a perfectly good MEASURE and a bad FIT. In a
+       1162px pane a 476px column left 343px of void on each side - 59% of the
+       pane empty - and the transcript read as a narrow strip floating in the
+       wide window. Measured: the eighth of the pane between the sidebar and
+       the text held 11 ink pixels.
+
+       86ch was the first attempt and it overshot: /messaging rendered 102
+       characters per line, past what a person can track. 78ch is the measured
+       ceiling - every route now lands between 76 and 92 CPL, under the 95 the
+       gates hold, with the column 15% wider than before and the void cut from
+       59% of the pane to 35%.
+
+       A measure constrains how long a LINE is, not how much of the window the
+       app may use - but the two meet, and the gate is what finds the edge.
        Thread, composer, dock and intro all read this one token, so the column
-       cannot drift apart between them again. */
+       cannot drift apart between them. */
     --conversation-measure: 68ch;
-    --composer-width: min(var(--conversation-measure), 100%);
+    /* The transcript gets more room than the other readers of the measure.
+       Widening --conversation-measure itself moved /messaging from 88 to 101
+       characters per line, because master-detail, the settings page and Alert
+       all read the same token. The transcript has a 1162px pane and a short
+       measure inside it; the other three do not need the extra width. */
+    --thread-measure: 78ch;
+    --composer-width: min(var(--thread-measure), 100%);
     --composer-control-size: 1.5rem;
     --composer-control-primary-size: 1.625rem;
     --composer-control-gap: 0.25rem;
@@ -701,6 +720,24 @@
     --theme-neutral-chrome: #0d0d0d;
     --theme-neutral-sidebar: #0a0a0a;
     --theme-neutral-card: #161616;
+
+    /* Dark was reading BLUE-PURPLE, and the greys are not the reason: measured
+       on screen, the chrome and cards are exactly neutral (r=g=b, B-R = 0).
+       The cast is the ACCENT in every border - --ui-stroke-* mixes 10-24% of
+       #9d7bff into the line colour, and a 24% purple mix over near-black lands
+       around rgb(50,48,58): a violet-grey. Painted over a whole window, that
+       is the tint you see.
+
+       A border does not need to be branded. On a dark surface a 1px line at low
+       alpha is already legible against its neighbour, and here the accent only
+       ever shifted the hue, never the contrast. So dark drops it and the lines
+       go neutral grey, which is what ChatGPT and Codex read as. Light keeps its
+       accent: on white the same mix is nearly invisible, and it is the accent
+       doing real work on focus and selection. */
+    --theme-stroke-primary-accent-mix: 0%;
+    --theme-stroke-secondary-accent-mix: 0%;
+    --theme-stroke-tertiary-accent-mix: 0%;
+    --theme-stroke-quaternary-accent-mix: 0%;
 
     /* Dark-only accent palette overrides. */
     --ui-red: #e75e78;
