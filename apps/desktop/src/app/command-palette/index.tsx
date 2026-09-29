@@ -18,9 +18,9 @@ import { codiconIcon } from '@/components/ui/codicon'
 import { Command, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
 import { HighlightMatches } from '@/components/ui/highlight-matches'
 import { KbdCombo } from '@/components/ui/kbd'
-import { getKovaConfigRecord, listAllProfileSessions } from '@/kova'
 import { useMediaQuery } from '@/hooks/use-media-query'
 import { useI18n } from '@/i18n'
+import { getKovaConfigRecord, listAllProfileSessions } from '@/kova'
 import { sessionTitle } from '@/lib/chat-runtime'
 import {
   Activity,

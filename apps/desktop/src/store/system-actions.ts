@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
-import { getActionStatus, getStatus, restartGateway } from '@/kova'
 import { translateNow } from '@/i18n'
+import { getActionStatus, getStatus, restartGateway } from '@/kova'
 import { sharedGatewayProfiles } from '@/lib/shared-gateway-restart'
 import { confirm } from '@/store/confirm'
 import { notify, notifyError } from '@/store/notifications'

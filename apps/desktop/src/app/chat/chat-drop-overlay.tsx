@@ -35,10 +35,15 @@ export function ChatDropOverlay({ kind }: { kind: DragKind }) {
   // the opening render, so there is nothing to arm.
   const [exiting, setExiting] = useState(false)
   const wasDragging = useRef(false)
+  // An EDGE DETECTOR, not a mirrored atom: only the truthy->falsy TRANSITION of
+  // `kind` arms the fade, and reading `kind` here would also arm on the
+  // opening render - the bug this effect exists to avoid.
+  // eslint-disable-next-line no-restricted-syntax -- edge detector, not a mirror
   useEffect(() => {
     if (kind) {
       wasDragging.current = true
       setExiting(false)
+
       return
     }
 
@@ -49,6 +54,7 @@ export function ChatDropOverlay({ kind }: { kind: DragKind }) {
     wasDragging.current = false
     setExiting(true)
     const timer = window.setTimeout(() => setExiting(false), 180)
+
     return () => window.clearTimeout(timer)
   }, [kind])
 

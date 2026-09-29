@@ -6,10 +6,10 @@ import { ROUTES_AREA, SIDEBAR_NAV_AREA, type SidebarNavContribution } from '@/ap
 import { createPluginContext } from '@/contrib/plugin'
 import { useContributions } from '@/contrib/react/use-contributions'
 import { registry } from '@/contrib/registry'
-import type { KovaConfigRecord } from '@/kova'
 import { I18nProvider, useI18n } from '@/i18n'
 import type { I18nContextValue } from '@/i18n'
 import { setRuntimeI18nLocale } from '@/i18n/runtime'
+import type { KovaConfigRecord } from '@/kova'
 import { contributedKeybindHandler, keybindAction, KEYBINDS_AREA } from '@/lib/keybinds/actions'
 import { bindingsFor, resetBinding, setBinding } from '@/store/keybinds'
 

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 
-import { type ProfileScope, saveKovaConfigRecord } from '@/kova'
 import { useI18n } from '@/i18n'
+import { type ProfileScope, saveKovaConfigRecord } from '@/kova'
 import { notify, notifyError } from '@/store/notifications'
 
 import { kovaConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'

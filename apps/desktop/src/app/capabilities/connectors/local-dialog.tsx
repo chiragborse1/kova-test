@@ -2,8 +2,8 @@ import { compactNumber } from '@kova/shared'
 import { useLocation, useNavigate } from 'react-router'
 
 import { PanelEmpty } from '@/app/overlays/panel'
-import type { ProfileScope } from '@/kova'
 import { useI18n } from '@/i18n'
+import type { ProfileScope } from '@/kova'
 
 import type { McpServersController } from '../mcp/use-mcp-servers'
 

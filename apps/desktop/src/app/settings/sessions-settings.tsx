@@ -4,6 +4,7 @@ import { restoreListedSession } from '@/app/session/hooks/use-session-actions/ut
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tip } from '@/components/ui/tooltip'
+import { useI18n } from '@/i18n'
 import {
   deleteSession,
   getKovaConfigRecord,
@@ -13,7 +14,6 @@ import {
   saveKovaConfig,
   setSessionArchived
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { sessionTitle } from '@/lib/chat-runtime'
 import { pathLeaf } from '@/lib/display-path'
 import { triggerHaptic } from '@/lib/haptics'

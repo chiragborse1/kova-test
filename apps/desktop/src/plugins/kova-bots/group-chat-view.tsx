@@ -743,6 +743,7 @@ export function GroupChatWorkspace({ group, members, onBack, visible = true }: G
     }
 
     const onDragEnd = () => setDragOver(false)
+
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setDragOver(false)

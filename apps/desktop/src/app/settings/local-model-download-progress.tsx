@@ -1,8 +1,8 @@
 import { type ReactElement, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { pauseLocalDownload, resumeLocalDownload } from '@/kova'
 import { useI18n } from '@/i18n'
+import { pauseLocalDownload, resumeLocalDownload } from '@/kova'
 import { Loader2, Pause, Play } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 import {

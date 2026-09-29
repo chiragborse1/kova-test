@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 
 import { PageLoader } from '@/components/page-loader'
 import { Button } from '@/components/ui/button'
-import { getSkillContent, type ProfileScope, profileScopeKey } from '@/kova'
 import { useI18n } from '@/i18n'
+import { getSkillContent, type ProfileScope, profileScopeKey } from '@/kova'
 import type { SkillInfo } from '@/types/kova'
 
 import { parseFrontmatter } from './frontmatter'

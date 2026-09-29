@@ -12,8 +12,8 @@ import { useEffect, useRef } from 'react'
 import { createGatewayEventDedupe } from '@/app/gateway/gateway-event-dedupe'
 import { shouldApplyPostBootProgressError } from '@/components/boot-failure-reauth'
 import type { DesktopBootProgress, KovaConnection, KovaWindowState } from '@/global'
-import { KovaGateway } from '@/kova'
 import { translateNow } from '@/i18n'
+import { KovaGateway } from '@/kova'
 import { desktopDefaultCwd } from '@/lib/desktop-fs'
 import {
   decideLivenessForceClose,
