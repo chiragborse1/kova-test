@@ -17,11 +17,6 @@ name: CI
 on:
   workflow_dispatch:
     inputs:
-      runner:
-        description: 'Runner label for the PR-gating jobs. Leave blank for the standard-runner default.'
-        required: false
-        type: string
-        default: ''
       release:
         description: 'Stable-release candidate run: force every applicability lane and make the aggregate gate strict (skipped required lanes fail).'
         required: false
@@ -29,11 +24,6 @@ on:
         default: false
   workflow_call:
     inputs:
-      runner:
-        description: 'Runner label for the PR-gating jobs. Empty uses each workflow''s own default, a standard runner. A larger runner is much faster but shares a small pool, and a job that never gets one is indistinguishable from broken CI.'
-        required: false
-        type: string
-        default: ''
       release:
         description: 'Stable-release candidate run: force every applicability lane and make the aggregate gate strict (skipped required lanes fail).'
         required: false
@@ -136,13 +126,7 @@ jobs:
     needs: detect
     if: needs.detect.outputs.python == 'true'
     uses: ./.github/workflows/tests-os.yml
-
     with:
-      # Empty means "use that workflow's own default", which is a
-      # standard runner. A larger one is faster but shares a small
-      # pool, and a job that never gets a runner looks exactly like a
-      # broken workflow - which is how this repo sat dead for a day.
-      runner: ${{ inputs.runner }}
       # The Windows lane spawns the real desktop-update hand-off script
       # (tests/test_desktop_update_windows_*.py) only when that surface
       # changed; unit-level platforms("windows") tests always run.
@@ -162,12 +146,6 @@ jobs:
     if: needs.detect.outputs.frontend == 'true'
     uses: ./.github/workflows/js-tests.yml
 
-    with:
-      # Empty means "use that workflow's own default", which is a
-      # standard runner. A larger one is faster but shares a small
-      # pool, and a job that never gets a runner looks exactly like a
-      # broken workflow - which is how this repo sat dead for a day.
-      runner: ${{ inputs.runner }}
   rust-tests:
     name: Rust tests
     needs: detect
@@ -176,12 +154,6 @@ jobs:
     if: needs.detect.outputs.rust == 'true'
     uses: ./.github/workflows/rust-tests.yml
 
-    with:
-      # Empty means "use that workflow's own default", which is a
-      # standard runner. A larger one is faster but shares a small
-      # pool, and a job that never gets a runner looks exactly like a
-      # broken workflow - which is how this repo sat dead for a day.
-      runner: ${{ inputs.runner }}
   bootstrap-installer:
     name: Bootstrap installer
     needs: detect
@@ -209,12 +181,6 @@ jobs:
     if: false
     uses: ./.github/workflows/e2e-desktop.yml
 
-    with:
-      # Empty means "use that workflow's own default", which is a
-      # standard runner. A larger one is faster but shares a small
-      # pool, and a job that never gets a runner looks exactly like a
-      # broken workflow - which is how this repo sat dead for a day.
-      runner: ${{ inputs.runner }}
   e2e-desktop-core:
     name: Desktop core E2E
     needs: detect
@@ -223,12 +189,6 @@ jobs:
     if: ${{ needs.detect.outputs.python_prod == 'true' || needs.detect.outputs.frontend == 'true' }}
     uses: ./.github/workflows/e2e-desktop-core.yml
 
-    with:
-      # Empty means "use that workflow's own default", which is a
-      # standard runner. A larger one is faster but shares a small
-      # pool, and a job that never gets a runner looks exactly like a
-      # broken workflow - which is how this repo sat dead for a day.
-      runner: ${{ inputs.runner }}
   e2e-desktop-update:
     name: Desktop update E2E
     needs: detect
@@ -239,12 +199,6 @@ jobs:
     if: ${{ needs.detect.outputs.python_prod == 'true' || needs.detect.outputs.frontend == 'true' }}
     uses: ./.github/workflows/e2e-desktop-update.yml
 
-    with:
-      # Empty means "use that workflow's own default", which is a
-      # standard runner. A larger one is faster but shares a small
-      # pool, and a job that never gets a runner looks exactly like a
-      # broken workflow - which is how this repo sat dead for a day.
-      runner: ${{ inputs.runner }}
   docs-site:
     name: Docs Site
     needs: detect
@@ -342,14 +296,6 @@ jobs:
   # Outputs ``needs-json`` — a compact ``{job_name: result}`` dict — so
   # the live comment poller can list failed jobs in the PR comment.
   # ─────────────────────────────────────────────────────────────────────
-  # `contributor-check` was removed in 5339ce959c (the upstream contributor map
-  # went away) but its name stayed in the `needs` below. GitHub rejects a
-  # workflow outright on a dangling `needs`, so ci.yaml - the only top-level
-  # pull_request carrier - never started, and with it none of the
-  # workflow_call sub-workflows. scripts/kova/workflows.py fails if any `needs`
-  # does not resolve, because nothing local can see this: tsc, eslint, vitest
-  # and every kova gate still pass while CI is dead.
-
   all-checks-pass:
     name: All required checks pass
     needs:
