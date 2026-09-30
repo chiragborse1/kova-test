@@ -49,7 +49,7 @@ PHASE="all"
 UPDATE_METHOD=""
 INSTALL_REF=""
 UPDATE_REF=""
-DMG_URL="https://kova-assets.nousresearch.com/Kova-Setup.dmg"
+DMG_URL="https://assets.neuralstudio.in/Kova-Setup.dmg"
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --phase)

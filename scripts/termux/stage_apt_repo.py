@@ -515,7 +515,7 @@ def main(argv: list | None = None) -> int:
     ap.add_argument("--pool", required=True, type=Path)
     ap.add_argument("--out", required=True, type=Path)
     # kova-nightly is the suite actually published today
-    # (https://kova-assets.nousresearch.com/releases/termux/nightly/,
+    # (https://assets.neuralstudio.in/releases/termux/nightly/,
     # verified 2026-09-06); kova-stable/kova-canary are what CI stages
     # for the stable/canary channels.
     ap.add_argument(

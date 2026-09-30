@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from html.parser import HTMLParser
 import json
 import logging
+import os
 import re
 import subprocess
 import urllib.error
@@ -13,7 +14,24 @@ import urllib.request
 from kova_cli.update_channel import STABLE_TAG_RE, is_canary_tag
 
 logger = logging.getLogger(__name__)
-_PUBLIC_BASE = "https://kova-assets.nousresearch.com"
+# The public origin of the release-channel archive. ``kova-assets.nousresearch.com``
+# is NXDOMAIN: it never resolved, so every channel read failed closed and the
+# updater could not tell "no published build" from "the host does not exist".
+# CI and any self-hosted mirror name the real origin with CLOUDFLARE_R2_PUBLIC_URL;
+# this default is only the last resort, and it must itself be reachable.
+_PUBLIC_BASE = "https://assets.neuralstudio.in"
+
+
+def _public_base() -> str:
+    """The channel archive origin for this process, environment override first.
+
+    Read at call time, not import time: a release job or a local mirror sets
+    CLOUDFLARE_R2_PUBLIC_URL, and a value baked in at import would ignore it.
+    """
+    configured = os.environ.get("CLOUDFLARE_R2_PUBLIC_URL", "").strip()
+    return configured or _PUBLIC_BASE
+
+
 OFFICIAL_REPOSITORY = "kova-agent"
 _GITHUB_ORIGIN = re.compile(
     r"^(?:https://github\.com/|git@github\.com:|ssh://git@github\.com/)"
@@ -69,7 +87,7 @@ def _resolve_channel(name: str, repository: str):
     """
     from kova_cli.release_channels import ChannelReader
 
-    return ChannelReader(_PUBLIC_BASE, repository=repository).resolve(name)
+    return ChannelReader(_public_base(), repository=repository).resolve(name)
 
 
 def resolve_source_target(channel: str, git_cmd=None, cwd=None, *, repository=None) -> SourceTarget:
@@ -223,14 +241,14 @@ def _release_pointer(channel: str) -> tuple[str | None, str | None]:
     # Stable's completion job writes this before publishing the GitHub draft.
     # Publication is checked separately, so that interval fails closed.
     if channel == "stable":
-        text = _read(f"{_PUBLIC_BASE}/releases/stable/release-candidates.json", missing_ok=True)
+        text = _read(f"{_public_base()}/releases/stable/release-candidates.json", missing_ok=True)
         if text is not None:
             data = json.loads(text)
             if (not isinstance(data, dict) or not _valid_tag(data.get("tag"), channel)
                     or not isinstance(data.get("commit"), str) or not _SHA.fullmatch(data["commit"])):
                 raise ValueError("Invalid stable release pointer")
             return data["tag"], data["commit"]
-    text = _read(f"{_PUBLIC_BASE}/releases/{channel}/index.html", missing_ok=True)
+    text = _read(f"{_public_base()}/releases/{channel}/index.html", missing_ok=True)
     if text is None:
         return None, None
     page = _BuildMetadata()

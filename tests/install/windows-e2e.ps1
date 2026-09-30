@@ -109,7 +109,7 @@ param(
 
     [string]$WorkRoot = $(if ($env:KOVA_E2E_WORKROOT) { $env:KOVA_E2E_WORKROOT } else { Join-Path $env:TEMP "kova-desktop-gui-e2e" }),
 
-    [string]$SetupExeUrl = "https://kova-assets.nousresearch.com/Kova-Setup.exe",
+    [string]$SetupExeUrl = "https://assets.neuralstudio.in/Kova-Setup.exe",
 
     # Driver dependencies come from the current checkout lockfile.
     [string]$DriverNode = $env:KOVA_E2E_NODE
