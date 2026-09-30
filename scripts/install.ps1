@@ -370,7 +370,10 @@ function Invoke-VerifiedDownload {
     )
     $urls = @($Url)
     if ($MirrorUrl -and $MirrorUrl -ne $Url) { $urls += $MirrorUrl }
-    $httpFailure = ""
+    # One entry per candidate, kept in order. The old single $httpFailure slot
+    # was overwritten by each failure, so a broken primary plus a broken
+    # mirror reported ONLY the mirror's message and hid the real cause.
+    $failures = @()
     foreach ($candidate in $urls) {
         try {
             Invoke-DownloadWithProgress -Uri $candidate -OutFile $OutFile
@@ -388,7 +391,7 @@ function Invoke-VerifiedDownload {
             } elseif ($errorType -ne 'Microsoft.PowerShell.Commands.HttpResponseException') {
                 throw
             }
-            $httpFailure = $_.Exception.Message
+            $failures += [pscustomobject]@{ Url = $candidate; Message = $_.Exception.Message }
             continue
         }
         $digest = (Get-FileHash -Path $OutFile -Algorithm SHA256).Hash.ToLowerInvariant()
@@ -397,11 +400,13 @@ function Invoke-VerifiedDownload {
         # Wrong bytes = tampering or a corrupt mirror, not a routing problem.
         Fail "download digest mismatch for $candidate (expected $Sha256, got $digest)"
     }
-    $tried = $urls -join " or "
-    if ($httpFailure) {
-        Fail "failed to download from $tried : $httpFailure"
+    if ($failures.Count) {
+        # Every attempt, each labelled, so the log names the failure that
+        # actually explains the abort instead of only the last one tried.
+        $detail = ($failures | ForEach-Object { "$($_.Url): $($_.Message)" }) -join "; "
+        Fail "failed to download from $($urls.Count) source(s) -- $detail"
     }
-    Fail "failed to download from $tried"
+    Fail "failed to download from $($urls -join ' or ')"
 }
 
 # Best-effort: how big is $Uri, per the server? Returns 0 when the server
@@ -480,6 +485,49 @@ function Invoke-DownloadWithProgress {
     if ($streamError) { throw $streamError }
 }
 
+# Free space the git bootstrap needs on the volume it will unpack onto:
+# the downloaded tarball plus the unpacked tree. The pinned tar.bz2 is ~121 MB
+# compressed and expands to roughly 320 MB, and both live in the same temp dir
+# until the store copy is moved into place.
+$script:GitBootstrapNeedMB = 600
+$script:GitBootstrapVolume = $env:SystemDrive
+
+# Returns free bytes on the bootstrap volume, or -1 (no throw) when the
+# volume cannot be measured -- a host without Get-Volume is not a host we
+# should refuse to install on.
+function Get-BootstrapFreeBytes {
+    $root = [IO.Path]::GetPathRoot([IO.Path]::GetTempPath())
+    if (-not $root) { return -1 }
+    $letter = $root.TrimEnd('\').TrimEnd(':')
+    try {
+        $vol = Get-Volume -DriveLetter $letter -ErrorAction Stop
+        return [long]$vol.SizeRemaining
+    } catch {
+        try {
+            $drive = Get-PSDrive -Name $letter -ErrorAction Stop
+            return [long]$drive.Free
+        } catch {
+            return -1
+        }
+    }
+}
+
+# Called before the git download and again after a failed extract. Throws
+# (via Fail) when the volume cannot hold the install; -Quiet only reports, so
+# the extract path can turn a generic tar failure into the real reason.
+function Assert-FreeSpaceForGitBootstrap {
+    param([switch]$Quiet)
+    $free = Get-BootstrapFreeBytes
+    $script:GitBootstrapVolume = ([IO.Path]::GetPathRoot([IO.Path]::GetTempPath())).TrimEnd('\')
+    if ($free -lt 0) { return $free }
+    $need = $script:GitBootstrapNeedMB * 1MB
+    if ($free -ge $need) { return $free }
+    if ($Quiet) { return $free }
+    Fail ("not enough free space to install git: $($script:GitBootstrapVolume) has " +
+          "$([math]::Round($free / 1MB, 0)) MB free, need at least " +
+          "$($script:GitBootstrapNeedMB) MB. Free up disk space and run the installer again.")
+}
+
 # Provision uv for this host from the pinned pm/lock.json artifact. Stages
 # the EXACT artifact pm itself uses into the same store slot
 # (<store>\uv-<version>-<target>\), sha256-verified, so pm adopts the same
@@ -537,6 +585,7 @@ function Get-PinnedGit {
     $gitExe = Join-Path $entry "cmd\git.exe"
     if (Test-Path $gitExe) { return $gitExe }
     Log "installing git $($script:GitPinVersion) ($target)"
+    Assert-FreeSpaceForGitBootstrap
     $tmpDir = Join-Path ([IO.Path]::GetTempPath()) "kova-git-bootstrap-$PID"
     try {
         New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
@@ -557,7 +606,18 @@ function Get-PinnedGit {
         $msysProcLinks = @('dev/fd', 'dev/stdin', 'dev/stdout', 'dev/stderr', 'etc/mtab')
         $excludes = foreach ($link in $msysProcLinks) { '--exclude'; "^$link" }
         Invoke-Native { & $inboxTar @excludes -xf $tarPath -C $extractDir }
-        if ($LASTEXITCODE) { Fail "failed to extract pinned git archive" }
+        if ($LASTEXITCODE) {
+            # tar reports a full disk once per file it could not write, so the
+            # generic message below blamed a perfectly good download. Name the
+            # real constraint, and the volume that ran out.
+            $free = Assert-FreeSpaceForGitBootstrap -Quiet
+            if ($free -lt 0) {
+                Fail ("failed to extract pinned git archive: ran out of free space on " +
+                      "$script:GitBootstrapVolume (unpacking needs ~$script:GitBootstrapNeedMB MB, " +
+                      "has $([math]::Round($free / 1MB, 0)) MB)")
+            }
+            Fail "failed to extract pinned git archive"
+        }
         # Layout: Git-<ver>/cmd\git.exe — flatten the single wrapper dir.
         $inner = @(Get-ChildItem $extractDir)
         $src = $extractDir
