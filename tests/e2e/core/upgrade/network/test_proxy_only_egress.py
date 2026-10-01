@@ -101,7 +101,7 @@ def test_update_with_corporate_root_only_in_ssl_cert_file(inst):
     finally:
         edge.close()
     with known_failure(
-        f"unable to access 'https://github\\.com/{RE_REPO_PATTERN}\\./': "
+        f"unable to access 'https://github\\.com/{RE_REPO_PATTERN}\\.git/': "
         r"(SSL certificate|server certificate verification failed|SSL certificate problem)",
         "gated on #124654: the updater's git fetch ignores SSL_CERT_FILE, so a corporate root "
         "supplied that way passes the channel read and then fails at `Fetching updates`",
