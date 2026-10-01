@@ -14,6 +14,12 @@ import pytest
 
 from kova_cli._launchers import runtime_command
 
+# systemd system-scope elevation is Linux-only, and the fixture below patches
+# os.geteuid, which does not exist on Windows: monkeypatch.setattr raises
+# AttributeError during setup, which surfaced as a collection error rather than
+# a skip. Gate the file on the host OS it actually describes.
+pytestmark = pytest.mark.platforms("linux")
+
 
 @pytest.fixture
 def unprivileged(monkeypatch):

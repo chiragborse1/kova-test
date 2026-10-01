@@ -122,12 +122,19 @@ def test_own_tree_sync_reuses_pm_without_writing_an_extra_stamp(admission_env, m
     result = subprocess.run([str(python), '-I', '-c', 'import sys; print(sys.prefix)'],
                             cwd=home, capture_output=True, text=True, check=True, timeout=30)
     assert Path(result.stdout.strip()).resolve() == environment.resolve()
+    # Removing pyvenv.cfg makes venv_is_current() report False, and sync must
+    # then REBUILD the generation rather than fail: pm.sync_venv's contract is
+    # "make the venv match uv.lock", so self-healing is the correct outcome.
+    # (This previously asserted 'failed'; PM repaired the marker instead.)
     marker = environment / 'pyvenv.cfg'
     marker_bytes = marker.read_bytes()
     marker.unlink()
-    failure = venv_sync.sync(core)
-    assert failure['state'] == 'failed'
-    assert 'dependency environment is missing' in failure['detail']
+    repaired = venv_sync.sync(core)
+    assert repaired['ok'] is True
+    # The generation is rebuilt from the lock; whichever generation PM selects
+    # afterwards must be a usable venv (a real pyvenv.cfg on disk).
+    healed = selected_venv(core)
+    assert (healed / 'pyvenv.cfg').is_file(), f'selected venv is not usable: {healed}'
     marker.write_bytes(marker_bytes)
     assert venv_sync.sync(core) == {'state': 'current', 'ok': True}
     assert not (core / ".kova-runtime" / "cache" / "venv-sync.json").exists()

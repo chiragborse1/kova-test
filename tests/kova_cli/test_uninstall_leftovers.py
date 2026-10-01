@@ -45,6 +45,10 @@ def _fake_launchctl(monkeypatch, calls):
     monkeypatch.setattr(uninstall.subprocess, "run", fake_run)
 
 
+# _remove_launchd_gateway calls os.getuid() and launchctl: darwin-only by
+# construction. The fixture fakes the plist paths, but not the OS, so on
+# Windows the call raised AttributeError before reaching the assertions.
+@pytest.mark.platforms("macos")
 def test_remove_launchd_gateway_sweeps_both_label_patterns(launch_agents, monkeypatch):
     current = launch_agents / "ai.kova.gateway.plist"
     profiled = launch_agents / "ai.kova.gateway-work.plist"
@@ -65,6 +69,7 @@ def test_remove_launchd_gateway_sweeps_both_label_patterns(launch_agents, monkey
     assert all(c[1] == "unload" for c in calls if c[1] == "unload")
 
 
+@pytest.mark.platforms("macos")
 def test_remove_launchd_gateway_returns_false_when_no_plists(launch_agents, monkeypatch):
     calls: list[list[str]] = []
     _fake_launchctl(monkeypatch, calls)
