@@ -95,6 +95,12 @@ assets/
 assets/*
 !assets/kova/kova-mark-black.svg
 !assets/kova/kova-mark-white.svg
+# generate_icons.py reads all four marks (black/white/color/favicon) to
+# compose every platform icon. The color and favicon variants were missing
+# here, so the Docker `icons` stage built with an empty SVG and died with
+# 'svg_string is empty or svg_path contains empty invalid svg'.
+!assets/kova/kova-mark-color.svg
+!assets/kova/kova-mark-favicon.svg
 !assets/backgrounds/
 !assets/backgrounds/**
 infographic/
