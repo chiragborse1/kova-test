@@ -87,6 +87,13 @@ def render() -> Image.Image:
 
 
 def main() -> int:
+    # --check reports without writing. The wordmark is font-rendered, so a host
+    # without the first-choice face produces DIFFERENT BYTES for a perfectly
+    # correct banner; writing it and then restoring the committed file in CI
+    # works only because CI happens to check out a merge commit whose banner is
+    # the committed one. Verifying without mutating states the same thing and
+    # cannot depend on that.
+    check_only = "--check" in sys.argv[1:]
     if not MARK.is_file():
         print(f"missing {MARK}; run scripts/kova/make_mark.py first", file=sys.stderr)
         return 1
@@ -96,12 +103,22 @@ def main() -> int:
     image.save(buf, "PNG", optimize=True)
     payload = buf.getvalue()
     for path in OUT:
+        rel = path.relative_to(ROOT)
+        if check_only:
+            if not path.is_file():
+                print(f"missing {rel}", file=sys.stderr)
+                return 1
+            if path.read_bytes() != payload:
+                print(f"differs {rel}", file=sys.stderr)
+                return 1
+            print(f"matches {rel}")
+            continue
         path.parent.mkdir(parents=True, exist_ok=True)
         if path.is_file() and path.read_bytes() == payload:
-            print(f"unchanged {path.relative_to(ROOT)}")
+            print(f"unchanged {rel}")
             continue
         path.write_bytes(payload)
-        print(f"wrote {path.relative_to(ROOT)} ({len(payload)} bytes)")
+        print(f"wrote {rel} ({len(payload)} bytes)")
     return 0
 
 

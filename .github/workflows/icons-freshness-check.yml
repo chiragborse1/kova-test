@@ -50,20 +50,20 @@ jobs:
           node scripts/generate-icons.mjs --check
           python scripts/kova/make_mark.py
 
-          # The banner is the only <text> master, and its glyphs come from a font
-          # STACK (scripts/kova/make_banner.py). A runner without the first-choice
-          # face renders different outlines, so its PNG legitimately differs --
-          # the header above says this lane regenerates the banner to catch a
-          # STALE MARK, not to assert byte equality, but the blanket `git diff`
-          # did assert it and went red on every run.
+          # The banner is the only <text> master and its glyphs come from a font
+          # STACK (scripts/kova/make_banner.py), so a host without the first-choice
+          # face renders different outlines for a perfectly correct banner. This
+          # lane exists to catch a STALE MARK -- the header above says so -- not to
+          # assert byte equality on that one file, which it could never do and did
+          # anyway.
           #
-          # So: regenerate it (that is the staleness signal -- make_banner.py
-          # reads the committed mark, so a changed mark changes the output), then
-          # restore the committed bytes before diffing. Everything else stays
-          # byte-compared. `git checkout --` keeps the committed PNG authoritative
-          # for every consumer, which is what the README and the docs site serve.
-          python scripts/kova/make_banner.py
-          git checkout -- assets/banner.png website/static/img/kova-agent-banner.png
+          # So the banner is rendered, compared, and reported, but its host-dependent
+          # bytes are not allowed to fail the run. Everything else stays strictly
+          # byte-compared. The committed PNG remains authoritative: the README, the
+          # translated READMEs and the docs site all serve it and none render it.
+          if ! python scripts/kova/make_banner.py --check; then
+            echo "::notice::The committed banner differs from what THIS host renders, which is expected without the first-choice font (Bahnschrift). Byte equality is not asserted for it."
+          fi
 
           if ! git diff --exit-code --stat || [ -n "$(git status --porcelain --untracked-files=all)" ]; then
             git status --porcelain --untracked-files=all
