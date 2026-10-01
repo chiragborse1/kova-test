@@ -35,8 +35,15 @@ from tests.e2e.core.upgrade import _helpers as H
 from tests.e2e.core.upgrade import _install_helpers as I
 from tests.e2e.core.upgrade.network import _netedge as N
 
-ASSETS = "kova-assets.nousresearch.com"
-REPOSITORY = "kova-agent"
+# The release-channel origin the PRODUCT reads, imported rather than restated:
+# this file seeded a hardcoded "kova-assets.nousresearch.com", which is NXDOMAIN,
+# so the proxy routed a host nothing ever asks for while refusing the real
+# one -- every update in this suite failed with "Channel read unavailable".
+from kova_cli.source_releases import _public_base as _product_public_base
+from urllib.parse import urlsplit
+
+ASSETS = urlsplit(_product_public_base()).hostname or ""
+REPOSITORY = "kova-agent/kova-agent"
 # Hosts a correctly isolated update must never reach directly; with the proxy they appear in
 # the proxy log as "refused" (the proxy has no route for them).
 PUBLIC_INDEXES = ("pypi.org", "files.pythonhosted.org", "registry.npmjs.org")
@@ -210,10 +217,12 @@ def seed_install(root: Path) -> Installed:
 
 def assert_isolated(inst: Installed) -> None:
     """The namespace has no route out and no DNS; only the bridged proxy port answers."""
+    # The isolated namespace must not resolve ANY host the product could reach,
+    # so probe the live channel origin (ASSETS), not a name nothing uses.
     probe = (
         "import socket,sys\n"
         "bad=[]\n"
-        "for host in ('github.com','pypi.org','kova-assets.nousresearch.com'):\n"
+        f"for host in ('github.com','pypi.org',{ASSETS!r}):\n"
         "    try: socket.getaddrinfo(host,443); bad.append('dns:'+host)\n"
         "    except OSError: pass\n"
         "for ip in ('140.82.112.3','1.1.1.1'):\n"
@@ -231,7 +240,7 @@ def assert_isolated(inst: Installed) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Release-channel records (the R2 objects under https://kova-assets.nousresearch.com/).
+# Release-channel records (the R2 objects under the public channel origin).
 # ---------------------------------------------------------------------------
 
 def canonical(value: object) -> bytes:
