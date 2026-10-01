@@ -49,9 +49,24 @@ jobs:
           node scripts/generate-icons.mjs
           node scripts/generate-icons.mjs --check
           python scripts/kova/make_mark.py
+
+          # The banner is the only <text> master, and its glyphs come from a font
+          # STACK (scripts/kova/make_banner.py). A runner without the first-choice
+          # face renders different outlines, so its PNG legitimately differs --
+          # the header above says this lane regenerates the banner to catch a
+          # STALE MARK, not to assert byte equality, but the blanket `git diff`
+          # did assert it and went red on every run.
+          #
+          # So: regenerate it (that is the staleness signal -- make_banner.py
+          # reads the committed mark, so a changed mark changes the output), then
+          # restore the committed bytes before diffing. Everything else stays
+          # byte-compared. `git checkout --` keeps the committed PNG authoritative
+          # for every consumer, which is what the README and the docs site serve.
           python scripts/kova/make_banner.py
+          git checkout -- assets/banner.png website/static/img/kova-agent-banner.png
+
           if ! git diff --exit-code --stat || [ -n "$(git status --porcelain --untracked-files=all)" ]; then
             git status --porcelain --untracked-files=all
-            echo "::error::Committed brand assets are stale. Run 'node scripts/generate-icons.mjs', 'python scripts/kova/make_mark.py' and 'python scripts/kova/make_banner.py', then commit the result."
+            echo "::error::Committed brand assets are stale. Run 'node scripts/generate-icons.mjs' and 'python scripts/kova/make_mark.py', then commit the result."
             exit 1
           fi
