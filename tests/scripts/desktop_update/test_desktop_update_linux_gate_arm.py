@@ -20,6 +20,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+# This drives posix.sh through bash. Its sibling test_desktop_update_linux_gate.py
+# is platforms("linux"); without the same marker this file is selected by no lane
+# at all and, on a Windows host, bash exits 127 because the POSIX tools are
+# absent -- three failures that look like product bugs and are not.
+pytestmark = pytest.mark.platforms("linux")
+
 POSIX_SH = Path(__file__).resolve().parent.parent.parent.parent / "scripts" / "desktop-update" / "posix.sh"
 
 # NOT linux_only: unlike the symlink-matrix file, these cases only exercise
