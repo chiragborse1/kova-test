@@ -13,7 +13,7 @@ import json
 import sys
 
 def failed(path):
-    data = json.loads(open(path, encoding="utf-8").read())
+    data = json.loads(open(path, encoding="utf-8-sig").read())
     return {r["name"] for r in data["testResults"] if r["status"] != "passed"}
 
 def main(argv):

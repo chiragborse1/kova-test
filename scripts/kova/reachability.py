@@ -52,7 +52,7 @@ def source_files():
 
 
 def read(path):
-    with open(path, encoding="utf-8") as handle:
+    with open(path, encoding="utf-8-sig") as handle:
         return handle.read()
 
 

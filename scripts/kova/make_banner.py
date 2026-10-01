@@ -58,7 +58,7 @@ SANS = "Bahnschrift, 'Franklin Gothic Medium', 'Arial Narrow', Arial, Helvetica,
 
 
 def svg() -> str:
-    inner = MARK.read_text(encoding="utf-8")
+    inner = MARK.read_text(encoding="utf-8-sig")
     inner = inner.split(">", 1)[1].rsplit("</svg>", 1)[0]
     inner = "\n".join(line for line in inner.splitlines() if line.strip())
     mark_y = (H - MARK_SIZE) / 2

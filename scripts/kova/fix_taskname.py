@@ -1,6 +1,6 @@
 ﻿import pathlib
 p = pathlib.Path("kova_cli/gateway_windows.py")
-s = p.read_text(encoding="utf-8")
+s = p.read_text(encoding="utf-8-sig")
 # The scheduled-task name also determines the .cmd/.vbs filenames written into
 # the user's Startup folder, so the old name leaks onto their disk. Both the
 # constant and the prose around it move together.

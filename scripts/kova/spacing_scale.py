@@ -49,7 +49,7 @@ def px(rem):
 
 
 def main():
-    css = open(CSS, encoding="utf-8").read()
+    css = open(CSS, encoding="utf-8-sig").read()
 
     steps = {int(n): px(v) for n, v in REM.findall(css)}
     aliased = {int(n) for n in ALIAS.findall(css)}

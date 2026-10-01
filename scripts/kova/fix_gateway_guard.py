@@ -7,7 +7,7 @@
 # matching and the bypass it closes reopens. A security control that fails
 # open is worse than one that is absent, because it looks present.
 p = pathlib.Path("cron/lifecycle_guard.py")
-s = p.read_text(encoding="utf-8")
+s = p.read_text(encoding="utf-8-sig")
 before = s
 s = s.replace(r"\bkova[.\-]?gateway", r"\bkova[.\-]?gateway")
 s = s.replace(r"\bkova\b[^\n]*\bgateway", r"\bkova\b[^\n]*\bgateway")
@@ -22,7 +22,7 @@ for f, old, new in [
     ("tools/environments/singularity.py", 'f"kova_{uuid.uuid4().hex[:12]}"', 'f"kova_{uuid.uuid4().hex[:12]}"'),
 ]:
     q = pathlib.Path(f)
-    t = q.read_text(encoding="utf-8")
+    t = q.read_text(encoding="utf-8-sig")
     if old in t:
         q.write_text(t.replace(old, new), encoding="utf-8")
         print(f"{f}: id prefix -> kova_")
