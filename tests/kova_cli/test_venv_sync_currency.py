@@ -27,7 +27,7 @@ def test_check_uses_real_pm_selection_and_keeps_invalid_evidence(admission_env, 
     # A historical foreign-root stamp must not certify a PM environment.
     old_stamp = core / ".kova-runtime" / "cache" / "venv-sync.json"
     old_stamp.parent.mkdir(parents=True)
-    old_stamp.write_text('{"lockDigest": "old-bootstrap-stamp"}')
+    old_stamp.write_text('{"lockDigest": "old-bootstrap-stamp"}', encoding='utf-8')
     cached = old_stamp.read_bytes()
 
     def check(expected, code=0):
@@ -61,8 +61,14 @@ def test_check_uses_real_pm_selection_and_keeps_invalid_evidence(admission_env, 
 
     # A recorded extra only counts while the tree still declares it.
     pyproject = core / 'pyproject.toml'
-    pyproject.write_text(pyproject.read_text(encoding='utf-8')
-                         + '[project.optional-dependencies]\nchanged-extra = []\n', encoding='utf-8')
+    # Split so the read and the write each carry their own encoding on their
+    # own line: check-windows-footguns matches encoding= textually, and a
+    # single nested line made it read the write as BOM-emitting.
+    current = pyproject.read_text(encoding='utf-8-sig')
+    pyproject.write_text(
+        current + '[project.optional-dependencies]\nchanged-extra = []\n',
+        encoding='utf-8',
+    )
     altered = json.loads(pristine)
     altered['packages']['venv']['extras'] = ['changed-extra']
     facts_path.write_text(json.dumps(altered), encoding='utf-8')

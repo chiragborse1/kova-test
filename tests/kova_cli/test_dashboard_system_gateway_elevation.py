@@ -24,7 +24,7 @@ pytestmark = pytest.mark.platforms("linux")
 @pytest.fixture
 def unprivileged(monkeypatch):
     """Run the predicate as a non-root user (CI containers can be root)."""
-    monkeypatch.setattr("os.geteuid", lambda: 1000)
+    # os.geteuid is POSIX-only; this whole module is gated platforms("linux") above.`n    monkeypatch.setattr("os.geteuid", lambda: 1000)  # windows-footgun: ok
 
 
 @pytest.fixture

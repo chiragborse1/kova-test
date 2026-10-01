@@ -31,7 +31,7 @@ def _posix(path: Path) -> str:
     return f"/mnt/{text[0].lower()}{text[2:]}" if text[1:3] == ":/" else text
 
 def _shell_pattern() -> re.Pattern:
-    match = _PATTERN_LINE.search(SCRIPT.read_text(encoding="utf-8"))
+    match = _PATTERN_LINE.search(SCRIPT.read_text(encoding="utf-8-sig"))
     assert match, "the tag filter is no longer a single grep -E line; update this test"
     return re.compile(match.group("pattern"))
 

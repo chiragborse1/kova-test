@@ -125,10 +125,10 @@ def test_source_check_and_apply_land_on_selected_release(releases, monkeypatch, 
     if start != "old":
         git(releases.root, "checkout", "-b", "my-work", releases.commits[3])
     if start == "local":
-        (releases.root / "my-work.txt").write_text("committed local work\n")
+        (releases.root / "my-work.txt").write_text("committed local work\n", encoding="utf-8")
         git(releases.root, "add", ".")
         git(releases.root, "commit", "-m", "local work")
-        (releases.root / "notes.txt").write_text("uncommitted notes\n")
+        (releases.root / "notes.txt").write_text("uncommitted notes\n", encoding="utf-8")
     branch_sha = git(releases.root, "rev-parse", "HEAD")
     set_install_channel(channel, releases.root)
     before = git(releases.root, "rev-parse", "HEAD")
@@ -159,7 +159,7 @@ def test_source_check_and_apply_land_on_selected_release(releases, monkeypatch, 
     if start != "old":
         assert git(releases.root, "rev-parse", "my-work") == branch_sha
     if start == "local":
-        assert (releases.root / "notes.txt").read_text() == "uncommitted notes\n"
+        assert (releases.root / "notes.txt").read_text(encoding="utf-8-sig") == "uncommitted notes\n"
     update_cmd._cmd_update_check()
     assert "Up to date with" in capsys.readouterr().out
 
