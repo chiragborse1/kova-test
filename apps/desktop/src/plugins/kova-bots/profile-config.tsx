@@ -9,15 +9,7 @@
  */
 
 import * as sdk from '@kova/plugin-sdk'
-import {
-  Checkbox,
-  GlyphSpinner,
-  host,
-  Input,
-  queryClient,
-  surfaceModelSwitchConfirm,
-  Textarea
-} from '@kova/plugin-sdk'
+import { Checkbox, GlyphSpinner, host, Input, queryClient, surfaceModelSwitchConfirm, Textarea } from '@kova/plugin-sdk'
 import { useState } from 'react'
 
 import { $lastRoster, ROSTER_KEY } from './data'
@@ -472,9 +464,7 @@ export function AdvancedProfileConfig({ bot, state, setState }: AdvancedProfileC
                           <McpSetupButton entry={m} onDone={() => toggleMcp(m.name, true)} profile={backendScope} />
                         ) : null}
                         {m.description ? (
-                          <div className="truncate text-sm leading-4 text-(--ui-text-quaternary)">
-                            {m.description}
-                          </div>
+                          <div className="truncate text-sm leading-4 text-(--ui-text-quaternary)">{m.description}</div>
                         ) : null}
                       </span>
                     </label>

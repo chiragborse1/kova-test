@@ -882,9 +882,7 @@ export function ToolsetConfigPanel({ toolset, onConfiguredChange, profile }: Too
                     )}
                   </div>
                 )}
-                {provider.requires_nous_auth && (
-                  <p className="text-base text-muted-foreground">{copy.nousIncluded}</p>
-                )}
+                {provider.requires_nous_auth && <p className="text-base text-muted-foreground">{copy.nousIncluded}</p>}
                 {provider.env_vars.length === 0 ? (
                   <p className="text-base text-muted-foreground">{copy.noApiKeyRequired}</p>
                 ) : (

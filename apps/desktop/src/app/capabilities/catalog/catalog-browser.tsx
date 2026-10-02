@@ -64,7 +64,7 @@ const TAG_LIMIT = 16
 // of content in a 783px box and its scrollbar is not visible, so it read as
 // ending at "Web" - and the Tags section below it did not exist as far as
 // anyone could tell. Same trade as TAG_LIMIT, for the same reason.
-const CATEGORY_LIMIT = 12// Discovery shelves preview a category; "See all" opens the full list. Every
+const CATEGORY_LIMIT = 12 // Discovery shelves preview a category; "See all" opens the full list. Every
 // rendered card is restyled whenever a modal locks the page.
 const SHELF_SIZE = 6
 /** On: masonry lanes. Off: fallback grid whose rows share one height (`.catalog-grid`). */
@@ -390,9 +390,7 @@ export const CatalogBrowser = memo(function CatalogBrowser({
                             </header>
                             <p className="text-xs text-(--ui-text-tertiary)">{section.blurb}</p>
                             <Reel className="*:w-68" data-catalog-hover-group>
-                              {section.entries
-                                .slice(0, SHELF_SIZE)
-                                .map((entry) => card(entry))}
+                              {section.entries.slice(0, SHELF_SIZE).map(entry => card(entry))}
                             </Reel>
                           </section>
                         ))}

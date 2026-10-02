@@ -921,9 +921,7 @@ export function CreateAgentDialog({ open, onClose, onConfigureModel, roster }: C
                       onToggle={(name, enabled) => toggleCap('toolsets', name, enabled)}
                     />
                   </div>
-                  <div className="text-sm leading-4 text-(--ui-text-quaternary)">
-                    {b.editor.defaultToolsHint}
-                  </div>
+                  <div className="text-sm leading-4 text-(--ui-text-quaternary)">{b.editor.defaultToolsHint}</div>
                 </div>
               ) : caps.mcp.length === 0 ? (
                 <div className="px-2 py-3 text-center text-xs text-(--ui-text-tertiary)">{b.tools.noMcpServers}</div>

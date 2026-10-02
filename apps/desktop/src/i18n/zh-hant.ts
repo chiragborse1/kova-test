@@ -422,8 +422,7 @@ export const zhHant = defineLocale({
     plugins: {
       openFolder: '開啟桌面外掛資料夾',
       installModal: {
-        installUncertain:
-          'Kova 已停止等待安裝結果，但外掛可能仍在安裝中。請關閉此視窗，重新掃描外掛清單後再嘗試安裝。',
+        installUncertain: 'Kova 已停止等待安裝結果，但外掛可能仍在安裝中。請關閉此視窗，重新掃描外掛清單後再嘗試安裝。',
         installFromGit: '從 Git 安裝',
         reviewRepository: '檢查儲存庫',
         repoPlaceholder: 'https://github.com/owner/repo',
@@ -1206,8 +1205,7 @@ export const zhHant = defineLocale({
       localTitle: '本機閘道',
       localDesc: '在 localhost 啟動私有 Kova 後端。這是預設方式，可離線使用。',
       remoteTitle: '遠端閘道',
-      remoteDesc:
-        '將此桌面殼層連線至遠端 Kova 後端。託管閘道使用 OAuth 或帳號密碼；自託管閘道也可使用工作階段 Token。',
+      remoteDesc: '將此桌面殼層連線至遠端 Kova 後端。託管閘道使用 OAuth 或帳號密碼；自託管閘道也可使用工作階段 Token。',
       remoteUrlTitle: '遠端 URL',
       remoteUrlDesc: '遠端儀表板後端的基礎 URL。支援路徑前綴，例如 /kova。',
       probing: '正在檢查此閘道的驗證方式…',
@@ -3218,8 +3216,7 @@ export const zhHant = defineLocale({
     discontinuedBody: '此版本的 Kova 已停止支援，可能無法正常運作——請解除安裝。您的資料仍保留在磁碟上。',
     channels: { stable: '穩定版', canary: '預覽版' },
     bundleSwapPending: '重新啟動以完成更新',
-    bundleSwapPendingDesc:
-      '更新後的應用程式已安裝完成，只需重新啟動 Kova 即可載入新版本。聊天記錄和設定不會受到影響。',
+    bundleSwapPendingDesc: '更新後的應用程式已安裝完成，只需重新啟動 Kova 即可載入新版本。聊天記錄和設定不會受到影響。',
     bundleSwapPendingAction: '重新啟動 Kova',
     stages: {
       idle: '準備中…',
@@ -3266,8 +3263,7 @@ export const zhHant = defineLocale({
     copy: '複製',
     copied: '已複製',
     done: '完成',
-    applyingBody:
-      'Kova 更新程式會在自己的視窗中接管，並在完成後自動重新開啟 Kova。更新期間請勿自行重新開啟 Kova。',
+    applyingBody: 'Kova 更新程式會在自己的視窗中接管，並在完成後自動重新開啟 Kova。更新期間請勿自行重新開啟 Kova。',
     applyingBodyBackend: '遠端後端正在套用更新並將重新啟動。恢復後 Kova 會自動重新連線。',
     applyingClose: '此視窗會在更新期間關閉，隨後 Kova 會自動重新開啟。',
     errorTitle: '更新未完成',

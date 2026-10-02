@@ -66,12 +66,7 @@ export function McpLogPane({ server }: McpLogPaneProps) {
       actions={
         <span className="flex items-center gap-1.5">
           {(['stdio', 'agent'] as const).map(kind => (
-            <TextTab
-              active={source === kind}
-              className="h-5 px-0.5 text-sm"
-              key={kind}
-              onClick={() => setSource(kind)}
-            >
+            <TextTab active={source === kind} className="h-5 px-0.5 text-sm" key={kind} onClick={() => setSource(kind)}>
               {kind}
             </TextTab>
           ))}

@@ -312,12 +312,7 @@ function ConfirmingModelPanel({
         </Button>
       </div>
 
-      <div
-        className={cn(
-          'transition slow ease-out',
-          leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
-        )}
-      >
+      <div className={cn('transition slow ease-out', leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100')}>
         <HackeryButton
           disabled={flow.saving}
           label={<GlyphText text={scrambledBegin} />}

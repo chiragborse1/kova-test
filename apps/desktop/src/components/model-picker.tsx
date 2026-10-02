@@ -390,9 +390,7 @@ function ModelResults({
                       <span className="text-xs tabular-nums text-muted-foreground">{loadProgress.percent}%</span>
                     </span>
                   )}
-                  {locked && (
-                    <span className="shrink-0 text-xs uppercase tracking-wide opacity-80">{copy.pro}</span>
-                  )}
+                  {locked && <span className="shrink-0 text-xs uppercase tracking-wide opacity-80">{copy.pro}</span>}
                   <ModelPrice isCurrent={isCurrent} price={price} />
                 </CommandItem>
               )

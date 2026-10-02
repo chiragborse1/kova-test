@@ -262,6 +262,7 @@ test('packaging isolates boot metadata and executable names without renaming rel
     // only passed locally, where the variable is absent.
     if (build !== 'canary') {
       const saved = { repo: process.env.GITHUB_REPOSITORY, feed: process.env.CLOUDFLARE_R2_PUBLIC_URL }
+
       try {
         delete process.env.GITHUB_REPOSITORY
         delete process.env.CLOUDFLARE_R2_PUBLIC_URL
@@ -271,13 +272,19 @@ test('packaging isolates boot metadata and executable names without renaming rel
 
         process.env.GITHUB_REPOSITORY = 'chiragborse1/kova-test'
         const released: PackagingConfiguration = load()
-        assert.deepEqual(released.publish, { provider: 'github', owner: 'chiragborse1', repo: 'kova-test', channel: identity.channel })
+        assert.deepEqual(released.publish, {
+          provider: 'github',
+          owner: 'chiragborse1',
+          repo: 'kova-test',
+          channel: identity.channel
+        })
       } finally {
         if (saved.repo === undefined) {
           delete process.env.GITHUB_REPOSITORY
         } else {
           process.env.GITHUB_REPOSITORY = saved.repo
         }
+
         if (saved.feed === undefined) {
           delete process.env.CLOUDFLARE_R2_PUBLIC_URL
         } else {

@@ -269,10 +269,7 @@ test('findRunningGatewayProfiles preserves order of allProfiles', () => {
   })
 
   const deps = { ...fs, isKovaProcess: () => true }
-  assert.deepEqual(findRunningGatewayProfiles('/home/u/.kova/profiles', ['coder', 'writer'], deps), [
-    'coder',
-    'writer'
-  ])
+  assert.deepEqual(findRunningGatewayProfiles('/home/u/.kova/profiles', ['coder', 'writer'], deps), ['coder', 'writer'])
 })
 
 // ---------------------------------------------------------------------------
@@ -536,10 +533,7 @@ test('profileStateDbPath puts default at kovaHome, named under profilesRoot', ()
 })
 
 test('profileGatewayPidPath puts default at kovaHome', () => {
-  assert.equal(
-    profileGatewayPidPath('default', '/home/u/.kova', '/home/u/.kova/profiles'),
-    '/home/u/.kova/gateway.pid'
-  )
+  assert.equal(profileGatewayPidPath('default', '/home/u/.kova', '/home/u/.kova/profiles'), '/home/u/.kova/gateway.pid')
   assert.equal(
     profileGatewayPidPath('coder', '/home/u/.kova', '/home/u/.kova/profiles'),
     '/home/u/.kova/profiles/coder/gateway.pid'

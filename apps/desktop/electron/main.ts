@@ -4239,9 +4239,7 @@ async function claimBackendChild(
     return identity
   } catch (error) {
     await localBackendLifecycle.stop(child)
-    throw new Error(
-      `Could not persist ownership for the Kova backend: ${error.message}${outputTail?.describe() ?? ''}`
-    )
+    throw new Error(`Could not persist ownership for the Kova backend: ${error.message}${outputTail?.describe() ?? ''}`)
   }
 }
 
@@ -4956,8 +4954,10 @@ async function resolveKovaBackend(backendArgs: string[]): Promise<ResolvedKovaBa
         rememberLog(`Ignoring desktop app executable on PATH while resolving Kova CLI: ${kovaCommand}`)
         kovaCommand = null
       } else {
-        const unwrapped: Awaited<ReturnType<typeof unwrapWindowsVenvKovaCommand>> =
-          await unwrapWindowsVenvKovaCommand(kovaCommand, backendArgs)
+        const unwrapped: Awaited<ReturnType<typeof unwrapWindowsVenvKovaCommand>> = await unwrapWindowsVenvKovaCommand(
+          kovaCommand,
+          backendArgs
+        )
 
         if (unwrapped) {
           return unwrapped
@@ -4965,10 +4965,7 @@ async function resolveKovaBackend(backendArgs: string[]): Promise<ResolvedKovaBa
 
         const shellForProbe: boolean = isCommandScript(kovaCommand)
 
-        if (
-          shouldTrustKovaOverride(kovaOverride) ||
-          (await verifyKovaCli(kovaCommand, { shell: shellForProbe }))
-        ) {
+        if (shouldTrustKovaOverride(kovaOverride) || (await verifyKovaCli(kovaCommand, { shell: shellForProbe }))) {
           return {
             label: `existing Kova CLI at ${kovaCommand}`,
             command: kovaCommand,
@@ -5061,10 +5058,7 @@ interface ResolvedKovaBackend {
   readyFile?: boolean
 }
 
-async function ensureRuntime(
-  backend: ResolvedKovaBackend,
-  assertStillOwned: () => void
-): Promise<ResolvedKovaBackend> {
+async function ensureRuntime(backend: ResolvedKovaBackend, assertStillOwned: () => void): Promise<ResolvedKovaBackend> {
   localBackendLifecycle.assertCanStart()
   assertStillOwned()
 
@@ -8272,9 +8266,7 @@ async function discoverCloudAgents(org?: string) {
       // A 401 means the portal session lapsed (and silent renewal could not
       // recover it) — surface it as a re-login, not a generic failure.
       if (error && error.statusCode === 401) {
-        const err = new Error(
-          'Your Kova Cloud session has expired. Open Settings → Gateway and sign in again.'
-        ) as any
+        const err = new Error('Your Kova Cloud session has expired. Open Settings → Gateway and sign in again.') as any
 
         err.needsCloudLogin = true
         err.cause = error
@@ -12776,8 +12768,7 @@ function reportPrimaryRecoveryCrashLoop(code: number | null, signal: string | nu
     return false
   }
 
-  const message =
-    'Kova backend keeps crashing right after it restarts; not restarting it again. Relaunch Kova Desktop.'
+  const message = 'Kova backend keeps crashing right after it restarts; not restarting it again. Relaunch Kova Desktop.'
 
   rememberLog(`[supervisor] ${message}`)
   sendBackendExit({ code, signal, error: message })
@@ -15504,10 +15495,7 @@ ipcMain.handle('kova:window:openInTerminal', async (_event, sessionId, opts) => 
     const scriptDir = path.join(app.getPath('userData'), 'open-in-terminal')
     fs.mkdirSync(scriptDir, { recursive: true })
 
-    const scriptPath = path.join(
-      scriptDir,
-      `kova-${crypto.randomBytes(6).toString('hex')}${terminalScriptExtension()}`
-    )
+    const scriptPath = path.join(scriptDir, `kova-${crypto.randomBytes(6).toString('hex')}${terminalScriptExtension()}`)
 
     fs.writeFileSync(
       scriptPath,

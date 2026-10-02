@@ -264,7 +264,5 @@ function Section({ children, className }: { children: ReactNode; className?: str
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return (
-    <div className="text-xs font-semibold uppercase tracking-caps text-muted-foreground/80">{children}</div>
-  )
+  return <div className="text-xs font-semibold uppercase tracking-caps text-muted-foreground/80">{children}</div>
 }

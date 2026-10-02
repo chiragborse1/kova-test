@@ -61,12 +61,7 @@ function load(build: ChannelBuildRequest): PackagingFacts {
 }
 
 afterEach((): void => {
-  for (const key of [
-    '_KOVA_CHANNEL_REQUEST_JSON',
-    'KOVA_DESKTOP_VARIANT',
-    'KOVA_BUILD_COMMIT',
-    'KOVA_PAYLOAD_TAG'
-  ]) {
+  for (const key of ['_KOVA_CHANNEL_REQUEST_JSON', 'KOVA_DESKTOP_VARIANT', 'KOVA_BUILD_COMMIT', 'KOVA_PAYLOAD_TAG']) {
     delete process.env[key]
   }
 

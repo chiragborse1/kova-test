@@ -325,9 +325,7 @@ function CronJobSidebarRow({
           actions={
             /* Trailing cluster: countdown by default, quick actions on hover. */
             <div className="flex items-center gap-0.5">
-              <span className="text-sm text-(--ui-text-tertiary) tabular-nums group-hover/cron:hidden">
-                {meta}
-              </span>
+              <span className="text-sm text-(--ui-text-tertiary) tabular-nums group-hover/cron:hidden">{meta}</span>
               <div className="hidden items-center gap-0.5 group-hover/cron:flex">
                 <Tip label={c.triggerNow}>
                   <button

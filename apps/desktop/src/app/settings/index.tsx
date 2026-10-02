@@ -415,22 +415,22 @@ export function SettingsView({ onClose, onConfigSaved, onMainModelChanged }: Set
           return { ...group, bandLabel: band !== previous ? bandLabel(band) : undefined }
         })
         .map(group => {
-        const view = group.id as SettingsViewId
-        const children = settingsSubpages(view)
+          const view = group.id as SettingsViewId
+          const children = settingsSubpages(view)
 
-        return children.length
-          ? {
-              ...group,
-              children: children.map(page => ({
-                active: group.active && subpage === page.id,
-                icon: settingsSubpageIcon(page, group.icon),
-                id: `${view}:${page.id}`,
-                label: t.settings.subpages[page.labelKey],
-                onSelect: () => openSettingsPage(view, page.id)
-              }))
-            }
-          : group
-      }),
+          return children.length
+            ? {
+                ...group,
+                children: children.map(page => ({
+                  active: group.active && subpage === page.id,
+                  icon: settingsSubpageIcon(page, group.icon),
+                  id: `${view}:${page.id}`,
+                  label: t.settings.subpages[page.labelKey],
+                  onSelect: () => openSettingsPage(view, page.id)
+                }))
+              }
+            : group
+        }),
     [
       activeView,
       billingView,

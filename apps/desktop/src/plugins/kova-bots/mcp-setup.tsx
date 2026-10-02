@@ -296,11 +296,7 @@ export function McpSetupButton({ profile, entry, onDone, ensureProfile }: McpSet
   }
 
   if (supported === false) {
-    return (
-      <span className="ml-1.5 text-sm text-(--ui-text-quaternary)">
-        {b.tools.needsSetup(requires.join(', '))}
-      </span>
-    )
+    return <span className="ml-1.5 text-sm text-(--ui-text-quaternary)">{b.tools.needsSetup(requires.join(', '))}</span>
   }
 
   if (phase === 'done') {

@@ -48,14 +48,14 @@ export function CatalogImage({ src, className }: { src: string; className?: stri
   )
 }
 
-  // ONE accent, the brand violet, for every card.
-  //
-  // This was seven accents picked by ARRAY INDEX (accentIndex % 7), so a card's
-  // colour said only where it sat in the list - a blue card and a red card were
-  // the same object. Accent is now a property of the surface, and the
-  // pointer-following tint (catalog.css) is the thing that carries the
-  // interaction, which is what it was always good at.
-  const CARD_ACCENT = '[--catalog-accent:var(--theme-primary)]'
+// ONE accent, the brand violet, for every card.
+//
+// This was seven accents picked by ARRAY INDEX (accentIndex % 7), so a card's
+// colour said only where it sat in the list - a blue card and a red card were
+// the same object. Accent is now a property of the surface, and the
+// pointer-following tint (catalog.css) is the thing that carries the
+// interaction, which is what it was always good at.
+const CARD_ACCENT = '[--catalog-accent:var(--theme-primary)]'
 
 interface CatalogCardProps {
   entry: CatalogEntry

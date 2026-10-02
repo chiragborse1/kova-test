@@ -38,10 +38,7 @@ export function SideAgents({ active, side, tick }: SideAgentsProps) {
         {title}
       </div>
       <div className="text-lg leading-6 text-white/85">{line1}</div>
-      <div
-        className="mt-1 text-md leading-6"
-        style={{ color: BLUE_FAINT, fontFamily: "'JetBrains Mono', monospace" }}
-      >
+      <div className="mt-1 text-md leading-6" style={{ color: BLUE_FAINT, fontFamily: "'JetBrains Mono', monospace" }}>
         {active ? decoded(line2, EVERYWHERE_T + delayMs + 500, tick, 700) : line2}
       </div>
     </div>

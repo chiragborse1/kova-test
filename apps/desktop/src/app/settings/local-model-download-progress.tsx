@@ -37,10 +37,7 @@ export function ProgressBar({ percent, paused = false }: ProgressBarProps) {
       role="progressbar"
     >
       <div
-        className={cn(
-          'h-full rounded-full',
-          paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] slow'
-        )}
+        className={cn('h-full rounded-full', paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] slow')}
         style={{ width: `${Math.max(0, Math.min(100, percent ?? 0))}%` }}
       />
     </div>

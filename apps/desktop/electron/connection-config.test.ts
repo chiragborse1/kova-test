@@ -120,10 +120,7 @@ test('normalizeRemoteHeaders sanitizes plaintext values at ingest', () => {
 
 test('remoteRequestMatchesBaseUrl treats HTTPS and WSS as the same gateway origin', () => {
   assert.equal(
-    remoteRequestMatchesBaseUrl(
-      'wss://kova.example.com/gateway/api/ws?ticket=abc',
-      'https://kova.example.com/gateway'
-    ),
+    remoteRequestMatchesBaseUrl('wss://kova.example.com/gateway/api/ws?ticket=abc', 'https://kova.example.com/gateway'),
     true
   )
   assert.equal(remoteRequestMatchesBaseUrl('ws://kova.example.com/api/ws', 'http://kova.example.com'), true)

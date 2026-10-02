@@ -149,7 +149,6 @@ test('code-skew 503 unwraps to a restart-required summary, not raw IPC JSON', ()
   expect($backendRestartRequest.get()).toBe(before + 1)
 })
 
-
 // Regression: a queued auto-dismissal outliving its environment failed a run
 // whose every test had passed. 'JS & TS checks' on run 36984180138 reported
 //   Test Files 1089 passed (1089) / Tests 9406 passed (9406) / Errors 1
@@ -166,10 +165,12 @@ test('a dismissal that fires after its environment is gone does not throw', () =
   const savedWindow = globalThis.window
   // @ts-expect-error -- deliberately removing the global to reproduce teardown.
   delete globalThis.window
+
   try {
     expect(() => dismissNotification(id)).not.toThrow()
   } finally {
     globalThis.window = savedWindow
   }
+
   expect($notifications.get().some(item => item.id === id)).toBe(false)
 })

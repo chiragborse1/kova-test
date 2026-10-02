@@ -136,9 +136,7 @@ function VersionStepper({
           <ChevronLeft className="size-3" />
         </button>
       </Tip>
-      <span className="text-xs font-bold tabular-nums text-muted-foreground">
-        {copy.versionOf(current + 1, total)}
-      </span>
+      <span className="text-xs font-bold tabular-nums text-muted-foreground">{copy.versionOf(current + 1, total)}</span>
       <Tip label={copy.newerVersion}>
         <button
           aria-label={copy.newerVersion}

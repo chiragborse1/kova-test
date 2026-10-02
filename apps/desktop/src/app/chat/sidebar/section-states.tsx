@@ -109,9 +109,7 @@ export function SidebarStorageCorruptNotice({
         <AlertDescription>
           <p>{copy.body(profiles.join(', '))}</p>
           <p>{copy.action}</p>
-          <code className="break-all text-sm">
-            kova sessions recover --source &lt;state.db&gt; --inspect-only
-          </code>
+          <code className="break-all text-sm">kova sessions recover --source &lt;state.db&gt; --inspect-only</code>
           <Button
             className="-ml-1 mt-0.5 text-(--ui-text-secondary)"
             onClick={() => openRecoveryGuide(SESSION_STORAGE_RECOVERY_URL)}

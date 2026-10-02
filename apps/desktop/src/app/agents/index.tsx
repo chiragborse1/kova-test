@@ -379,9 +379,7 @@ export function SubagentRow({ node, depth = 0, nowMs }: { node: SubagentNode; de
             {node.goal}
           </span>
           {subtitle.length > 0 ? (
-            <FadeText className="text-sm leading-lg text-muted-foreground/65">
-              {subtitle.join(' · ')}
-            </FadeText>
+            <FadeText className="text-sm leading-lg text-muted-foreground/65">{subtitle.join(' · ')}</FadeText>
           ) : null}
         </span>
         {running ? <ActivityTimerText className="mt-1 shrink-0 text-2xs" seconds={durationSeconds} /> : null}
@@ -403,9 +401,7 @@ export function SubagentRow({ node, depth = 0, nowMs }: { node: SubagentNode; de
 
       {open && fileLines.length > 0 ? (
         <div className="grid min-w-0 gap-0.5 pl-6" data-selectable-text="true">
-          <p className="text-2xs font-medium tracking-wider text-muted-foreground/60 uppercase">
-            {t.agents.files}
-          </p>
+          <p className="text-2xs font-medium tracking-wider text-muted-foreground/60 uppercase">{t.agents.files}</p>
           {fileLines.slice(0, 8).map(line => (
             <p className="wrap-break-word font-mono text-sm leading-relaxed text-muted-foreground/80" key={line}>
               {line}

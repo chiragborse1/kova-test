@@ -70,9 +70,7 @@ export function renderRosterToolbar({
   return (
     <>
       <div className="flex items-center justify-between gap-2 px-2.5 pt-2.5 pb-1.5">
-        <span className="text-sm font-semibold uppercase tracking-wider text-(--ui-text-quaternary)">
-          Bots
-        </span>
+        <span className="text-sm font-semibold uppercase tracking-wider text-(--ui-text-quaternary)">Bots</span>
         <div className="flex items-center gap-0.5">
           <Tip
             label={activityToasts ? 'Activity toasts on — click to silence' : 'Activity toasts off — click to enable'}
@@ -206,9 +204,7 @@ export function renderRosterToolbar({
                             kind={option.kind}
                           />
                           <span className="min-w-0 flex-1 truncate">{option.label || option.connectionId}</span>
-                          <span className="text-xs tabular-nums text-(--ui-text-quaternary)">
-                            {option.count}
-                          </span>
+                          <span className="text-xs tabular-nums text-(--ui-text-quaternary)">{option.count}</span>
                           {gatewayFilter === option.connectionId ? <Codicon name="check" /> : null}
                         </DropdownMenuItem>
                       )

@@ -203,9 +203,7 @@ export function CapabilityScopeSelector({
         compact ? 'flex-1' : 'border-b border-(--ui-stroke-secondary) px-3 py-2'
       )}
     >
-      {!compact && (
-        <span className="text-sm font-medium text-(--ui-text-tertiary)">{t.skills.configuringProfile}</span>
-      )}
+      {!compact && <span className="text-sm font-medium text-(--ui-text-tertiary)">{t.skills.configuringProfile}</span>}
       <Select onValueChange={scope.onChange} value={scope.value}>
         <SelectTrigger className={cn('text-xs', compact ? 'h-6 min-w-0 w-full px-2 truncate' : 'h-7 w-56')}>
           {compact ? (

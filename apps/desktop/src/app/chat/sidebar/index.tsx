@@ -9,12 +9,7 @@ import { PlatformAvatar } from '@/app/messaging/platform-icon'
 import { Button } from '@/components/ui/button'
 import { Codicon } from '@/components/ui/codicon'
 import { ContextMenu, ContextMenuContent, ContextMenuTrigger } from '@/components/ui/context-menu'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { GlyphSpinner } from '@/components/ui/glyph-spinner'
 import { KbdGroup } from '@/components/ui/kbd'
 import { SearchField } from '@/components/ui/search-field'
@@ -535,9 +530,7 @@ export function ChatSidebar({
   // collapsed set and the open set can never disagree about where the halves
   // are - the bug a hand-maintained pair of id lists would eventually have.
   const primaryNav = useMemo(() => {
-    const manageIds = new Set(
-      SIDEBAR_NAV.slice(MANAGE_NAV_FROM).map(item => item.id as string)
-    )
+    const manageIds = new Set(SIDEBAR_NAV.slice(MANAGE_NAV_FROM).map(item => item.id as string))
 
     return {
       // A contributed row arrives after the core list, so slicing by INDEX

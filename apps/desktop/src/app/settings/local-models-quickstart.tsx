@@ -62,9 +62,7 @@ export function LocalModelsQuickstart({
                   the composer drops speed/ETA when bytes aren't moving —
                   showing a stale rate across a stage hand-off would read as
                   progress loss. A paused job keeps its frozen counter. */}
-              <p className="mt-2 min-h-10 text-md leading-5 text-muted-foreground">
-                {downloadStatusText(qJob, copy)}
-              </p>
+              <p className="mt-2 min-h-10 text-md leading-5 text-muted-foreground">{downloadStatusText(qJob, copy)}</p>
 
               <div className="mt-5">
                 <ProgressBar paused={qJob.status === 'paused'} percent={qJob.percent} />

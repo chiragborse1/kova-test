@@ -43,10 +43,7 @@ export const SIDEBAR_ROW_INSET = cn(
 // so the extra leading just centers.
 export const SIDEBAR_TRUNCATED_LEADING = 'leading-snug' as const
 
-export const SIDEBAR_ROW_LABEL = cn(
-  'min-w-0 truncate text-md text-(--ui-text-secondary)',
-  SIDEBAR_TRUNCATED_LEADING
-)
+export const SIDEBAR_ROW_LABEL = cn('min-w-0 truncate text-md text-(--ui-text-secondary)', SIDEBAR_TRUNCATED_LEADING)
 
 /** Inbox-style card (workspace + age, title + preview, model + size). */
 export const SIDEBAR_ROW_CARD_MIN_H = 'min-h-[3.375rem]' as const

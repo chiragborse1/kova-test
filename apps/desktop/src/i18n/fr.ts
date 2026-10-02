@@ -846,7 +846,7 @@ export const frOverrides = {
       about: 'À propos',
       billing: 'Facturation',
       notifications: 'Notifications',
-      vault: 'Mots de passe et identifiants',
+      vault: 'Mots de passe et identifiants'
     },
     // Band headings for the Settings rail. The first band is unlabelled
     // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
@@ -856,7 +856,7 @@ export const frOverrides = {
       bandAgents: 'Agents et modèles',
       bandConnections: 'Connexions',
       bandAccount: 'Compte',
-      bandSystem: 'Système',
+      bandSystem: 'Système'
     },
     plugins: {
       title: 'Plugins du desktop',
@@ -2842,8 +2842,7 @@ export const frOverrides = {
       catalogHint:
         'Utilisez « + Ajouter à cet agent » sur un plugin : les entrées vérifiées sont installées depuis leur commit épinglé dans le profil sélectionné.',
       alreadyInstalled: (name: string) => `${name} est déjà installé dans ce profil.`,
-      catalogProvenance: (sha: string) =>
-        `Installé depuis le catalogue Kova${sha ? ` au commit épinglé ${sha}` : ''}.`,
+      catalogProvenance: (sha: string) => `Installé depuis le catalogue Kova${sha ? ` au commit épinglé ${sha}` : ''}.`,
       pinnedProvenance: (sha: string) =>
         `Épinglé au commit ${sha}. Les mises à jour sont refusées tant qu’il n’est pas réinstallé avec un nouvel épinglage.`,
       pinnedBadge: (sha: string) => `épinglé @ ${sha}`,
@@ -3960,7 +3959,7 @@ export const frOverrides = {
       starmap: 'Graphe mémoire',
       'command-center': 'Centre de commande',
       'session-import': 'Importer une session',
-      more: 'Plus',
+      more: 'Plus'
     },
     searchAria: 'Rechercher des sessions',
     searchPlaceholder: 'Rechercher des sessions…',
@@ -4235,8 +4234,7 @@ export const frOverrides = {
       '/queue':
         'Mettre un prompt en file pour le prochain tour, ou lister/modifier/supprimer/déplacer/vider les prompts en file',
       '/steer': 'Injecter un message après le prochain appel d’outil sans interrompre',
-      '/goal':
-        'Définir un objectif permanent sur lequel Kova travaille au fil des tours jusqu’à ce qu’il soit atteint',
+      '/goal': 'Définir un objectif permanent sur lequel Kova travaille au fil des tours jusqu’à ce qu’il soit atteint',
       '/heartbeat': 'Définir un prompt récurrent qui revient dans cette session lorsqu’elle est inactive',
       '/refine': 'Passer en revue cette conversation maintenant et enregistrer les leçons en mémoire/skills',
       '/review': 'Lancer un sous-agent indépendant pour relire le travail qui vient d’être discuté (PR, code, docs)',
@@ -4662,8 +4660,7 @@ export const frOverrides = {
     manualBody:
       "Vous avez installé Kova depuis la ligne de commande, les mises à jour s'y effectuent donc aussi. Collez ceci dans votre terminal :",
     manualPickedUp: 'Kova prendra en compte la nouvelle version au prochain lancement.',
-    manualBodyBackend:
-      'Le backend Kova est géré en dehors de cette app. Exécutez ceci sur le serveur qui l’héberge :',
+    manualBodyBackend: 'Le backend Kova est géré en dehors de cette app. Exécutez ceci sur le serveur qui l’héberge :',
     manualPickedUpBackend: 'Le backend chargera la nouvelle version une fois la mise à jour terminée.',
     guiSkewTitle: "Mettre à jour l'application de bureau",
     guiSkewBody:
@@ -4813,8 +4810,7 @@ export const frOverrides = {
     headerTitle: 'Configurons Kova Agent pour vous',
     headerDesc:
       'Connectez un fournisseur de modèles pour commencer à discuter. La plupart des options nécessitent un clic.',
-    preparingInstall:
-      "Kova finalise l'installation. Cela prend généralement moins d'une minute au premier lancement.",
+    preparingInstall: "Kova finalise l'installation. Cela prend généralement moins d'une minute au premier lancement.",
     starting: 'Démarrage de Kova…',
     lookingUpProviders: 'Recherche des fournisseurs...',
     collapse: 'Réduire',

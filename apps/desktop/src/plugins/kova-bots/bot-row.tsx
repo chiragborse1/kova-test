@@ -609,9 +609,7 @@ export function GroupRow({ active, group, members, needsYou, onOpen, onDisband, 
             </Tip>
           ) : null}
           {lastAt ? (
-            <span className="shrink-0 text-sm text-(--ui-text-quaternary)">
-              {rowAge(lastAt, t.sidebar.row)}
-            </span>
+            <span className="shrink-0 text-sm text-(--ui-text-quaternary)">{rowAge(lastAt, t.sidebar.row)}</span>
           ) : null}
         </div>
         <div className="min-w-0 truncate text-xs text-(--ui-text-tertiary)">{preview}</div>

@@ -405,10 +405,7 @@ function InlineHtmlFrame({
           style={{ height }}
         />
       ) : (
-        <span
-          className="relative block max-w-full transition-[height] base"
-          style={{ height, width: width ?? '100%' }}
-        >
+        <span className="relative block max-w-full transition-[height] base" style={{ height, width: width ?? '100%' }}>
           <iframe
             className="absolute inset-0 size-full border-0 bg-transparent"
             loading="lazy"

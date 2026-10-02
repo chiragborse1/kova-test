@@ -740,9 +740,7 @@ function UsageList({
 }) {
   return (
     <section className="min-w-0">
-      <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
-        {title}
-      </div>
+      <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">{title}</div>
       {rows.length === 0 ? (
         <div className="text-[length:var(--conversation-caption-font-size)] text-(--ui-text-tertiary)">
           {emptyLabel}

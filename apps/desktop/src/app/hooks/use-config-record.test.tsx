@@ -8,12 +8,7 @@ import { bindConfigReadOrigin, getKovaConfigRecord } from '@/kova'
 import { queryClient } from '@/lib/query-client'
 import { $connection } from '@/store/session'
 
-import {
-  KOVA_CONFIG_KEY,
-  kovaConfigCacheWriter,
-  setKovaConfigCache,
-  useKovaConfigRecord
-} from './use-config-record'
+import { KOVA_CONFIG_KEY, kovaConfigCacheWriter, setKovaConfigCache, useKovaConfigRecord } from './use-config-record'
 
 vi.mock('@/kova', async importOriginal => ({
   ...(await importOriginal<typeof KovaApi>()),

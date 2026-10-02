@@ -488,10 +488,7 @@ export function GroupClarifyCard({ entry, members }: GroupClarifyCardProps) {
 
                 return (
                   <Button
-                    className={cn(
-                      'h-6 px-2 text-sm',
-                      isApproval && choice === 'deny' && !chosen && 'text-destructive'
-                    )}
+                    className={cn('h-6 px-2 text-sm', isApproval && choice === 'deny' && !chosen && 'text-destructive')}
                     disabled={sending || !member}
                     key={`choice:${q.qid}:${choice}`}
                     onClick={() => {

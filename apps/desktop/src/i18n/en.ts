@@ -908,7 +908,7 @@ export const en: Translations = {
       about: 'About',
       billing: 'Billing',
       notifications: 'Notifications',
-      vault: 'Passwords & Logins',
+      vault: 'Passwords & Logins'
     },
     // Band headings for the Settings rail. The first band is unlabelled
     // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
@@ -918,7 +918,7 @@ export const en: Translations = {
       bandAgents: 'Agents & models',
       bandConnections: 'Connections',
       bandAccount: 'Account',
-      bandSystem: 'System',
+      bandSystem: 'System'
     },
     plugins: {
       title: 'Desktop plugins',
@@ -1316,8 +1316,7 @@ export const en: Translations = {
         },
         lite: {
           title: 'Uninstall GUI + agent, keep my data',
-          description:
-            'Remove the app and the Kova agent, but keep config, chats, and secrets for a future reinstall.',
+          description: 'Remove the app and the Kova agent, but keep config, chats, and secrets for a future reinstall.',
           consequence: 'the Chat GUI and the Kova agent (config, chats, and secrets are kept)'
         },
         full: {
@@ -1430,8 +1429,7 @@ export const en: Translations = {
         'Allow Kova in System Settings → Privacy & Security → Input Monitoring, then retry. This gesture does not record keystrokes or capture your screen.',
       unavailable:
         'The HUD gesture helper could not start or stopped unexpectedly. Retry, or restart Kova. The existing HUD shortcut still works inside Kova.',
-      missingHelper:
-        'This Kova installation is missing the HUD gesture helper. Update or reinstall Kova, then retry.',
+      missingHelper: 'This Kova installation is missing the HUD gesture helper. Update or reinstall Kova, then retry.',
       unsupportedSession:
         'This desktop session does not support global modifier taps. Linux requires X11; Wayland is not supported.'
     },
@@ -1572,8 +1570,7 @@ export const en: Translations = {
     gateway: {
       loading: 'Loading gateway settings...',
       unavailableTitle: 'Gateway settings unavailable',
-      unavailableDesc:
-        'Connection settings can only be changed from the Kova Desktop app on the computer running it.',
+      unavailableDesc: 'Connection settings can only be changed from the Kova Desktop app on the computer running it.',
       title: 'Gateway Connection',
       envOverride: 'env override',
       intro:
@@ -3572,7 +3569,7 @@ export const en: Translations = {
       starmap: 'Memory graph',
       'command-center': 'Command center',
       'session-import': 'Import a session',
-      more: 'More',
+      more: 'More'
     },
     searchAria: 'Search sessions',
     searchPlaceholder: 'Search sessions…',
@@ -4233,8 +4230,7 @@ export const en: Translations = {
     errorTitle: 'Update didn’t finish',
     errorBody: 'No worries — nothing was lost. You can try again now.',
     blockerTitle: 'Close local previews to update Kova?',
-    blockerBody:
-      'Kova needs to stop these local previews before updating. This will not modify or delete your files.',
+    blockerBody: 'Kova needs to stop these local previews before updating. This will not modify or delete your files.',
     foreignBlockerTitle: 'Close other processes to update Kova',
     foreignBlockerBody:
       'Kova can’t safely close these processes automatically. Close the app, terminal, or service that owns each one, then try the update again.',
@@ -4349,8 +4345,7 @@ export const en: Translations = {
     installTo: 'Will install to',
     retryAfterRun: 'I’ve run it -- retry',
     setupChoiceTitle: 'Set up Kova Desktop',
-    setupChoiceDesc:
-      'Connect this app to a Kova gateway you already run, or install Kova locally on this computer.',
+    setupChoiceDesc: 'Connect this app to a Kova gateway you already run, or install Kova locally on this computer.',
     setupChoiceDescLocal: 'Install Kova on this computer, or connect to a Kova gateway you already run.',
     connectExistingTitle: 'Connect to existing Kova',
     connectExistingShort: 'Connect existing',
@@ -4559,8 +4554,7 @@ export const en: Translations = {
       powRequired:
         "The Nous server asked for a proof of work, but that isn't implemented in your Agent yet. Sign in or create a free Nous account to continue.",
       locked: "This session can't continue without signing in. Sign in or create a free Nous account to keep going.",
-      generic:
-        "Kova couldn't set up free access without signing in. Signing in is free, or connect another provider.",
+      generic: "Kova couldn't set up free access without signing in. Signing in is free, or connect another provider.",
       signInBelow: 'Signing in is free. Pick Nous below.',
       tryAgain: 'Try again',
       retrying: 'Trying again…'
@@ -5038,8 +5032,7 @@ export const en: Translations = {
         auth: 'The AI service rejected your sign-in. Check the credentials for this provider, then send your message again.',
         billing: 'Your account has no credits left for this provider. Top up or switch provider, then send again.',
         disk: 'Your disk is full, so Kova could not save this conversation. Free some space, then retry.',
-        endpoint:
-          "Kova can't reach your custom model server. Check that it is running, then send your message again.",
+        endpoint: "Kova can't reach your custom model server. Check that it is running, then send your message again.",
         gateway:
           'Kova hit an internal problem starting this reply. Send your message again; if it keeps happening, send diagnostics.',
         generic: 'Something went wrong while Kova was replying. Retry, or copy the details if it keeps happening.',

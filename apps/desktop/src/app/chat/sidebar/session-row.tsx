@@ -617,10 +617,7 @@ function SidebarSessionRowImpl({
                   </OverflowTip>
                   {session.preview && rowMeta.includes('preview') ? (
                     <span
-                      className={cn(
-                        'min-w-0 truncate text-xs text-(--ui-text-quaternary)',
-                        SIDEBAR_TRUNCATED_LEADING
-                      )}
+                      className={cn('min-w-0 truncate text-xs text-(--ui-text-quaternary)', SIDEBAR_TRUNCATED_LEADING)}
                     >
                       {session.preview}
                     </span>

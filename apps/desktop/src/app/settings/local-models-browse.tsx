@@ -289,9 +289,7 @@ export function LocalModelsBrowseSection(): ReactElement {
                           <>
                             <ProgressBar paused={dJob.status === 'paused'} percent={dJob.percent} />
 
-                            <span className="text-sm text-muted-foreground">
-                              {downloadStatusText(dJob, copy)}
-                            </span>
+                            <span className="text-sm text-muted-foreground">{downloadStatusText(dJob, copy)}</span>
 
                             <LocalModelDownloadActions job={dJob} owner={owner} />
                           </>
@@ -308,9 +306,7 @@ export function LocalModelsBrowseSection(): ReactElement {
                                     : copy.browseFitUnknown}
                             </Pill>
 
-                            <span className="shrink-0 text-sm text-muted-foreground">
-                              {gbLabel(group.total_bytes)}
-                            </span>
+                            <span className="shrink-0 text-sm text-muted-foreground">{gbLabel(group.total_bytes)}</span>
                           </span>
                         )}
                       </div>

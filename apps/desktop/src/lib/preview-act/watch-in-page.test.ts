@@ -27,8 +27,8 @@ const host = () => document.querySelector('kova-watch')
 /** …except through the parts the engine parks on the window for its own reuse,
  *  which is the only way to inspect what the overlay actually drew. */
 const drawn = () =>
-  (window as unknown as { __kovaWatch: { parts: Record<string, HTMLElement> & { shadow: ShadowRoot } } })
-    .__kovaWatch.parts
+  (window as unknown as { __kovaWatch: { parts: Record<string, HTMLElement> & { shadow: ShadowRoot } } }).__kovaWatch
+    .parts
 
 /** Everything the overlay drew for this action. The cursor is the only fixed
  *  layer — every box and pin is a mark that comes and goes. */

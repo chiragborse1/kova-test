@@ -512,9 +512,7 @@ export function useStatusbarItems({
         // solid and set off by a gap instead of touching the label.
         detail: (
           <span className="inline-flex items-center gap-2">
-            <span className="font-mono text-xs text-muted-foreground/70">
-              {freeTier?.model ?? FREE_TIER_MODEL}
-            </span>
+            <span className="font-mono text-xs text-muted-foreground/70">{freeTier?.model ?? FREE_TIER_MODEL}</span>
             {/* The class merger drops Badge's own leading-none behind the size's
                 font-size class, so the badge grows to the inherited 1.5 leading and
                 overhangs an 11px label. Restating it here keeps it 11.6px tall. */}

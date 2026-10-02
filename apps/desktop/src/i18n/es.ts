@@ -847,7 +847,7 @@ export const esOverrides = {
       about: 'Acerca de',
       billing: 'Facturación',
       notifications: 'Notificaciones',
-      vault: 'Contraseñas e inicios de sesión',
+      vault: 'Contraseñas e inicios de sesión'
     },
     // Band headings for the Settings rail. The first band is unlabelled
     // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
@@ -857,7 +857,7 @@ export const esOverrides = {
       bandAgents: 'Agentes y modelos',
       bandConnections: 'Conexiones',
       bandAccount: 'Cuenta',
-      bandSystem: 'Sistema',
+      bandSystem: 'Sistema'
     },
     plugins: {
       title: 'Plugins de escritorio',
@@ -1833,8 +1833,7 @@ export const esOverrides = {
         'Un ajuste de inicio externo a la app eligió esta conexión, así que las opciones de abajo son de solo lectura. Reinicia Kova sin ese ajuste (o pregunta a quien lo configuró) para cambiarla aquí.',
       modeTitle: 'Modo de conexión',
       localTitle: 'Gateway local',
-      localDesc:
-        'Inicia un backend privado de Kova en localhost. Es el valor predeterminado y funciona sin conexión.',
+      localDesc: 'Inicia un backend privado de Kova en localhost. Es el valor predeterminado y funciona sin conexión.',
       remoteTitle: 'Gateway remoto',
       remoteDesc: 'Conecta esta shell de escritorio a un backend remoto de Kova.',
       remoteAuthHint:
@@ -3940,7 +3939,7 @@ export const esOverrides = {
       starmap: 'Gráfico de memoria',
       'command-center': 'Centro de control',
       'session-import': 'Importar sesión',
-      more: 'Más',
+      more: 'Más'
     },
     searchAria: 'Buscar sesiones',
     searchPlaceholder: 'Buscar sesiones…',
@@ -3970,8 +3969,7 @@ export const esOverrides = {
       title: 'La base de datos de sesiones está dañada',
       body: (profiles: string) =>
         `Kova no puede leer todo el historial de sesiones de ${profiles}. Los chats que faltan en esta lista no se eliminaron; el archivo donde se guardan está dañado.`,
-      action:
-        'Sal de Kova en este perfil y luego inspecciona el archivo sin modificarlo, o restaura una instantánea:',
+      action: 'Sal de Kova en este perfil y luego inspecciona el archivo sin modificarlo, o restaura una instantánea:',
       guide: 'Guía de recuperación'
     },
     noFilterMatches: 'Ninguna sesión coincide con estos filtros',
@@ -4650,8 +4648,7 @@ export const esOverrides = {
     copy: 'Copiar',
     copied: 'Copiado',
     done: 'Listo',
-    applyingBody:
-      'El actualizador de Kova tomará el control en su propia ventana y volverá a abrir Kova al terminar.',
+    applyingBody: 'El actualizador de Kova tomará el control en su propia ventana y volverá a abrir Kova al terminar.',
     applyingBodyBackend:
       'El backend remoto está aplicando la actualización y se reiniciará. Kova se reconectará automáticamente cuando vuelva a estar disponible.',
     applyingClose: 'Kova se cerrará para aplicar la actualización.',
@@ -5252,8 +5249,7 @@ export const esOverrides = {
       askRestart: 'Pedir a Kova que reinicie el servidor',
       lookingRestart: taskId => `Kova está buscando un servidor de vista previa para reiniciar (${taskId})`,
       restartingTitle: 'Reiniciando servidor de vista previa',
-      restartingMessage:
-        'Kova está trabajando en segundo plano. Mira la consola de vista previa para ver el progreso.',
+      restartingMessage: 'Kova está trabajando en segundo plano. Mira la consola de vista previa para ver el progreso.',
       startRestartFailed: message => `No se pudo iniciar el reinicio del servidor: ${message}`,
       restartFailed: 'Falló el reinicio del servidor',
       hideConsole: 'Ocultar consola de vista previa',

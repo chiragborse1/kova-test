@@ -1,10 +1,5 @@
 import { kovaApi } from '@/api/client'
-import type {
-  KovaConnection,
-  KovaReadDirResult,
-  KovaReadFileTextResult,
-  KovaSelectPathsOptions
-} from '@/global'
+import type { KovaConnection, KovaReadDirResult, KovaReadFileTextResult, KovaSelectPathsOptions } from '@/global'
 import { translateNow } from '@/i18n'
 import { $connection } from '@/store/session'
 

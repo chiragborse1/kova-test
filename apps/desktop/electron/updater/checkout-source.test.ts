@@ -164,10 +164,10 @@ function buildManifest(
       buildId: id,
       channel,
       // owner/repository, not a bare project name: release_channels.validate_repository
-    // rejects 'kova-agent', and the resolved install names the full pair.
-    // Must equal the repository the INSTALL resolves (a local-path origin falls back to
-    // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
-    repository: 'chiragborse1/kova-test',
+      // rejects 'kova-agent', and the resolved install names the full pair.
+      // Must equal the repository the INSTALL resolves (a local-path origin falls back to
+      // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
+      repository: 'chiragborse1/kova-test',
       commit: sha,
       sourceVersion: tag.replace(/^v/, '').split('+')[0],
       releaseTag: tag,
@@ -281,10 +281,10 @@ it('carries each install channel from Python publication checks into the source 
         schema: 1,
         name: 'main',
         // owner/repository, not a bare project name: release_channels.validate_repository
-    // rejects 'kova-agent', and the resolved install names the full pair.
-    // Must equal the repository the INSTALL resolves (a local-path origin falls back to
-    // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
-    repository: 'chiragborse1/kova-test',
+        // rejects 'kova-agent', and the resolved install names the full pair.
+        // Must equal the repository the INSTALL resolves (a local-path origin falls back to
+        // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
+        repository: 'chiragborse1/kova-test',
         policy: 'source-branch',
         state: 'active',
         revision: 1,

@@ -78,10 +78,7 @@ test('matches the dashboard scheduled task (python -m kova_cli / -m kova)', () =
     ),
     true
   )
-  assert.equal(
-    isExternalVenvHolder('C:\\Kova\\venv\\Scripts\\pythonw.exe', 'pythonw.exe -m kova serve', SCRIPTS),
-    true
-  )
+  assert.equal(isExternalVenvHolder('C:\\Kova\\venv\\Scripts\\pythonw.exe', 'pythonw.exe -m kova serve', SCRIPTS), true)
 })
 
 test('never matches an unrelated process that merely borrows the venv interpreter', () => {

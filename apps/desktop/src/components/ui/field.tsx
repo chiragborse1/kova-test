@@ -39,7 +39,5 @@ export function Field({
 }
 
 export function FieldHint({ children, error }: { children: ReactNode; error?: boolean }) {
-  return (
-    <p className={cn('text-sm leading-4', error ? 'text-destructive' : 'text-muted-foreground')}>{children}</p>
-  )
+  return <p className={cn('text-sm leading-4', error ? 'text-destructive' : 'text-muted-foreground')}>{children}</p>
 }

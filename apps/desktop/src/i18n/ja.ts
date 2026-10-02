@@ -3162,8 +3162,7 @@ export const ja = defineLocale({
       'セッショントークンまたはブラウザーサインインでリモートバックエンドを使用します。ローカルインストールは開始されません。',
     installLocalTitle: 'Kova をローカルにインストール',
     installLocalDesc: 'Kova をダウンロードし、Python 環境を作成して、このコンピューターでバックエンドを実行します。',
-    localStartUnavailable:
-      'ローカルインストールを開始できません。Kova Desktop を再起動して、もう一度お試しください。',
+    localStartUnavailable: 'ローカルインストールを開始できません。Kova Desktop を再起動して、もう一度お試しください。',
     remoteSetupTitle: '既存の Kova に接続',
     remoteSetupDesc:
       'ゲートウェイ URL を入力してください。Kova Desktop がトークンとブラウザーサインインのどちらが必要かを検出します。',
@@ -3586,8 +3585,7 @@ export const ja = defineLocale({
       address: 'アドレス',
       addressPlaceholder: 'アドレスを入力',
       blankPageBody: '上のアドレス欄に入力するか、Kova にページを開くよう頼んでください。',
-      finishedRestarting: message =>
-        `Kova がプレビューサーバーの再起動を完了しました${message ? `: ${message}` : ''}`,
+      finishedRestarting: message => `Kova がプレビューサーバーの再起動を完了しました${message ? `: ${message}` : ''}`,
       failedRestarting: message => `サーバーの再起動に失敗しました: ${message}`,
       unknownError: '不明なエラー',
       restartedTitle: 'プレビューサーバーが再起動しました',
@@ -3616,8 +3614,7 @@ export const ja = defineLocale({
       'シンプルモードで設定されています。ここでの変更はこのセッション中のみ有効です。自分の設定にするには詳細モードに切り替えてください。',
     simple: {
       label: 'シンプル',
-      description:
-        'Kova と話すための表示。サイドバーとチャットのみ。ターミナル、ファイル、差分のペインは表示しません。'
+      description: 'Kova と話すための表示。サイドバーとチャットのみ。ターミナル、ファイル、差分のペインは表示しません。'
     },
     advanced: {
       label: '詳細',

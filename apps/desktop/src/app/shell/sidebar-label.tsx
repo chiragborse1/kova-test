@@ -33,11 +33,7 @@ export function SidebarPanelLabel({ children, className, dotClassName, meta, ...
     >
       <span aria-hidden="true" className={cn('dither inline-block size-1 shrink-0 rounded-xs', dotClassName)} />
       <span className="min-w-0 truncate leading-none">{children}</span>
-      {meta && (
-        <span className="shrink-0 text-sm font-medium tracking-normal text-(--ui-text-quaternary)">
-          {meta}
-        </span>
-      )}
+      {meta && <span className="shrink-0 text-sm font-medium tracking-normal text-(--ui-text-quaternary)">{meta}</span>}
     </span>
   )
 }

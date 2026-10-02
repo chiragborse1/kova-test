@@ -370,9 +370,7 @@ export function CustomEndpointsSettings({ onConfigSaved, onMainModelChanged }: C
                       )}
                       {endpoint.source === 'direct-config' && <Pill>config.yaml</Pill>}
                     </div>
-                    <div className="mt-1 truncate font-mono text-sm text-muted-foreground">
-                      {endpoint.base_url}
-                    </div>
+                    <div className="mt-1 truncate font-mono text-sm text-muted-foreground">{endpoint.base_url}</div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">
                       <span>{endpoint.model}</span>
                       {endpoint.has_api_key && <span>{endpoint.api_key_preview ?? ce.apiKeySet}</span>}

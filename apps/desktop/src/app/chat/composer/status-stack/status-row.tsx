@@ -33,13 +33,7 @@ function leadingGlyph(item: ComposerStatusItem, s: Translations['statusStack'], 
       return <Codicon className="text-emerald-500/80" name="pass-filled" size="0.8rem" />
     }
 
-    return (
-      <GlyphSpinner
-        ariaLabel={s.running}
-        className="text-md leading-none text-emerald-500/80"
-        spinner="braille"
-      />
-    )
+    return <GlyphSpinner ariaLabel={s.running} className="text-md leading-none text-emerald-500/80" spinner="braille" />
   }
 
   if (item.todoStatus === 'pending' || (historical && item.todoStatus === 'in_progress')) {
@@ -54,11 +48,7 @@ function leadingGlyph(item: ComposerStatusItem, s: Translations['statusStack'], 
 
   if (item.state === 'running') {
     return (
-      <GlyphSpinner
-        ariaLabel={s.running}
-        className="text-md leading-none text-muted-foreground/80"
-        spinner="braille"
-      />
+      <GlyphSpinner ariaLabel={s.running} className="text-md leading-none text-muted-foreground/80" spinner="braille" />
     )
   }
 
@@ -144,9 +134,7 @@ export const StatusItemRow = memo(function StatusItemRow({
           </span>
         )}
         {item.type === 'goal' && item.currentTool && (
-          <span className="shrink-0 truncate text-xs leading-4 text-muted-foreground/70">
-            {item.currentTool}
-          </span>
+          <span className="shrink-0 truncate text-xs leading-4 text-muted-foreground/70">{item.currentTool}</span>
         )}
         {failed && typeof item.exitCode === 'number' && item.exitCode !== 0 && (
           <span className="shrink-0 rounded bg-destructive/15 px-1 text-2xs font-semibold text-destructive tabular-nums">

@@ -847,7 +847,7 @@ export const deOverrides = {
       about: 'Über',
       billing: 'Abrechnung',
       notifications: 'Benachrichtigungen',
-      vault: 'Passwörter & Logins',
+      vault: 'Passwörter & Logins'
     },
     // Band headings for the Settings rail. The first band is unlabelled
     // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
@@ -857,7 +857,7 @@ export const deOverrides = {
       bandAgents: 'Agenten & Modelle',
       bandConnections: 'Verbindungen',
       bandAccount: 'Konto',
-      bandSystem: 'System',
+      bandSystem: 'System'
     },
     plugins: {
       title: 'Desktop-Plugins',
@@ -1568,8 +1568,7 @@ export const deOverrides = {
           title: 'Oberfläche + Agent deinstallieren, Daten behalten',
           description:
             'Entfernt die App und den Kova-Agent, behält aber Konfiguration, Chats und Geheimnisse für eine spätere Neuinstallation.',
-          consequence:
-            'die Chat-Oberfläche und den Kova-Agent (Konfiguration, Chats und Geheimnisse bleiben erhalten)'
+          consequence: 'die Chat-Oberfläche und den Kova-Agent (Konfiguration, Chats und Geheimnisse bleiben erhalten)'
         },
         full: {
           title: 'Alles deinstallieren',
@@ -3950,7 +3949,7 @@ export const deOverrides = {
       starmap: 'Speicher-Graph',
       'command-center': 'Zentrale',
       'session-import': 'Session importieren',
-      more: 'Mehr',
+      more: 'Mehr'
     },
     searchAria: 'Sessions durchsuchen',
     searchPlaceholder: 'Sessions durchsuchen…',

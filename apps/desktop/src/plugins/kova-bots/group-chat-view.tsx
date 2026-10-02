@@ -1059,10 +1059,7 @@ export function GroupChatWorkspace({ group, members, onBack, visible = true }: G
             key={`${img.name || 'img'}:${index}`}
           >
             {img.kind === 'pdf' || img.kind === 'file' ? (
-              <Codicon
-                className="text-lg text-(--ui-text-tertiary)"
-                name={img.kind === 'pdf' ? 'file-pdf' : 'file'}
-              />
+              <Codicon className="text-lg text-(--ui-text-tertiary)" name={img.kind === 'pdf' ? 'file-pdf' : 'file'} />
             ) : (
               <img alt="" className="size-6 rounded object-cover" src={img.data} />
             )}

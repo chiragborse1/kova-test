@@ -35,9 +35,7 @@ const TICKER_DEPTH = 6
 
 function statusGlyph(status: DelegateRowStatus, label: string): ReactNode {
   if (isDelegateRowLive(status)) {
-    return (
-      <GlyphSpinner ariaLabel={label} className="size-3.5 text-lg text-(--ui-text-tertiary)" spinner="breathe" />
-    )
+    return <GlyphSpinner ariaLabel={label} className="size-3.5 text-lg text-(--ui-text-tertiary)" spinner="breathe" />
   }
 
   if (status === 'failed' || status === 'interrupted') {

@@ -256,9 +256,7 @@ function Diagnostics({ items, onReclaim }: { items: Diagnostic[]; onReclaim: () 
             title={`${diag.title}${diag.count > 1 ? ` ×${diag.count}` : ''}`}
             tone={tone}
           >
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-(--ui-text-secondary)">
-              {diag.detail}
-            </p>
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-(--ui-text-secondary)">{diag.detail}</p>
             {actions.length > 0 && (
               <div className="flex flex-wrap gap-1.5">
                 {actions.map(action => (
@@ -439,11 +437,7 @@ function DescriptionSection({ body, onSave }: { body: null | string | undefined;
     >
       {editing ? (
         <div className="flex flex-col gap-1.5">
-          <Textarea
-            className="min-h-24 text-base"
-            onChange={event => setDraft(event.target.value)}
-            value={draft}
-          />
+          <Textarea className="min-h-24 text-base" onChange={event => setDraft(event.target.value)} value={draft} />
           <Button
             className="self-end"
             onClick={() => {
@@ -1037,9 +1031,7 @@ export function TaskDrawer({
                 <div className="flex flex-col gap-5">
                   {task.status === 'ready' && !task.assignee && !defaultAssignee && (
                     <Callout title={k.readyUnassignedTitle} tone={SEVERITY_TONE.warning}>
-                      <p className="text-sm leading-relaxed text-(--ui-text-secondary)">
-                        {k.readyUnassignedBody}
-                      </p>
+                      <p className="text-sm leading-relaxed text-(--ui-text-secondary)">{k.readyUnassignedBody}</p>
                     </Callout>
                   )}
 

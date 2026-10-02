@@ -131,10 +131,7 @@ export const useKovaConfigRecord = (profile?: ProfileScope) => {
 // gateway is active when the save happens — the same row its query reads.
 const writeKovaConfigCache =
   (keyFor: () => ReturnType<typeof kovaConfigKey>) =>
-  (
-    next:
-      KovaConfigRecord | undefined | ((previous: KovaConfigRecord | undefined) => KovaConfigRecord | undefined)
-  ) =>
+  (next: KovaConfigRecord | undefined | ((previous: KovaConfigRecord | undefined) => KovaConfigRecord | undefined)) =>
     void queryClient.setQueryData<KovaConfigRecord>(keyFor(), previous => {
       const record = typeof next === 'function' ? next(previous) : next
 
@@ -147,8 +144,7 @@ const writeKovaConfigCache =
     })
 
 export const setKovaConfigCache = writeKovaConfigCache(() => kovaConfigKey())
-export const kovaConfigCacheWriter = (profile?: ProfileScope) =>
-  writeKovaConfigCache(() => kovaConfigKey(profile))
+export const kovaConfigCacheWriter = (profile?: ProfileScope) => writeKovaConfigCache(() => kovaConfigKey(profile))
 
 export const invalidateKovaConfig = (profile?: ProfileScope) =>
   queryClient.invalidateQueries({ queryKey: kovaConfigKey(profile) })

@@ -347,11 +347,7 @@ export function MaintenancePanel() {
 }
 
 function SectionLabel({ children }: { children: string }) {
-  return (
-    <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
-      {children}
-    </div>
-  )
+  return <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">{children}</div>
 }
 
 function OpRow({
