@@ -109,7 +109,13 @@ test('channel smoke binds the complete admitted request, not a commit-build iden
       expect(run('identity').status).not.toBe(0)
     }
   } finally { fs.rmSync(temp, { recursive: true, force: true }) }
-}, 15_000)
+// This cell's cost is interpreter startups, not assertions: channelBuildRequest
+// re-runs the authoritative Python validator on every spawn, and the cell spawns
+// it once per identity/stamp call plus once per rejected request. The 15s budget
+// was sized for the pre-rebrand fixture, which died in validate_channel_request
+// before reaching any of that -- so it was never actually exercised. Now that the
+// request is admitted, the real cost shows: 15.6s locally against a 15s limit.
+}, 60_000)
 
 test('workspace admission rejects reuse and symlink escapes before creating anything outside runner temp', () => {
   const temp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'smoke-paths-')))
