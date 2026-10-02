@@ -240,7 +240,7 @@ export function notify(input: NotificationInput): string {
     placement: input.placement ?? defaultPlacement(kind, input.action)
   }
 
-  window.clearTimeout(timers.get(id))
+  clearTimer(timers.get(id))
   timers.delete(id)
   // Visual depth is capped by CardStack, not by discarding queued notifications.
   $notifications.set([notification, ...$notifications.get().filter(item => item.id !== id)])
@@ -296,8 +296,25 @@ export function notifyError(
   })
 }
 
+/** `window.clearTimeout` that tolerates the window being gone. See dismissNotification. */
+function clearTimer(timer: number | undefined): void {
+  if (timer !== undefined && typeof window !== 'undefined') {
+    window.clearTimeout(timer)
+  }
+}
+
 export function dismissNotification(id: string) {
-  window.clearTimeout(timers.get(id))
+  // A queued dismissal can fire after the environment that scheduled it is
+  // gone: the timer is a `window.setTimeout`, and teardown (a jsdom document
+  // closing, a renderer reload) takes `window` with it while the callback is
+  // still queued. The uncaught ReferenceError then surfaces as a vitest
+  // "Unhandled Error" that fails a run whose every test passed -- which is
+  // what happened to 'JS & TS checks' on run 36984180138:
+  //   Test Files 1089 passed (1089) / Tests 9406 passed (9406) / Errors 1
+  //
+  // The timer id is still worth dropping from the map, and the store update
+  // still has to happen, so guard only the global lookup.
+  clearTimer(timers.get(id))
   timers.delete(id)
   const dismissed = $notifications.get().find(item => item.id === id)
   $notifications.set($notifications.get().filter(item => item.id !== id))
@@ -306,7 +323,7 @@ export function dismissNotification(id: string) {
 
 export function clearNotifications() {
   for (const timer of timers.values()) {
-    window.clearTimeout(timer)
+    clearTimer(timer)
   }
 
   timers.clear()

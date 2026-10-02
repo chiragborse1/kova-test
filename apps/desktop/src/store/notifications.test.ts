@@ -2,7 +2,14 @@ import { beforeEach, expect, test, vi } from 'vitest'
 
 import { en } from '@/i18n/en'
 
-import { $notifications, clearNotifications, isDiskFullErrorMessage, notifyError } from './notifications'
+import {
+  $notifications,
+  clearNotifications,
+  dismissNotification,
+  isDiskFullErrorMessage,
+  notify,
+  notifyError
+} from './notifications'
 import { $backendRestartRequest, $routeRequest } from './recovery-requests'
 
 beforeEach(() => {
@@ -140,4 +147,29 @@ test('code-skew 503 unwraps to a restart-required summary, not raw IPC JSON', ()
   expect($notifications.get()[0]?.action?.label).toBe(en.notifications.actions.restartKova)
   $notifications.get()[0]?.action?.onClick()
   expect($backendRestartRequest.get()).toBe(before + 1)
+})
+
+
+// Regression: a queued auto-dismissal outliving its environment failed a run
+// whose every test had passed. 'JS & TS checks' on run 36984180138 reported
+//   Test Files 1089 passed (1089) / Tests 9406 passed (9406) / Errors 1
+// with
+//   Uncaught Exception: ReferenceError: window is not defined
+//     at dismissNotification (src/store/notifications.ts:300:3)
+//     at Timeout._onTimeout (src/store/notifications.ts:253:31)
+// originating in plugins-tab.test.tsx, whose environment tore down before the
+// timer fired. The store update still has to run; only the global lookup fails.
+test('a dismissal that fires after its environment is gone does not throw', () => {
+  const id = notify({ kind: 'info', title: 'late', message: 'late', durationMs: 1 })
+  // Stand in for teardown: the callback runs with no `window`, exactly as a
+  // jsdom document closing leaves it.
+  const savedWindow = globalThis.window
+  // @ts-expect-error -- deliberately removing the global to reproduce teardown.
+  delete globalThis.window
+  try {
+    expect(() => dismissNotification(id)).not.toThrow()
+  } finally {
+    globalThis.window = savedWindow
+  }
+  expect($notifications.get().some(item => item.id === id)).toBe(false)
 })

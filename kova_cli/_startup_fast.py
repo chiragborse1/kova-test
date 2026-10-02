@@ -71,6 +71,12 @@ def normalize_kova_home_env() -> None:
     if not raw.strip():
         return
     expanded = os.path.expanduser(os.path.expandvars(raw.strip()))
+    # expanduser splices the home directory onto the tail verbatim, so "~/a/b"
+    # comes back as "C:\Users\me/a/b" on Windows. Readers that compare this value
+    # as a string (and subprocess cwd spellings) then disagree with the
+    # backslash form kova_constants produces, so normalize the separators.
+    if os.sep != "/":
+        expanded = expanded.replace("/", os.sep)
     if expanded != raw:
         os.environ["KOVA_HOME"] = expanded
 

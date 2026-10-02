@@ -8,6 +8,8 @@ import sys
 
 import pytest
 
+from kova_cli.source_releases import OFFICIAL_REPOSITORY
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -87,7 +89,7 @@ else:
         result = subprocess.run([sys.executable, '-I', '-S', str(driver), str(repo), *args],
                                 cwd=repo, env={**env, **(extra or {})}, capture_output=True,
                                 text=True, encoding='utf-8', timeout=45)
-        recorded = [json.loads(line) for line in calls.read_text(encoding='utf-8').splitlines()] if calls.exists() else []
+        recorded = [json.loads(line) for line in calls.read_text(encoding='utf-8-sig').splitlines()] if calls.exists() else []
         return result, recorded
 
     return repo, upstream, invoke
@@ -133,8 +135,11 @@ def test_commit_build_dispatch_is_repository_independent(fixture_repo):
                            extra={'PROBE_UPSTREAM_URL': 'https://github.com/chiragborse1/kova-test.git'})
     assert result.returncode == 0, result.stderr
     dispatches = [call for call in calls if call[1:3] == ['workflow', 'run']]
+    # The official repository is an owner/repo pair; OFFICIAL_REPOSITORY is the
+    # single authority for it. This used to hardcode the bare name 'kova-agent',
+    # which the rebrand had stripped of its owner (see kova_cli.source_releases).
     assert dispatches == [['gh', 'workflow', 'run', 'desktop-bundled-release.yml',
-                           '--ref', 'main', '--repo', 'kova-agent',
+                           '--ref', 'main', '--repo', OFFICIAL_REPOSITORY,
                            '-f', f'build_commit={tip}', '-f', 'tag=', '-f', 'upload_release=false',
                            '-f', 'termux_upgrade_from_tag=']]
 
@@ -230,7 +235,7 @@ def test_workflow_admission_checks_trust_before_publishing_outputs(tmp_path, fix
            'BUNDLE_ENV_JSON': '{"KOVA_GUEST_ONBOARDING":"1","KOVA_HOME":null}'}
     result, calls = invoke('admit', extra=env)
     assert result.returncode == 0, result.stderr
-    assert dict(line.split('=', 1) for line in output.read_text(encoding='utf-8').splitlines()) == {
+    assert dict(line.split('=', 1) for line in output.read_text(encoding='utf-8-sig').splitlines()) == {
         'sha': tip, 'channel': 'commit', 'payload-version': '1.2.3'}
     assert calls and all(call[1] == 'api' for call in calls)
     original = output.read_bytes()

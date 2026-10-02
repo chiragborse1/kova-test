@@ -7,7 +7,7 @@ files = ["tests/kova_cli/test_gateway.py",
          "website/docs/user-guide/windows-native.md"]
 for f in files:
     p = pathlib.Path(f)
-    s = p.read_text(encoding="utf-8")
+    s = p.read_text(encoding="utf-8-sig")
     n = s.count("Kova_Gateway")
     if n:
         p.write_text(s.replace("Kova_Gateway", "Kova_Gateway"), encoding="utf-8")

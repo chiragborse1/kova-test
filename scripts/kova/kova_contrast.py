@@ -38,7 +38,7 @@ def ratio(a, b):
 
 def load_kova_palette():
     """Read the kova theme's colours from the one file that defines them."""
-    text = THEME.read_text(encoding="utf-8")
+    text = THEME.read_text(encoding="utf-8-sig")
     start = text.find("  kova: {")
     if start < 0:
         raise SystemExit("could not find the kova theme in theme-presets.ts")

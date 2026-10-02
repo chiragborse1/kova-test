@@ -143,6 +143,19 @@ _SKIP_PARTS = {"integration", "e2e", "docker"}
 # time while keeping a genuinely hung file bounded.
 _DEFAULT_FILE_TIMEOUT_SECONDS = 300.0
 
+
+def _default_file_timeout() -> float:
+    """The per-file cap: ``KOVA_TEST_FILE_TIMEOUT``, else the flat default.
+
+    The ``or`` is for the same reason KOVA_TEST_WORKERS uses one: a workflow
+    that sets the var for one matrix row and evaluates it to '' for the others
+    (tests-os.yml does exactly this) would otherwise crash those rows before
+    they ran a test, because ``float("")`` is a ValueError. Read at parse time
+    rather than at import so the env var is honoured whenever it is set.
+    """
+    return float(os.environ.get("KOVA_TEST_FILE_TIMEOUT") or _DEFAULT_FILE_TIMEOUT_SECONDS)
+
+
 # One-shot retry of failing test FILES. A file that exits non-zero is re-run
 # once in a fresh subprocess; if the re-run passes, the file counts as passed
 # but is loudly reported as FLAKY so it gets fixed rather than hidden.
@@ -1007,9 +1020,7 @@ def main() -> int:
     parser.add_argument(
         "--file-timeout",
         type=float,
-        default=float(
-            os.environ.get("KOVA_TEST_FILE_TIMEOUT", _DEFAULT_FILE_TIMEOUT_SECONDS)
-        ),
+        default=_default_file_timeout(),
         help=(
             "Per-file wall-clock cap in seconds. On timeout, the pytest "
             "subprocess and its full process tree are SIGKILL'd. "

@@ -32,7 +32,17 @@ def _public_base() -> str:
     return configured or _PUBLIC_BASE
 
 
-OFFICIAL_REPOSITORY = "kova-agent"
+# The project's own repository, as ``owner/repository``.
+#
+# The rebrand mapped ``NousResearch/hermes-agent`` to the bare string
+# ``"kova-agent"``, which names a GitHub *user*, not a repository. Every
+# consumer then built a URL that cannot exist: ``api.github.com/repos/
+# kova-agent/...`` and ``https://github.com/kova-agent.git`` both 404, and
+# release_channels.validate_repository rejects the bare name outright. That
+# left the ZIP-fallback updater unable to name an archive authority at all.
+# scripts/kova/fix_repo_urls.py documents the same mapping for the project's
+# own links.
+OFFICIAL_REPOSITORY = "chiragborse1/kova-test"
 _GITHUB_ORIGIN = re.compile(
     r"^(?:https://github\.com/|git@github\.com:|ssh://git@github\.com/)"
     r"([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?/?$", re.IGNORECASE,

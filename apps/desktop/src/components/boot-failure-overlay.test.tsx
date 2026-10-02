@@ -322,7 +322,11 @@ describe('BootFailureOverlay', () => {
       expect(screen.getByRole('button', { name: /use local gateway/i })).toBeTruthy()
       // The electron-built error message (portal / local mode / Discord) is
       // still surfaced in the error box.
-      expect(screen.getByText(/ares-3009\.agents\.openkova\.com/i)).toBeTruthy()
+      // The fixture above sets a nousresearch.com agent host, so this must match
+      // that host. The rebrand left this looking for an openkova.com host that
+      // nothing produces, so the assertion could never find the message it was
+      // written to check -- the cell failed while the overlay was working.
+      expect(screen.getByText(/ares-3009\.agents\.nousresearch\.com/i)).toBeTruthy()
     } finally {
       restore()
     }

@@ -67,7 +67,28 @@ from tests.fakes.fake_llm_provider import write_kova_home
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 OPT_IN_ENV = "KOVA_E2E_WINDOWS_INSTALL"
-INSTALL_TIMEOUT = 1500.0
+# One install.ps1 run is dominated by work unrelated to what these cells test.
+# Measured on the current runner (job 110749495428, machine host-1db4):
+#
+#   0 -> 1033s    PM managed tools, ~500 MB (ffmpeg 185 MiB, agent-browser
+#                  204 MiB, node, npm, python, ripgrep)
+#   1037 -> 1040s  isolated Kova runtime, Python dependencies
+#   1268s -> killed   npm ci for the node workspaces (ui-tui, web). Scripts are
+#                      enabled, so electron fetches a binary and node-pty builds.
+#
+# Both earlier caps produced 0 passed / 18 failed, each for its own reason and
+# each reported by every cell as a missing launcher rather than as itself:
+#
+#   1500s  died before publishing kova.exe -> 'journey step ... never ran'
+#   2100s  cleared the tool downloads, then died inside npm ci
+#
+# 3600s leaves ~2330s for an npm ci that 836s of observed time did not finish.
+# The six machines run concurrently (6 workers, 2122s of suite wall), so this is
+# a per-machine budget rather than an additive one, and it fits inside the job's
+# 120-minute cap with room for the update and gateway legs after it.
+#
+# UPDATE_TIMEOUT is untouched: the update path downloads no tools.
+INSTALL_TIMEOUT = 3600.0
 UPDATE_TIMEOUT = 1200.0
 CMD_TIMEOUT = 300.0
 GATEWAY_READY_TIMEOUT = 240.0
@@ -476,6 +497,15 @@ class Machine:
                 if src.is_dir():
                     shutil.copytree(src, dest / sub, dirs_exist_ok=True,
                                     ignore=shutil.ignore_patterns("*.db", "*.db-*"))
+            # npm's own debug log, when a `npm ci` inside the install did not
+            # finish. runNpmCi keeps its logs dir on failure (1afc13dac0), but
+            # that dir is under the fake profile's %TEMP%, and the workflow
+            # uploads only ${{ runner.temp }}/win-update-e2e -- so the log
+            # survives the kill and is never collected. Without this, a stalled
+            # `Preparing Node dependencies` reports nothing but its own label.
+            for logs_dir in Path(tempfile.gettempdir()).glob("kova-npm-logs-*"):
+                if logs_dir.is_dir():
+                    shutil.copytree(logs_dir, dest / logs_dir.name, dirs_exist_ok=True),
             (dest / "evidence.txt").write_text(self.evidence(), encoding="utf-8", errors="replace")
             (dest / "timings.json").write_text(json.dumps(self.timings, indent=1), encoding="utf-8")
 

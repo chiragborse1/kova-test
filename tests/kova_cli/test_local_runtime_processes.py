@@ -174,7 +174,19 @@ def test_failed_setup_never_runs_child_and_releases_handles(tmp_path, monkeypatc
 
     def assign(job, proc):
         children.append(proc)
-        assert psutil.Process(proc.pid).status() == psutil.STATUS_STOPPED
+        # The property under test is that the child has not executed yet, which
+        # `not marker.exists()` below asserts directly. psutil is the wrong
+        # instrument for it: Process.status() defers to cext.proc_is_suspended,
+        # a psutil-internal lookup that does not observe the suspension on the
+        # Server 2025 runners (win25-vs2026) and reports 'running' for a child
+        # that is genuinely suspended. That made this assertion red on both
+        # Windows lanes and green on a desktop.
+        #
+        # A created-suspended process has exactly one thread -- its primary
+        # thread has not been released, so no runtime has started and no second
+        # thread can exist. Releasing it (NtResumeProcess) makes the count jump,
+        # which is what makes this an assertion rather than a tautology.
+        assert psutil.Process(proc.pid).num_threads() == 1
         assert not marker.exists()
         # Query the actual kernel object, not implementation source/constants.
         limits = processes._ExtendedLimits()

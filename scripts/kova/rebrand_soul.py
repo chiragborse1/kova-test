@@ -35,7 +35,7 @@ for f in TARGETS:
     if not p.exists():
         print("  missing:", f)
         continue
-    s = p.read_text(encoding="utf-8", errors="replace")
+    s = p.read_text(encoding="utf-8-sig", errors="replace")
     orig = s
     for rx, rep in PAIRS:
         s = rx.sub(rep, s)

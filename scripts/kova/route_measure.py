@@ -94,7 +94,7 @@ def ev(expr):
 
 def core_routes():
     """Read the route list from the source, so it cannot fall behind."""
-    src = open(ROUTES_TS, encoding="utf-8").read()
+    src = open(ROUTES_TS, encoding="utf-8-sig").read()
     pairs = re.findall(r"^export const (\w+_ROUTE) = '([^']+)'", src, re.M)
     skip = {"NEW_CHAT_ROUTE"}
     return [(sym, path) for sym, path in pairs if sym not in skip]

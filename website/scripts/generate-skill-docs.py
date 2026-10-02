@@ -303,7 +303,10 @@ def derive_skill_meta(skill_path: Path, source_dir: Path, source_kind: str) -> d
         "category": category,
         "sub": sub,
         "slug": slug,
-        "rel_path": str(rel),
+        # POSIX separators: this string is rendered into committed Markdown and
+        # compared against it in CI, so a Windows run must not bake in backslashes
+        # (it did -- 210 generated pages differed per host).
+        "rel_path": rel.as_posix(),
     }
 
 

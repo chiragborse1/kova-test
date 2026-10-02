@@ -35,7 +35,7 @@ DESKTOP = os.path.join(ROOT, "apps", "desktop")
 
 
 def run(args, cwd=ROOT):
-    return subprocess.run(args, cwd=cwd, capture_output=True, text=True, shell=True)
+    return subprocess.run(args, cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace", shell=True)
 
 
 def changed_files(base):
@@ -70,7 +70,7 @@ def main(argv):
         print(res.stderr[-800:])
         return 1
 
-    with open(report, encoding="utf-8") as handle:
+    with open(report, encoding="utf-8-sig") as handle:
         data = json.load(handle)
     os.remove(report)
 

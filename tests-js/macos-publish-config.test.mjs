@@ -34,6 +34,8 @@ it('bakes only a canonical https feed base into the updater config', () => {
     cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
     env: { ...process.env, KOVA_DESKTOP_VARIANT: 'bundled', KOVA_PAYLOAD_TAG: 'v0.28.0', CLOUDFLARE_R2_PUBLIC_URL: url }
   })
-  expect(JSON.parse(build('https://updates.example/'))).toEqual([{ provider: 'generic', url: 'https://updates.example', channel: 'latest' }])
+  // The top-level `publish` is a single object, not the array form `mac.publish` uses:
+  // 953e9a30a7 replaced it when the guard stopped demanding owner/repo from a local build.
+  expect(JSON.parse(build('https://updates.example/'))).toEqual({ provider: 'generic', url: 'https://updates.example', channel: 'latest' })
   expect(() => build('http://updates.example')).toThrow(/canonical https/)
 })

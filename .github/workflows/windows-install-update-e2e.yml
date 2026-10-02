@@ -26,8 +26,18 @@ jobs:
   install-update:
     name: Windows install.ps1 + kova update E2E
     runs-on: ${{ vars.WIN_RUNNER || 'windows-latest-32-core' }}
-    # A typical run is ~17 min; one slow runner took 28 min for the same work (run 36295230146).
-    timeout-minutes: 50
+    # The cap exists to bound a wedged runner, not to express an expectation.
+    # One install leg is already 3600s on the current runner (see
+    # _machine.py INSTALL_TIMEOUT: ~1030s of managed-tool downloads, then an
+    # npm ci that 836s of observed time did not finish), and the six machines
+    # run in parallel under 6 workers, so this is a per-machine budget rather
+    # than an additive one. 120 min leaves room for one install plus the update
+    # and gateway legs that follow it.
+    #
+    # History, because the number only makes sense against it: a typical run was
+    # ~17 min (36295230146 took 28), then every cell started failing at the
+    # install timeout instead of at anything it was testing.
+    timeout-minutes: 120
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -60,7 +70,14 @@ jobs:
           KOVA_E2E_ARTIFACTS: ${{ runner.temp }}\win-update-e2e
           # One journey per file, all in parallel (each is mostly network + subprocess wait).
           KOVA_TEST_WORKERS: '6'
-          KOVA_TEST_FILE_TIMEOUT: '2400'
+          # Must exceed INSTALL_TIMEOUT (3600s) plus the longest journey that
+          # follows it (UPDATE_TIMEOUT, 1200s): a file that owns an install and
+          # then runs journeys cannot be capped below their sum. At 2400s the
+          # cap fired first and killed a file mid-install:
+          #   (2400s exceeded; process tree SIGKILL'd)
+          #   6 files, 0 tests passed, 0 failed
+          # which the runner correctly refuses to call a pass.
+          KOVA_TEST_FILE_TIMEOUT: '5400'
           KOVA_TEST_FILE_RETRIES: '0'
           OPENROUTER_API_KEY: ''
           OPENAI_API_KEY: ''

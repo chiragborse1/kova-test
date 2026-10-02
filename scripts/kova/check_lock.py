@@ -12,9 +12,8 @@ def pairs(text):
         out[m.group(1)] = m.group(2)
     return out
 
-old = subprocess.run(["git","show","2a977be9:uv.lock"],capture_output=True,text=True,
-                     encoding="utf-8",errors="replace").stdout
-new = pathlib.Path("uv.lock").read_text(encoding="utf-8")
+old = subprocess.run(["git","show","2a977be9:uv.lock"], capture_output=True, text=True, encoding="utf-8", errors="replace").stdout
+new = pathlib.Path("uv.lock").read_text(encoding="utf-8-sig")
 
 po, pn = pairs(old), pairs(new)
 print("packages before:", len(po), " after:", len(pn))

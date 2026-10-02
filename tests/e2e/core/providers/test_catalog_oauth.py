@@ -46,7 +46,7 @@ KNOWN: dict[str, Known] = {
         r"^device poll gap \d+\.\d+s < server interval",
         "#121163 Nous device-code login polls at 1s, ignoring the server's interval"),
     "nous_401_retry_route": Known(
-        r"^401 recovery retry left NOUS_INFERENCE_BASE_URL: egress to \[[^\]]*'inference-api\.openkova\.com:443'",
+        r"^401 recovery retry left NOUS_INFERENCE_BASE_URL: egress to \[[^\]]*'inference-api\.nousresearch\.com:443'",
         "#121323 Nous 401 pool recovery retries on the stored production host, "
         "dropping the NOUS_INFERENCE_BASE_URL override"),
 }

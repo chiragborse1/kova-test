@@ -59,8 +59,7 @@ def check(paths: list[str]) -> int:
 def main() -> int:
     if len(sys.argv) > 1:
         return check(sys.argv[1:])
-    out = subprocess.run(["git", "ls-files", "-z"], capture_output=True, text=True,
-                         check=True).stdout
+    out = subprocess.run(["git", "ls-files", "-z"], capture_output=True, text=True, encoding="utf-8", errors="replace", check=True).stdout
     files = [f for f in out.split("\0") if f.endswith((".ts", ".tsx"))]
     return check(files)
 

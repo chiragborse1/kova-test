@@ -585,7 +585,15 @@ function Get-PinnedGit {
     $gitExe = Join-Path $entry "cmd\git.exe"
     if (Test-Path $gitExe) { return $gitExe }
     Log "installing git $($script:GitPinVersion) ($target)"
-    Assert-FreeSpaceForGitBootstrap
+    # Assign, do not call bare: Assert-FreeSpaceForGitBootstrap returns the free
+    # byte count for its other caller, and an unassigned call emits that number
+    # into THIS function's output stream. Get-PinnedGit then returned
+    # [freeBytes, gitExe], so Ensure-Git's
+    #   Split-Path (Split-Path $g -Parent) -Parent
+    # was handed a 2-element array and failed with
+    #   Cannot bind argument to parameter 'Path' because it is an empty string
+    # after the download, move and cleanup had all already succeeded.
+    $gitBootstrapFreeBytes = Assert-FreeSpaceForGitBootstrap
     $tmpDir = Join-Path ([IO.Path]::GetTempPath()) "kova-git-bootstrap-$PID"
     try {
         New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null

@@ -27,7 +27,7 @@ def test_check_uses_real_pm_selection_and_keeps_invalid_evidence(admission_env, 
     # A historical foreign-root stamp must not certify a PM environment.
     old_stamp = core / ".kova-runtime" / "cache" / "venv-sync.json"
     old_stamp.parent.mkdir(parents=True)
-    old_stamp.write_text('{"lockDigest": "old-bootstrap-stamp"}')
+    old_stamp.write_text('{"lockDigest": "old-bootstrap-stamp"}', encoding='utf-8')
     cached = old_stamp.read_bytes()
 
     def check(expected, code=0):
@@ -61,8 +61,14 @@ def test_check_uses_real_pm_selection_and_keeps_invalid_evidence(admission_env, 
 
     # A recorded extra only counts while the tree still declares it.
     pyproject = core / 'pyproject.toml'
-    pyproject.write_text(pyproject.read_text(encoding='utf-8')
-                         + '[project.optional-dependencies]\nchanged-extra = []\n', encoding='utf-8')
+    # Split so the read and the write each carry their own encoding on their
+    # own line: check-windows-footguns matches encoding= textually, and a
+    # single nested line made it read the write as BOM-emitting.
+    current = pyproject.read_text(encoding='utf-8-sig')
+    pyproject.write_text(
+        current + '[project.optional-dependencies]\nchanged-extra = []\n',
+        encoding='utf-8',
+    )
     altered = json.loads(pristine)
     altered['packages']['venv']['extras'] = ['changed-extra']
     facts_path.write_text(json.dumps(altered), encoding='utf-8')
@@ -122,12 +128,19 @@ def test_own_tree_sync_reuses_pm_without_writing_an_extra_stamp(admission_env, m
     result = subprocess.run([str(python), '-I', '-c', 'import sys; print(sys.prefix)'],
                             cwd=home, capture_output=True, text=True, check=True, timeout=30)
     assert Path(result.stdout.strip()).resolve() == environment.resolve()
+    # Removing pyvenv.cfg makes venv_is_current() report False, and sync must
+    # then REBUILD the generation rather than fail: pm.sync_venv's contract is
+    # "make the venv match uv.lock", so self-healing is the correct outcome.
+    # (This previously asserted 'failed'; PM repaired the marker instead.)
     marker = environment / 'pyvenv.cfg'
     marker_bytes = marker.read_bytes()
     marker.unlink()
-    failure = venv_sync.sync(core)
-    assert failure['state'] == 'failed'
-    assert 'dependency environment is missing' in failure['detail']
+    repaired = venv_sync.sync(core)
+    assert repaired['ok'] is True
+    # The generation is rebuilt from the lock; whichever generation PM selects
+    # afterwards must be a usable venv (a real pyvenv.cfg on disk).
+    healed = selected_venv(core)
+    assert (healed / 'pyvenv.cfg').is_file(), f'selected venv is not usable: {healed}'
     marker.write_bytes(marker_bytes)
     assert venv_sync.sync(core) == {'state': 'current', 'ok': True}
     assert not (core / ".kova-runtime" / "cache" / "venv-sync.json").exists()

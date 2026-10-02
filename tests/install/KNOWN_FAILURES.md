@@ -37,6 +37,81 @@ These script installs have no staged updater. The released Electron code (`apps/
 
 Evidence required: an app-update leg from this released commit and those explicit manual-update log entries. A hand-off timeout without the manual message is not this limitation. Desktop-installer installs have a different staged-updater path and are not covered by this classification.
 
+## v1.0.0 ships a lock that contradicts its own manifest
+
+Classification: **unfixable in the update target; the release itself is
+defective, and no later commit can change a published tag.**
+
+Every leg that installs from `v1.0.0` fails while resolving dependencies:
+
+```
+error: Since the package `kittentts==0.8.1 @ direct+https://github.com/
+KittenML/KittenTTS/...` comes from a direct dependency, a hash was expected
+but one was not found for wheel
+```
+
+`kittentts` is a red herring. The entire `uv.lock` differs from `main`'s by one
+line -- the project's own recorded version:
+
+```
+-name = "kova-agent"    -version = "0.0.0"     v1.0.0
++name = "kova-agent"    +version = "1.0.0"     main
+```
+
+`v1.0.0`'s `pyproject.toml` already declared `1.0.0`; only the lock was stale.
+`b4e0ac2715` ("refresh uv.lock for the 1.0.0 version reset") corrected exactly
+that one line, one commit after the tag -- but no CI job runs `uv lock --check`,
+so the tag shipped the inconsistency and only a dispatched release workflow
+found it.
+
+Isolating the single line proves causation, and the failure is deterministic:
+
+| Tree | Command | Result |
+|---|---|---|
+| `v1.0.0` | `uv lock --check` | exit 2 |
+| `v1.0.0` with `0.0.0` -> `1.0.0` | `uv lock --check` | exit 0 |
+| `v1.0.0` with that one-line fix | `uv sync --locked --extra all` | exit 0 |
+
+Every dependency pin involved (`spacy` 3.8.16, `murmurhash` 1.0.15, `thinc`
+8.3.13, `confection`, `cymem`, `preshed`) matches current PyPI, so this is not
+upstream drift.
+
+`tests/scripts/test_uv_lock_matches_pyproject.py` now compares the project's
+name and version in `uv.lock` against `pyproject.toml`, so the next release
+cannot ship this way. It cannot repair this one.
+
+## v1.0.0 pins an ffmpeg build that upstream deleted
+
+Classification: **unfixable in the update target; the referenced artifact no
+longer exists.**
+
+The install leg fails at the pinned dependency stage:
+
+```
+[+] xx:xx  ffmpeg: install failed: download failed from
+  https://github.com/BtbN/FFmpeg-Builds/releases/download/
+  autobuild-2026-09-10-15-31/ffmpeg-n9.0.1-27-g9b0578816c-linux64-gpl-9.0.tar.xz:
+  HTTP Error 404: Not Found
+```
+
+BtbN-FFmpeg-Builds keeps only recent autobuilds and prunes older ones. That
+release tag is gone from the API, not merely renamed:
+
+```
+GET /repos/BtbN/FFmpeg-Builds/releases/tags/autobuild-2026-09-10-15-31  -> 404
+```
+
+`main` already pins a live build (`autobuild-2026-09-29-13-10`,
+`ffmpeg-n9.0.2-14-gebafaee10a-linux64-gpl-9.0.tar.xz`, HTTP 200, asset present on
+the tag), which is why the `HEAD -> NEXT` leg passes and only `v1.0.0 -> HEAD`
+fails.
+
+Neither leg can be repaired by changing the update target: the failing bytes are
+the ones `v1.0.0` ships. Both clear once a new release is published, because the
+E2E samples the newest tag. Do not add these to `known-failures.json` -- that
+file classifies *updater* defects reachable from a later commit, and these are
+release-artifact losses that a green rerun supersedes.
+
 ## Not classified as unfixable
 
 The July desktop-installer → app-update failure was a driver lifetime bug, not a released-updater exception. The driver treated an expected page closure as failure and could exit before Playwright released its launch process. On Windows, inherited pipes delayed the `close` event even after the launch process exited with code 0. Playwright then ran its tree-kill cleanup. The driver now waits independently of the closing page, releases its pipe handles after process exit, and waits for `close` before it exits. [The real July rerun](https://github.com/ethernet8023/kova-agent/actions/runs/34075042380/job/101599434616) reached the target commit, cleared the update marker, passed the CLI check, and relaunched the app.

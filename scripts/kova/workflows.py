@@ -73,7 +73,7 @@ def main():
     for name in files:
         path = os.path.join(WF, name)
         try:
-            with open(path, encoding="utf-8") as handle:
+            with open(path, encoding="utf-8-sig") as handle:
                 doc = yaml.load(handle, Loader=StrictLoader)
         except Exception as error:  # noqa: BLE001 - report, do not raise
             broken.append("%s does not parse: %s" % (name, str(error).split("\n")[0]))

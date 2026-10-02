@@ -375,7 +375,7 @@ def main() -> int:
     }
     for filename, text in written.items():
         path = OUT / filename
-        if not path.is_file() or path.read_text(encoding="utf-8") != text:
+        if not path.is_file() or path.read_text(encoding="utf-8-sig") != text:
             path.write_text(text, encoding="utf-8")
             print(f"wrote {path.relative_to(ROOT)}")
         else:

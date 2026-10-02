@@ -109,7 +109,11 @@ function channelRecord(channel: 'stable' | 'canary', sequence: number): FixtureR
   return {
     schema: 1,
     name: channel,
-    repository: 'kova-agent',
+    // owner/repository, not a bare project name: release_channels.validate_repository
+    // rejects 'kova-agent', and the resolved install names the full pair.
+    // Must equal the repository the INSTALL resolves (a local-path origin falls back to
+    // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
+    repository: 'chiragborse1/kova-test',
     policy: channel === 'stable' ? 'stable-release' : 'canary-release',
     state: 'active',
     revision: 1,
@@ -159,7 +163,11 @@ function buildManifest(
       schema: 1,
       buildId: id,
       channel,
-      repository: 'kova-agent',
+      // owner/repository, not a bare project name: release_channels.validate_repository
+    // rejects 'kova-agent', and the resolved install names the full pair.
+    // Must equal the repository the INSTALL resolves (a local-path origin falls back to
+    // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
+    repository: 'chiragborse1/kova-test',
       commit: sha,
       sourceVersion: tag.replace(/^v/, '').split('+')[0],
       releaseTag: tag,
@@ -168,7 +176,7 @@ function buildManifest(
       windowsVersion: `0.0.${sequence}.0`,
       identity,
       bundleEnv: {},
-      publicBase: 'https://kova-assets.nousresearch.com'
+      publicBase: 'https://assets.neuralstudio.in'
     },
     packages: [
       {
@@ -272,7 +280,11 @@ it('carries each install channel from Python publication checks into the source 
       JSON.stringify({
         schema: 1,
         name: 'main',
-        repository: 'kova-agent',
+        // owner/repository, not a bare project name: release_channels.validate_repository
+    // rejects 'kova-agent', and the resolved install names the full pair.
+    // Must equal the repository the INSTALL resolves (a local-path origin falls back to
+    // OFFICIAL_REPOSITORY), or the reader reports an authority mismatch.
+    repository: 'chiragborse1/kova-test',
         policy: 'source-branch',
         state: 'active',
         revision: 1,
@@ -304,7 +316,7 @@ original_build = urllib.request.build_opener
 passthrough = original_build().open
 def local(request, *args, **kwargs):
     parsed = urlsplit(request.full_url if isinstance(request, urllib.request.Request) else request)
-    assert parsed.hostname in ('kova-assets.nousresearch.com', 'api.github.com')
+    assert parsed.hostname in ('assets.neuralstudio.in', 'api.github.com')
     url = 'http://127.0.0.1:${address.port}' + parsed.path + ('?' + parsed.query if parsed.query else '')
     # ChannelReader compares response.geturl() against the ORIGINAL request url:
     # wrap so the redirect detector still sees the un-rewritten authority.

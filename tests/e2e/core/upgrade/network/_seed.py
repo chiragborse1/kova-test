@@ -35,8 +35,24 @@ from tests.e2e.core.upgrade import _helpers as H
 from tests.e2e.core.upgrade import _install_helpers as I
 from tests.e2e.core.upgrade.network import _netedge as N
 
-ASSETS = "kova-assets.nousresearch.com"
-REPOSITORY = "kova-agent"
+# The release-channel origin the PRODUCT reads, imported rather than restated:
+# this file seeded a hardcoded "kova-assets.nousresearch.com", which is NXDOMAIN,
+# so the proxy routed a host nothing ever asks for while refusing the real
+# one -- every update in this suite failed with "Channel read unavailable".
+from kova_cli.source_releases import (
+    OFFICIAL_REPOSITORY,
+    _public_base as _product_public_base,
+)
+from urllib.parse import urlsplit
+
+ASSETS = urlsplit(_product_public_base()).hostname or ""
+# The rebrand moved the project from the invented "OpenKova/kova-agent" to
+# chiragborse1/kova-test, which is what the updater now fetches from. Both the
+# git smart-HTTP route below and the channel records have to name the SAME
+# repository the product resolves, or every cell fails at its first fetch:
+# "fatal: repository ... not found" / "Channel repository authority mismatch".
+REPOSITORY = OFFICIAL_REPOSITORY
+OWNER, _NAME = REPOSITORY.split("/", 1)
 # Hosts a correctly isolated update must never reach directly; with the proxy they appear in
 # the proxy log as "refused" (the proxy has no route for them).
 PUBLIC_INDEXES = ("pypi.org", "files.pythonhosted.org", "registry.npmjs.org")
@@ -200,8 +216,10 @@ def seed_install(root: Path) -> Installed:
     # From here on the checkout talks to the official URL, which only the proxy can serve.
     (sb.home / ".gitconfig").write_text("", encoding="utf-8")
     gitroot = root / "gitroot"
-    (gitroot / "OpenKova").mkdir(parents=True, exist_ok=True)
-    (gitroot / "OpenKova" / "kova-agent.git").symlink_to(origin)
+    # git_app maps /<Owner>/<repo>.git/... onto <gitroot>/<Owner>/<repo>.git, so
+    # the directory name must be the authority the product actually requests.
+    (gitroot / OWNER).mkdir(parents=True, exist_ok=True)
+    (gitroot / OWNER / f"{_NAME}.git").symlink_to(origin)
     ca = N.TestCA(root / "corporate-ca")
     inst = Installed(root, sb, origin, gitroot, ca, ca.os_trust_store(root / "corporate-ca" / "etc-ssl-certs"))
     assert_isolated(inst)
@@ -210,10 +228,12 @@ def seed_install(root: Path) -> Installed:
 
 def assert_isolated(inst: Installed) -> None:
     """The namespace has no route out and no DNS; only the bridged proxy port answers."""
+    # The isolated namespace must not resolve ANY host the product could reach,
+    # so probe the live channel origin (ASSETS), not a name nothing uses.
     probe = (
         "import socket,sys\n"
         "bad=[]\n"
-        "for host in ('github.com','pypi.org','kova-assets.nousresearch.com'):\n"
+        f"for host in ('github.com','pypi.org',{ASSETS!r}):\n"
         "    try: socket.getaddrinfo(host,443); bad.append('dns:'+host)\n"
         "    except OSError: pass\n"
         "for ip in ('140.82.112.3','1.1.1.1'):\n"
@@ -231,7 +251,7 @@ def assert_isolated(inst: Installed) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Release-channel records (the R2 objects under https://kova-assets.nousresearch.com/).
+# Release-channel records (the R2 objects under the public channel origin).
 # ---------------------------------------------------------------------------
 
 def canonical(value: object) -> bytes:

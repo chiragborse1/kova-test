@@ -100,8 +100,11 @@ def canary(tmp_path, r2_server, monkeypatch):
     base = f"http://127.0.0.1:{r2_server.server_port}/kova-releases"
     env = {**os.environ, "PATH": str(tools) + os.pathsep + os.environ["PATH"],
            "FIXTURE_RELEASE": str(release_state), "FIXTURE_WINDOWS_VERSION": windows_version, "GITHUB_ACTIONS": "true",
-           "GITHUB_EVENT_NAME": "workflow_dispatch", "GITHUB_REPOSITORY": "kova-agent",
-           "GITHUB_WORKFLOW_REF": "kova-agent/.github/workflows/desktop-bundled-release.yml@refs/heads/main",
+           # owner/repository: release_channels.validate_repository rejects the bare
+           # "kova-agent" the rebrand left here, and channel_releases.admit_transaction calls it
+           # on GITHUB_REPOSITORY, so the fixture aborted before publishing anything.
+           "GITHUB_EVENT_NAME": "workflow_dispatch", "GITHUB_REPOSITORY": "kova-agent/kova-agent",
+           "GITHUB_WORKFLOW_REF": "kova-agent/kova-agent/.github/workflows/desktop-bundled-release.yml@refs/heads/main",
            "RELEASE_TAG": tag, "TAG": tag, "KOVA_PAYLOAD_TAG": tag,
            "RELEASE_TAG_OBJECT": tag_object,
            "RELEASE_COMMIT": commit, "RELEASE_PHASE": "", "KOVA_DESKTOP_VARIANT": "bundled",

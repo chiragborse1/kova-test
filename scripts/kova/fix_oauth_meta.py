@@ -1,6 +1,6 @@
 ﻿import json, pathlib
 p = pathlib.Path("website/static/oauth/client-metadata.json")
-d = json.loads(p.read_text(encoding="utf-8"))
+d = json.loads(p.read_text(encoding="utf-8-sig"))
 # client_id and logo_uri are the OAuth client's identity. They must resolve to
 # a document that actually exists, or the dynamic-client-registration flow the
 # app performs cannot complete. The rebrand pointed them at an invented
