@@ -88,6 +88,27 @@ jobs:
           test-environment: 'true'
           prune-python-cache: true
 
+      - name: Restore per-file duration cache
+        # run_tests_parallel.py raises a file's cap to 3x its last healthy
+        # duration (_effective_file_timeout) so a known-slow file dilated by
+        # runner load is not SIGKILL'd at the flat 300s and then laundered into a
+        # FLAKY retry. It reads test_durations.json, which this lane never
+        # restored -- so the scaler was inert here and
+        # tests/pm/test_windows_build_deps.py (301s observed, the slowest file in
+        # the lane) was killed at the cap, failing a job whose own tally read
+        # '177 files, 479 tests passed, 0 failed'.
+        #
+        # Scoped by runner.arch, and deliberately NOT sharing tests.yml's
+        # 'test-durations-' prefix: a Windows file's runtime says nothing about
+        # a Linux one, and the Linux cache holds ~850 entries this lane must not
+        # read as if they were its own.
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: test_durations.json
+          key: test-durations-os-${{ matrix.marker }}-${{ runner.arch }}-never-exact
+          restore-keys: |
+            test-durations-os-${{ matrix.marker }}-${{ runner.arch }}-
+
       - name: Run ${{ matrix.marker }} tests
         # scripts/run_tests.sh — the canonical runner, same as every other
         # lane: per-file subprocess isolation (run_tests_parallel.py). It
@@ -166,6 +187,17 @@ jobs:
           OPENROUTER_API_KEY: ''
           OPENAI_API_KEY: ''
           NOUS_API_KEY: ''
+
+      - name: Save per-file duration cache (main only)
+        # Without this the restore above can never bootstrap: 'Cache not found
+        # for input keys: test-durations-os-...' on every run, forever. Only
+        # green first-attempt durations are written by the runner, so a hang on
+        # main cannot ratchet its own bound upward.
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.marker == 'windows' && hashFiles('test_durations.json') != ''
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: test_durations.json
+          key: test-durations-os-windows-${{ runner.arch }}-${{ github.run_id }}
 
   install-update-e2e:
     # The real scripts/install.ps1 -> `kova update` HEAD -> NEXT journey on a real Windows
