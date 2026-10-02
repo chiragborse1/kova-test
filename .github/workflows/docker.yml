@@ -158,7 +158,13 @@ jobs:
             platform: linux/arm64
 
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 45
+    # The arm64 row runs on an amd64 host (no paid larger arm64 runner quota
+    # here), so its smoke tests execute under qemu. That is roughly an order
+    # of magnitude slower than native, and 45 min was not enough -- the first
+    # qemu run was cancelled at 46 min inside 'Run docker integration tests'
+    # after the image itself had built and every setup step had passed. Only
+    # the emulated row needs the longer budget; amd64 keeps the fast-fail one.
+    timeout-minutes: ${{ matrix.arch == 'arm64' && 180 || 45 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
