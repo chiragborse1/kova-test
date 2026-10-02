@@ -70,7 +70,14 @@ jobs:
           KOVA_E2E_ARTIFACTS: ${{ runner.temp }}\win-update-e2e
           # One journey per file, all in parallel (each is mostly network + subprocess wait).
           KOVA_TEST_WORKERS: '6'
-          KOVA_TEST_FILE_TIMEOUT: '2400'
+          # Must exceed INSTALL_TIMEOUT (3600s) plus the longest journey that
+          # follows it (UPDATE_TIMEOUT, 1200s): a file that owns an install and
+          # then runs journeys cannot be capped below their sum. At 2400s the
+          # cap fired first and killed a file mid-install:
+          #   (2400s exceeded; process tree SIGKILL'd)
+          #   6 files, 0 tests passed, 0 failed
+          # which the runner correctly refuses to call a pass.
+          KOVA_TEST_FILE_TIMEOUT: '5400'
           KOVA_TEST_FILE_RETRIES: '0'
           OPENROUTER_API_KEY: ''
           OPENAI_API_KEY: ''
