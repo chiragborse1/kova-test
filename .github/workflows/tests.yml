@@ -28,14 +28,17 @@ jobs:
     # 82s). A second slice divides work that is already at that floor, and
     # adds a second setup.
     #
-    # 60 minutes, not 30: this job ran the whole ~42,000-test suite under
-    # 96 workers and was killed at the cap on three consecutive runs
-    # (aa0e67a, f1962ab, 45450cd -- each 'cancelled' at 30.8 min, which is the
-    # cap plus teardown). A cap that reliably truncates the suite reports
-    # 'cancelled', not 'passed', so it proves nothing either way; 60 leaves
-    # headroom without pretending the suite got faster.
+    # 90 minutes, measured rather than guessed. This job runs the whole
+    # ~42,470-test suite under 96 workers, and the lane prints its own
+    # progress: on run 37035400387 it read
+    #   [ 47.6% | 20201/~42470]
+    # about 30 minutes in, so completion is ~63 min plus setup and teardown.
+    # It was killed at 30, then again at 60, each time reporting
+    # 'cancelled' -- which is not a verdict about the suite at all. 90 leaves
+    # ~40% headroom, because the lane grows with every fix and a cap set at
+    # the measurement is what produced four consecutive silent runs.
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    timeout-minutes: 60
+    timeout-minutes: 90
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -140,7 +143,13 @@ jobs:
     # The core suites spawn real serve / gateway / tui_gateway / MCP / SQLite
     # writer processes per test; a 4-vCPU runner serialises them into timeouts.
     runs-on: ${{ vars.UBU_RUNNER || 'ubuntu-latest-32-core' }}
-    timeout-minutes: 30
+    # 45, not 30: on run 37035400387 this job reported
+    #   103 files, 764 tests passed, 0 failed, 15 skipped (100% complete)
+    # and was still 'cancelled' -- every test had finished and the job was
+    # killed afterwards, in teardown or reporting. At 3 workers on a 4-vCPU
+    # runner the suite is slower than the cap allows; the margin covers the
+    # tail rather than pretending it got faster.
+    timeout-minutes: 45
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
