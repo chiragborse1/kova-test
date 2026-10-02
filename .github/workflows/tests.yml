@@ -27,8 +27,15 @@ jobs:
     # 96 cores clear the floor that the slowest single test file sets (about
     # 82s). A second slice divides work that is already at that floor, and
     # adds a second setup.
+    #
+    # 60 minutes, not 30: this job ran the whole ~42,000-test suite under
+    # 96 workers and was killed at the cap on three consecutive runs
+    # (aa0e67a, f1962ab, 45450cd -- each 'cancelled' at 30.8 min, which is the
+    # cap plus teardown). A cap that reliably truncates the suite reports
+    # 'cancelled', not 'passed', so it proves nothing either way; 60 leaves
+    # headroom without pretending the suite got faster.
     runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
