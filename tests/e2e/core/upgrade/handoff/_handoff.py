@@ -196,6 +196,12 @@ def stage_n1(root: Path) -> Install:
     cp = subprocess.run([I.real_uv(), "sync", "-q", "--frozen", "--extra", "all", "--managed-python", "--python",
                          base_python], cwd=str(checkout), env=uv_env, capture_output=True, text=True, timeout=1800)
     assert cp.returncode == 0, f"N-1 venv install from its uv.lock failed:\n{cp.stderr[-4000:]}"
+    # This build regenerates N-1's committed `kova_agent.egg-info`, which
+    # v1.0.0 ships stale (PKG-INFO 0.0.0 against its own pyproject 1.0.0), so
+    # the checkout is left dirty and the `kova update` under test autostashes
+    # the change and conflicts against HEAD's copy. Restore N-1's bytes; the
+    # artifact is a build output and the venv keeps the installed package.
+    I.git("checkout", "--", "kova_agent.egg-info", cwd=checkout, check=False)
     local_bin = sb.home / ".local" / "bin"
     local_bin.mkdir(parents=True, exist_ok=True)
     (local_bin / "kova").symlink_to(checkout / "venv" / "bin" / "kova")

@@ -395,6 +395,13 @@ def make_leg(root: Path, template_home: Path | None) -> Leg:
                          "--python", base_python], cwd=str(install),
                         env=uv_env, capture_output=True, text=True, timeout=1800)
     assert cp.returncode == 0, f"N-1 venv install from its uv.lock failed:\n{cp.stderr[-4000:]}"
+    # This build regenerates N-1's committed `kova_agent.egg-info`, and v1.0.0
+    # ships that artifact stale (PKG-INFO says 0.0.0 while its own pyproject
+    # says 1.0.0), so the install leaves the checkout dirty. Every leg then
+    # asserts on a clean tree afterwards, and `kova update` autostashes the
+    # change and conflicts against HEAD's regenerated copy. Restore N-1's
+    # bytes: the artifact is a build output, so this costs the leg nothing.
+    _git("checkout", "--", "kova_agent.egg-info", cwd=install, check=False)
     env_probe = H.isolated_env(root)
     kova_home = Path(env_probe["KOVA_HOME"])
     if template_home is not None:
