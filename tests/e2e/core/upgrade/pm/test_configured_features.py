@@ -146,7 +146,9 @@ def migrated(tmp_path_factory, provider):
                   XDG_CONFIG_DIRS=str(no_cfg))
     uv = I.real_uv()
     assert uv is not None
-    cp = subprocess.run([uv, "sync", "-q", "--locked", "--extra", "all", "--extra", "messaging",
+    # --frozen, not --locked: same reason as test_upgrade_path.py's N-1 venv
+    # install. This harness re-syncs that same N-1 lock to add the messaging extra.
+    cp = subprocess.run([uv, "sync", "-q", "--frozen", "--extra", "all", "--extra", "messaging",
                          "--python", str(leg.install / "venv" / "bin" / "python")],
                         cwd=str(leg.install), env=uv_env, capture_output=True, text=True, timeout=1800)
     assert cp.returncode == 0, f"harness: messaging install into the N-1 venv failed:\n{cp.stderr[-4000:]}"

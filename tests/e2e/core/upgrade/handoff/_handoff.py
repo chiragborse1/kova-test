@@ -188,7 +188,12 @@ def stage_n1(root: Path) -> Install:
     no_cfg.mkdir(exist_ok=True)
     uv_env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "UV_NO_CONFIG", "UV_CONFIG_FILE")}
     uv_env.update(UV_PROJECT_ENVIRONMENT=str(checkout / "venv"), XDG_CONFIG_HOME=str(no_cfg), XDG_CONFIG_DIRS=str(no_cfg))
-    cp = subprocess.run([I.real_uv(), "sync", "-q", "--locked", "--extra", "all", "--managed-python", "--python",
+    # --frozen, not --locked, for the reason documented in
+    # test_upgrade_path.py: pm's sync() defaults to frozen=True and v1.0.0's
+    # uv.lock is legitimately stale against its own pyproject (the release commit
+    # bumped the version without re-locking). --locked re-resolves and so rejects
+    # a lock no real install ever re-resolves.
+    cp = subprocess.run([I.real_uv(), "sync", "-q", "--frozen", "--extra", "all", "--managed-python", "--python",
                          base_python], cwd=str(checkout), env=uv_env, capture_output=True, text=True, timeout=1800)
     assert cp.returncode == 0, f"N-1 venv install from its uv.lock failed:\n{cp.stderr[-4000:]}"
     local_bin = sb.home / ".local" / "bin"
