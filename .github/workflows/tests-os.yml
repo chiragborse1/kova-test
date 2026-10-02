@@ -182,6 +182,15 @@ jobs:
           # These files spawn nested PowerShell trees. CPU-count parallelism
           # starves cold child startup before the fixture's idle deadline.
           KOVA_TEST_WORKERS: ${{ matrix.marker == 'windows' && (runner.arch == 'ARM64' && '2' || '8') || '' }}
+          # The flat per-file cap is 300s, and this lane's slowest file --
+          # tests/pm/test_windows_build_deps.py, four tests that each spawn real
+          # PowerShell -- measured 303.7s on the ARM64 runner and 301s on X64,
+          # against 7.9s on an idle desktop. It is a slow runner, not a slow
+          # test, so the cap is raised for THIS lane only rather than globally:
+          # every other file in the lane finishes well inside 300s, and the
+          # adaptive 3x scaler (which reads test_durations.json) still raises
+          # any file further once this lane has a cache to learn from.
+          KOVA_TEST_FILE_TIMEOUT: ${{ matrix.marker == 'windows' && '600' || '' }}
           # Belt-and-suspenders with tests/conftest.py's env blanking: no
           # test may reach a real provider API.
           OPENROUTER_API_KEY: ''
