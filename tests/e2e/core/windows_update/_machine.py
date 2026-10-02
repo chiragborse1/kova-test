@@ -497,6 +497,15 @@ class Machine:
                 if src.is_dir():
                     shutil.copytree(src, dest / sub, dirs_exist_ok=True,
                                     ignore=shutil.ignore_patterns("*.db", "*.db-*"))
+            # npm's own debug log, when a `npm ci` inside the install did not
+            # finish. runNpmCi keeps its logs dir on failure (1afc13dac0), but
+            # that dir is under the fake profile's %TEMP%, and the workflow
+            # uploads only ${{ runner.temp }}/win-update-e2e -- so the log
+            # survives the kill and is never collected. Without this, a stalled
+            # `Preparing Node dependencies` reports nothing but its own label.
+            for logs_dir in Path(tempfile.gettempdir()).glob("kova-npm-logs-*"):
+                if logs_dir.is_dir():
+                    shutil.copytree(logs_dir, dest / logs_dir.name, dirs_exist_ok=True),
             (dest / "evidence.txt").write_text(self.evidence(), encoding="utf-8", errors="replace")
             (dest / "timings.json").write_text(json.dumps(self.timings, indent=1), encoding="utf-8")
 
