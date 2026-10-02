@@ -67,7 +67,24 @@ from tests.fakes.fake_llm_provider import write_kova_home
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 OPT_IN_ENV = "KOVA_E2E_WINDOWS_INSTALL"
-INSTALL_TIMEOUT = 1500.0
+# One install.ps1 run pulls ~500 MB of managed tools (ffmpeg alone is 185 MiB,
+# agent-browser another 204 MiB) before it builds anything, so the wall clock is
+# dominated by the runner's network, not by the work. At 1500s the current
+# runner reaches 'Installing Python dependencies' at 1390s and is killed with
+# ~110s left, having published no kova.exe -- which is what every cell in the
+# suite then reports as 'journey step ... never ran'. The job itself is allowed
+# 50 minutes and a typical full run is ~17, so there is room to give the install
+# itself what a slow runner needs; UPDATE_TIMEOUT is left alone because the
+# update path does no tool downloads.
+# One install.ps1 run pulls ~500 MB of managed tools (ffmpeg alone is 185 MiB,
+# agent-browser another 204 MiB) before it builds anything, so the wall clock is
+# the runner's network, not the work. At 1500s the current runner reached
+# 'OK Installing Python dependencies' at 1390s and was killed with ~110s left,
+# having published no kova.exe -- which is what all 18 cells then reported as
+# 'journey step ... never ran'. 2100s leaves ~12 min of headroom over the
+# observed 1390s while leaving room in the 60-minute job for the other cells.
+# UPDATE_TIMEOUT is untouched: the update path downloads no tools.
+INSTALL_TIMEOUT = 2100.0
 UPDATE_TIMEOUT = 1200.0
 CMD_TIMEOUT = 300.0
 GATEWAY_READY_TIMEOUT = 240.0
