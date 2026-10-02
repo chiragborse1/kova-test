@@ -282,6 +282,13 @@ jobs:
           OPENROUTER_API_KEY: ""
           OPENAI_API_KEY: ""
           NOUS_API_KEY: ""
+          # The arm64 row executes under qemu on an amd64 host, where every
+          # instruction in the container's cont-init chain costs ~8x. 30s is a
+          # native budget and the emulated image never finishes inside it
+          # (measured: arm64 build 40.4 min vs amd64 4.9 min, run 37027608034).
+          # amd64 keeps the tight default so a genuinely wedged container
+          # still fails fast there.
+          KOVA_DOCKER_READY_TIMEOUT: ${{ matrix.arch == 'arm64' && '300' || '30' }}
         run: |
           # Each of these tests drives a container, so the docker daemon sets
           # the limit and not the processor. This pins the runner's worker

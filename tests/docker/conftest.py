@@ -21,6 +21,18 @@ import pytest
 
 IMAGE_TAG = os.environ.get("KOVA_TEST_IMAGE", "kova-agent-harness:latest")
 
+# Readiness deadlines. A container's cont-init chain (UID remap, chown, config
+# seeding, skills sync, browser discovery, config migration) is a fixed amount
+# of work, but a fixed amount of work is measured in instructions -- and an
+# arm64 image on an amd64 host runs every one of them through qemu at roughly
+# 8x the cost. Measured on run 37027608034: the arm64 build took 40.4 min against
+# amd64's 4.9. So 30s fits a native runner and cannot fit an emulated one; the
+# first qemu run failed every readiness check with
+#   TimeoutError: container ... did not finish cont-init within 30.0s
+# and said nothing at all about the image. Overridable so the docker workflow
+# can raise it for the emulated row only; amd64 keeps the tight default.
+CONTAINER_READY_TIMEOUT_S = float(os.environ.get("KOVA_DOCKER_READY_TIMEOUT", "30"))
+
 
 def _docker_available() -> bool:
     """Return True iff a docker CLI is on PATH and the daemon answers."""
@@ -138,7 +150,7 @@ def docker_exec_sh(
 def wait_for_container_ready(
     container: str,
     *,
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.25,
 ) -> None:
     """Poll until the container has finished s6 cont-init (stage2 + reconcile).
@@ -154,7 +166,9 @@ def wait_for_container_ready(
     better than a fixed ``time.sleep()`` that either wastes time on fast
     machines or flakes on slow ones.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     while time.monotonic() < end:
         r = docker_exec(
             container,
@@ -225,7 +239,7 @@ def poll_container(
     container: str,
     probe: str,
     *,
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.5,
     user: str = "kova",
 ) -> tuple[bool, str]:
@@ -235,7 +249,9 @@ def poll_container(
     Returns ``(success, last_stdout)``. Useful for waiting on a process
     to appear, a port to open, a file to contain a string, etc.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
         r = docker_exec_sh(container, probe, user=user, timeout=10)
@@ -251,7 +267,7 @@ def wait_for_path(
     path: str,
     *,
     kind: str = "f",
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.25,
 ) -> bool:
     """Poll ``test -<kind> <path>`` inside the container until success or timeout.
@@ -270,14 +286,16 @@ def wait_for_log(
     log_path: str,
     needle: str,
     *,
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.25,
 ) -> str:
     """Poll until a log file inside the container contains ``needle``.
 
     Returns the full log on success.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
         r = docker_exec_sh(
@@ -299,7 +317,9 @@ def wait_for_docker_logs(
 
     Returns the full docker logs on success.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
         r = subprocess.run(
