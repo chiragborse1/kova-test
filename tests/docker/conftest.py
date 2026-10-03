@@ -168,7 +168,11 @@ def wait_for_container_ready(
     """
     # None means the configured default, so a caller that passes nothing gets
     # the environment's budget rather than a hardcoded one.
-    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
+    # Name the budget that was actually used. Printing the raw `deadline_s`
+    # printed "within Nones" for every caller that relies on the default, which
+    # hid the very number anyone needs when an emulated (qemu) row times out.
+    budget = CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s
+    end = time.monotonic() + budget
     while time.monotonic() < end:
         r = docker_exec(
             container,
@@ -179,8 +183,28 @@ def wait_for_container_ready(
         if r.returncode == 0 and "profile=default" in r.stdout:
             return
         time.sleep(interval_s)
+    # Two sources, and they must not be confused: the container's own boot log
+    # from INSIDE it, and the daemon's view of the container from the runner.
+    # An earlier version chained them with `||`, so when the boot log was absent
+    # the in-container `docker logs` ran - there is no docker CLI or socket
+    # inside the image, so it printed "Cannot connect to the Docker daemon at
+    # unix:///var/run/docker.sock", which reads like the runner had lost its
+    # daemon when it had not. Read them separately and label each.
+    parts = []
+    boot = docker_exec(
+        container, "sh", "-c", "cat /opt/data/logs/container-boot.log 2>/dev/null", timeout=10)
+    if (boot.stdout or "").strip():
+        parts.append("container boot log:\n" + boot.stdout.strip()[-1500:])
+    runner_logs = subprocess.run(
+        ["docker", "logs", "--tail", "50", container],
+        capture_output=True, text=True, timeout=30)
+    host_out = (runner_logs.stdout or runner_logs.stderr or "").strip()
+    if host_out:
+        parts.append("docker logs (runner):\n" + host_out[-1500:])
+    detail = "\n".join(parts)
     raise TimeoutError(
-        f"container {container} did not finish cont-init within {deadline_s}s"
+        f"container {container} did not finish cont-init within {budget}s"
+        + (f"\ncontainer output:\n{detail}" if detail else "")
     )
 
 
@@ -208,7 +232,16 @@ def start_container(
     for e in env:
         args.extend(["-e", e])
     args.extend([image, *cmd.split()])
-    subprocess.run(args, check=True, capture_output=True, timeout=timeout)
+    # `check=True` alone raises CalledProcessError with only the exit status.
+    # Docker puts the reason on stderr - "no matching manifest", "exec format
+    # error", "cannot connect to the daemon" - and losing it is what made the
+    # arm64 rows report a bare `exit status 125` with nothing to act on.
+    result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+    if result.returncode:
+        raise RuntimeError(
+            f"docker run failed for {name} (exit {result.returncode}):\n"
+            f"{(result.stderr or result.stdout or '<no output>')[-2000:]}"
+        )
     wait_for_container_ready(name)
     return name
 
