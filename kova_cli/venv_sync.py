@@ -189,8 +189,22 @@ def refuse_foreign_owned_venv(project_root: Path) -> None:
     # A root-run update on a user's checkout is not safe even if a fresh
     # generation would be allocated: it publishes root-owned state for them.
     from pm.environments import selected_venv
-    candidates = [root, root / "venv", root / ".venv", root / ".kova", selected_venv(root)]
-    for venv in (root / "venv", root / ".venv", candidates[-1]):
+    # A selection that cannot be read is a venv PM is about to rebuild, not
+    # foreign-owned state: `selected_venv` raises when the recorded generation
+    # has no pyvenv.cfg, which is exactly the half-written venv this sync
+    # exists to repair. Refusing there turned self-healing into a hard failure
+    # (venv_sync_currency::test_own_tree_sync_... expected 'ok' and got
+    # "dependency environment is missing or outside this install"). Only a
+    # *resolvable* selection can be foreign-owned, so fall back to the paths
+    # that do not depend on one.
+    try:
+        selected = selected_venv(root)
+    except (OSError, RuntimeError, ValueError):
+        selected = None
+    candidates = [root, root / "venv", root / ".venv", root / ".kova"]
+    if selected is not None:
+        candidates.append(selected)
+    for venv in (root / "venv", root / ".venv", *( [selected] if selected is not None else [] )):
         for directory in (venv / ("Scripts" if os.name == "nt" else "bin"),
                           *venv.glob("lib/python*/site-packages")):
             if directory.is_dir():
