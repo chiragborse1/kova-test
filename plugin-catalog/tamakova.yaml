@@ -1,6 +1,6 @@
 name: tamahermes
 repo: https://github.com/ahrazzle/TamaHermes
-subdir: plugins/TamaHermes
+subdir: plugins/tamahermes
 sha: d25f76fdf5d8032910ffbe1dca3ba00bf442061f
 description: >-
   Grow a local TamaHermes pet from real Kova agent activity. Disclosure — hooks write a pet
