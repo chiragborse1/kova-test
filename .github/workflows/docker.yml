@@ -43,6 +43,13 @@ on:
       manifest-digest:
         description: "Immutable digest of the published versioned multi-arch manifest."
         value: ${{ jobs.release-publish-manifest.outputs.digest }}
+    secrets:
+      DOCKERHUB_USERNAME:
+        description: Release credential for docker.yml
+        required: false
+      DOCKERHUB_TOKEN:
+        description: Release credential for docker.yml
+        required: false
 
 permissions:
   contents: read

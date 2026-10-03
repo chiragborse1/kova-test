@@ -22,6 +22,16 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID:
+        description: Release credential for termux-verify.yml
+        required: false
+      CLOUDFLARE_R2_ACCOUNT_ID:
+        description: Release credential for termux-verify.yml
+        required: false
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY:
+        description: Release credential for termux-verify.yml
+        required: false
 
 permissions:
   contents: read
