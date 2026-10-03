@@ -222,7 +222,7 @@ class TestStartRun:
                     "/v1/runs",
                     data="{this body must never be parsed",
                     headers={
-                        "Authorization": "KovaRoom invalid-token",
+                        "Authorization": "hermesroom invalid-token",
                         "Content-Type": "application/json",
                     },
                 )
@@ -2084,7 +2084,7 @@ class TestHostedRoomRuns:
             refreshed = await cli.post(
                 "/v1/room-members/grants/refresh",
                 json={"ttl_seconds": 300},
-                headers={"Authorization": f"KovaRoom {old_grant}"},
+                headers={"Authorization": f"hermesroom {old_grant}"},
             )
             body = await refreshed.json()
         assert refreshed.status == 200
@@ -2131,7 +2131,7 @@ class TestHostedRoomRuns:
             status_refresh = await cli.post(
                 "/v1/room-members/grants/refresh",
                 json={"ttl_seconds": 300},
-                headers={"Authorization": f"KovaRoom {status_only}"},
+                headers={"Authorization": f"hermesroom {status_only}"},
             )
             status_refresh_body = await status_refresh.json()
         assert status_refresh.status == 401
@@ -2156,7 +2156,7 @@ class TestHostedRoomRuns:
             denied = await cli.post(
                 "/v1/room-members/grants/refresh",
                 json={},
-                headers={"Authorization": f"KovaRoom {fully_expired}"},
+                headers={"Authorization": f"hermesroom {fully_expired}"},
             )
             denied_body = await denied.json()
         assert denied.status == 401
@@ -2207,7 +2207,7 @@ class TestHostedRoomRuns:
             refused = await cli.post(
                 "/v1/room-members/grants/refresh",
                 json={"ttl_seconds": 300},
-                headers={"Authorization": f"KovaRoom {drifted}"},
+                headers={"Authorization": f"hermesroom {drifted}"},
             )
             refused_body = await refused.json()
         assert refused.status == 403
@@ -2240,7 +2240,7 @@ class TestHostedRoomRuns:
             denied = await cli.post(
                 "/v1/room-members/grants/refresh",
                 json={},
-                headers={"Authorization": f"KovaRoom {revoked}"},
+                headers={"Authorization": f"hermesroom {revoked}"},
             )
             denied_body = await denied.json()
         assert denied.status == 401
@@ -2293,7 +2293,7 @@ class TestHostedRoomRuns:
 
         def request(token):
             return SimpleNamespace(
-                headers={"Authorization": f"KovaRoom {token}"},
+                headers={"Authorization": f"hermesroom {token}"},
                 method="POST",
                 path="/v1/runs",
             )
@@ -2337,22 +2337,22 @@ class TestHostedRoomRuns:
             first = await cli.post(
                 "/v1/room-members/grants/revoke",
                 json={},
-                headers={"Authorization": f"KovaRoom {old_grant}"},
+                headers={"Authorization": f"hermesroom {old_grant}"},
             )
             repeated = await cli.post(
                 "/v1/room-members/grants/revoke",
                 json={},
-                headers={"Authorization": f"KovaRoom {old_grant}"},
+                headers={"Authorization": f"hermesroom {old_grant}"},
             )
             denied = await cli.get(
                 "/v1/room-members/capabilities",
-                headers={"Authorization": f"KovaRoom {old_grant}"},
+                headers={"Authorization": f"hermesroom {old_grant}"},
             )
             denied_run = await cli.post(
                 "/v1/runs",
                 data="{never parsed",
                 headers={
-                    "Authorization": f"KovaRoom {old_grant}",
+                    "Authorization": f"hermesroom {old_grant}",
                     "Content-Type": "application/json",
                 },
             )
@@ -2380,7 +2380,7 @@ class TestHostedRoomRuns:
             )
             repaired = await cli.get(
                 "/v1/room-members/capabilities",
-                headers={"Authorization": f"KovaRoom {future_grant}"},
+                headers={"Authorization": f"hermesroom {future_grant}"},
             )
         assert first.status == repeated.status == 200
         assert denied.status == 403
@@ -2425,7 +2425,7 @@ class TestHostedRoomRuns:
                 method,
                 f"/v1/runs/run_ownerless{suffix}",
                 json={} if method == "POST" else None,
-                headers={"Authorization": f"KovaRoom {grant}"},
+                headers={"Authorization": f"hermesroom {grant}"},
             )
         assert response.status == 404
 
@@ -2458,7 +2458,7 @@ class TestHostedRoomRuns:
             catalog = invitation_body["catalog"]
             probe = await cli.get(
                 "/v1/room-members/capabilities",
-                headers={"Authorization": f"KovaRoom {grant}"},
+                headers={"Authorization": f"hermesroom {grant}"},
             )
             probe_body = await probe.json()
             assert probe.status == 200
@@ -2498,7 +2498,7 @@ class TestHostedRoomRuns:
                     "/v1/runs",
                     json={"input": prompt, "hosted_room_dispatch": dispatch},
                     headers={
-                        "Authorization": f"KovaRoom {grant}",
+                        "Authorization": f"hermesroom {grant}",
                         "Idempotency-Key": "room:task-room-1:1",
                     },
                 )
@@ -2508,7 +2508,7 @@ class TestHostedRoomRuns:
                 for _ in range(40):
                     status = await cli.get(
                         f"/v1/runs/{run_id}",
-                        headers={"Authorization": f"KovaRoom {grant}"},
+                        headers={"Authorization": f"hermesroom {grant}"},
                     )
                     status_body = await status.json()
                     if status_body.get("status") == "completed":
@@ -2572,7 +2572,7 @@ class TestHostedRoomRuns:
                     "/v1/runs",
                     json={"input": prompt, "hosted_room_dispatch": dispatch},
                     headers={
-                        "Authorization": f"KovaRoom {invitation_body['grant']}",
+                        "Authorization": f"hermesroom {invitation_body['grant']}",
                         "Idempotency-Key": "room:task-room-1:1",
                     },
                 )
