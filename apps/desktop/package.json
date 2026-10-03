@@ -2,7 +2,7 @@
   "name": "kova",
   "productName": "Kova",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Native desktop shell for Kova Agent.",
   "author": "Nous Research",
   "repository": {
