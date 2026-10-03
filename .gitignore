@@ -108,6 +108,11 @@ apps/desktop/electron/**/*.d.ts
 !apps/desktop/src/vite-env.d.ts
 
 # Build/debug artifacts that must never be committed
+# .shots/ is 96 local UI screenshots (14 MB) from ad-hoc visual checks. Untracked,
+# it makes `git status --porcelain` non-empty, and kova_cli/source_check.py:232 reads
+# that as dirty - so the desktop app reports "Could not resolve the main source
+# channel" for a checkout whose only change is a developer's screenshots.
+/.shots/
 /log.txt
 /sqlite_leak_fix.png
 /*.png.bak
