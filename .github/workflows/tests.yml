@@ -42,6 +42,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # tests/scripts/test_pick_release_tags.py runs the real picker against this
+          # repo and asserts its own v1.0.0 is seen. Without tags the checkout is
+          # shallow and the picker aborts with "no release tags found" - the script
+          # says so in its own error text. Tags only, not full history: the lane
+          # needs the release list, not every commit.
+          fetch-tags: true
 
       - name: Install ripgrep (prebuilt binary)
         run: |
