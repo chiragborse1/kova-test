@@ -76,6 +76,9 @@ jobs:
     if: >-
       !cancelled() && needs.admit.result == 'success'
     uses: ./.github/workflows/docker.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       release-phase: test
       skip-tests: ${{ needs.admit.outputs.skip-tests == 'true' }}
@@ -109,6 +112,10 @@ jobs:
       contents: read
       actions: read
     uses: ./.github/workflows/termux-verify.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
     with:
       release: true
 
@@ -145,6 +152,15 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+      CSC_LINK: ${{ secrets.CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}
@@ -165,6 +181,15 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+      CSC_LINK: ${{ secrets.CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}
@@ -185,6 +210,10 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}
@@ -205,6 +234,10 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}
@@ -227,6 +260,10 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}
@@ -247,6 +284,12 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+      TERMUX_APT_GPG_KEY: ${{ secrets.TERMUX_APT_GPG_KEY }}
+      TERMUX_APT_GPG_PASSPHRASE: ${{ secrets.TERMUX_APT_GPG_PASSPHRASE }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}
@@ -523,6 +566,9 @@ jobs:
     # stable/latest aliases move in the ordered publication pass.
     needs: [admit, docker]
     uses: ./.github/workflows/docker.yml
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
     with:
       release-phase: publish
       tag: ${{ needs.admit.outputs.tag }}
@@ -538,6 +584,21 @@ jobs:
       packages: write
       id-token: write
     uses: ./.github/workflows/desktop-bundled-release.yml
+    secrets:
+      CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+      CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+      CSC_LINK: ${{ secrets.CSC_LINK }}
+      CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+      APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+      APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+      APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+      TERMUX_APT_GPG_KEY: ${{ secrets.TERMUX_APT_GPG_KEY }}
+      TERMUX_APT_GPG_PASSPHRASE: ${{ secrets.TERMUX_APT_GPG_PASSPHRASE }}
+      MS_STORE_CLIENT_ID: ${{ secrets.MS_STORE_CLIENT_ID }}
+      MS_STORE_CLIENT_SECRET: ${{ secrets.MS_STORE_CLIENT_SECRET }}
+      MS_STORE_SELLER_ID: ${{ secrets.MS_STORE_SELLER_ID }}
+      MS_STORE_TENANT_ID: ${{ secrets.MS_STORE_TENANT_ID }}
     with:
       tag: ${{ needs.admit.outputs.tag }}
       claim-tag: ${{ needs.admit.outputs.claim-tag }}

@@ -120,6 +120,49 @@ on:
       win32-bundle-receipt-sha256:
         value: ${{ jobs.assemble-win32-bundle.outputs.receipt-sha256 }}
         description: Digest of the win32-bundle stable receipt
+    secrets:
+      APPLE_API_ISSUER:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      APPLE_API_KEY_ID:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      APPLE_API_KEY_P8:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      CLOUDFLARE_R2_ACCESS_KEY_ID:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      CLOUDFLARE_R2_ACCOUNT_ID:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      CLOUDFLARE_R2_SECRET_ACCESS_KEY:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      CSC_KEY_PASSWORD:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      CSC_LINK:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      MS_STORE_CLIENT_ID:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      MS_STORE_CLIENT_SECRET:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      MS_STORE_SELLER_ID:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      MS_STORE_TENANT_ID:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      TERMUX_APT_GPG_KEY:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
+      TERMUX_APT_GPG_PASSPHRASE:
+        description: Release credential for desktop-bundled-release.yml
+        required: false
   workflow_dispatch:
     inputs:
       tag:
