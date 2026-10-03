@@ -42,6 +42,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # tests/scripts/test_pick_release_tags.py runs the real picker against this
+          # repo and asserts its own v1.0.0 is seen. Without tags the checkout is
+          # shallow and the picker aborts with "no release tags found" - the script
+          # says so in its own error text. Tags only, not full history: the lane
+          # needs the release list, not every commit.
+          fetch-tags: true
 
       - name: Install ripgrep (prebuilt binary)
         run: |
@@ -120,10 +127,34 @@ jobs:
           # across a 6x range. The suite has sufficient concurrency at this
           # size. The remaining time is the slowest files plus the setup.
           # Workers above the core count only add contention.
-          KOVA_TEST_WORKERS: 96
+          # One worker per core, whatever the runner actually is.
+          #
+          # This was hardcoded to 96, calibrated on a 96-core EPYC 7763 (run
+          # 32549672063: 96 workers was fastest at 126s, and the curve is
+          # shallow - 126s to 142s across a 6x range). But the lane no longer
+          # runs on that machine: repo variable UBU_RUNNER is `ubuntu-latest`,
+          # which overrides the `ubuntu-latest-32-core` default below, so the
+          # core count this table was measured on is not the one in use. 96
+          # concurrent pytest subprocesses then oversubscribe whatever the
+          # runner has (the job log shows `KOVA_TEST_WORKERS: 96` in effect),
+          # and the suite's timing-sensitive tests fail on that contention
+          # rather than on anything they assert:
+          #
+          #   test_interrupt_propagation  Took 1.38s to detect interrupt (expected < 1.0s)
+          #   test_authorization_gate     human_wait_seconds > 0 never became true
+          #   test_auxiliary_concurrency  assert 5 == 6
+          #
+          # 183 of these on main and 198 on this branch, in 96-107 files, with
+          # the four sampled files passing 45/45 locally. The runner's own
+          # default is already `os.cpu_count()`, which is the calibration this
+          # table measured ("one worker for each core wins"), so the override
+          # only ever hurt: it cannot raise the count above the cores present.
+          # Leaving KOVA_TEST_WORKERS unset keeps the measured rule correct on
+          # whatever runner the job lands on, and self-tunes if that changes.
+          #
           # A healthy 44-test compression file takes ~197s alone and can exceed
-          # the 300s default under 96-worker load before its duration is cached.
-          # Match the runner's 3x known-slow headroom on the first PR run too.
+          # the 300s default under full load before its duration is cached.
+          # Match the runner's known-slow headroom on the first PR run too.
           KOVA_TEST_FILE_TIMEOUT: 600
           # Ensure tests don't accidentally call real APIs
           OPENROUTER_API_KEY: ""

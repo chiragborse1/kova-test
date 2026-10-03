@@ -91,7 +91,7 @@ def test_superseded_room_authority_cannot_reuse_its_grant(tmp_path, monkeypatch)
     )
 
     adapter = api_server.APIServerAdapter.__new__(api_server.APIServerAdapter)
-    request = MagicMock(headers={"Authorization": f"KovaRoom {old_grant}"})
+    request = MagicMock(headers={"Authorization": f"hermesroom {old_grant}"})
     assert adapter._room_grant_claims(request, permission="status")[
         "authority_gateway_id"
     ] == "gateway-old"

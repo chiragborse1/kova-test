@@ -82,13 +82,27 @@ OPT_IN_ENV = "KOVA_E2E_WINDOWS_INSTALL"
 #   1500s  died before publishing kova.exe -> 'journey step ... never ran'
 #   2100s  cleared the tool downloads, then died inside npm ci
 #
-# 3600s leaves ~2330s for an npm ci that 836s of observed time did not finish.
-# The six machines run concurrently (6 workers, 2122s of suite wall), so this is
-# a per-machine budget rather than an additive one, and it fits inside the job's
-# 120-minute cap with room for the update and gateway legs after it.
+# The 3600s cap then failed on main (job 110966197140) without the installer ever
+# being at fault: it was still working. Measured on that run, per machine:
+#
+#   0 -> 1409s   PM managed tools (~500 MB; ffmpeg alone took 480s to 185 MiB)
+#   1477 -> 1832s Python dependencies into the Kova runtime
+#   1834 -> 1898s agent-browser, then config prepared
+#   1899s        "Building the kova command and apps"
+#   1907 -> 2782s the isolated runtime's own Python dependencies
+#   2782s        "Preparing Node dependencies" - npm ci had not started
+#
+# So the run died 818s before even reaching the npm ci the old comment budgeted
+# for, having spent 2782s on tool and Python downloads. Those downloads are slow
+# because six machines pull the same ~500 MB concurrently on one runner.
+#
+# 5400s covers the observed 2782s of pre-npm work, the npm ci that had not begun,
+# and the build+publish after it, while staying inside the job's 120-minute cap
+# with room for the update and gateway legs. The six machines still run
+# concurrently, so this is a per-machine budget, not an additive one.
 #
 # UPDATE_TIMEOUT is untouched: the update path downloads no tools.
-INSTALL_TIMEOUT = 3600.0
+INSTALL_TIMEOUT = 5400.0
 UPDATE_TIMEOUT = 1200.0
 CMD_TIMEOUT = 300.0
 GATEWAY_READY_TIMEOUT = 240.0

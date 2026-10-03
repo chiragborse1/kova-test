@@ -107,7 +107,7 @@ _KOVA_MODEL_WARNING = (
 # false-positived on tool-capable local Modelfiles like ``kova-brain:qwen3-14b-ctx16k``.
 #   match:    nousresearch/hermes-3-Llama-3.1-70B, hermes-4-405b, openrouter/kova3:70b
 #   no match: kova-brain:qwen3-14b-ctx16k, qwen3:14b, claude-opus-4-6
-_NOUS_KOVA_NON_AGENTIC_RE = re.compile(r"(?:^|[/:])kova[-_ ]?[34](?:[-_.:]|$)", re.IGNORECASE)
+_NOUS_KOVA_NON_AGENTIC_RE = re.compile(r"(?:^|[/:])(?:hermes|kova)[-_ ]?[34](?:[-_.:]|$)", re.IGNORECASE)
 
 
 # Opaque proxy model IDs (Palantir Foundry: ``ri.language-model-service..language-model.<slug>``)

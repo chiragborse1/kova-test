@@ -163,7 +163,7 @@ def test_spawn_detached_marks_primary_breakaway_success(monkeypatch, tmp_path, c
     monkeypatch.setattr(
         gateway_windows,
         "_build_gateway_argv",
-        lambda home=None: (argv, cwd, {"Kova_Gateway_DETACHED": "1"}),
+        lambda home=None: (argv, cwd, {"KOVA_GATEWAY_DETACHED": "1"}),
     )
     monkeypatch.setattr("kova_cli.config.get_kova_home", lambda: tmp_path)
     monkeypatch.setattr(gateway_windows.subprocess, "Popen", fake_popen)
@@ -204,7 +204,7 @@ def test_spawn_detached_warns_and_marks_no_breakaway_fallback(
         lambda home=None: (
             argv,
             cwd,
-            {"Kova_Gateway_DETACHED": "1", "SECRET_SENTINEL": "do-not-log"},
+            {"KOVA_GATEWAY_DETACHED": "1", "SECRET_SENTINEL": "do-not-log"},
         ),
     )
     monkeypatch.setattr("kova_cli.config.get_kova_home", lambda: tmp_path)
@@ -368,7 +368,7 @@ def test_gateway_vbs_script_is_console_less(monkeypatch):
     assert "kova_cli.main" in content
     assert "gateway run" in content
     assert ", 0, False" in content  # hidden window, detached/async
-    for var in ("KOVA_HOME", "PYTHONIOENCODING", "Kova_Gateway_DETACHED", "VIRTUAL_ENV", "PYTHONPATH"):
+    for var in ("KOVA_HOME", "PYTHONIOENCODING", "KOVA_GATEWAY_DETACHED", "VIRTUAL_ENV", "PYTHONPATH"):
         assert var in content
     assert "--profile" in content and "work" in content
     assert content.endswith("\r\n")

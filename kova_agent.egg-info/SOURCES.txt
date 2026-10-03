@@ -1255,8 +1255,6 @@ plugins/google_meet/node/registry.py
 plugins/google_meet/node/server.py
 plugins/google_meet/realtime/__init__.py
 plugins/google_meet/realtime/openai_client.py
-plugins/kova-achievements/dashboard/plugin_api.py
-plugins/kova-achievements/tests/test_achievement_engine.py
 plugins/image_gen/_common.py
 plugins/image_gen/deepinfra/__init__.py
 plugins/image_gen/deepinfra/plugin.yaml
@@ -1275,6 +1273,8 @@ plugins/image_gen/openrouter/plugin.yaml
 plugins/image_gen/xai/__init__.py
 plugins/image_gen/xai/plugin.yaml
 plugins/kanban/dashboard/plugin_api.py
+plugins/kova-achievements/dashboard/plugin_api.py
+plugins/kova-achievements/tests/test_achievement_engine.py
 plugins/memory/__init__.py
 plugins/memory/config_schema.py
 plugins/memory/query_rewrite.py
@@ -1623,13 +1623,13 @@ tests/test_engines_satisfiable.py
 tests/test_fast_safe_load.py
 tests/test_get_tool_definitions_cache_isolation.py
 tests/test_git_safety_boundary.py
+tests/test_ipv4_preference.py
 tests/test_kova_bootstrap.py
 tests/test_kova_constants.py
 tests/test_kova_home_key_cache.py
 tests/test_kova_home_profile_warning.py
 tests/test_kova_logging.py
 tests/test_kova_yaml.py
-tests/test_ipv4_preference.py
 tests/test_live_system_guard.py
 tests/test_live_system_guard_self_test.py
 tests/test_load_yaml_file_readonly.py

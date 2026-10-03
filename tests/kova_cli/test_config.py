@@ -68,8 +68,8 @@ class TestEnsureKovaHome:
     # module) so this fixture keeps testing the OLD text regardless of any
     # future change to _LEGACY_TEMPLATE_SOULS's length or ordering.
     _PRE_REWRITE_DEFAULT_SOUL = (
-        "You are Kova Agent, an intelligent AI assistant created by Nous "
-        "Research. You are helpful, knowledgeable, and direct. You assist "
+        "You are Kova Agent, an intelligent AI assistant created by Neural "
+        "Studios. You are helpful, knowledgeable, and direct. You assist "
         "users with a wide range of tasks including answering questions, "
         "writing and editing code, analyzing information, creative work, "
         "and executing actions via your tools. You communicate clearly, "
@@ -1317,7 +1317,7 @@ class TestEnvWriteDenylist:
             "KOVA_REDACT_SECRETS",
             "KOVA_INTERACTIVE",
             "KOVA_EXEC_ASK",
-            "Kova_Gateway_SESSION",
+            "KOVA_GATEWAY_SESSION",
             "KOVA_CRON_SESSION",
             "KOVA_SINGLE_QUERY_SESSION",
             "KOVA_SESSION_KEY",
