@@ -62,8 +62,12 @@ class TestUserSkins:
         assert skin.get_color("banner_title") == "#FF0000"
         assert skin.get_branding("agent_name") == "Custom Agent"
         assert skin.tool_prefix == "▸"
-        # Should inherit defaults for unspecified colors
-        assert skin.get_color("banner_border") == "#CD7F32"  # from default
+        # Should inherit defaults for unspecified colors. Read the default rather
+        # than pinning a hex: 5580eae8e1 made the "kova" skin the default and
+        # changed the palette, leaving these two assertions on the old gold.
+        from kova_cli.skin_engine import _BUILTIN_SKINS, _DEFAULT_SKIN_NAME
+        default_colors = _BUILTIN_SKINS[_DEFAULT_SKIN_NAME]["colors"]
+        assert skin.get_color("banner_border") == default_colors["banner_border"]
 
     def test_load_user_skin_invalid_section_types_fall_back_to_defaults(self, tmp_path, monkeypatch):
         from kova_cli.skin_engine import load_skin
@@ -90,7 +94,8 @@ class TestUserSkins:
         skin = load_skin("broken")
 
         assert skin.name == "broken"
-        assert skin.get_color("banner_title") == "#FFD700"
+        from kova_cli.skin_engine import _BUILTIN_SKINS, _DEFAULT_SKIN_NAME
+        assert skin.get_color("banner_title") == _BUILTIN_SKINS[_DEFAULT_SKIN_NAME]["colors"]["banner_title"]
         assert skin.get_branding("agent_name") == "Kova Agent"
         assert skin.spinner.get("waiting_faces", []) == []
         assert skin.tool_emojis == {}
