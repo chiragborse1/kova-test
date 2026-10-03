@@ -287,7 +287,7 @@ class PeerRunsHTTPClient:
             data=None if body is None else json.dumps(body, separators=(",", ":")).encode("utf-8"),
             headers={
                 "Authorization": (
-                    f"KovaRoom {room_grant}" if room_grant else f"Bearer {self.api_key}"),
+                    f"hermesroom {room_grant}" if room_grant else f"Bearer {self.api_key}"),
                 "Content-Type": "application/json", "User-Agent": "Kova-RoomLink/1.0",
                 **(headers or {})})
         try:
