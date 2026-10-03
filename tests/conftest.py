@@ -1165,6 +1165,32 @@ def pytest_configure(config):  # noqa: D401 — pytest hook
         config.option.timeout_method = "thread"
 
 
+# A real-PowerShell subprocess costs a fresh runspace startup plus, on a loaded
+# CI box, seconds of scheduler contention. The tests that use this took ~1 s on
+# a developer machine against a hardcoded 60 s ceiling, and still timed out on
+# the Windows runners -- a 60x margin that a loaded box erases entirely. These
+# tests assert the child's OUTPUT, not its timing, so the ceiling exists only to
+# stop a genuine hang; 300 s still fails fast relative to a real deadlock while
+# surviving a contended runner. KOVA_TEST_SUBPROCESS_TIMEOUT overrides it.
+_SUBPROCESS_TIMEOUT_DEFAULT_S = 300.0
+
+
+def subprocess_timeout(default: float | None = None) -> float:
+    """Seconds a real-PowerShell / real-git subprocess may take in a test.
+
+    Pass ``default`` to use a per-call ceiling instead of the shared one.
+    A malformed, zero or negative override falls back rather than disabling the
+    ceiling, so a typo cannot turn a hang into an indefinite wait.
+    """
+    fallback = _SUBPROCESS_TIMEOUT_DEFAULT_S if default is None else float(default)
+    raw = os.environ.get("KOVA_TEST_SUBPROCESS_TIMEOUT", "")
+    try:
+        value = float(raw)
+    except ValueError:
+        return fallback
+    return value if value > 0 else fallback
+
+
 _symlink_supported_cache = None
 
 

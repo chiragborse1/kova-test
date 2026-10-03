@@ -1849,7 +1849,7 @@ export default function ChatPage({ isActive = true }: { isActive?: boolean }) {
             "font-mondwest fixed top-0 right-0 z-[60] flex h-dvh max-h-dvh w-64 min-w-0 flex-col antialiased",
             "border-l border-current/20 text-midground",
             "bg-background-base/95",
-            "transition-transform duration-200 ease-out",
+            "transition-transform duration-base ease-out",
             "[background:var(--component-sidebar-background,var(--background-base))]",
             "[clip-path:var(--component-sidebar-clip-path)]",
             "[border-image:var(--component-sidebar-border-image)]",
@@ -1865,7 +1865,7 @@ export default function ChatPage({ isActive = true }: { isActive?: boolean }) {
           >
             <Typography
               mondwest
-              className="text-display font-bold text-[1.125rem] leading-[0.95] tracking-[0.0525rem] text-midground"
+              className="text-display font-bold text-xl leading-tight tracking-[0.0525rem] text-midground"
             >
               {t.app.modelToolsSheetTitle}
               <br />
@@ -2037,7 +2037,7 @@ export default function ChatPage({ isActive = true }: { isActive?: boolean }) {
               "rounded border border-current/30",
               "bg-black/20",
               "opacity-70 hover:opacity-100 hover:border-current/60",
-              "transition-opacity duration-150",
+              "transition-opacity duration-fast",
               "bottom-2 right-2 px-2 py-1 text-xs sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1.5",
               "lg:bottom-4 lg:right-4",
             )}
@@ -2063,7 +2063,7 @@ export default function ChatPage({ isActive = true }: { isActive?: boolean }) {
                 "rounded border border-current/30",
                 "bg-black/20",
                 "opacity-70 hover:opacity-100 hover:border-current/60",
-                "transition-opacity duration-150",
+                "transition-opacity duration-fast",
                 "top-2 right-2 px-2 py-1 text-xs sm:top-3 sm:right-3",
               )}
               style={{ color: terminalFg }}

@@ -1,5 +1,5 @@
-import { getLocalModelsJobs, getLocalModelsStatus } from '@/kova'
 import type { Translations } from '@/i18n/types'
+import { getLocalModelsJobs, getLocalModelsStatus } from '@/kova'
 import { queryClient } from '@/lib/query-client'
 import { localSetupDue } from '@/lib/tips/local-cta'
 import { $activeGatewayRoute } from '@/store/gateway'

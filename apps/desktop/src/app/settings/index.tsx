@@ -5,8 +5,8 @@ import { Navigate, useLocation, useNavigate } from 'react-router'
 import { codiconIcon } from '@/components/ui/codicon'
 import { KbdCombo } from '@/components/ui/kbd'
 import { Tip } from '@/components/ui/tooltip'
-import { getKovaConfigDefaults, getKovaConfigRecord, saveKovaConfig } from '@/kova'
 import { useI18n } from '@/i18n'
+import { getKovaConfigDefaults, getKovaConfigRecord, saveKovaConfig } from '@/kova'
 import { triggerHaptic } from '@/lib/haptics'
 import {
   Archive,
@@ -56,6 +56,7 @@ import { NotificationsSettings } from './notifications-settings'
 import { SettingsBreadcrumbContext } from './primitives'
 import { PROVIDER_VIEWS, ProvidersSettings, type ProviderView } from './providers-settings'
 import { SessionsSettings } from './sessions-settings'
+import { bandFor, bandRank } from './settings-rail-bands'
 import { SettingsSubpageHeader } from './subpage-navigation'
 import { resolveSettingsSubpage, settingsSubpageIcon, settingsSubpages } from './subpages'
 import type { SettingsPageProps, SettingsView as SettingsViewId } from './types'
@@ -228,6 +229,12 @@ export function SettingsView({ onClose, onConfigSaved, onMainModelChanged }: Set
     }
   }
 
+  // The band KEY and the sort order live in ./settings-rail-bands so the rule
+  // can be tested without a DOM, and so the table and the sort cannot drift
+  // apart. Only the LABEL lives here, because it needs the active locale.
+  const bandLabel = (key: string | null): string | undefined =>
+    key ? t.settings.bands[key as keyof typeof t.settings.bands] : undefined
+
   const navGroups: OverlayNavGroup[] = useMemo(
     () =>
       (
@@ -393,7 +400,21 @@ export function SettingsView({ onClose, onConfigSaved, onMainModelChanged }: Set
             onSelect: () => setActiveView('about')
           }
         ] as OverlayNavGroup[]
-      ).map(group => {
+      )
+        // Grouping has to REORDER, not just label. In source order the bands
+        // interleave - Advanced sits between Browser and Notifications, Tools &
+        // Keys sits between Keyboard Shortcuts and Sessions - so labelling alone
+        // drew 13 headings for 22 rows: a list of interruptions rather than a
+        // map. Sort into contiguous bands first, keeping the author's order
+        // WITHIN each band, then label only where the band actually changes.
+        .map((group, index) => ({ group, index, band: bandFor(group.id) }))
+        .sort((a, b) => bandRank(a.band) - bandRank(b.band) || a.index - b.index)
+        .map(({ group, band }, index, all) => {
+          const previous = index > 0 ? all[index - 1].band : null
+
+          return { ...group, bandLabel: band !== previous ? bandLabel(band) : undefined }
+        })
+        .map(group => {
         const view = group.id as SettingsViewId
         const children = settingsSubpages(view)
 
@@ -464,7 +485,7 @@ export function SettingsView({ onClose, onConfigSaved, onMainModelChanged }: Set
   const searchPill = (
     <button
       className={cn(
-        'flex h-(--titlebar-control-height) items-center gap-1.5 rounded-full border border-(--ui-stroke-secondary) bg-(--ui-chat-surface-background) px-2.5 text-(--ui-text-tertiary) shadow-sm transition-all duration-200 ease-out hover:text-foreground motion-reduce:transition-none',
+        'flex h-(--titlebar-control-height) items-center gap-1.5 rounded-full border border-(--ui-stroke-secondary) bg-(--ui-chat-surface-background) px-2.5 text-(--ui-text-tertiary) shadow-popover transition-all base ease-out hover:text-foreground motion-reduce:transition-none',
         paletteOpen && 'pointer-events-none scale-110 opacity-0'
       )}
       data-glass-opaque=""

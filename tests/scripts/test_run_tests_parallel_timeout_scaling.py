@@ -62,3 +62,37 @@ def test_only_first_attempt_clean_durations_feed_the_cache() -> None:
     kept = mod._clean_pass_durations(file_times, failures, flaky_results)
 
     assert kept == [(clean, 12.0)]
+
+
+def test_env_file_timeout_falls_back_when_empty(monkeypatch) -> None:
+    """A workflow that scopes the cap to one matrix row must not break the others.
+
+    tests-os.yml sets KOVA_TEST_FILE_TIMEOUT only for the windows row and
+    evaluates the expression to '' for macOS, so the var is present but empty.
+    float('') is a ValueError, which took the macOS row down before it ran a
+    single test. KOVA_TEST_WORKERS has always absorbed this with `or`; this
+    makes the timeout agree.
+
+    Calls the runner's own resolver. An earlier version of this test
+    re-evaluated the expression inline, which passed with or without the fix --
+    the same tautology trap as an assertion that cannot fail.
+    """
+    mod = _load_runner()
+    default = mod._DEFAULT_FILE_TIMEOUT_SECONDS
+
+    monkeypatch.delenv("KOVA_TEST_FILE_TIMEOUT", raising=False)
+    assert mod._default_file_timeout() == default
+
+    monkeypatch.setenv("KOVA_TEST_FILE_TIMEOUT", "")
+    assert mod._default_file_timeout() == default, "an empty scoped value must fall back, not raise"
+
+    monkeypatch.setenv("KOVA_TEST_FILE_TIMEOUT", "600")
+    assert mod._default_file_timeout() == 600.0
+
+    monkeypatch.setenv("KOVA_TEST_FILE_TIMEOUT", "junk")
+    try:
+        mod._default_file_timeout()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("a non-numeric override must still be rejected, not silently ignored")

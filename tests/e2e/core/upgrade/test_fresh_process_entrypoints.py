@@ -536,8 +536,11 @@ def test_every_shipped_module_imports_from_a_clean_first_party_graph(tmp_path):
 
 def _pre_handoff_tag() -> tuple[str, str] | None:
     """Newest release tag whose updater still ran post-pull phases in the pre-pull interpreter."""
+    # v1.* not v20*: the same STABLE_TAG_RE grammar the other N-1 lookups use.
+    # refs/tags/v20* matched only the abandoned 4-digit CalVer majors, so this
+    # scan found nothing on a 1.x repo and the test silently degraded.
     cp = _git("for-each-ref", "--merged=HEAD", "--sort=-version:refname",
-              "--format=%(refname:short)", "refs/tags/v20*")
+              "--format=%(refname:short)", "refs/tags/v[0-9]*.[0-9]*.[0-9]*")
     for tag in cp.stdout.split()[:15] if cp.returncode == 0 else []:
         if _git("cat-file", "-e", f"{tag}:kova_cli/update_handoff.py").returncode == 0:
             continue

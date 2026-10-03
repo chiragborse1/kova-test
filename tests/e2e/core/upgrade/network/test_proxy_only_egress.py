@@ -4,7 +4,7 @@ Every command runs in its own network namespace (no route, no DNS; proven per mo
 ``_seed.assert_isolated``). The proxy is what a corporate network runs: it tunnels ``CONNECT``,
 inspects TLS with the company's own root, may demand credentials, and refuses every host it has no
 route for, logging it. The installed checkout was cloned from the official GitHub URL, so the
-update's channel read (``kova-assets.nousresearch.com``), its git fetch and every lazy blob
+update's channel read (the public channel origin), its git fetch and every lazy blob
 fetch of the partial clone (``github.com``) have to cross the proxy, and the cell reads the
 proxy's log to show they did.
 
@@ -16,6 +16,8 @@ ignores the proxy), a proxy that requires auth, and a corporate root supplied vi
 from __future__ import annotations
 
 import shutil
+
+import re
 
 import pytest
 
@@ -35,7 +37,11 @@ pytestmark = [
     pytest.mark.skipif(I.real_uv() is None, reason="uv required"),
 ]
 
-GIT_PATH = "/kova-agent.git/"
+# Derived from the repository the product actually fetches: the seed serves
+# the origin under that same owner/name, so restating the old "kova-agent"
+# here made this assert on a path no fetch ever takes.
+GIT_PATH = f"/{S.REPOSITORY}.git/"
+RE_REPO_PATTERN = re.escape(S.REPOSITORY)
 
 
 @pytest.fixture(scope="module")
@@ -95,7 +101,7 @@ def test_update_with_corporate_root_only_in_ssl_cert_file(inst):
     finally:
         edge.close()
     with known_failure(
-        r"unable to access 'https://github\.com/kova-agent\.git/': "
+        f"unable to access 'https://github\\.com/{RE_REPO_PATTERN}\\.git/': "
         r"(SSL certificate|server certificate verification failed|SSL certificate problem)",
         "gated on #124654: the updater's git fetch ignores SSL_CERT_FILE, so a corporate root "
         "supplied that way passes the channel read and then fails at `Fetching updates`",

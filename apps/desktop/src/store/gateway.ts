@@ -11,8 +11,8 @@ import {
 import { atom } from 'nanostores'
 
 import type { KovaConnection } from '@/global'
-import { KovaGateway, setApiRequestConnection } from '@/kova'
 import { translateNow } from '@/i18n'
+import { KovaGateway, setApiRequestConnection } from '@/kova'
 import {
   decideLivenessForceClose,
   LIVENESS_PROBE_TIMEOUT_MS,

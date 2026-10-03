@@ -76,7 +76,7 @@ export function AskDirective({ attrs, streaming }: { attrs: Record<string, strin
 
   return (
     <div
-      className="my-3 flex min-w-0 max-w-full flex-col gap-2 overflow-visible duration-300 animate-in fade-in-0 slide-in-from-bottom-2"
+      className="my-3 flex min-w-0 max-w-full flex-col gap-2 overflow-visible slow animate-in fade-in-0 slide-in-from-bottom-2"
       data-onboarding-card
     >
       <div className="text-[13px] font-medium">{question}</div>

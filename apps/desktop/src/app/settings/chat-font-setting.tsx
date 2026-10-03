@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { saveKovaConfig } from '@/kova'
 import { useI18n } from '@/i18n'
+import { saveKovaConfig } from '@/kova'
 import { notifyError } from '@/store/notifications'
 import {
   CHAT_FONT_SUGGESTIONS,

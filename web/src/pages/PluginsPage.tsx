@@ -70,10 +70,10 @@ function SetupCommandBlock({ code, label }: { code: string; label: string }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-[0.6875rem] text-muted-foreground">{label}</span>
+        <span className="text-sm text-muted-foreground">{label}</span>
         <CopyButton text={code} />
       </div>
-      <div className="border border-border bg-background/40 px-3 py-2 font-mono text-[0.6875rem] leading-relaxed">
+      <div className="border border-border bg-background/40 px-3 py-2 font-mono text-sm leading-relaxed">
         <code className="break-all">{code}</code>
       </div>
     </div>
@@ -108,7 +108,7 @@ function MemoryProviderSetupResults({ results }: { results: MemoryProviderSetupR
             <div className="flex flex-wrap items-center gap-2">
               <span
                 className={cn(
-                  "border px-2 py-0.5 font-mono text-[0.6875rem]",
+                  "border px-2 py-0.5 font-mono text-sm",
                   setupResultClass(result.status),
                 )}
               >
@@ -120,12 +120,12 @@ function MemoryProviderSetupResults({ results }: { results: MemoryProviderSetupR
               </span>
             </div>
             {result.command ? (
-              <code className="block break-all border border-border bg-background/40 px-2 py-1 font-mono text-[0.6875rem]">
+              <code className="block break-all border border-border bg-background/40 px-2 py-1 font-mono text-sm">
                 {result.command}
               </code>
             ) : null}
             {detail ? (
-              <pre className="max-h-32 overflow-auto whitespace-pre-wrap break-words border border-border bg-background/40 px-2 py-1 font-mono text-[0.6875rem] text-muted-foreground">
+              <pre className="max-h-32 overflow-auto whitespace-pre-wrap break-words border border-border bg-background/40 px-2 py-1 font-mono text-sm text-muted-foreground">
                 {detail}
               </pre>
             ) : null}
@@ -233,7 +233,7 @@ function MemoryProviderSetupHint({
                 {setup.pip_dependencies.map((dep) => (
                   <code
                     key={dep}
-                    className="border border-border bg-background/40 px-2 py-1 font-mono text-[0.6875rem]"
+                    className="border border-border bg-background/40 px-2 py-1 font-mono text-sm"
                   >
                     {dep}
                   </code>
@@ -253,7 +253,7 @@ function MemoryProviderSetupHint({
             {setup.required_env.map((envKey) => (
               <code
                 key={envKey}
-                className="border border-border bg-background/40 px-2 py-1 font-mono text-[0.6875rem]"
+                className="border border-border bg-background/40 px-2 py-1 font-mono text-sm"
               >
                 {envKey}
               </code>
@@ -568,7 +568,7 @@ export default function PluginsPage() {
           <Card>
             <CardHeader>
               <CardTitle>{t.pluginsPage.providersHeading}</CardTitle>
-              <p className="text-xs tracking-[0.08em] text-text-tertiary">
+              <p className="text-xs tracking-wide text-text-tertiary">
                 Configure memory providers and runtime context engine selection.
               </p>
             </CardHeader>
@@ -811,7 +811,7 @@ export default function PluginsPage() {
         <Card>
           <CardHeader>
             <CardTitle>{t.pluginsPage.installHeading}</CardTitle>
-            <p className="text-xs tracking-[0.08em] text-text-tertiary">
+            <p className="text-xs tracking-wide text-text-tertiary">
               {t.pluginsPage.installHint}
             </p>
           </CardHeader>
@@ -840,7 +840,7 @@ export default function PluginsPage() {
 
                 <Switch checked={installForce} onCheckedChange={setInstallForce} />
 
-                <span className="text-xs tracking-[0.06em] text-text-secondary">
+                <span className="text-xs tracking-wide text-text-secondary">
                   {t.pluginsPage.forceReinstall}
                 </span>
               </div>
@@ -849,7 +849,7 @@ export default function PluginsPage() {
 
                 <Switch checked={installEnable} onCheckedChange={setInstallEnable} />
 
-                <span className="text-xs tracking-[0.06em] text-text-secondary">
+                <span className="text-xs tracking-wide text-text-secondary">
                   {t.pluginsPage.enableAfterInstall}
                 </span>
               </div>
@@ -865,11 +865,11 @@ export default function PluginsPage() {
               {t.pluginsPage.installBtn}
             </Button>
 
-            <p className="text-xs tracking-[0.06em] text-text-tertiary">
+            <p className="text-xs tracking-wide text-text-tertiary">
               {t.pluginsPage.rescanHint}
             </p>
 
-            <p className="text-xs tracking-[0.06em] text-text-tertiary">
+            <p className="text-xs tracking-wide text-text-tertiary">
               {t.pluginsPage.removeHint}
             </p>
           </CardContent>
@@ -877,11 +877,11 @@ export default function PluginsPage() {
 
         <div className="flex flex-col gap-3" data-testid="plugin-catalog-section">
 
-          <h3 className="font-mondwest text-display text-xs tracking-[0.12em] text-text-secondary">
+          <h3 className="font-mondwest text-display text-xs tracking-caps text-text-secondary">
             {t.pluginsPage.catalogHeading ?? "Plugin catalog"}
           </h3>
 
-          <p className="text-xs tracking-[0.06em] text-text-tertiary">
+          <p className="text-xs tracking-wide text-text-tertiary">
             {t.pluginsPage.catalogHint ??
               "Curated, Nous-reviewed plugins pinned to exact commits."}
           </p>
@@ -930,7 +930,7 @@ export default function PluginsPage() {
 
         <div className="flex flex-col gap-3">
 
-          <h3 className="font-mondwest text-display text-xs tracking-[0.12em] text-text-secondary">
+          <h3 className="font-mondwest text-display text-xs tracking-caps text-text-secondary">
             {t.pluginsPage.pluginListHeading}
           </h3>
 
@@ -968,7 +968,7 @@ export default function PluginsPage() {
 
           <div className="flex flex-col gap-3 opacity-95">
 
-            <h3 className="font-mondwest text-display text-xs tracking-[0.12em] text-text-secondary">
+            <h3 className="font-mondwest text-display text-xs tracking-caps text-text-secondary">
               {t.pluginsPage.orphanHeading}
             </h3>
 
@@ -1146,7 +1146,7 @@ function PluginRowCard(props: PluginRowCardProps) {
                 className={cn(
                   "inline-flex items-center rounded-none px-3 py-1.5",
                   "border border-current/25 hover:bg-current/10",
-                  "font-mondwest text-display text-xs tracking-[0.1em]",
+                  "font-mondwest text-display text-xs tracking-caps",
                 )}
                 to={tabPath}
               >
@@ -1223,7 +1223,7 @@ function PluginRowCard(props: PluginRowCardProps) {
         </div>
 
         {row.description ? (
-          <p className="min-w-0 w-full text-xs tracking-[0.06em] text-text-secondary break-words">
+          <p className="min-w-0 w-full text-xs tracking-wide text-text-secondary break-words">
             {row.description}
           </p>
         ) : null}
@@ -1236,7 +1236,7 @@ function PluginRowCard(props: PluginRowCardProps) {
 
         {dm?.slots?.length ? (
 
-          <p className="text-xs tracking-[0.05em] text-text-tertiary">
+          <p className="text-xs tracking-wide text-text-tertiary">
             {t.pluginsPage.dashboardSlots}: {dm.slots.join(", ")}
           </p>
         ) : null}
@@ -1344,7 +1344,7 @@ function CatalogEntryCard(props: CatalogEntryCardProps) {
         ) : null}
 
         {entry.description ? (
-          <p className="min-w-0 w-full text-xs tracking-[0.06em] text-text-secondary break-words">
+          <p className="min-w-0 w-full text-xs tracking-wide text-text-secondary break-words">
             {entry.description}
           </p>
         ) : null}
@@ -1354,7 +1354,7 @@ function CatalogEntryCard(props: CatalogEntryCardProps) {
             {chips.map((chip) => (
               <code
                 key={chip}
-                className="border border-border bg-background/40 px-2 py-1 font-mono text-[0.6875rem]"
+                className="border border-border bg-background/40 px-2 py-1 font-mono text-sm"
               >
                 {chip}
               </code>

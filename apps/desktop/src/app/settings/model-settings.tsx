@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
+import { useI18n } from '@/i18n'
 import {
   getAuxiliaryModels,
   getGlobalModelInfo,
@@ -26,7 +27,6 @@ import type {
   MoaModelSlot,
   StaleAuxAssignment
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { isCodeSkewRestartRequired } from '@/lib/code-skew-error'
 import { AlertTriangle, Cpu, Loader2 } from '@/lib/icons'
 import { isSubmitEnter } from '@/lib/ime'
@@ -36,7 +36,7 @@ import { setMainModelAssignment } from '@/store/model-assignment'
 import { notifyError, readableError } from '@/store/notifications'
 import { startManualLocalEndpoint, startManualOnboarding, startManualProviderOAuth } from '@/store/onboarding'
 
-import { kovaConfigCacheWriter, invalidateKovaConfig, useKovaConfigRecord } from '../hooks/use-config-record'
+import { invalidateKovaConfig, kovaConfigCacheWriter, useKovaConfigRecord } from '../hooks/use-config-record'
 import { useOnProfileSwitch } from '../hooks/use-on-profile-switch'
 import { PanelEmpty } from '../overlays/panel'
 
@@ -1162,7 +1162,7 @@ export function ModelSettings({ onMainModelChanged, scopeProfile, subpage }: Mod
                       )
                     }
                     description={
-                      <span className="font-mono text-[0.68rem]">
+                      <span className="font-mono text-sm">
                         {isAuto ? m.autoUseMain : `${current.provider} · ${current.model || m.providerDefault}`}
                         {!isAuto && current.base_url && (
                           <span className="text-muted-foreground"> · {current.base_url}</span>
@@ -1372,7 +1372,7 @@ export function ModelSettings({ onMainModelChanged, scopeProfile, subpage }: Mod
                 }
                 className={cn(slot.enabled === false && 'opacity-60')}
                 description={
-                  <span className="font-mono text-[0.68rem]">
+                  <span className="font-mono text-sm">
                     {slot.provider} · {slot.model || m.model}
                   </span>
                 }
@@ -1444,7 +1444,7 @@ export function ModelSettings({ onMainModelChanged, scopeProfile, subpage }: Mod
                 </div>
               }
               description={
-                <span className="font-mono text-[0.68rem]">
+                <span className="font-mono text-sm">
                   {currentMoaPreset.aggregator.provider} · {currentMoaPreset.aggregator.model}
                 </span>
               }

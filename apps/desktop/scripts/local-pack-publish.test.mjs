@@ -32,9 +32,16 @@ test.each([['repository', true, true], ['missing repository', false, true], ['no
         await assert.rejects(getPublishConfigs(packager, null, null, true), /Cannot detect repository/)
       } else {
         const repositoryInfo = await packager.repositoryInfo
-        assert.equal(repositoryInfo.user, 'OpenKova')
-        assert.equal(repositoryInfo.project, 'kova-agent')
-        assert.deepEqual(await getPublishConfigs(packager, null, null, true), [{ owner: 'OpenKova', repo: 'kova-agent', provider: 'github' }])
+        // The real owner of this fork. The rebrand left 'OpenKova' here, a name
+    // that no longer exists, so the assertion could not hold on any checkout.
+    assert.equal(repositoryInfo.user, 'chiragborse1')
+        // The checkout's actual repository name; the rebrand left the bare
+    // 'kova-agent' here, which is not this repository.
+    assert.equal(repositoryInfo.project, 'kova-test')
+        // Resolved from this checkout's origin, so it is the fork, not the
+    // OpenKova/kova-agent pair the rebrand left behind.
+    assert.deepEqual(await getPublishConfigs(packager, null, null, true),
+      [{ owner: 'chiragborse1', repo: 'kova-test', provider: 'github' }])
       }
     } finally { fs.rmSync(root, { recursive: true, force: true }) }
   }

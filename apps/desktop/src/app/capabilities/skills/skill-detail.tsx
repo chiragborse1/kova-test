@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 
 import { PageLoader } from '@/components/page-loader'
 import { Button } from '@/components/ui/button'
-import { getSkillContent, type ProfileScope, profileScopeKey } from '@/kova'
 import { useI18n } from '@/i18n'
+import { getSkillContent, type ProfileScope, profileScopeKey } from '@/kova'
 import type { SkillInfo } from '@/types/kova'
 
 import { parseFrontmatter } from './frontmatter'
@@ -55,7 +55,7 @@ export function SkillDetail({
         <PageLoader className="h-40" label={t.skills.loading} />
       ) : parsed ? (
         <pre
-          className="overflow-auto whitespace-pre-wrap wrap-break-word font-mono text-[0.68rem] leading-relaxed text-(--ui-text-secondary)"
+          className="overflow-auto whitespace-pre-wrap wrap-break-word font-mono text-sm leading-relaxed text-(--ui-text-secondary)"
           data-selectable-text="true"
         >
           {parsed.body.trim() || t.skills.noDescription}

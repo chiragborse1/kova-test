@@ -3,8 +3,8 @@ import { Dialog as DialogPrimitive } from 'radix-ui'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { listAllProfileSessions } from '@/kova'
 import { useI18n } from '@/i18n'
+import { listAllProfileSessions } from '@/kova'
 import { sessionTitle } from '@/lib/chat-runtime'
 import { Check, MessageCircle } from '@/lib/icons'
 import { cn } from '@/lib/utils'
@@ -48,7 +48,7 @@ export function SessionPickerDialog({ activeStoredSessionId, onOpenChange, onRes
         <DialogPrimitive.Overlay className="fixed inset-0 z-(--z-over-modal) bg-black/15 backdrop-blur-[1px] data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:animate-in data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
-          className="fixed left-1/2 top-[14vh] z-(--z-over-modal-content) w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-(--ui-stroke-secondary) bg-(--ui-chat-bubble-background) shadow-lg duration-150 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2 data-[state=open]:zoom-in-95"
+          className="fixed left-1/2 top-[14vh] z-(--z-over-modal-content) w-[min(40rem,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-(--ui-stroke-secondary) bg-(--ui-chat-bubble-background) shadow-popover fast data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:slide-in-from-top-2 data-[state=open]:zoom-in-95"
         >
           <DialogPrimitive.Title className="sr-only">{t.commandCenter.sections.sessions}</DialogPrimitive.Title>
           <Command className="bg-transparent" loop>
@@ -56,7 +56,7 @@ export function SessionPickerDialog({ activeStoredSessionId, onOpenChange, onRes
             <CommandList className="max-h-[min(24rem,60vh)]">
               <CommandEmpty>{t.commandCenter.noResults}</CommandEmpty>
               <CommandGroup
-                className="**:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-wider **:[[cmdk-group-heading]]:text-[0.6875rem] **:[[cmdk-group-heading]]:text-muted-foreground/70"
+                className="**:[[cmdk-group-heading]]:uppercase **:[[cmdk-group-heading]]:tracking-wider **:[[cmdk-group-heading]]:text-sm **:[[cmdk-group-heading]]:text-muted-foreground/70"
                 heading={t.commandCenter.sections.sessions}
               >
                 {sessions.map(session => {

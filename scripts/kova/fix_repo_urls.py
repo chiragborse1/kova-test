@@ -37,7 +37,7 @@ BINARY_EXT = (".png", ".jpg", ".jpeg", ".ico", ".icns", ".webp", ".gif",
 
 
 def tracked() -> list[str]:
-    out = subprocess.run(["git", "ls-files", "-z"], capture_output=True, text=True, check=True)
+    out = subprocess.run(["git", "ls-files", "-z"], capture_output=True, text=True, encoding="utf-8", errors="replace", check=True)
     return [f for f in out.stdout.split("\0") if f]
 
 

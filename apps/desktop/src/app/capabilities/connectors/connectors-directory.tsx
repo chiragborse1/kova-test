@@ -90,13 +90,13 @@ export function ConnectorsDirectory({
               ) : null}
 
               {segmentFellBack ? (
-                <span className="text-[0.7rem] text-(--ui-text-tertiary)">
+                <span className="text-sm text-(--ui-text-tertiary)">
                   {copy.page.segmentNoMatch(segmentLabel(filter.segment))}
                 </span>
               ) : null}
 
               {hiddenMatches > 0 ? (
-                <span className="flex items-center gap-1 text-[0.7rem] text-(--ui-text-tertiary)">
+                <span className="flex items-center gap-1 text-sm text-(--ui-text-tertiary)">
                   {copy.page.matchesElsewhere(hiddenMatches)}
                   <Button onClick={() => set({ segment: 'all' })} size="xs" variant="text">
                     {copy.page.showAllMatches}
@@ -197,7 +197,12 @@ function Group({
         {group.id === 'off' ? <Note>{copy.offNote}</Note> : null}
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+      {/* One surface per group, not one box per row. The rows inside are flat
+          and separate with whitespace; the hairline lives here. */}
+      <div
+        className="grid gap-0.5 rounded-xl border border-(--ui-stroke-tertiary)
+          bg-(--ui-bg-elevated) p-1.5 sm:grid-cols-2 sm:gap-x-1.5"
+      >
         {group.cards.map(card => {
           const key = cardKey(card)
 
@@ -220,5 +225,5 @@ function Group({
 }
 
 function Note({ children }: { children: ReactNode }) {
-  return <span className="truncate text-[0.65rem] text-(--ui-text-tertiary)">{children}</span>
+  return <span className="truncate text-sm text-(--ui-text-tertiary)">{children}</span>
 }

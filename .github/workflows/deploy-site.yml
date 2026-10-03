@@ -49,7 +49,20 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Trigger Vercel Deploy
-        run: curl -fsS --retry 3 --retry-delay 10 -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          # An unconfigured hook is a skip, not a failure. `curl -X POST ""`
+          # exits 3 (malformed URL), so every manual dispatch before the hook
+          # existed failed this job - and a permanently red job is a job
+          # people stop reading. Warn loudly and let the docs deploy carry
+          # the run.
+          if [ -z "$HOOK" ]; then
+            echo "::warning::VERCEL_DEPLOY_HOOK is not set; skipping the Vercel deploy."
+            echo "Add it in Settings > Secrets > Actions, or via \`gh secret set VERCEL_DEPLOY_HOOK\`."
+            exit 0
+          fi
+          curl -fsS --retry 3 --retry-delay 10 -X POST "$HOOK"
 
   deploy-docs:
     if: github.repository == 'chiragborse1/kova-test'
@@ -69,6 +82,17 @@ jobs:
         with:
           client-id: ${{ vars.APP_CLIENT_ID }}
           private-key: ${{ secrets.APP_PRIVATE_KEY }}
+        # The skills crawl reads GITHUB_APP_ID / GITHUB_APP_PRIVATE_KEY_PATH /
+        # GITHUB_APP_INSTALLATION_ID. The minted token is also exported under
+        # the plain names so the crawler's PAT path uses it, which is worth
+        # 5,000 req/hr instead of the 60/hr it falls back to unauthenticated.
+        env:
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_APP_ID: ${{ vars.APP_CLIENT_ID }}
+          GITHUB_APP_PRIVATE_KEY_PATH: ${{ runner.temp }}/app-key.pem
+          GITHUB_APP_INSTALLATION_ID: ${{ vars.APP_INSTALLATION_ID }}
+        # (the key itself is written by get-app-token; the IDs above are what
+        # GitHubAuth._try_github_app reads)
 
       - name: Set up the locked site toolchain
         id: pm

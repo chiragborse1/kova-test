@@ -858,7 +858,7 @@ export function TreeGroup({
               outlineColor: 'color-mix(in srgb, var(--ui-accent) 55%, transparent)'
             }}
           >
-            <span className="flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md border border-(--ui-stroke-secondary) bg-popover px-2 py-1 text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-(--ui-text-secondary)">
+            <span className="flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md border border-(--ui-stroke-secondary) bg-popover px-2 py-1 text-xs font-semibold uppercase tracking-caps text-(--ui-text-secondary)">
               <Codicon className="shrink-0" name="gripper" size="0.8125rem" />
               <span className="min-w-0 truncate">{tabText(activeId)}</span>
             </span>
@@ -1017,7 +1017,7 @@ function ZoneDropOverlay({ node }: { node: GroupNode }) {
           // backdrop-filter, and a blur interpolating while the insets glide
           // re-blurs half a zone every frame — the single most expensive
           // paint in the whole drag.
-          'absolute transition-[top,right,bottom,left,background-color,border-color,opacity] duration-150 ease-out',
+          'absolute transition-[top,right,bottom,left,background-color,border-color,opacity] fast ease-out',
           // Blur only the live target — idle outlines must not fog the app.
           active && !centerLink && DROP_SHEET_BLUR_CLASS,
           centerLink && 'opacity-0'

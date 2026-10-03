@@ -4,7 +4,7 @@ Class C6 (bricked installs, stale code, lost state after `kova update`). Each le
 
 1. stages a local bare ``origin`` (``--shared`` onto this repository, so no network and no
    object copy) with ``main`` parked at release N-1 (``git describe --tags --abbrev=0 HEAD~1``);
-2. clones it as a git-mode install with its own venv (``uv sync --locked --extra all`` from N-1's
+2. clones it as a git-mode install with its own venv (``uv sync --frozen --extra all`` from N-1's
    own uv.lock and the warm uv cache: the installer's tier 0 and its editable layout; the installer
    script itself is covered by ``.github/workflows/install-e2e*.yml``);
 3. gives it user state created BY THE N-1 CLI ITSELF: sessions in state.db from real one-shot
@@ -79,6 +79,12 @@ UPDATE_TIMEOUT = 1500  # seconds; a cold dependency sync on a loaded CI box is m
 CLI_TIMEOUT = 600
 
 
+# The N-1 tag glob is derived from kova_cli.update_channel.STABLE_TAG_RE:
+# a stable version is v<1-3 digits>.<minor>.<patch>, and a 4-digit major is a
+# CalVer label rather than a version. This used to be 'v20[0-9][0-9].*',
+# which cannot match a v1.x tag at all - when the product moved to 1.0.0
+# these tests silently stopped finding N-1 and failed with
+# 'fatal: No names found, cannot describe anything'.
 def _git(*args: str, cwd: Path, check: bool = True) -> str:
     cp = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True,
                         env={**os.environ, "GIT_TERMINAL_PROMPT": "0"})
@@ -112,7 +118,7 @@ def _refs() -> _Refs:
     head = _git("rev-parse", "HEAD", cwd=H.WORKTREE)
     try:
         tag = os.environ.get("KOVA_E2E_UPGRADE_BASE") or _git(
-            "describe", "--tags", "--match", "v20[0-9][0-9].*", "--abbrev=0", "HEAD~1",
+            "describe", "--tags", "--match", "v[0-9]*.[0-9]*.[0-9]*", "--abbrev=0", "HEAD~1",
             cwd=H.WORKTREE,
         )
         return _Refs(head, tag, _git("rev-parse", f"{tag}^{{commit}}", cwd=H.WORKTREE))
@@ -369,14 +375,33 @@ def make_leg(root: Path, template_home: Path | None) -> Leg:
     # The installer's tier 0: N-1's own uv.lock (hash-pinned, `--extra all`) into install/venv, with the
     # user's uv config hidden. Select a managed interpreter allowed by N-1, not HEAD's pinned 3.14;
     # the updater must cross that interpreter boundary during the retry.
+    #
+    # --frozen, NOT --locked. pm's own sync() defaults to frozen=True (locked=False),
+    # and no production path passes locked=True, so --locked here tested a mode users
+    # never run. --locked re-resolves to prove the lock still matches pyproject, and
+    # v1.0.0 legitimately fails that check: its release commit raised pyproject's
+    # version to 1.0.0 but never re-locked uv.lock, so the lock's own kova-agent
+    # entry still said 0.0.0. uv reads that stale root entry as an unresolvable
+    # requirement and then demands hashes for every direct URL dependency - which is
+    # where "a hash was expected but one was not found for kittentts" came from. That
+    # message names kittentts, but the defect was in kova-agent's own version field.
+    # --frozen installs the lock exactly as written, which is what a real install of
+    # v1.0.0 does, and it succeeds.
     no_cfg = root / "uv-config"
     no_cfg.mkdir()
     uv_env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "UV_NO_CONFIG", "UV_CONFIG_FILE")}
     uv_env.update(UV_PROJECT_ENVIRONMENT=str(install / "venv"), XDG_CONFIG_HOME=str(no_cfg), XDG_CONFIG_DIRS=str(no_cfg))
-    cp = subprocess.run([uv, "sync", "-q", "--locked", "--extra", "all", "--managed-python",
+    cp = subprocess.run([uv, "sync", "-q", "--frozen", "--extra", "all", "--managed-python",
                          "--python", base_python], cwd=str(install),
                         env=uv_env, capture_output=True, text=True, timeout=1800)
     assert cp.returncode == 0, f"N-1 venv install from its uv.lock failed:\n{cp.stderr[-4000:]}"
+    # This build regenerates N-1's committed `kova_agent.egg-info`, and v1.0.0
+    # ships that artifact stale (PKG-INFO says 0.0.0 while its own pyproject
+    # says 1.0.0), so the install leaves the checkout dirty. Every leg then
+    # asserts on a clean tree afterwards, and `kova update` autostashes the
+    # change and conflicts against HEAD's regenerated copy. Restore N-1's
+    # bytes: the artifact is a build output, so this costs the leg nothing.
+    _git("checkout", "--", "kova_agent.egg-info", cwd=install, check=False)
     env_probe = H.isolated_env(root)
     kova_home = Path(env_probe["KOVA_HOME"])
     if template_home is not None:

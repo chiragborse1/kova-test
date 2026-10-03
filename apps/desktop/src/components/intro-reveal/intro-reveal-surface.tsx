@@ -70,7 +70,7 @@ export function IntroRevealSurface() {
       </div>
 
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-[13vh] text-center text-[1.02rem] tracking-[0.34em] text-white/60 uppercase"
+        className="pointer-events-none absolute inset-x-0 bottom-[13vh] text-center text-lg tracking-[0.34em] text-white/60 uppercase"
         style={{
           fontFamily: "'Collapse', sans-serif",
           opacity: everywhere && !brand ? 1 : 0,
@@ -84,7 +84,7 @@ export function IntroRevealSurface() {
       <BrandClose ref={brandRef} />
 
       <button
-        className="absolute bottom-6 right-7 text-[0.72rem] uppercase tracking-[0.24em] text-white/40 transition-colors hover:text-white/80"
+        className="absolute bottom-6 right-7 text-base uppercase tracking-caps text-white/40 transition-colors hover:text-white/80"
         onClick={skip}
         style={{ fontFamily: "'Collapse', sans-serif" }}
         type="button"
@@ -126,7 +126,7 @@ function HeroChat({ frame, viewportRef }: HeroChatProps) {
 
       <div className="flex min-h-[3.9rem] justify-end">
         <div
-          className="max-w-[80%] px-1 py-3.5 text-right text-[1.02rem] leading-7 text-white/92"
+          className="max-w-[80%] px-1 py-3.5 text-right text-lg leading-7 text-white/92"
           style={{
             opacity: sent ? 1 : 0,
             transform: sent ? 'translateY(0) scale(1)' : 'translateY(10px) scale(0.97)',
@@ -157,19 +157,19 @@ function HeroChat({ frame, viewportRef }: HeroChatProps) {
               }}
             >
               <span
-                className={cn('w-4 text-center font-mono text-[0.95rem]', !done && 'text-white/55')}
+                className={cn('w-4 text-center font-mono text-lg', !done && 'text-white/55')}
                 style={{ color: done ? BLUE : undefined, fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {done ? '✓' : SPINNER[frame.tick % SPINNER.length]}
               </span>
               <span
-                className="text-[0.66rem] font-bold uppercase tracking-[0.18em] text-white/55"
+                className="text-sm font-bold uppercase tracking-caps text-white/55"
                 style={{ fontFamily: "'Collapse', sans-serif" }}
               >
                 {row.label}
               </span>
               <span
-                className="ml-auto grid text-[0.8rem] text-white/50"
+                className="ml-auto grid text-md text-white/50"
                 style={{ fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {/* Stacking keeps the running/done crossfade in place. */}
@@ -193,7 +193,7 @@ function HeroChat({ frame, viewportRef }: HeroChatProps) {
 
       <div className="mt-5 min-h-[6.5rem]">
         <div
-          className="max-w-[88%] rounded-xl rounded-bl-md px-5 py-3.5 text-[1.02rem] leading-7 text-white/88"
+          className="max-w-[88%] rounded-xl rounded-bl-md px-5 py-3.5 text-lg leading-7 text-white/88"
           style={{
             background: 'rgba(255,255,255,0.055)',
             border: '1px solid rgba(255,255,255,0.07)',
@@ -222,7 +222,7 @@ function HeroChat({ frame, viewportRef }: HeroChatProps) {
             border: '1px solid rgba(255,255,255,0.12)'
           }}
         >
-          <div className="min-h-[2rem] px-1.5 pt-0.5 text-[1.02rem] leading-7 text-white/90">
+          <div className="min-h-[2rem] px-1.5 pt-0.5 text-lg leading-7 text-white/90">
             {sent || typedText.length === 0 ? (
               <span className="text-white/28">Ask anything. Build anything.</span>
             ) : (
@@ -319,7 +319,7 @@ function ViewportNode({ frame, viewportRef }: HeroChatProps) {
         }}
       >
         <div
-          className="flex items-center justify-between px-3 pt-2.5 text-[0.5rem] uppercase tracking-[0.2em] text-white/30"
+          className="flex items-center justify-between px-3 pt-2.5 text-2xs uppercase tracking-caps text-white/30"
           style={{ fontFamily: "'Collapse', sans-serif" }}
         >
           <span className="flex items-center gap-1.5">
@@ -330,7 +330,7 @@ function ViewportNode({ frame, viewportRef }: HeroChatProps) {
             viewport
           </span>
           <span
-            className="text-[0.6rem] normal-case tracking-normal"
+            className="text-2xs normal-case tracking-normal"
             style={{ color: BLUE_DIM, fontFamily: "'JetBrains Mono', monospace" }}
           >
             {decoded(viewport.mode, viewport.at, frame.tick, 300)}

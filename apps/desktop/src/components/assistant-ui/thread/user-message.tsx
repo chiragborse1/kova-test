@@ -48,7 +48,7 @@ export function StickyHumanMessageContainer({
     // while attachments below it scroll away.
     <>
       <div
-        className="group/user-message sticky z-40 -mx-4 flex w-[calc(100%+2rem)] min-w-0 max-w-none flex-col items-stretch gap-0 self-end overflow-visible px-4 pb-(--conversation-turn-gap) pt-1"
+        className="group/user-message sticky z-40 -mx-4 flex w-[calc(100%+2rem)] min-w-0 max-w-none flex-col items-end gap-0 self-end overflow-visible px-4 pb-(--conversation-turn-gap) pt-1"
         data-message-id={messageId}
         data-role="user"
         data-slot="aui_user-message-root"
@@ -71,7 +71,7 @@ export function StickyHumanMessageContainer({
 // so without the carve-out, clicking a stuck bubble drags the window instead of
 // opening the edit composer.
 export const USER_BUBBLE_BASE_CLASS =
-  'composer-human-message standalone-glass relative flex w-full min-w-0 max-w-full flex-col gap-1.5 overflow-y-auto rounded-xl border bg-(--dt-user-bubble) px-3 py-2 text-left [-webkit-app-region:no-drag]'
+  'composer-human-message standalone-glass relative flex w-fit min-w-0 max-w-[min(85%,44rem)] flex-col gap-1.5 overflow-y-auto rounded-xl border bg-(--dt-user-bubble) px-3 py-2 text-right [-webkit-app-region:no-drag]'
 
 export const USER_ACTION_ICON_BUTTON_CLASS =
   'grid place-items-center rounded-md bg-transparent text-(--ui-text-secondary) transition-colors hover:bg-(--ui-control-active-background) hover:text-foreground disabled:cursor-default disabled:text-(--ui-text-quaternary) disabled:opacity-70'
@@ -203,14 +203,14 @@ const AgentMessageNote: FC<{ text: string }> = ({ text }) => {
   // message, so the exchange still reads in order.
   return (
     <div
-      className="flex max-w-[min(86%,44rem)] flex-col gap-0.5 self-center px-2 py-0.5 text-[0.6875rem] leading-5 text-muted-foreground/60"
+      className="flex max-w-[min(86%,44rem)] flex-col gap-0.5 self-center px-2 py-0.5 text-sm leading-5 text-muted-foreground/60"
       data-slot="aui_agent-message-note"
     >
       <span className="flex items-center justify-center gap-1.5">
         {avatar ? (
           <img alt="" aria-hidden className="size-4 shrink-0 rounded-full object-cover" src={avatar} />
         ) : (
-          <span aria-hidden className="text-[0.8125rem] leading-none">
+          <span aria-hidden className="text-md leading-none">
             🤖
           </span>
         )}
@@ -221,7 +221,7 @@ const AgentMessageNote: FC<{ text: string }> = ({ text }) => {
           <summary className="cursor-pointer select-none text-center text-muted-foreground/45 hover:text-muted-foreground/70">
             show message
           </summary>
-          <div className="mt-1 max-w-[36rem] rounded-lg border border-(--ui-stroke-tertiary) px-3 py-2 text-left text-[0.75rem] leading-5 text-foreground/85">
+          <div className="mt-1 max-w-[36rem] rounded-lg border border-(--ui-stroke-tertiary) px-3 py-2 text-left text-base leading-5 text-foreground/85">
             <UserMessageText text={body} />
           </div>
         </details>
@@ -423,8 +423,11 @@ export const UserMessage: FC<{
         }
         messageId={messageId}
       >
-        <ActionBarPrimitive.Root className="relative w-full max-w-full" data-slot="aui_user-bubble-actions">
-          <div className="human-message-with-todos-wrapper flex w-full flex-col gap-0">
+        <ActionBarPrimitive.Root
+          className="relative flex w-full max-w-full flex-col items-end"
+          data-slot="aui_user-bubble-actions"
+        >
+          <div className="human-message-with-todos-wrapper flex w-full flex-col items-end gap-0">
             <ReactionPicker
               onOpenChange={setPickerOpen}
               onSelect={pickEmoji}
@@ -432,7 +435,7 @@ export const UserMessage: FC<{
               selected={shownReactions.find(reaction => reaction.author === 'user')?.emoji}
             >
               <div
-                className="relative w-full"
+                className="relative flex w-full flex-col items-end"
                 // The app context menu skips PLAIN right-clicks here (the
                 // attr below) so this handler keeps the picker gesture; a
                 // link/image/selection inside the bubble still gets the app
@@ -560,7 +563,7 @@ export const UserMessage: FC<{
             <MessageTimelineTimestamp className="self-end pr-1.5" />
             <BranchPickerPrimitive.Root
               className={cn(
-                'checkpoint-container flex items-center gap-1 pb-0 pt-1 pl-1.5 text-[0.75rem] leading-none text-(--ui-text-tertiary)',
+                'checkpoint-container flex items-center gap-1 pb-0 pt-1 pl-1.5 text-base leading-none text-(--ui-text-tertiary)',
                 readOnly && 'hidden'
               )}
               hideWhenSingleBranch

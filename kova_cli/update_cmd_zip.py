@@ -372,6 +372,40 @@ def _download_and_swap_zip(branch: str, zip_url: str) -> None:
 
 
 
+def _zip_fallback_repository() -> str:
+    """The install's own ``owner/repository``, for the static-archive fallback.
+
+    The archive URL must name a real GitHub repository, and this path is
+    reached precisely when Git is unusable -- so it cannot ask Git what the
+    origin is. It reads the checkout's configured origin instead, falling back
+    to the upstream project when that is unreadable or not a GitHub URL.
+
+    The previous literal ``"kova-agent"`` was a bare project name with no
+    owner, so it could never satisfy the ``owner/repository`` check below: any
+    caller that reached here without a resolved target raised ValueError and
+    the ZIP fallback could not run at all.
+    """
+    import re as _re
+    import subprocess as _subprocess
+    from pathlib import Path as _Path
+
+    from kova_cli.update_cmd import _m
+    from kova_cli.source_releases import _GITHUB_ORIGIN, OFFICIAL_REPOSITORY
+
+    try:
+        result = _subprocess.run(
+            ["git", "config", "--get", "remote.origin.url"],
+            cwd=_Path(_m().PROJECT_ROOT), capture_output=True, text=True,
+            encoding="utf-8", errors="replace", timeout=10, stdin=_subprocess.DEVNULL)
+        if result.returncode == 0:
+            match = _GITHUB_ORIGIN.fullmatch(result.stdout.strip())
+            if match and _re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", match[1]):
+                return match[1]
+    except (OSError, ValueError, _subprocess.SubprocessError):
+        pass
+    return OFFICIAL_REPOSITORY
+
+
 def _update_via_zip(args, *, had_desktop_app_before_update: bool = False,
                    target_sha: str | None = None, target_repository: str | None = None,
                    completion_request=None) -> bool:
@@ -400,7 +434,7 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False,
     if target_sha is not None and not re.fullmatch(r"[0-9a-f]{40}", target_sha):
         raise ValueError("ZIP update requires an exact full commit SHA")
     ref = target_sha if target_sha is not None else f"refs/heads/{branch}"
-    repository = target_repository or "kova-agent"
+    repository = target_repository or _zip_fallback_repository()
     if (not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository)
             or any(part in (".", "..") for part in repository.split("/"))):
         raise ValueError("ZIP update requires a GitHub owner/repository")

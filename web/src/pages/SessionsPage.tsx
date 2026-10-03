@@ -1766,16 +1766,16 @@ export default function SessionsPage() {
           <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
             <div className="flex items-center gap-2 min-w-0">
               {actionStatus?.running ? (
-                <Spinner className="shrink-0 text-[0.875rem] text-warning" />
+                <Spinner className="shrink-0 text-lg text-warning" />
               ) : actionStatus?.exit_code === 0 ? (
                 <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-success" />
               ) : actionStatus !== null ? (
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-destructive" />
               ) : (
-                <Spinner className="shrink-0 text-[0.875rem] text-muted-foreground" />
+                <Spinner className="shrink-0 text-lg text-muted-foreground" />
               )}
 
-              <span className="text-xs font-mondwest tracking-[0.12em] truncate">
+              <span className="text-xs font-mondwest tracking-caps truncate">
                 {activeAction === "restart"
                   ? t.status.restartGateway
                   : t.status.updateKova}
@@ -1940,7 +1940,7 @@ export default function SessionsPage() {
             {showList && (
               <div className="relative min-w-0 w-full sm:w-auto sm:min-w-[12rem] sm:max-w-md sm:flex-1">
                 {searching ? (
-                  <Spinner className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[0.875rem] text-primary" />
+                  <Spinner className="absolute left-2.5 top-1/2 -translate-y-1/2 text-lg text-primary" />
                 ) : (
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 )}

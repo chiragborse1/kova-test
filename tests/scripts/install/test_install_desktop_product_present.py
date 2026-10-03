@@ -16,6 +16,13 @@ from pathlib import Path
 
 import pytest
 
+# This file drives scripts/install.sh through bash. Every sibling that does the
+# same carries platforms("posix"); without it the file is selected by no lane
+# and, on a Windows host, bash exits 127 because the POSIX tools are absent --
+# failures that read like product bugs and are not.
+pytestmark = pytest.mark.platforms("posix")
+
+
 ROOT = Path(__file__).resolve().parents[3]
 INSTALL_SH = ROOT / "scripts" / "install.sh"
 INSTALL_PS1 = ROOT / "scripts" / "install.ps1"

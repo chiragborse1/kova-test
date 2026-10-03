@@ -149,16 +149,22 @@ jobs:
         variant: [slim, desktop]
         include:
           - arch: amd64
-            runner: ubuntu-latest-32-core
+            runner: ${{ vars.UBU_RUNNER || 'ubuntu-latest-32-core' }}
             platform: linux/amd64
           # arm64 builds on the native arm64 larger runner. A build of
           # linux/arm64 on an x64 host uses emulation.
           - arch: arm64
-            runner: ubuntu-latest-32-arm-core
+            runner: ${{ vars.UBU_ARM_RUNNER || 'ubuntu-latest-32-arm-core' }}
             platform: linux/arm64
 
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 45
+    # The arm64 row runs on an amd64 host (no paid larger arm64 runner quota
+    # here), so its smoke tests execute under qemu. That is roughly an order
+    # of magnitude slower than native, and 45 min was not enough -- the first
+    # qemu run was cancelled at 46 min inside 'Run docker integration tests'
+    # after the image itself had built and every setup step had passed. Only
+    # the emulated row needs the longer budget; amd64 keeps the fast-fail one.
+    timeout-minutes: ${{ matrix.arch == 'arm64' && 180 || 45 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -196,6 +202,29 @@ jobs:
       # collide with the failed first attempt. A genuine persistent failure
       # still fails the job — only the first attempt has continue-on-error.
       # Refs: docker/setup-buildx-action#510
+      # An arm64 image can be BUILT on an amd64 runner (buildx emulates the
+      # build) but cannot be RUN there unless binfmt is registered, which is
+      # why the arm64 row failed with
+      #   [FATAL tini] exec /opt/kova/docker/entrypoint-dispatch.sh failed:
+      #   Exec format error
+      # while the build step above reported success.
+      #
+      # vars.UBU_ARM_RUNNER stays 'ubuntu-latest' (amd64): this repository has
+      # no paid larger arm64 runner quota, and pointing it at
+      # 'ubuntu-latest-32-arm-core' only trades the failure for a job that
+      # queues indefinitely (observed: 7.6 h, never scheduled).
+      #
+      # Registering qemu keeps the guarantee that matters -- the arm64 image
+      # this workflow publishes has actually been started. Every container
+      # assertion in this lane is `--help` / `dashboard --help`, not a
+      # benchmark, so emulation costs wall clock and nothing else. amd64 rows
+      # skip the step.
+      - name: Set up QEMU
+        if: matrix.arch == 'arm64'
+        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3
+        with:
+          platforms: arm64
+
       - name: Set up Docker Buildx
         id: buildx
         continue-on-error: true
@@ -253,6 +282,13 @@ jobs:
           OPENROUTER_API_KEY: ""
           OPENAI_API_KEY: ""
           NOUS_API_KEY: ""
+          # The arm64 row executes under qemu on an amd64 host, where every
+          # instruction in the container's cont-init chain costs ~8x. 30s is a
+          # native budget and the emulated image never finishes inside it
+          # (measured: arm64 build 40.4 min vs amd64 4.9 min, run 37027608034).
+          # amd64 keeps the tight default so a genuinely wedged container
+          # still fails fast there.
+          KOVA_DOCKER_READY_TIMEOUT: ${{ matrix.arch == 'arm64' && '300' || '30' }}
         run: |
           # Each of these tests drives a container, so the docker daemon sets
           # the limit and not the processor. This pins the runner's worker
@@ -334,11 +370,11 @@ jobs:
         variant: [slim, desktop]
         include:
           - arch: amd64
-            runner: ubuntu-latest-32-core
+            runner: ${{ vars.UBU_RUNNER || 'ubuntu-latest-32-core' }}
             platform: linux/amd64
           # Native arm64 for the same reason as the build matrix above.
           - arch: arm64
-            runner: ubuntu-latest-32-arm-core
+            runner: ${{ vars.UBU_ARM_RUNNER || 'ubuntu-latest-32-arm-core' }}
             platform: linux/arm64
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 30
@@ -517,7 +553,7 @@ jobs:
       matrix:
         arch: [amd64, arm64]
         variant: [slim, desktop]
-    runs-on: ubuntu-latest-32-core
+    runs-on: ${{ vars.UBU_RUNNER || 'ubuntu-latest-32-core' }}
     timeout-minutes: 45
     env:
       ARCH: ${{ matrix.arch }}

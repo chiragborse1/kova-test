@@ -68,7 +68,7 @@ export function McpLogPane({ server }: McpLogPaneProps) {
           {(['stdio', 'agent'] as const).map(kind => (
             <TextTab
               active={source === kind}
-              className="h-5 px-0.5 text-[0.65rem]"
+              className="h-5 px-0.5 text-sm"
               key={kind}
               onClick={() => setSource(kind)}
             >
@@ -79,7 +79,7 @@ export function McpLogPane({ server }: McpLogPaneProps) {
       }
       defaultHeight={176}
       id="mcp-logs"
-      title={<span className="text-[0.68rem] font-normal text-muted-foreground/60">{server ?? m.allServers}</span>}
+      title={<span className="text-sm font-normal text-muted-foreground/60">{server ?? m.allServers}</span>}
     >
       <McpLogs emptyLabel={m.noOutput} server={server} source={source} />
     </DetailPane>

@@ -2,8 +2,8 @@ import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { McpCatalogEntry } from '@/kova'
 import { useI18n } from '@/i18n'
+import type { McpCatalogEntry } from '@/kova'
 
 export type InstallField = McpCatalogEntry['required_env'][number]
 
@@ -24,10 +24,10 @@ export function LocalInstall({
     <div className="grid justify-items-start gap-2">
       {installFields.length > 0 ? (
         <>
-          <p className="text-[0.7rem] text-(--ui-text-tertiary)">{t.settings.mcp.catalogEnvRequired}</p>
+          <p className="text-sm text-(--ui-text-tertiary)">{t.settings.mcp.catalogEnvRequired}</p>
           {installFields.map(field => (
             <label className="grid w-full gap-1" key={field.name}>
-              <span className="text-[0.65rem] text-(--ui-text-secondary)">
+              <span className="text-sm text-(--ui-text-secondary)">
                 {field.prompt || field.name}
                 {field.required ? ' *' : ''}
               </span>

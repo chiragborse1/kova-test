@@ -9,8 +9,8 @@ import {
   type SidebarProjectTree
 } from '@/app/chat/sidebar/projects/workspace-groups'
 import type { KovaGitBaseBranch, KovaGitBranch } from '@/global'
-import { getKovaConfig, kovaApi, type KovaGateway } from '@/kova'
 import { translateNow } from '@/i18n'
+import { getKovaConfig, kovaApi, type KovaGateway } from '@/kova'
 import { desktopDefaultCwd, isDesktopFsRemoteMode, selectDesktopPaths, writeDesktopFileText } from '@/lib/desktop-fs'
 import { desktopGit } from '@/lib/desktop-git'
 import { isMissingRestEndpoint, isMissingRpcMethod } from '@/lib/gateway-rpc'

@@ -274,7 +274,7 @@ export function ComposerStatusStack({ onSubmit, queue, sessionId }: ComposerStat
             hasRunningTodo(group) ? (
               <GlyphSpinner
                 ariaLabel={t.statusStack.running}
-                className="text-[0.8rem] leading-none text-muted-foreground/80"
+                className="text-md leading-none text-muted-foreground/80"
                 spinner="braille"
               />
             ) : undefined
@@ -379,7 +379,7 @@ export function ComposerStatusStack({ onSubmit, queue, sessionId }: ComposerStat
           <div className="min-h-0 overflow-y-auto overscroll-y-contain" data-slot="status-stack-scroll">
             <div
               className={cn(
-                'transition-opacity duration-200 ease-out',
+                'transition-opacity base ease-out',
                 scrolledUp ? 'opacity-30 group-hover/composer:opacity-100' : 'opacity-100'
               )}
               data-slot="status-stack-content"

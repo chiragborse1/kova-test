@@ -24,8 +24,15 @@
 # checkout has no tags and this exits non-zero rather than silently emitting an
 # empty matrix.
 #
-# Only vYYYY.M.D[.N] release tags are considered; the repo also carries
+# Only vMAJOR.MINOR.PATCH release tags are considered; the repo also carries
 # backup/* and one-off tags that are not releases.
+#
+# The pattern mirrors kova_cli.update_channel.STABLE_TAG_RE, which is the single
+# authority for the stable tag shape. This script cannot import it (it runs before
+# any Python environment exists), so the rule is restated here -- keep the two in
+# step. It previously required a FOUR-digit major (^v[0-9]{4}\.), i.e. the old
+# CalVer scheme, so after the move to 1.0.0 it matched no tag this project makes
+# and the workflow failed with "no release tags found" even though v1.0.0 existed.
 
 set -euo pipefail
 
@@ -68,7 +75,7 @@ fi
 # lexicographic sort gets wrong.
 mapfile -t tags < <(
   git -C "$REPO" tag --list 'v*' \
-    | grep -E '^v[0-9]{4}\.[0-9]+\.[0-9]+(\.[0-9]+)?$' \
+    | grep -E '^v(0|[1-9][0-9]{0,2})\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' \
     | sort -V
 )
 

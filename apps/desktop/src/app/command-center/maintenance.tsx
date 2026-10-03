@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { PageLoader } from '@/components/page-loader'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { useI18n } from '@/i18n'
 import {
   type ActionResponse,
   type CuratorStatusResponse,
@@ -19,7 +20,6 @@ import {
   runSecurityAudit,
   setCuratorPaused
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { AlertCircle } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 import { upsertDesktopActionTask } from '@/store/activity'
@@ -227,12 +227,12 @@ export function MaintenancePanel() {
 
         {share && Object.keys(share.urls).length > 0 && (
           <div className="mt-2 rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) p-3">
-            <div className="mb-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="mb-1.5 text-sm font-semibold uppercase tracking-caps text-muted-foreground">
               {mm.debugShareLinks}
             </div>
             {Object.entries(share.urls).map(([key, url]) => (
               <div className="flex items-center justify-between gap-2 py-1" key={key}>
-                <span className="min-w-0 truncate font-mono text-[0.7rem]">
+                <span className="min-w-0 truncate font-mono text-sm">
                   {key}: {url}
                 </span>
                 <Button
@@ -252,12 +252,12 @@ export function MaintenancePanel() {
 
         {actionStatus && (
           <div className="mt-2">
-            <div className="mb-1.5 flex items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="mb-1.5 flex items-center gap-2 text-sm font-semibold uppercase tracking-caps text-muted-foreground">
               {mm.viewLog}
               {actionStatus.running && <span className="normal-case tracking-normal">{mm.running}</span>}
             </div>
             <pre
-              className="max-h-48 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) p-3 font-mono text-[0.65rem] leading-relaxed text-(--ui-text-tertiary)"
+              className="max-h-48 overflow-auto whitespace-pre-wrap wrap-break-word rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-bg-quinary) p-3 font-mono text-sm leading-relaxed text-(--ui-text-tertiary)"
               data-selectable-text="true"
             >
               {actionStatus.lines.join('\n')}
@@ -348,7 +348,7 @@ export function MaintenancePanel() {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <div className="mb-1.5 text-[0.625rem] font-medium uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+    <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
       {children}
     </div>
   )

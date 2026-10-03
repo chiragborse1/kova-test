@@ -258,7 +258,7 @@ export function GroupMentionInput({ members, onChange, onSubmitDraft, value, ...
   return (
     <div className="relative min-w-0 flex-1">
       {open ? (
-        <div className="absolute bottom-full left-0 z-50 mb-1 max-h-48 w-64 overflow-y-auto rounded-md border border-(--ui-stroke-secondary) bg-(--ui-bg-elevated) py-1 shadow-lg">
+        <div className="absolute bottom-full left-0 z-50 mb-1 max-h-48 w-64 overflow-y-auto rounded-md border border-(--ui-stroke-secondary) bg-(--ui-bg-elevated) py-1 shadow-popover">
           {options.map((option, index) => (
             <RowButton
               className={cn(
@@ -273,7 +273,7 @@ export function GroupMentionInput({ members, onChange, onSubmitDraft, value, ...
               onMouseEnter={() => setSelected(index)}
             >
               <span className="font-medium">{`@${option.handle}`}</span>
-              <span className="truncate text-[0.65rem] text-(--ui-text-quaternary)">{option.meta}</span>
+              <span className="truncate text-sm text-(--ui-text-quaternary)">{option.meta}</span>
             </RowButton>
           ))}
         </div>
@@ -474,7 +474,7 @@ export function GroupClarifyCard({ entry, members }: GroupClarifyCardProps) {
           : b.group.asks(botHandle(entry.member, member))}
       </div>
       {isApproval && entry.command ? (
-        <code className="block overflow-x-auto rounded bg-(--ui-bg-secondary,rgba(0,0,0,0.25)) px-2 py-1 font-mono text-[0.7rem] whitespace-pre-wrap break-all">
+        <code className="block overflow-x-auto rounded bg-(--ui-bg-secondary,rgba(0,0,0,0.25)) px-2 py-1 font-mono text-sm whitespace-pre-wrap break-all">
           {entry.command}
         </code>
       ) : null}
@@ -489,7 +489,7 @@ export function GroupClarifyCard({ entry, members }: GroupClarifyCardProps) {
                 return (
                   <Button
                     className={cn(
-                      'h-6 px-2 text-[0.7rem]',
+                      'h-6 px-2 text-sm',
                       isApproval && choice === 'deny' && !chosen && 'text-destructive'
                     )}
                     disabled={sending || !member}

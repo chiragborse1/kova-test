@@ -133,7 +133,7 @@ export function ThemeSwitcher({ collapsed = false, dropUp = false }: ThemeSwitch
           >
             <div className="border-b border-current/20 px-3 py-2">
               <Typography
-                className="text-display text-xs tracking-[0.12em] text-text-tertiary"
+                className="text-display text-xs tracking-caps text-text-tertiary"
               >
                 {sheetTitle}
               </Typography>
@@ -232,7 +232,7 @@ function FontSection({ fontChoices, fontId, setFont }: FontSectionProps) {
         <span className="inline-flex items-center gap-1.5">
           <Type className="h-3 w-3 text-text-tertiary" />
           <Typography
-            className="text-display text-xs tracking-[0.12em] text-text-tertiary"
+            className="text-display text-xs tracking-caps text-text-tertiary"
           >
             {t.theme?.fontTitle ?? "Font"}
           </Typography>
@@ -271,7 +271,7 @@ function FontSection({ fontChoices, fontId, setFont }: FontSectionProps) {
         return (
           <div key={cat}>
             <div className="px-3 pb-0.5 pt-1.5">
-              <Typography className="text-[0.65rem] uppercase tracking-[0.1em] text-text-tertiary">
+              <Typography className="text-xs uppercase tracking-caps text-text-tertiary">
                 {catLabel}
               </Typography>
             </div>

@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ErrorBanner } from '@/components/ui/error-state'
 import { Input } from '@/components/ui/input'
+import { useI18n } from '@/i18n'
 import {
   applyTelegramOnboarding,
   cancelTelegramOnboarding,
@@ -13,7 +14,6 @@ import {
   type TelegramOnboardingApplyResponse,
   type TelegramOnboardingStartResponse
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { openExternalLink } from '@/lib/external-link'
 import { Check, ExternalLink, QrCode, Save, X } from '@/lib/icons'
 import { isSubmitEnter } from '@/lib/ime'
@@ -306,7 +306,7 @@ export function TelegramQrSetup({ onApplied, platform, scopeProfile }: TelegramQ
 
                 <div className="grid gap-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                    <span className="text-sm font-semibold uppercase tracking-caps text-muted-foreground">
                       {q.allowedUsers}
                     </span>
                     {detectedOwnerId && allowedIds.includes(detectedOwnerId) && (

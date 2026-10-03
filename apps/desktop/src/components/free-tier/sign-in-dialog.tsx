@@ -15,8 +15,8 @@ import {
   DialogTitle,
   preventCloseButtonAutoFocus
 } from '@/components/ui/dialog'
-import { getGlobalModelOptions } from '@/kova'
 import { type Translations, useI18n } from '@/i18n'
+import { getGlobalModelOptions } from '@/kova'
 import { CheckCircle2, Loader2 } from '@/lib/icons'
 import { FREE_TIER_MODEL, friendlyWait, NOUS_PROVIDER_ID, refreshFreeTierStatus } from '@/store/free-tier'
 import {
@@ -153,7 +153,7 @@ export function FreeTierSignInDialog({ onSelectModel }: FreeTierSignInDialogProp
           >
             {state.model && (
               <div className="flex min-w-0 flex-wrap items-center gap-2">
-                <span className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-muted-foreground">
+                <span className="font-mono text-xs uppercase tracking-caps text-muted-foreground">
                   {copy.defaultModel}
                 </span>
                 <span className="min-w-0 truncate font-mono text-[length:var(--conversation-text-font-size)]">

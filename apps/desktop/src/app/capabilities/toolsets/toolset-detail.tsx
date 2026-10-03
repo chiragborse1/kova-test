@@ -2,8 +2,8 @@ import { compactNumber } from '@kova/shared'
 import { useNavigate } from 'react-router'
 
 import { Button } from '@/components/ui/button'
-import { type ProfileScope, profileScopeKey } from '@/kova'
 import { useI18n } from '@/i18n'
+import { type ProfileScope, profileScopeKey } from '@/kova'
 import type { ToolsetInfo } from '@/types/kova'
 
 import { ToolChip } from '../../master-detail'

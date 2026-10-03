@@ -29,8 +29,8 @@ import {
 import { HighlightMatches } from '@/components/ui/highlight-matches'
 import { usePointerQuiet } from '@/components/ui/keyboard-first'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { KovaGateway } from '@/kova'
 import { useI18n } from '@/i18n'
+import type { KovaGateway } from '@/kova'
 import { isSubmitEnter } from '@/lib/ime'
 import { catalogProviderMatches, modelOptionsQueryKey, requestModelOptions } from '@/lib/model-options'
 import { displayModelName, modelDisplayParts } from '@/lib/model-status-label'
@@ -611,7 +611,7 @@ export function ModelCatalogMenu({
             return (
               <DropdownMenuGroup className="py-0.5" key={slug}>
                 <DropdownMenuItem
-                  className="group/label flex w-full items-center gap-1 px-2 pb-0.5 pt-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-(--ui-text-tertiary) cursor-pointer !bg-transparent focus:!bg-transparent"
+                  className="group/label flex w-full items-center gap-1 px-2 pb-0.5 pt-0.5 text-xs font-semibold uppercase tracking-wider text-(--ui-text-tertiary) cursor-pointer !bg-transparent focus:!bg-transparent"
                   onSelect={event => {
                     event.preventDefault()
                     toggleCollapsedProvider(slug)
@@ -707,7 +707,7 @@ export function ModelCatalogMenu({
                             </span>
                             {metaTags.map(chip => (
                               <span
-                                className="shrink-0 rounded-sm border border-(--ui-stroke-secondary) bg-(--chrome-action-hover) px-1 py-px text-[0.625rem] font-medium uppercase leading-none tracking-wide text-(--ui-text-tertiary)"
+                                className="shrink-0 rounded-sm border border-(--ui-stroke-secondary) bg-(--chrome-action-hover) px-1 py-px text-xs font-medium uppercase leading-none tracking-wide text-(--ui-text-tertiary)"
                                 key={chip}
                               >
                                 {chip}
@@ -721,11 +721,11 @@ export function ModelCatalogMenu({
                             >
                               <span className="h-1 w-14 overflow-hidden rounded-full bg-(--ui-bg-tertiary)">
                                 <span
-                                  className="block h-full rounded-full bg-primary transition-[width] duration-500"
+                                  className="block h-full rounded-full bg-primary transition-[width] slow"
                                   style={{ width: `${Math.max(2, loadProgress.percent)}%` }}
                                 />
                               </span>
-                              <span className="text-[0.62rem] tabular-nums text-(--ui-text-tertiary)">
+                              <span className="text-xs tabular-nums text-(--ui-text-tertiary)">
                                 {loadProgress.percent}%
                               </span>
                             </span>
@@ -770,7 +770,7 @@ export function ModelCatalogMenu({
           })}
           {!hasLocalGroup && shownDownloads.length > 0 && (
             <DropdownMenuGroup className="py-0.5" key="local-downloads">
-              <DropdownMenuLabel className="px-2 pb-0.5 pt-0.5 text-[0.625rem] font-semibold uppercase tracking-wider text-(--ui-text-tertiary)">
+              <DropdownMenuLabel className="px-2 pb-0.5 pt-0.5 text-xs font-semibold uppercase tracking-wider text-(--ui-text-tertiary)">
                 {copyPicker.localDownloadsHeading}
               </DropdownMenuLabel>
               {shownDownloads.map(job => (
@@ -928,12 +928,12 @@ function DownloadingModelRow({
           <span
             className={cn(
               'block h-full rounded-full',
-              paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] duration-500'
+              paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] slow'
             )}
             style={{ width: `${Math.max(2, percent ?? 0)}%` }}
           />
         </span>
-        <span className="text-[0.62rem] tabular-nums text-(--ui-text-tertiary)">
+        <span className="text-xs tabular-nums text-(--ui-text-tertiary)">
           {paused
             ? copyLocal.downloadPausedLabel
             : typeof percent === 'number'

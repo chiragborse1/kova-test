@@ -148,7 +148,7 @@ export function GatewayConnectingOverlay() {
   return (
     <div
       className={cn(
-        'fixed inset-0 z-(--z-connecting) grid place-items-center bg-(--ui-chat-surface-background) transition-opacity duration-500 ease-out',
+        'fixed inset-0 z-(--z-connecting) grid place-items-center bg-(--ui-chat-surface-background) transition-opacity slow ease-out',
         overlayHidden ? 'pointer-events-none opacity-0' : 'opacity-100'
       )}
       // Masks the whole app while booting — must stay filled under window
@@ -159,7 +159,7 @@ export function GatewayConnectingOverlay() {
       <DecodeText
         active={phase === 'live' && (previewing || connecting)}
         className={cn(
-          'pl-[0.4em] text-(--theme-primary) transition duration-300 ease-out',
+          'pl-[0.4em] text-(--theme-primary) transition slow ease-out',
           leaving ? 'translate-y-2 opacity-0 saturate-0' : 'translate-y-0 opacity-100 saturate-100'
         )}
         cursor

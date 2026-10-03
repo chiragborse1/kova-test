@@ -9,6 +9,8 @@ import time
 
 import pytest
 
+from tests.conftest import subprocess_timeout
+
 
 @pytest.mark.platforms("windows")
 def test_windows_update_writes_locale_independent_marker_and_result(tmp_path, monkeypatch):
@@ -26,7 +28,7 @@ def test_windows_update_writes_locale_independent_marker_and_result(tmp_path, mo
     started = int(time.time())
     result = subprocess.run([shell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command],
                             env={**os.environ, "KOVA_TIMESTAMP_TEST_SCRIPT": str(script)},
-                            capture_output=True, text=True, timeout=60)
+                            capture_output=True, text=True, timeout=subprocess_timeout())
     finished = int(time.time())
     assert result.returncode == 0, result.stdout + result.stderr
     marker = (tmp_path / ".kova-update-in-progress").read_text(encoding="utf-8-sig").splitlines()

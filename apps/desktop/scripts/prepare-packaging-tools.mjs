@@ -35,6 +35,22 @@ export function packagingTargetArch(target) {
   throw new Error(`Packaging preparation requires a same-OS x64/arm64 target, got ${target}`)
 }
 
+/**
+ * Ceiling for the Electron artifact download. Defaults to 45 minutes, which is
+ * generous for the ~100 MB zip even on a slow link, and overridable for hosts
+ * that need longer. A non-numeric or non-positive override is ignored rather
+ * than silently producing an instant abort.
+ * @returns {number}
+ */
+export function electronDownloadTimeoutMs(env = process.env) {
+  const raw = env.KOVA_ELECTRON_DOWNLOAD_TIMEOUT_MINUTES
+  if (raw != null && String(raw).trim() !== '') {
+    const minutes = Number(raw)
+    if (Number.isFinite(minutes) && minutes > 0) return minutes * 60 * 1000
+  }
+  return 45 * 60 * 1000
+}
+
 /** @param {string} from @param {string} to @returns {string} */
 function copyTool(from, to) {
   fs.rmSync(to, { recursive: true, force: true })
@@ -87,7 +103,19 @@ async function acquirePackagingTools({ source, out, cache, target, formats, buil
   const resourcesDir = path.join(source, 'apps/desktop', config.directories?.buildResources || 'build')
   const [archive, archiveTool, iconTools] = await Promise.all([
     electronGet.downloadElectronArtifactZip({ version: config.electronVersion, platformName: process.platform, arch: packagingTargetArch(target),
-      artifactName: 'electron', cacheDir: path.join(cache, 'electron') }),
+      artifactName: 'electron', cacheDir: path.join(cache, 'electron'),
+      // app-builder-lib hard-codes `AbortSignal.timeout(10 * 60 * 1000)` as the
+      // DEFAULT for `signal`, then spreads `...config.downloadOptions` over it, so
+      // anything we pass here wins. On a slow or residential link the Electron
+      // zip is still mid-transfer at the 10-minute mark, the abort fires, and the
+      // whole install dies on a download that was never actually failing -- it
+      // was merely slow. Its retry predicate only re-runs errors carrying a
+      // string .code (ENOTFOUND/ETIMEDOUT/...), and a TimeoutError has none, so
+      // the abort was terminal: no retry, straight to exit 1.
+      //
+      // Raise the ceiling to something a real download can finish inside.
+      // Override with KOVA_ELECTRON_DOWNLOAD_TIMEOUT_MINUTES on a slower link.
+      downloadOptions: { signal: AbortSignal.timeout(electronDownloadTimeoutMs()) } }),
     sevenZip.getPath7za(), icons.getIconsToolsetPath(config.toolsets?.icons, resourcesDir),
   ])
   const electron = copyTool(archive, path.join(out, 'electron.zip'))

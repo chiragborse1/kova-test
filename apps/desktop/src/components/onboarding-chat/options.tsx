@@ -76,7 +76,7 @@ export function AccentSwatch({
 }) {
   const className = cn(
     // The border keeps the mono swatch visible when its colour matches the background.
-    'relative inline-flex size-9 items-center justify-center rounded-full border border-foreground/15 transition-transform duration-150',
+    'relative inline-flex size-9 items-center justify-center rounded-full border border-foreground/15 transition-transform fast',
     !active && 'hover:scale-105'
   )
 
@@ -149,7 +149,7 @@ export const LAYOUTS: Array<{ description: string; id: string; mode: InterfaceMo
 
 export function MiniTree({ node }: { node: MiniNode }) {
   if (node === 1) {
-    return <div className="min-h-0 min-w-0 flex-1 rounded-[3px] bg-foreground/15" />
+    return <div className="min-h-0 min-w-0 flex-1 rounded-sm bg-foreground/15" />
   }
 
   return (
@@ -208,7 +208,7 @@ export function LayoutPreviewCard({
 }) {
   return (
     <button aria-pressed={active} className="group flex flex-col items-center gap-2" onClick={onSelect} type="button">
-      <span className={cn('flex aspect-[10/7] w-full flex-col gap-1.5 rounded-[8px] p-2', selectableClass(active))}>
+      <span className={cn('flex aspect-[10/7] w-full flex-col gap-1.5 rounded-md p-2', selectableClass(active))}>
         <MiniWindowButtons />
         <span className="flex min-h-0 flex-1">
           <MiniTree node={tree} />
@@ -216,7 +216,7 @@ export function LayoutPreviewCard({
       </span>
       <span className="flex flex-col items-center gap-0.5">
         <span className={cn('text-xs', active ? 'text-foreground' : 'text-muted-foreground')}>{name}</span>
-        {description && <span className="text-[0.68rem] text-muted-foreground/70">{description}</span>}
+        {description && <span className="text-sm text-muted-foreground/70">{description}</span>}
       </span>
     </button>
   )

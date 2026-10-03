@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Codicon } from '@/components/ui/codicon'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
-import { getGlobalModelOptions } from '@/kova'
 import { useI18n } from '@/i18n'
+import { getGlobalModelOptions } from '@/kova'
 import { Check, ChevronDown, ChevronLeft, KeyRound, Loader2 } from '@/lib/icons'
 import { isSubmitEnter } from '@/lib/ime'
 import { isProviderSetupErrorMessage } from '@/lib/provider-setup-errors'
@@ -424,10 +424,10 @@ export function DesktopOnboardingOverlay({
     >
       <div
         className={cn(
-          'relative w-full max-w-[45rem] transition-all duration-500 ease-out',
+          'relative w-full max-w-[45rem] transition-all slow ease-out',
           bare
             ? ''
-            : 'overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) shadow-nous',
+            : 'overflow-hidden rounded-xl border border-(--stroke-nous) bg-(--ui-chat-bubble-background) shadow-dialog',
           // Bare confirm screen orchestrates its own per-element exit; the
           // carded states use the simple lift/blur dissolve.
           leaving && !bare
@@ -490,12 +490,12 @@ function FreeTierReadyPanel({
 
       <div
         className={cn(
-          'grid justify-items-center gap-1.5 transition duration-[360ms] ease-out',
+          'grid justify-items-center gap-1.5 transition slow ease-out',
           leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
         )}
       >
         <div className="flex items-center gap-2">
-          <span className="font-mono text-[0.625rem] uppercase tracking-[0.2em] text-muted-foreground">
+          <span className="font-mono text-xs uppercase tracking-caps text-muted-foreground">
             {t.onboarding.defaultModel}
           </span>
           <Badge size="xs" variant="success">
@@ -508,7 +508,7 @@ function FreeTierReadyPanel({
 
       <div
         className={cn(
-          'grid justify-items-center gap-2 transition duration-[360ms] ease-out',
+          'grid justify-items-center gap-2 transition slow ease-out',
           leaving ? 'opacity-0 saturate-0' : 'opacity-100 saturate-100'
         )}
       >
@@ -573,8 +573,8 @@ function Header() {
 
   return (
     <div className="bg-(--ui-chat-bubble-background) px-5 pt-5 pb-1">
-      <h2 className="text-[0.9375rem] font-semibold tracking-tight">{t.onboarding.headerTitle}</h2>
-      <p className="mt-1 max-w-xl text-[0.8125rem] leading-5 text-(--ui-text-tertiary)">{t.onboarding.headerDesc}</p>
+      <h2 className="text-lg font-semibold tracking-tight">{t.onboarding.headerTitle}</h2>
+      <p className="mt-1 max-w-xl text-md leading-5 text-(--ui-text-tertiary)">{t.onboarding.headerDesc}</p>
     </div>
   )
 }

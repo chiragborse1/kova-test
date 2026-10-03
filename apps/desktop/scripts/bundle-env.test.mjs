@@ -34,8 +34,8 @@ test('explicit clears beat inherited homes and prevent Windows registry fallback
     delete env.KOVA_DATA_DIR_SUFFIX
     delete env.KOVA_DESKTOP_USER_DATA_DIR
     const actual = JSON.parse(execFileSync(process.execPath, [outfile], { env, encoding: 'utf8' }))
-    expect(actual).toEqual({ cleared: '', home: 'C:\\Users\\test\\AppData\\Local\\hermesmagic-test',
-      child: 'C:\\Users\\test\\AppData\\Local\\hermesmagic-test', registryReads: 0 })
+    expect(actual).toEqual({ cleared: '', home: 'C:\\Users\\test\\AppData\\Local\\kovamagic-test',
+      child: 'C:\\Users\\test\\AppData\\Local\\kovamagic-test', registryReads: 0 })
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

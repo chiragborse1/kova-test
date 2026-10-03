@@ -29,7 +29,7 @@ for f, old, new in EDITS:
     p = pathlib.Path(f)
     if not p.exists():
         print("  missing:", f); continue
-    s = p.read_text(encoding="utf-8", errors="replace")
+    s = p.read_text(encoding="utf-8-sig", errors="replace")
     if old in s:
         p.write_text(s.replace(old, new), encoding="utf-8")
         print(f"  updated {f}")

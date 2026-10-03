@@ -35,6 +35,14 @@ on:
         description: Whether the critical supply-chain scan found a risk requiring review.
         type: boolean
         default: false
+      pr_number:
+        description: >-
+          The pull request number whose labels are checked. Passed explicitly because a
+          reusable workflow invoked with workflow_call does NOT inherit the caller's
+          pull_request context, so github.event.pull_request.number is empty here.
+          Left empty when there is no PR, in which case the label check is skipped.
+        type: string
+        default: ''
     outputs:
       ci_reviewed:
         description: Whether the ci-reviewed label is present. Empty when neither input was true.
@@ -67,8 +75,16 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          PR="${{ github.event.pull_request.number }}"
+          PR="${{ inputs.pr_number }}"
+          if [ -z "$PR" ]; then
+            # No PR to check (a push, or a caller that forgot to pass one). Do not
+            # fall back to PR #1: an unrelated open PR must never decide this gate.
+            echo "No pull request number supplied; skipping the label check."
+            echo "ci_reviewed=skipped" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           LABELS=$(gh pr view "$PR" --repo "$REPO" --json labels --jq '.labels[].name' || true)
+          echo "PR #$PR labels: ${LABELS:-<none>}"
 
           if echo "$LABELS" | grep -Fxq 'ci-reviewed'; then
             echo "ci-reviewed label present."
@@ -117,7 +133,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Fail on missing label
-        if: steps.label-check.outputs.ci_reviewed != 'true'
+        if: steps.label-check.outputs.ci_reviewed == 'false'
         run: |
           echo "::error::CI-sensitive changes require the ci-reviewed label. Add the label and re-run this check."
           exit 1

@@ -17,8 +17,8 @@ import { Button } from '@/components/ui/button'
 import { RowButton } from '@/components/ui/row-button'
 import { SearchField } from '@/components/ui/search-field'
 import { Tip } from '@/components/ui/tooltip'
-import { disconnectOAuthProvider, listOAuthProviders } from '@/kova'
 import { useI18n } from '@/i18n'
+import { disconnectOAuthProvider, listOAuthProviders } from '@/kova'
 import { Check, ChevronDown, ChevronRight, KeyRound, Loader2, Terminal, Trash2 } from '@/lib/icons'
 import { normalize } from '@/lib/text'
 import { cn } from '@/lib/utils'
@@ -278,7 +278,7 @@ function ConnectedProviderRow({
   const showHint = !canDisconnect && !terminalDisconnect
 
   return (
-    <div className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-[6px] transition-colors hover:bg-(--ui-control-hover-background)">
+    <div className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-md transition-colors hover:bg-(--ui-control-hover-background)">
       <RowButton
         className="min-w-0 px-3 py-2.5 text-left"
         onClick={() => (terminalDisconnect ? onTerminalDisconnect(provider) : onSelect(provider))}
@@ -292,7 +292,7 @@ function ConnectedProviderRow({
         </div>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">{t.onboarding.flowSubtitles[provider.flow]}</p>
         {showHint && (
-          <p className="mt-0.5 truncate text-[0.68rem] leading-5 text-muted-foreground/70">
+          <p className="mt-0.5 truncate text-sm leading-5 text-muted-foreground/70">
             {provider.flow === 'external' ? copy.removeExternalGeneric(title) : copy.removeKeyManaged(title)}
           </p>
         )}
@@ -367,7 +367,7 @@ function LocalEndpointRow({ onOpen }: { onOpen: (reason: null | string) => void 
 
   return (
     <RowButton
-      className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-[6px] px-3 py-2.5 text-left transition-colors hover:bg-(--ui-control-hover-background)"
+      className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-1 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-(--ui-control-hover-background)"
       onClick={() => onOpen(null)}
     >
       <div className="flex min-w-0 flex-col gap-0.5">

@@ -1,6 +1,6 @@
 import { capabilityScoped } from '@/api/client'
-import { addMcpServer, getMcpCatalog, listMcpServers, removeMcpServer } from '@/kova'
 import { translateNow } from '@/i18n'
+import { addMcpServer, getMcpCatalog, listMcpServers, removeMcpServer } from '@/kova'
 import { completeMcpDesktopOAuth, McpOAuthCancelled } from '@/lib/mcp-dashboard-oauth'
 import { prettyName } from '@/lib/text'
 import { type ComposerSuggestion, registerDraftProvider } from '@/store/composer-suggestions'

@@ -220,7 +220,8 @@ def test_every_anchor_extra_exists_in_pyproject():
 def test_legacy_selection_carries_extras_the_main_era_venv_lazily_installed(monkeypatch, tmp_path):
     """Migrating a main-era venv must keep opt-in extras it already had (FAL
     image generation, a messaging SDK), or the first PM launch prompts to
-    reinstall them. Umbrella and gated-off extras are never carried."""
+    reinstall them. Gated-off extras, and the umbrellas whose members share
+    an anchor (`voice`, `wake`), are never carried."""
     monkeypatch.setattr(extras, "_PLATFORM_GATES", {"piper": "python_version < '0'"})
     site = tmp_path / "venv" / "lib" / "python3.11" / "site-packages"
     (site / "fal_client").mkdir(parents=True)
@@ -235,7 +236,11 @@ def test_legacy_selection_carries_extras_the_main_era_venv_lazily_installed(monk
 
     assert selection[0] == "all"
     assert {"fal", "telegram", "vertex", "exa"} <= set(selection)
-    assert "messaging" not in selection
+    # `messaging` IS carried: it is the only extra holding the whole
+    # Telegram/Discord/Slack closure, and its members share its anchor, so
+    # excluding it dropped the SDKs a working gateway depended on. The
+    # umbrella exclusions that remain are `voice` and `wake`.
+    assert "messaging" in selection
     assert "piper" not in selection
     assert "hindsight" not in selection  # Catalog plugin owns this dependency, not a core extra.
     assert extras.legacy_selection(tmp_path / "no-venv") == ["all"]

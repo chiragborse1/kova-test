@@ -11,6 +11,7 @@ import {
 import { defaultNewSessionTarget, prepareDefaultNewSession } from '@/app/session/new-session-route'
 import { revealTreePane } from '@/components/pane-shell/tree/store'
 import { setWorkspaceScope } from '@/components/pane-shell/workspace-scope'
+import { useI18n } from '@/i18n'
 import {
   deleteSession,
   fetchStoredTranscriptAcrossBackends,
@@ -18,7 +19,6 @@ import {
   getLatestSessionMessages,
   setSessionArchived
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import {
   type ChatMessage,
   preserveLocalAssistantErrors,

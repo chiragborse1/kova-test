@@ -36,7 +36,10 @@ def update_tree(tmp_path, monkeypatch):
     git(origin, 'config', 'user.name', 'Fixture')
     git(origin, 'config', 'user.email', 'fixture@example.invalid')
     (origin / 'content.txt').write_text('base\n', encoding='utf-8')
-    (origin / '.gitignore').write_text('.bytecode-fingerprint\n', encoding='utf-8')
+    # Newlines are pinned: write_text emits CRLF on Windows, and appending LF
+    # bytes to a CRLF file leaves the committed blob with mixed line endings, so
+    # the later stash-content assertions compare endings rather than content.
+    (origin / '.gitignore').write_bytes(b'.bytecode-fingerprint\n')
     git(origin, 'add', 'content.txt', '.gitignore')
     git(origin, '-c', 'commit.gpgsign=false', 'commit', '-qm', 'base')
     git(origin, 'tag', 'v1.0.0')
@@ -200,14 +203,19 @@ def test_stable_git_uses_remote_identity_without_moving_local_tags(update_tree, 
     t = update_tree
     # The stable channel is an R2 record whose published build pins t.wanted
     # (the documented reader seam; see test_source_channel_integration).
-    record = {"schema": 1, "name": "stable", "repository": "kova-agent",
+    record = {"schema": 1, "name": "stable", "repository": "kova-agent/kova-agent",
               "policy": "stable-release", "state": "active", "identity": {}, "nextSequence": 2,
               "head": {"buildId": "build-fixture", "sequence": 1}}
     manifest = {"schema": 1, "request": {"buildId": "build-fixture", "channel": "stable", "sequence": 1,
-                "repository": "kova-agent", "commit": t.wanted, "sourceVersion": "1.1.0",
+                "repository": "kova-agent/kova-agent", "commit": t.wanted, "sourceVersion": "1.1.0",
                 "version": "0.0.1", "identity": {}, "bundleEnv": {}}, "packages": []}
-    monkeypatch.setattr(source_releases, '_resolve_channel',
-                        lambda name, repository: ChannelResolution(record, record, manifest))
+    # The record must name the same repository the install resolved, exactly as a
+    # published channel record is bound to it (validate_repository requires owner/repo).
+    def resolved_for(name, repository):
+        record['repository'] = repository
+        manifest['request']['repository'] = repository
+        return ChannelResolution(record, record, manifest)
+    monkeypatch.setattr(source_releases, '_resolve_channel', resolved_for)
     expected = t.wanted
     if server in {'at-release', 'ahead-release'}:
         git(t.clone, 'fetch', '--no-tags', 'origin', t.wanted)
@@ -277,16 +285,25 @@ def test_stable_zip_consumes_the_same_commit_through_the_real_swap(update_tree, 
     archive = tmp_path / 'source.zip'
     git(t.origin, 'archive', '--format=zip', '--prefix=kova-agent-source/', f'--output={archive}', t.wanted)
     archive_bytes = archive.read_bytes()
-    record = {"schema": 1, "name": "stable", "repository": "kova-agent",
+    record = {"schema": 1, "name": "stable", "repository": "kova-agent/kova-agent",
               "policy": "stable-release", "state": "active", "identity": {}, "nextSequence": 2,
               "head": {"buildId": "build-fixture", "sequence": 1}}
     manifest = {"schema": 1, "request": {"buildId": "build-fixture", "channel": "stable", "sequence": 1,
-                "repository": "kova-agent", "commit": t.wanted, "sourceVersion": "1.1.0",
+                "repository": "kova-agent/kova-agent", "commit": t.wanted, "sourceVersion": "1.1.0",
                 "version": "0.0.1", "identity": {}, "bundleEnv": {}}, "packages": []}
-    monkeypatch.setattr(source_releases, '_resolve_channel',
-                        lambda name, repository: ChannelResolution(record, record, manifest))
+    # The record must name the same repository the install resolved, exactly as a
+    # published channel record is bound to it (validate_repository requires owner/repo).
+    def resolved_for(name, repository):
+        record['repository'] = repository
+        manifest['request']['repository'] = repository
+        return ChannelResolution(record, record, manifest)
+    monkeypatch.setattr(source_releases, '_resolve_channel', resolved_for)
+    # The ZIP path builds its URL from the resolved repository, so the route must
+    # be keyed by that same value rather than a hardcoded project name.
+    from kova_cli.source_releases import source_repository
+    zip_repository = source_repository(['git'], t.clone)
     routes = {
-        f'/kova-agent/archive/{t.wanted}.zip': archive_bytes,
+        f'/{zip_repository}/archive/{t.wanted}.zip': archive_bytes,
     }
 
     class Handler(BaseHTTPRequestHandler):

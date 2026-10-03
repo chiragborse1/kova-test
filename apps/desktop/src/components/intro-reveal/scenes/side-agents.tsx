@@ -28,7 +28,7 @@ export function SideAgents({ active, side, tick }: SideAgentsProps) {
       }}
     >
       <div
-        className="mb-3 flex items-center gap-2 text-[0.72rem] uppercase tracking-[0.18em] text-white/50"
+        className="mb-3 flex items-center gap-2 text-base uppercase tracking-caps text-white/50"
         style={{ fontFamily: "'Collapse', sans-serif" }}
       >
         <span
@@ -37,9 +37,9 @@ export function SideAgents({ active, side, tick }: SideAgentsProps) {
         />
         {title}
       </div>
-      <div className="text-[0.95rem] leading-6 text-white/85">{line1}</div>
+      <div className="text-lg leading-6 text-white/85">{line1}</div>
       <div
-        className="mt-1 text-[0.85rem] leading-6"
+        className="mt-1 text-md leading-6"
         style={{ color: BLUE_FAINT, fontFamily: "'JetBrains Mono', monospace" }}
       >
         {active ? decoded(line2, EVERYWHERE_T + delayMs + 500, tick, 700) : line2}

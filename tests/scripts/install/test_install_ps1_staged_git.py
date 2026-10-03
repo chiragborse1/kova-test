@@ -7,6 +7,7 @@ import shutil
 import subprocess
 
 import pytest
+from tests.conftest import subprocess_timeout
 
 
 INSTALLER = Path(__file__).resolve().parents[3] / "scripts" / "install.ps1"
@@ -36,7 +37,7 @@ def test_stage_processes_restore_pinned_git_and_never_fall_back(tmp_path):
     def stage(name):
         result = subprocess.run([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
                                  "-File", str(INSTALLER), "-Stage", name, "-Json"],
-                                env=env, capture_output=True, text=True, timeout=240)
+                                env=env, capture_output=True, text=True, timeout=subprocess_timeout(240))
         frames = [json.loads(line) for line in result.stdout.splitlines() if line.startswith("{")]
         assert result.returncode == 0 and len(frames) == 1 and frames[0]["ok"], result.stdout + result.stderr
 

@@ -153,14 +153,75 @@
 
   --spacing-mul: var(--dt-spacing-mul, 1);
 
-  --radius-xs: calc(var(--radius-scalar) * 0.125rem);
-  --radius-sm: calc(var(--radius-scalar) * 0.5rem);
-  --radius-md: calc(var(--radius-scalar) * 0.625rem);
-  --radius-lg: calc(var(--radius-scalar) * 0.75rem);
-  --radius-xl: calc(var(--radius-scalar) * 1rem);
-  --radius-2xl: calc(var(--radius-scalar) * 1.5rem);
-  --radius-3xl: calc(var(--radius-scalar) * 2rem);
-  --radius-4xl: calc(var(--radius-scalar) * 2.5rem);
+  /* Kova's shape scale. Authored per step, not a global multiplier: the small
+     end must stay tight for a 20px control while the large end needs real
+     softness for a card, and no single scalar lands both. A ~1.4x progression
+     is what reads as one family.
+
+     This replaces a global 0.2x compression that collapsed the whole scale to
+     0.4-8px - the reason the product read as a grid of hard rectangles.
+     --radius-scalar survives for the xs step and for the web dashboard, so
+     removing it later cannot silently flatten every surface again. */
+  /* Kova's type ramp, exposed so components reference a scale step rather
+     than a number. The px values are in the token definitions above. */
+  --text-2xs: var(--ui-type-2xs);
+  --text-xs: var(--ui-type-xs);
+  --text-sm: var(--ui-type-sm);
+  --text-base: var(--ui-type-base);
+  --text-md: var(--ui-type-md);
+  --text-lg: var(--ui-type-lg);
+  --text-xl: var(--ui-type-xl);
+  --text-2xl: var(--ui-type-2xl);
+  --leading-tight: var(--ui-leading-tight);
+  --leading-snug: var(--ui-leading-snug);
+  --leading-normal: var(--ui-leading-normal);
+  --leading-relaxed: var(--ui-leading-relaxed);
+  /* Kova's spatial rhythm, on the names Tailwind uses for spacing, so that a
+     step MEANS something rather than being whatever the author typed.
+
+     The values are Tailwind's own 4px-grid steps. An earlier version of this
+     scale declared its own 8-step rhythm and aliased `--spacing-N` onto it,
+     which quietly rewrote every `p-N`/`h-N`/`gap-N`/`m-N` in the product:
+     `h-7` became 48px ("empty-state breathing room") and `h-8`..`h-10` fell
+     back to Tailwind's defaults, so the scale ran 24, 32, 48, 32, 36, 40 -
+     `h-7` TALLER than `h-10`. Nothing errored. The sidebar's nav rows ask for
+     `h-7` and rendered 48px tall, which left one session row visible in a
+     925px window.
+
+     `scripts/kova/spacing_scale.py` fails if any step stops being strictly
+     larger than the one before it, which is the only property a scale needs
+     to be usable as one. If you want a named rhythm, give it NEW names
+     (`--ui-gap-row` etc.) and leave `--spacing-*` alone. */
+  --spacing-0: var(--ui-space-0);
+  --spacing-1: var(--ui-space-1);
+  --spacing-2: var(--ui-space-2);
+  --spacing-3: var(--ui-space-3);
+  --spacing-4: var(--ui-space-4);
+  --spacing-5: var(--ui-space-5);
+  --spacing-6: var(--ui-space-6);
+  --spacing-7: var(--ui-space-7);
+  /* Elevation and motion. */
+  --shadow-popover: var(--ui-elev-popover);
+  --shadow-dialog: var(--ui-elev-dialog);
+  --shadow-sheet: var(--ui-elev-sheet);
+  --duration-instant: var(--ui-duration-instant);
+  --duration-fast: var(--ui-duration-fast);
+  --duration-slow: var(--ui-duration-slow);
+  --ease-standard: var(--ui-ease-standard);
+  --ease-entrance: var(--ui-ease-entrance);
+  --ease-exit: var(--ui-ease-exit);
+  --tracking-none: var(--ui-tracking-none);
+  --tracking-tight: var(--ui-tracking-tight);
+  --tracking-wide: var(--ui-tracking-wide);
+  --tracking-caps: var(--ui-tracking-caps);
+  --radius-xs: calc(var(--radius-scalar) * 0.1875rem);
+  --radius-sm: 0.3125rem;
+  --radius-md: 0.4375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.125rem;
+  --radius-3xl: 1.5rem;
+  --radius-4xl: 2rem;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -221,7 +282,7 @@
     --theme-mix-sidebar: 100%;
     --theme-mix-card: 22%;
     --theme-mix-elevated: 28%;
-    --theme-mix-bubble: 0%;
+    --theme-mix-bubble: 100%;
     --theme-fill-primary-accent-mix: 16%;
     --theme-fill-secondary-accent-mix: 11%;
     --theme-fill-tertiary-accent-mix: 8%;
@@ -337,15 +398,31 @@
       var(--ui-accent) var(--theme-fill-quinary-accent-mix),
       color-mix(in srgb, var(--ui-base) 3%, transparent)
     );
+    /* Row states lift toward the SURFACE, not toward the accent.
+       These used to mix the accent against `color-mix(base N%, transparent)`,
+       which is a bug twice over: alpha interpolates, so the second colour is
+       mostly-transparent and the row composites over whatever is behind it
+       rather than over the sidebar; and the result carried the accent hue, so
+       the selected session was a violet block. Measured live at
+       rgb(157,123,255) at 12.6% - saturation 0.48 on a neutral sidebar.
+
+       The reference does the opposite and does it plainly: its selected row
+       is #212121 on an #181818 sidebar - a pure grey lift at 1.10:1, with no
+       colour in it at all. Selection is carried by the lift plus the
+       foreground weight, and the accent stays free for the composer ring and
+       the primary action.
+
+       Mixing against --ui-base (an opaque neutral) rather than `transparent`
+       also makes the result independent of what is painted underneath. */
     --ui-row-hover-background: color-mix(
       in srgb,
-      var(--ui-accent) var(--theme-row-hover-accent-mix),
-      color-mix(in srgb, var(--ui-base) 3%, transparent)
+      var(--ui-base) 4%,
+      var(--ui-bg-sidebar)
     );
     --ui-row-active-background: color-mix(
       in srgb,
-      var(--ui-accent) var(--theme-row-active-accent-mix),
-      color-mix(in srgb, var(--ui-base) 5%, transparent)
+      var(--ui-base) 9%,
+      var(--ui-bg-sidebar)
     );
     /* Open in a pane, but not the FOCUSED one: the active band at reduced
        strength, so every session on screen is marked and the one you're in
@@ -438,7 +515,17 @@
     --dt-accent: var(--theme-accent-soft);
     --dt-accent-foreground: var(--ui-text-primary);
     --dt-border: var(--ui-stroke-secondary);
-    --dt-input: var(--ui-stroke-primary);
+    /* The input FIELD fill, not its border. This was --ui-stroke-primary,
+       which is an ACCENT-mixed token - so every text field in the app came
+       out carrying the brand hue. Measured live on the catalog search: a
+       1509x42 field painted rgb(194,177,243) at 5.9% with an accent border,
+       next to 51 accent switches. A search box is a well, not a control that
+       needs to advertise itself; the accent belongs on focus, which the
+       ring and border already carry.
+
+       A neutral lift off the surface it sits on, so the well reads as
+       recessed-in without dragging the brand colour along. */
+    --dt-input: var(--ui-bg-elevated);
     /* THE single knob for input-field borders: the resting alpha (% of the ring
        color). Hover doubles it; focus/open go full. 0% = invisible at rest. */
     --dt-input-border: 7%;
@@ -456,10 +543,16 @@
     --dt-ring: var(--ui-stroke-primary);
     --dt-midground: var(--theme-midground);
     /* Scrollbars carry no theme colour: the accent-tinted thumb read as a
-       coloured element in the corner of every list. Same lightness as the
-       midground so each theme still gets a thumb that sits right against its
-       own surfaces — chroma 0 is the only thing removed. */
-    --dt-scrollbar-thumb: oklch(from var(--dt-midground) l 0 h);
+       coloured element in the corner of every list. The thumb is the INK at
+       partial alpha, not the midground desaturated: the midground's lightness
+       with chroma 0 lands on a mid grey (~#6b6b6b), and a mid grey is the
+       worst possible colour for a control boundary — it is close to BOTH
+       themes' surfaces at once, so one declaration cannot serve both. Painted,
+       that grey measured 1.30:1 on the light rail and 1.43:1 on the dark one,
+       with 80% of the list hidden behind it. --ui-base is the ink, so it is
+       already directional: near-black in light, near-white in dark, and the
+       alphas below clear 3:1 (WCAG 1.4.11, non-text contrast) in each. */
+    --dt-scrollbar-thumb: var(--ui-base);
     --dt-composer-ring: var(--ui-base);
     --dt-destructive: #cf2d56;
     --dt-destructive-foreground: #ffffff;
@@ -534,7 +627,41 @@
     --sticky-human-top: 0.23rem;
     --file-tree-row-height: 1.375rem;
 
-    --composer-width: 100%;
+    /* The reading measure, and the ONE width the conversation column shares.
+       Prose was inheriting the window: the thread rendered 1713px of body text
+       at 13px, which measures 267 characters per line - roughly three times the
+       45-90 a person can actually track, and the single biggest reason the app
+       read as unfinished. The composer input was worse at 233.
+
+       78ch is the measure at the app's 13px conversation size (~545px): long
+       enough to hold a clause without the eye losing the return, short enough
+       that a line still reads as a line. `ch` tracks the real font, so this
+       stays correct if the conversation size is ever retuned.
+
+       It was 68ch, which is a perfectly good MEASURE and a bad FIT. In a
+       1162px pane a 476px column left 343px of void on each side - 59% of the
+       pane empty - and the transcript read as a narrow strip floating in the
+       wide window. Measured: the eighth of the pane between the sidebar and
+       the text held 11 ink pixels.
+
+       86ch was the first attempt and it overshot: /messaging rendered 102
+       characters per line, past what a person can track. 78ch is the measured
+       ceiling - every route now lands between 76 and 92 CPL, under the 95 the
+       gates hold, with the column 15% wider than before and the void cut from
+       59% of the pane to 35%.
+
+       A measure constrains how long a LINE is, not how much of the window the
+       app may use - but the two meet, and the gate is what finds the edge.
+       Thread, composer, dock and intro all read this one token, so the column
+       cannot drift apart between them. */
+    --conversation-measure: 68ch;
+    /* The transcript gets more room than the other readers of the measure.
+       Widening --conversation-measure itself moved /messaging from 88 to 101
+       characters per line, because master-detail, the settings page and Alert
+       all read the same token. The transcript has a 1162px pane and a short
+       measure inside it; the other three do not need the extra width. */
+    --thread-measure: 78ch;
+    --composer-width: min(var(--thread-measure), 100%);
     --composer-control-size: 1.5rem;
     --composer-control-primary-size: 1.625rem;
     --composer-control-gap: 0.25rem;
@@ -590,9 +717,27 @@
     --theme-mix-card: 38%;
     --theme-mix-elevated: 46%;
     --theme-mix-bubble: 46%;
-    --theme-neutral-chrome: #0d0d0e;
-    --theme-neutral-sidebar: #0a0a0b;
-    --theme-neutral-card: #161618;
+    --theme-neutral-chrome: #0d0d0d;
+    --theme-neutral-sidebar: #0a0a0a;
+    --theme-neutral-card: #161616;
+
+    /* Dark was reading BLUE-PURPLE, and the greys are not the reason: measured
+       on screen, the chrome and cards are exactly neutral (r=g=b, B-R = 0).
+       The cast is the ACCENT in every border - --ui-stroke-* mixes 10-24% of
+       #9d7bff into the line colour, and a 24% purple mix over near-black lands
+       around rgb(50,48,58): a violet-grey. Painted over a whole window, that
+       is the tint you see.
+
+       A border does not need to be branded. On a dark surface a 1px line at low
+       alpha is already legible against its neighbour, and here the accent only
+       ever shifted the hue, never the contrast. So dark drops it and the lines
+       go neutral grey, which is what ChatGPT and Codex read as. Light keeps its
+       accent: on white the same mix is nearly invisible, and it is the accent
+       doing real work on focus and selection. */
+    --theme-stroke-primary-accent-mix: 0%;
+    --theme-stroke-secondary-accent-mix: 0%;
+    --theme-stroke-tertiary-accent-mix: 0%;
+    --theme-stroke-quaternary-accent-mix: 0%;
 
     /* Dark-only accent palette overrides. */
     --ui-red: #e75e78;
@@ -1514,6 +1659,28 @@ body.guest-pointer-lock :is(webview, iframe) {
     background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 40%, transparent);
   }
 
+  /* A scroll container whose overflow is PART of its content needs a
+     persistent cue. The global rule above hides every scrollbar until hover,
+     which is right for a list you are already dragging and wrong for a
+     filter rail: the capabilities facets held 1100px of rows in a 783px box,
+     the scrollbar only appeared on hover, and the rail therefore read as
+     ending at its last visible row. Someone filtering by tag needs to know
+     tags exist BEFORE they move the pointer.
+     */
+  /* 55% at rest, 75% on hover. The cue has to be VISIBLE to work: it exists
+     because 2747px of list sits in a 552px box, and at the 22% this started
+     at, the thumb measured 1.30:1 against the rail - a bar you cannot see is
+     the same as no bar. 55% clears 3:1 in both themes against --ui-base ink
+     (3.74 light, 5.01 dark) and still reads as a background affordance
+     rather than a control. */
+  .scrollbar-cue::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 55%, transparent);
+  }
+
+  .scrollbar-cue:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--dt-scrollbar-thumb) 75%, transparent);
+  }
+
   /* Hover marquee: a truncated line that scrolls its overflow into view while
      hovered. Opt-in via .hover-marquee + an inner .hover-marquee-inner; the
      JS side measures the overflow on pointerenter and sets --marquee-d (and
@@ -1935,6 +2102,98 @@ body.guest-pointer-lock :is(webview, iframe) {
 /* Dock glow intensity scale — dimmer in light mode (the primary glow reads
    much stronger over a light backdrop), full strength in dark mode. */
 :root {
+  /* ── Kova's type ramp ───────────────────────────────────────────────────
+     A designed type scale, not a list of sizes. 4px grid, 1.2 ratio, and a
+     CUIRED step: a strict ramp has no 12px, and a dense tool needs both 12
+     (UI chrome) and 13 (conversation body). A scale that cannot express the
+     sizes the product actually uses is a scale nobody follows.
+     The live app showed 10 distinct sizes, two of them one-decimal
+     accidents (10.2px, 13.9px) - the symptom of surfaces picking numbers. */
+  --ui-type-2xs: 0.5625rem;   /*  9px  a tick, a badge count        */
+  --ui-type-xs: 0.625rem;     /* 10px  metadata, timestamps        */
+  --ui-type-sm: 0.6875rem;     /* 11px  secondary UI, tool output   */
+  --ui-type-base: 0.75rem;     /* 12px  UI body - the default       */
+  --ui-type-md: 0.8125rem;     /* 13px  conversation body            */
+  --ui-type-lg: 0.9375rem;     /* 15px  card titles                 */
+  --ui-type-xl: 1.125rem;      /* 18px  page titles                 */
+  --ui-type-2xl: 1.375rem;     /* 22px  the empty-state wordmark    */
+  /* Line heights pair with the size, so leading is never a guess. */
+  --ui-leading-tight: 1.2;
+  --ui-leading-snug: 1.35;
+  --ui-leading-normal: 1.5;
+  --ui-leading-relaxed: 1.65;
+  /* Absolute leadings, for type whose leading is a fixed relationship to a
+     size step rather than a ratio. A 9px terminal line at 0.85rem and a 13px
+     body at 1.1rem are different relationships, so no single ratio covers
+     both without breaking when the size changes. */
+  --ui-leading-2xs: 0.8125rem;
+  --ui-leading-xs: 0.9375rem;
+  --ui-leading-sm: 1.0625rem;
+  --ui-leading-md: 1.125rem;
+  --ui-leading-lg: 1.4375rem;
+
+  /* ── Kova's spatial rhythm ──────────────────────────────────────────────
+     A 4px grid with named steps. The live app used six gap values
+     (0,1,2,4,6,8) with nothing tying them together, so density was an
+     accident of whoever wrote the class. Named steps make density a choice. */
+  --ui-space-0: 0;
+  --ui-space-1: 0.25rem;   /*  4px  inside a control               */
+  --ui-space-2: 0.5rem;    /*  8px  icon to label, row padding      */
+  --ui-space-3: 0.75rem;   /* 12px  between rows in a list          */
+  --ui-space-4: 1rem;      /* 16px  card padding                    */
+  --ui-space-5: 1.25rem;   /* 20px  a control's own height           */
+  --ui-space-6: 1.5rem;    /* 24px  between groups                  */
+  --ui-space-7: 1.75rem;   /* 28px  a dense row: sidebar nav, tabs  */
+
+  /* ── Kova's elevation ───────────────────────────────────────────────────
+     Three steps, because the app has exactly three floating surfaces:
+     a popover, a dialog, and a sheet. Two cannot express that ordering;
+     four would be a scale nobody reaches for. A shadow is not decoration
+     here - it is the only cue that says "this is above that". */
+  --ui-elev-popover:
+    0 1px 2px -1px rgba(0, 0, 0, 0.22),
+    0 4px 12px -4px rgba(0, 0, 0, 0.26);
+  --ui-elev-dialog:
+    0 2px 4px -2px rgba(0, 0, 0, 0.26),
+    0 12px 32px -8px rgba(0, 0, 0, 0.34);
+  --ui-elev-sheet:
+    0 -2px 8px -4px rgba(0, 0, 0, 0.26),
+    0 -16px 40px -12px rgba(0, 0, 0, 0.38);
+  /* A surface in the page is not floating, so it has no shadow. Only an
+     edge or a fill change. That is the whole point of the flat rule. */
+  --ui-elev-none: none;
+
+  /* ── Kova's letter-spacing ───────────────────────────────────────────────
+     The scale most interfaces forget they have. The app used 18 different em
+     values across 87 sites, from 0.02em (a timer, where uneven digit widths
+     are visible) to 0.42em (the wordmark). A label at 0.06 beside one at
+     0.08 is a difference nobody chose.
+
+     Four steps, by what the tracking is FOR - not by size:
+       none   body and UI text; tracking changes the texture of text you read
+       tight  dense metadata where letters must not collide
+       wide   small uppercase labels and section eyebrows
+       caps   display type, where wide tracking IS the point
+
+     0.12em is where the mass of the app already sits, so the scale is
+     anchored on real usage rather than on a theory. */
+  --ui-tracking-none: 0;
+  --ui-tracking-tight: 0.01em;
+  --ui-tracking-wide: 0.04em;
+  --ui-tracking-caps: 0.12em;
+
+  /* ── Kova's motion ──────────────────────────────────────────────────────
+     Three durations and two curves. Every one collapses under
+     prefers-reduced-motion rather than merely slowing: a 200ms slide is
+     still motion, and the point of the preference is that there is none. */
+  --ui-duration-instant: 0ms;
+  --ui-duration-fast: 120ms;
+  --ui-duration-base: 200ms;
+  --ui-duration-slow: 320ms;
+  --ui-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ui-ease-entrance: cubic-bezier(0, 0, 0.2, 1);
+  --ui-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
   --dock-glow-scale: 0.55;
   /* Unfocused chat surface (multi-pane): a pane the user isn't in recedes so
      the focused conversation reads as the one being worked in. Light needs a
@@ -3781,4 +4040,17 @@ html[data-hud-window] [data-slot='popover-content'] {
 
 [data-hud-shell] [data-slot='composer-bounds'] *::-webkit-scrollbar {
   display: none;
+}
+
+/* Reduced motion: collapse, do not slow. A 200ms slide is still motion, and
+   the reason the preference exists is that there should be none. The shell's
+   own pause switch (data-renderer-animations-paused) is separate and stays
+   where it was. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ui-duration-instant: 0ms;
+    --ui-duration-fast: 0ms;
+    --ui-duration-base: 0ms;
+    --ui-duration-slow: 0ms;
+  }
 }

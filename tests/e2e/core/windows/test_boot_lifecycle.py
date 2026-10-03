@@ -140,7 +140,20 @@ def test_serve_tree_kill_leaves_no_orphans_and_reboots(tmp_path: Path) -> None:
             assert first.pid in owned, f"ownership scan cannot see serve pid {first.pid} (saw {owned})"
 
             killed = taskkill_tree(first.pid)
-            assert killed.returncode == 0, killed.stderr
+            # taskkill /T /F reports 128/255 when a process in the tree exits
+            # between the snapshot and the signal -- "There is no running
+            # instance of the task" -- which is the desired end state, not a
+            # failure. The product already treats the call as best-effort
+            # (backend-release-gate.ts exists because /T /F returns once
+            # termination is INITIATED, not completed, and waits on the PIDs
+            # afterwards). What this cell actually claims is that nothing
+            # survives, and the two assertions below check exactly that.
+            # Requiring returncode 0 made it fail on a kill that worked:
+            #   stdout: SUCCESS: PID 8780 (child of 7932) has been terminated.
+            #   stderr: ERROR: PID 7932 (child of 4828) could not be terminated.
+            #              Reason: There is no running instance of the task.
+            assert killed.returncode == 0 or b"no running instance" in killed.stderr.lower(), (
+                f"taskkill /T /F failed: rc={killed.returncode} {killed.stderr!r}")
             # Ownership, not ancestry: anything the backend spawned detached (a broken
             # parent link taskkill /T cannot follow) still carries this profile's
             # KOVA_HOME / cwd, and is an orphan the Desktop quit leaves behind.

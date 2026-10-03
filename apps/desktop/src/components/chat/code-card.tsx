@@ -13,7 +13,7 @@ function CodeCard({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'group/code relative min-w-0 max-w-full overflow-hidden rounded-[0.625rem] bg-(--ui-bg-editor) [--expandable-fade-from:var(--ui-bg-editor)] text-[length:var(--conversation-tool-font-size)] text-muted-foreground',
+        'group/code relative min-w-0 max-w-full overflow-hidden rounded-lg bg-(--ui-bg-editor) [--expandable-fade-from:var(--ui-bg-editor)] text-[length:var(--conversation-tool-font-size)] text-muted-foreground',
         className
       )}
       data-slot="code-card"
@@ -25,7 +25,7 @@ function CodeCard({ className, ...props }: React.ComponentProps<'div'>) {
 function CodeCardIcon({ className, ...props }: CodiconProps) {
   return (
     <Codicon
-      className={cn('shrink-0 text-[0.875rem] leading-none text-muted-foreground', className)}
+      className={cn('shrink-0 text-lg leading-none text-muted-foreground', className)}
       data-slot="code-card-icon"
       {...props}
     />
@@ -36,7 +36,7 @@ function CodeCardBody({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       className={cn(
-        'font-mono text-[0.7rem] leading-relaxed text-foreground/90 [&_pre]:m-0 [&_pre]:overflow-x-auto [&_pre]:scrollbar-overlay [&_pre]:bg-transparent! [&_pre]:px-2 [&_pre]:py-1.5 [&_pre]:font-mono [&_pre]:leading-relaxed',
+        'font-mono text-sm leading-relaxed text-foreground/90 [&_pre]:m-0 [&_pre]:overflow-x-auto [&_pre]:scrollbar-overlay [&_pre]:bg-transparent! [&_pre]:px-2 [&_pre]:py-1.5 [&_pre]:font-mono [&_pre]:leading-relaxed',
         className
       )}
       data-slot="code-card-body"

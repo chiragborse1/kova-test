@@ -4,8 +4,8 @@ import { useMemo, useState } from 'react'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import type { DesktopRosterAgent } from '@/global'
-import { getProfiles, type ProfileScope, profileScopeKey } from '@/kova'
 import { useI18n } from '@/i18n'
+import { getProfiles, type ProfileScope, profileScopeKey } from '@/kova'
 import { cn } from '@/lib/utils'
 import { activeGatewayConnectionId } from '@/store/gateway'
 import { $activeGatewayProfile, normalizeProfileKey } from '@/store/profile'
@@ -204,7 +204,7 @@ export function CapabilityScopeSelector({
       )}
     >
       {!compact && (
-        <span className="text-[0.7rem] font-medium text-(--ui-text-tertiary)">{t.skills.configuringProfile}</span>
+        <span className="text-sm font-medium text-(--ui-text-tertiary)">{t.skills.configuringProfile}</span>
       )}
       <Select onValueChange={scope.onChange} value={scope.value}>
         <SelectTrigger className={cn('text-xs', compact ? 'h-6 min-w-0 w-full px-2 truncate' : 'h-7 w-56')}>

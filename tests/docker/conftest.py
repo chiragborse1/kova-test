@@ -21,6 +21,18 @@ import pytest
 
 IMAGE_TAG = os.environ.get("KOVA_TEST_IMAGE", "kova-agent-harness:latest")
 
+# Readiness deadlines. A container's cont-init chain (UID remap, chown, config
+# seeding, skills sync, browser discovery, config migration) is a fixed amount
+# of work, but a fixed amount of work is measured in instructions -- and an
+# arm64 image on an amd64 host runs every one of them through qemu at roughly
+# 8x the cost. Measured on run 37027608034: the arm64 build took 40.4 min against
+# amd64's 4.9. So 30s fits a native runner and cannot fit an emulated one; the
+# first qemu run failed every readiness check with
+#   TimeoutError: container ... did not finish cont-init within 30.0s
+# and said nothing at all about the image. Overridable so the docker workflow
+# can raise it for the emulated row only; amd64 keeps the tight default.
+CONTAINER_READY_TIMEOUT_S = float(os.environ.get("KOVA_DOCKER_READY_TIMEOUT", "30"))
+
 
 def _docker_available() -> bool:
     """Return True iff a docker CLI is on PATH and the daemon answers."""
@@ -138,7 +150,7 @@ def docker_exec_sh(
 def wait_for_container_ready(
     container: str,
     *,
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.25,
 ) -> None:
     """Poll until the container has finished s6 cont-init (stage2 + reconcile).
@@ -154,7 +166,13 @@ def wait_for_container_ready(
     better than a fixed ``time.sleep()`` that either wastes time on fast
     machines or flakes on slow ones.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    # Name the budget that was actually used. Printing the raw `deadline_s`
+    # printed "within Nones" for every caller that relies on the default, which
+    # hid the very number anyone needs when an emulated (qemu) row times out.
+    budget = CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s
+    end = time.monotonic() + budget
     while time.monotonic() < end:
         r = docker_exec(
             container,
@@ -165,8 +183,28 @@ def wait_for_container_ready(
         if r.returncode == 0 and "profile=default" in r.stdout:
             return
         time.sleep(interval_s)
+    # Two sources, and they must not be confused: the container's own boot log
+    # from INSIDE it, and the daemon's view of the container from the runner.
+    # An earlier version chained them with `||`, so when the boot log was absent
+    # the in-container `docker logs` ran - there is no docker CLI or socket
+    # inside the image, so it printed "Cannot connect to the Docker daemon at
+    # unix:///var/run/docker.sock", which reads like the runner had lost its
+    # daemon when it had not. Read them separately and label each.
+    parts = []
+    boot = docker_exec(
+        container, "sh", "-c", "cat /opt/data/logs/container-boot.log 2>/dev/null", timeout=10)
+    if (boot.stdout or "").strip():
+        parts.append("container boot log:\n" + boot.stdout.strip()[-1500:])
+    runner_logs = subprocess.run(
+        ["docker", "logs", "--tail", "50", container],
+        capture_output=True, text=True, timeout=30)
+    host_out = (runner_logs.stdout or runner_logs.stderr or "").strip()
+    if host_out:
+        parts.append("docker logs (runner):\n" + host_out[-1500:])
+    detail = "\n".join(parts)
     raise TimeoutError(
-        f"container {container} did not finish cont-init within {deadline_s}s"
+        f"container {container} did not finish cont-init within {budget}s"
+        + (f"\ncontainer output:\n{detail}" if detail else "")
     )
 
 
@@ -194,7 +232,16 @@ def start_container(
     for e in env:
         args.extend(["-e", e])
     args.extend([image, *cmd.split()])
-    subprocess.run(args, check=True, capture_output=True, timeout=timeout)
+    # `check=True` alone raises CalledProcessError with only the exit status.
+    # Docker puts the reason on stderr - "no matching manifest", "exec format
+    # error", "cannot connect to the daemon" - and losing it is what made the
+    # arm64 rows report a bare `exit status 125` with nothing to act on.
+    result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+    if result.returncode:
+        raise RuntimeError(
+            f"docker run failed for {name} (exit {result.returncode}):\n"
+            f"{(result.stderr or result.stdout or '<no output>')[-2000:]}"
+        )
     wait_for_container_ready(name)
     return name
 
@@ -225,7 +272,7 @@ def poll_container(
     container: str,
     probe: str,
     *,
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.5,
     user: str = "kova",
 ) -> tuple[bool, str]:
@@ -235,7 +282,9 @@ def poll_container(
     Returns ``(success, last_stdout)``. Useful for waiting on a process
     to appear, a port to open, a file to contain a string, etc.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
         r = docker_exec_sh(container, probe, user=user, timeout=10)
@@ -251,7 +300,7 @@ def wait_for_path(
     path: str,
     *,
     kind: str = "f",
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.25,
 ) -> bool:
     """Poll ``test -<kind> <path>`` inside the container until success or timeout.
@@ -270,14 +319,16 @@ def wait_for_log(
     log_path: str,
     needle: str,
     *,
-    deadline_s: float = 30.0,
+    deadline_s: float | None = None,
     interval_s: float = 0.25,
 ) -> str:
     """Poll until a log file inside the container contains ``needle``.
 
     Returns the full log on success.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
         r = docker_exec_sh(
@@ -299,7 +350,9 @@ def wait_for_docker_logs(
 
     Returns the full docker logs on success.
     """
-    end = time.monotonic() + deadline_s
+    # None means the configured default, so a caller that passes nothing gets
+    # the environment's budget rather than a hardcoded one.
+    end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
         r = subprocess.run(

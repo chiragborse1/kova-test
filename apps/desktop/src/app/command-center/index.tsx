@@ -9,9 +9,9 @@ import { SearchField } from '@/components/ui/search-field'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { ResponsiveTabs } from '@/components/ui/tab-dropdown'
 import { Tip } from '@/components/ui/tooltip'
+import { useI18n } from '@/i18n'
 import { getActionStatus, getLogs, getStatus, getUsageAnalytics, restartGateway, updateKova } from '@/kova'
 import type { ActionStatusResponse, AnalyticsResponse, SessionInfo, StatusResponse } from '@/kova'
-import { useI18n } from '@/i18n'
 import { sessionTitle } from '@/lib/chat-runtime'
 import {
   Activity,
@@ -533,7 +533,7 @@ export function CommandCenterView({
 
               <div className="flex min-h-0 flex-col pt-2">
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
-                  <span className="text-[0.625rem] font-medium uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+                  <span className="text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
                     {cc.recentLogs}
                   </span>
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -656,15 +656,15 @@ function UsagePanel({ error, loading, onRefresh, period, usage }: UsagePanelProp
 
       <section>
         <div className="mb-2 flex items-baseline justify-between">
-          <span className="text-[0.625rem] font-medium uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+          <span className="text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
             {cc.dailyTokens}
           </span>
-          <span className="flex items-center gap-3 text-[0.65rem] text-(--ui-text-tertiary)">
+          <span className="flex items-center gap-3 text-sm text-(--ui-text-tertiary)">
             <span className="inline-flex items-center gap-1">
-              <span className="size-2 rounded-[1px] bg-[color:var(--dt-primary)]/60" /> {cc.input}
+              <span className="size-2 rounded-xs bg-[color:var(--dt-primary)]/60" /> {cc.input}
             </span>
             <span className="inline-flex items-center gap-1">
-              <span className="size-2 rounded-[1px] bg-emerald-500/70" /> {cc.output}
+              <span className="size-2 rounded-xs bg-emerald-500/70" /> {cc.output}
             </span>
           </span>
         </div>
@@ -697,7 +697,7 @@ function UsagePanel({ error, loading, onRefresh, period, usage }: UsagePanelProp
                 )
               })}
             </div>
-            <div className="mt-1 flex justify-between text-[0.6rem] text-(--ui-text-tertiary)">
+            <div className="mt-1 flex justify-between text-2xs text-(--ui-text-tertiary)">
               <span>{daily[0]?.day}</span>
               <span>{daily[daily.length - 1]?.day}</span>
             </div>
@@ -740,7 +740,7 @@ function UsageList({
 }) {
   return (
     <section className="min-w-0">
-      <div className="mb-1.5 text-[0.625rem] font-medium uppercase tracking-[0.08em] text-(--ui-text-tertiary)">
+      <div className="mb-1.5 text-xs font-medium uppercase tracking-wide text-(--ui-text-tertiary)">
         {title}
       </div>
       {rows.length === 0 ? (
@@ -751,8 +751,8 @@ function UsageList({
         <ul>
           {rows.map(row => (
             <li className="flex items-center justify-between gap-2 py-1.5" key={row.key}>
-              <span className="min-w-0 truncate font-mono text-[0.7rem] text-foreground">{row.label}</span>
-              <span className="shrink-0 text-[0.65rem] text-(--ui-text-tertiary)">{row.value}</span>
+              <span className="min-w-0 truncate font-mono text-sm text-foreground">{row.label}</span>
+              <span className="shrink-0 text-sm text-(--ui-text-tertiary)">{row.value}</span>
             </li>
           ))}
         </ul>
@@ -764,9 +764,9 @@ function UsageList({
 function UsageStat({ hint, label, value }: { hint?: string; label: string; value: string }) {
   return (
     <div className="min-w-0">
-      <div className="text-[0.625rem] font-medium uppercase tracking-[0.12em] text-(--ui-text-tertiary)">{label}</div>
+      <div className="text-xs font-medium uppercase tracking-caps text-(--ui-text-tertiary)">{label}</div>
       <div className="mt-1 truncate text-base font-semibold tracking-tight text-foreground">{value}</div>
-      {hint && <div className="mt-0.5 truncate text-[0.62rem] text-(--ui-text-tertiary)">{hint}</div>}
+      {hint && <div className="mt-0.5 truncate text-xs text-(--ui-text-tertiary)">{hint}</div>}
     </div>
   )
 }

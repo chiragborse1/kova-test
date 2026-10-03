@@ -552,7 +552,7 @@ export default function App() {
           <Menu />
         </Button>
 
-        <Typography className="font-bold text-[0.95rem] leading-[0.95] tracking-[0.05em] text-midground">
+        <Typography className="font-bold text-lg leading-tight tracking-wide text-midground">
           {t.app.brand}
         </Typography>
       </header>
@@ -588,10 +588,10 @@ export default function App() {
               "fixed top-0 left-0 z-50 flex h-dvh max-h-dvh w-64 min-h-0 flex-col font-sans",
               "border-r border-current/20",
               "bg-background-base",
-              "transition-[transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)]",
+              "transition-[transform] duration-base ease-[cubic-bezier(0.23,1,0.32,1)]",
               mobileOpen ? "translate-x-0" : "-translate-x-full",
               "lg:sticky lg:top-0 lg:translate-x-0 lg:shrink-0 lg:overflow-hidden",
-              "lg:transition-[width] lg:duration-300 lg:ease-[cubic-bezier(0.23,1,0.32,1)]",
+              "lg:transition-[width] lg:duration-slow lg:ease-[cubic-bezier(0.23,1,0.32,1)]",
               collapsed && "lg:w-14",
             )}
             style={{
@@ -616,7 +616,7 @@ export default function App() {
               >
                 <PluginSlot name="header-left" />
 
-                <Typography className="font-bold text-[1.125rem] leading-[0.95] tracking-[0.0525rem] text-midground uppercase">
+                <Typography className="font-bold text-xl leading-tight tracking-[0.0525rem] text-midground uppercase">
                   Kova
                   <br />
                   Agent
@@ -678,7 +678,7 @@ export default function App() {
                   <span
                     className={cn(
                       "px-5 pt-2.5 pb-1",
-                      "font-sans text-display text-xs tracking-[0.12em] text-text-tertiary",
+                      "font-sans text-display text-xs tracking-caps text-text-tertiary",
                       isDesktopCollapsed && "lg:hidden",
                     )}
                     id="kova-sidebar-plugin-nav-heading"
@@ -888,7 +888,7 @@ function SidebarNavLink({
           cn(
             "group/nav relative flex items-center gap-3",
             "px-5 py-2.5",
-            "font-sans text-display uppercase text-sm tracking-[0.12em]",
+            "font-sans text-display uppercase text-sm tracking-caps",
             "whitespace-nowrap transition-colors cursor-pointer",
             "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-midground",
             isActive
@@ -906,7 +906,7 @@ function SidebarNavLink({
 
             <span
               className={cn(
-                "truncate transition-opacity duration-300",
+                "truncate transition-opacity duration-slow",
                 collapsed ? "lg:opacity-0" : "lg:opacity-100",
               )}
             >
@@ -915,7 +915,7 @@ function SidebarNavLink({
 
             <span
               aria-hidden
-              className="absolute inset-y-0.5 left-1.5 right-1.5 bg-midground opacity-0 pointer-events-none transition-opacity duration-200 group-hover/nav:opacity-5"
+              className="absolute inset-y-0.5 left-1.5 right-1.5 bg-midground opacity-0 pointer-events-none transition-opacity duration-base group-hover/nav:opacity-5"
             />
 
             {isActive && (
@@ -1050,7 +1050,7 @@ function SidebarSystemActions({
       <span
         className={cn(
           "px-5 pt-0.5 pb-0.5",
-          "font-sans text-display text-xs tracking-[0.12em] text-text-tertiary",
+          "font-sans text-display text-xs tracking-caps text-text-tertiary",
           collapsed && "lg:hidden",
         )}
       >
@@ -1154,7 +1154,7 @@ function SystemActionButton({
         className={cn(
           "group/action relative flex w-full items-center gap-3",
           "px-5 py-2.5",
-          "font-sans text-display text-xs tracking-[0.1em]",
+          "font-sans text-display text-xs tracking-caps",
           "whitespace-nowrap transition-colors cursor-pointer",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-midground",
           busy
@@ -1164,9 +1164,9 @@ function SystemActionButton({
         )}
       >
         {isPending ? (
-          <Spinner className="shrink-0 text-[0.875rem]" />
+          <Spinner className="shrink-0 text-lg" />
         ) : isActionRunning && spin ? (
-          <Spinner className="shrink-0 text-[0.875rem]" />
+          <Spinner className="shrink-0 text-lg" />
         ) : (
           <Icon
             className={cn(
@@ -1177,7 +1177,7 @@ function SystemActionButton({
         )}
 
         <span className={cn(
-          "truncate transition-opacity duration-300",
+          "truncate transition-opacity duration-slow",
           collapsed ? "lg:opacity-0" : "lg:opacity-100",
         )}>
           {displayLabel}
@@ -1185,7 +1185,7 @@ function SystemActionButton({
 
         <span
           aria-hidden
-          className="absolute inset-y-0.5 left-1.5 right-1.5 bg-midground opacity-0 pointer-events-none transition-opacity duration-200 group-hover/action:opacity-5"
+          className="absolute inset-y-0.5 left-1.5 right-1.5 bg-midground opacity-0 pointer-events-none transition-opacity duration-base group-hover/action:opacity-5"
         />
 
         {busy && (
@@ -1234,7 +1234,7 @@ function SidebarIconWithTooltip({
       {collapsed && (
         <span
           aria-hidden
-          className="absolute inset-y-0 inset-x-[-0.375rem] bg-midground opacity-0 pointer-events-none transition-opacity duration-200 group-hover/icon:opacity-5 hidden lg:block"
+          className="absolute inset-y-0 inset-x-[-0.375rem] bg-midground opacity-0 pointer-events-none transition-opacity duration-base group-hover/icon:opacity-5 hidden lg:block"
         />
       )}
 
@@ -1280,7 +1280,7 @@ function GatewayDot({ collapsed, status, tooltipWarmRef }: GatewayDotProps) {
   return (
     <div
       className={cn(
-        "hidden lg:flex py-3 pl-[1.625rem] transition-opacity duration-300",
+        "hidden lg:flex py-3 pl-[1.625rem] transition-opacity duration-slow",
         collapsed ? "lg:opacity-100" : "lg:opacity-0 lg:h-0 lg:py-0 lg:overflow-hidden",
       )}
       role="status"
@@ -1328,7 +1328,7 @@ function SidebarTooltip({ anchor, label, warmRef }: SidebarTooltipProps) {
         "fixed z-[100] pointer-events-none",
         "px-2 py-1",
         "bg-background-base border border-current/20 shadow-lg",
-        "font-sans text-display text-xs tracking-[0.1em] text-midground uppercase",
+        "font-sans text-display text-xs tracking-caps text-midground uppercase",
       )}
       style={{
         top: rect.top + rect.height / 2,

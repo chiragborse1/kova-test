@@ -462,6 +462,24 @@ jobs:
           git archive "$RELEASE_COMMIT" | tar -x -C "$tree"
           python3 -m scripts.releases.stamping --tree "$tree" \
             --version "$RELEASE_VERSION"
+          # A release that raises pyproject's version without re-locking uv.lock leaves
+          # the lock's own root entry stale, and uv then refuses every `--locked` install
+          # of that release with a message naming an unrelated dependency ("a hash was
+          # expected but one was not found for kittentts"). v1.0.0 shipped exactly that.
+          # Real installs use --frozen and never notice, so nothing else in the pipeline
+          # catches it. Fail here, where the message can still name the release.
+          #
+          # Scope the read to the ROOT entry: a bare grep for the version matches any
+          # dependency that happens to share it (three unrelated packages carry 1.0.0
+          # in the v1.0.0 lock), which would pass a lock that is actually stale.
+          locked_root_version="$(
+            awk '/^name = "kova-agent"$/{getline; sub(/^version = "/, ""); sub(/"$/, ""); print; exit}' \
+              "$tree/uv.lock"
+          )"
+          if [ "$locked_root_version" != "$RELEASE_VERSION" ]; then
+            echo "::error::uv.lock root entry says ${locked_root_version:-<none>} but the release is $RELEASE_VERSION; re-lock (uv lock) before tagging"
+            exit 1
+          fi
           actual="$(cargo metadata --no-deps --format-version 1 \
             --manifest-path "$tree/apps/bootstrap-installer/src-tauri/Cargo.toml" \
             | jq -r '.packages[] | select(.name == "kova-bootstrap") | .version')"

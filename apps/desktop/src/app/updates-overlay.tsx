@@ -307,7 +307,7 @@ function IdleView({
       <div className="grid gap-3">
         {groups.map(group => (
           <div key={group.id}>
-            <p className="text-[0.625rem] font-semibold text-muted-foreground">{group.label}</p>
+            <p className="text-xs font-semibold text-muted-foreground">{group.label}</p>
             <ul className="mt-1.5 grid gap-1.5 text-xs text-foreground">
               {group.items.map(item => (
                 <li className="flex items-start gap-2" key={item}>

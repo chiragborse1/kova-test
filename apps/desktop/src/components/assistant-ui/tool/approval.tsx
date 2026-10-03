@@ -212,7 +212,7 @@ export function ApprovalQueue({
       }}
       surfaceClassName={cn(
         'rounded-xl border bg-(--ui-chat-surface-background)',
-        floating ? 'border-(--stroke-nous) shadow-nous' : 'border-(--ui-stroke-secondary)'
+        floating ? 'border-(--stroke-nous) shadow-dialog' : 'border-(--ui-stroke-secondary)'
       )}
       swipeDirections={['left']}
     >
@@ -338,7 +338,7 @@ const ApprovalCard: FC<ApprovalCardProps> = ({ request, total, position, stack }
         <Codicon name="terminal" size="0.875rem" />
         <span>{showsDescription ? copy.commandDetails : copy.command}</span>
         {total > 1 && (
-          <span className="ml-auto text-[0.6875rem] tabular-nums text-(--ui-text-tertiary)">
+          <span className="ml-auto text-sm tabular-nums text-(--ui-text-tertiary)">
             {position} / {total}
           </span>
         )}

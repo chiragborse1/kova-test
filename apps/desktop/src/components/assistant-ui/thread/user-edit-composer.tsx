@@ -53,8 +53,8 @@ import { isRedoShortcut, isUndoShortcut } from '@/app/chat/composer/undo-history
 import { chipTypedUrlOnSpace, linkifyUrls } from '@/app/chat/composer/url-refs'
 import {
   extractDroppedFiles,
-  KOVA_PATHS_MIME,
   isImagePath,
+  KOVA_PATHS_MIME,
   partitionDroppedFiles
 } from '@/app/chat/hooks/use-composer-actions'
 import { uploadComposerAttachment } from '@/app/session/hooks/use-prompt-actions'
@@ -67,8 +67,8 @@ import {
   USER_BUBBLE_BASE_CLASS
 } from '@/components/assistant-ui/thread/user-message'
 import { Codicon } from '@/components/ui/codicon'
-import type { KovaGateway } from '@/kova'
 import { useI18n } from '@/i18n'
+import type { KovaGateway } from '@/kova'
 import { attachmentDisplayText, attachmentId, pathLabel } from '@/lib/chat-runtime'
 import { sanitizeComposerInput } from '@/lib/composer-input-sanitize'
 import { DATA_IMAGE_URL_RE } from '@/lib/embedded-images'
@@ -921,7 +921,7 @@ export const UserEditComposer: FC<UserEditComposerProps> = ({ cwd, gateway, sess
             </ComposerPrimitive.Input>
             {staging && (
               <span
-                className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-background/80 px-1.5 py-0.5 text-[0.62rem] text-muted-foreground backdrop-blur-[1px]"
+                className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-background/80 px-1.5 py-0.5 text-xs text-muted-foreground backdrop-blur-[1px]"
                 data-slot="aui_edit-staging"
               >
                 <Loader2Icon className="size-3 animate-spin" />

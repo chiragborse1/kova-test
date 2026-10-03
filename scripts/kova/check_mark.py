@@ -46,7 +46,7 @@ def check(condition: bool, message: str) -> None:
 for variant, fill in (("black", "#000000"), ("white", "#ffffff")):
     path = pathlib.Path(f"assets/kova/kova-mark-{variant}.svg")
     print(path.name)
-    raw = path.read_text(encoding="utf-8")
+    raw = path.read_text(encoding="utf-8-sig")
     root = ET.fromstring(raw)                      # raises if malformed
     paths = root.findall(f"{SVG}path")
     print(f"  {len(paths)} path element(s)")
@@ -80,7 +80,7 @@ for variant, fill in (("black", "#000000"), ("white", "#ffffff")):
 
 colour = pathlib.Path("assets/kova/kova-mark-color.svg")
 print(colour.name)
-root = ET.fromstring(colour.read_text(encoding="utf-8"))
+root = ET.fromstring(colour.read_text(encoding="utf-8-sig"))
 parts = root.findall(f"{SVG}path")
 # head(outer+screen hole), 2 blue, screen(outer + 2 eye holes), 2 green
 check(len(parts) == 9, f"9 coloured parts, one per traced ring (got {len(parts)})")
@@ -97,7 +97,7 @@ for name, expected in (
     ("kova-mark-color.svg", mm.color_svg(parts_built, 1024)),
 ):
     actual = pathlib.Path("assets/kova") / name
-    check(actual.read_text(encoding="utf-8") == expected,
+    check(actual.read_text(encoding="utf-8-sig") == expected,
           f"{name} matches a fresh trace of the source artwork")
 
 print("FAIL" if fail else "PASS")

@@ -293,7 +293,15 @@ def legacy_selection(project_root: Path) -> list[str]:
     carried = sorted(
         # An umbrella extra shares its anchor with one member; carrying it
         # would install every sibling the user never chose.
-        extra for extra in ANCHORS if extra not in {"messaging", "voice", "wake"}
+        # `messaging` was excluded here as an umbrella, but it is also the ONLY
+        # extra that carries the whole Telegram/Discord/Slack closure: its members
+        # (`telegram`, `discord`, `slack`) share its anchor, so judging a venv that
+        # carried the umbrella against each member reads only part of it and the
+        # first PM generation then drops the SDKs a user's gateway was working on.
+        # The umbrella concern is real for `voice` and `wake`, whose members carry
+        # the same anchor (`faster_whisper`, `pyopen_wakeword`) and would each pull
+        # siblings the user never chose - those stay excluded.
+        extra for extra in ANCHORS if extra not in {"voice", "wake"}
         # PM refuses a gated extra outside its platform even if a hand-synced venv carried it.
         # Installed first: judging a gate may cost a PM-runtime subprocess.
         if any(all(_installed_in(tree, anchor) for anchor in _anchors(extra)) for tree in trees)

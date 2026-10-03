@@ -41,10 +41,10 @@ export const SIDEBAR_ROW_INSET = cn(
 // box equal the em-square, so glyph ink that sticks out — Segoe UI on Windows
 // is ~1.33em — gets shaved. 1.35 leaves room; the shell still owns row height,
 // so the extra leading just centers.
-export const SIDEBAR_TRUNCATED_LEADING = 'leading-[1.35]' as const
+export const SIDEBAR_TRUNCATED_LEADING = 'leading-snug' as const
 
 export const SIDEBAR_ROW_LABEL = cn(
-  'min-w-0 truncate text-[0.8125rem] text-(--ui-text-secondary)',
+  'min-w-0 truncate text-md text-(--ui-text-secondary)',
   SIDEBAR_TRUNCATED_LEADING
 )
 

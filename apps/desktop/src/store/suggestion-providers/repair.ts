@@ -1,5 +1,5 @@
-import { listMcpServers } from '@/kova'
 import { translateNow } from '@/i18n'
+import { listMcpServers } from '@/kova'
 import { completeMcpDesktopOAuth, McpOAuthCancelled } from '@/lib/mcp-dashboard-oauth'
 import { prettyName } from '@/lib/text'
 import { type ComposerSuggestion, offerSuggestions } from '@/store/composer-suggestions'

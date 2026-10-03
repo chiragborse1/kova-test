@@ -4,8 +4,8 @@ import { ArchiveSkillConfirmDialog } from '@/app/learning/archive-skill-confirm-
 import { CodeEditor } from '@/components/chat/code-editor'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { editLearningNode, getLearningNode, type ProfileScope, profileScopeKey, setSkillEnabled } from '@/kova'
 import { useI18n } from '@/i18n'
+import { editLearningNode, getLearningNode, type ProfileScope, profileScopeKey, setSkillEnabled } from '@/kova'
 import { queryClient } from '@/lib/query-client'
 import { invalidateSlashCompletions } from '@/lib/slash-completion-cache'
 import { notify, notifyError } from '@/store/notifications'
@@ -293,7 +293,7 @@ function ScopedSkillsTab({
                 id="skill-editor"
                 onClose={closeSkillEditor}
                 title={
-                  <span className="text-[0.68rem] font-normal text-muted-foreground/60">
+                  <span className="text-sm font-normal text-muted-foreground/60">
                     {skillEditor.name}/SKILL.md
                   </span>
                 }

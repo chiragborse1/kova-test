@@ -56,12 +56,18 @@ class Refs:
 
 
 @functools.cache
+# The N-1 tag glob is derived from kova_cli.update_channel.STABLE_TAG_RE:
+# a stable version is v<1-3 digits>.<minor>.<patch>, and a 4-digit major is a
+# CalVer label rather than a version. This used to be 'v20[0-9][0-9].*',
+# which cannot match a v1.x tag at all - when the product moved to 1.0.0
+# these tests silently stopped finding N-1 and failed with
+# 'fatal: No names found, cannot describe anything'.
 def refs() -> Refs:
     """HEAD and release N-1, resolved on first use (collection runs no git)."""
     head = I.head_sha()
     try:
         tag = os.environ.get("KOVA_E2E_UPGRADE_BASE") or I.git(
-            "describe", "--tags", "--match", "v20[0-9][0-9].*", "--abbrev=0", "HEAD~1", cwd=H.WORKTREE)
+            "describe", "--tags", "--match", "v[0-9]*.[0-9]*.[0-9]*", "--abbrev=0", "HEAD~1", cwd=H.WORKTREE)
         return Refs(head, tag, I.git("rev-parse", f"{tag}^{{commit}}", cwd=H.WORKTREE))
     except AssertionError:  # shallow checkout without tags
         return Refs(head, "", "")
@@ -182,9 +188,20 @@ def stage_n1(root: Path) -> Install:
     no_cfg.mkdir(exist_ok=True)
     uv_env = {k: v for k, v in os.environ.items() if k not in ("VIRTUAL_ENV", "UV_NO_CONFIG", "UV_CONFIG_FILE")}
     uv_env.update(UV_PROJECT_ENVIRONMENT=str(checkout / "venv"), XDG_CONFIG_HOME=str(no_cfg), XDG_CONFIG_DIRS=str(no_cfg))
-    cp = subprocess.run([I.real_uv(), "sync", "-q", "--locked", "--extra", "all", "--managed-python", "--python",
+    # --frozen, not --locked, for the reason documented in
+    # test_upgrade_path.py: pm's sync() defaults to frozen=True and v1.0.0's
+    # uv.lock is legitimately stale against its own pyproject (the release commit
+    # bumped the version without re-locking). --locked re-resolves and so rejects
+    # a lock no real install ever re-resolves.
+    cp = subprocess.run([I.real_uv(), "sync", "-q", "--frozen", "--extra", "all", "--managed-python", "--python",
                          base_python], cwd=str(checkout), env=uv_env, capture_output=True, text=True, timeout=1800)
     assert cp.returncode == 0, f"N-1 venv install from its uv.lock failed:\n{cp.stderr[-4000:]}"
+    # This build regenerates N-1's committed `kova_agent.egg-info`, which
+    # v1.0.0 ships stale (PKG-INFO 0.0.0 against its own pyproject 1.0.0), so
+    # the checkout is left dirty and the `kova update` under test autostashes
+    # the change and conflicts against HEAD's copy. Restore N-1's bytes; the
+    # artifact is a build output and the venv keeps the installed package.
+    I.git("checkout", "--", "kova_agent.egg-info", cwd=checkout, check=False)
     local_bin = sb.home / ".local" / "bin"
     local_bin.mkdir(parents=True, exist_ok=True)
     (local_bin / "kova").symlink_to(checkout / "venv" / "bin" / "kova")

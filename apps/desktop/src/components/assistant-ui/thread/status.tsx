@@ -11,8 +11,8 @@ import { SCAFFOLD_LABEL_CLASS } from '@/components/chat/scaffold-row'
 import { Codicon } from '@/components/ui/codicon'
 import { Loader } from '@/components/ui/loader'
 import { StatusPulse } from '@/components/ui/status-pulse'
-import { getLocalModelsStatus } from '@/kova'
 import { useI18n } from '@/i18n'
+import { getLocalModelsStatus } from '@/kova'
 import { cn } from '@/lib/utils'
 import { sessionBackgroundResume } from '@/store/background-delegation'
 import { sessionCompacting } from '@/store/compaction'
@@ -139,7 +139,7 @@ const ProgressHint: FC<{ label: string; percent: null | number }> = ({ label, pe
       <>
         <span className="h-1 w-24 shrink-0 overflow-hidden rounded-full bg-(--ui-bg-tertiary)">
           <span
-            className="block h-full rounded-full bg-primary transition-[width] duration-500"
+            className="block h-full rounded-full bg-primary transition-[width] slow"
             style={{ width: `${Math.max(2, percent)}%` }}
           />
         </span>
@@ -254,7 +254,7 @@ export const ResponseLoadingIndicator: FC = () => {
     <StatusRow data-slot="aui_response-loading" label={hint || t.assistant.thread.loadingResponse}>
       <StatusPulse
         aria-hidden="true"
-        className="dither inline-block size-3 rounded-[2px] text-midground/80"
+        className="dither inline-block size-3 rounded-xs text-midground/80"
         kind="opacity"
       />
       {hint ? (
@@ -385,7 +385,7 @@ export const TurnActivityIndicator: FC = () => {
         <>
           <StatusPulse
             aria-hidden="true"
-            className="dither inline-block size-3 rounded-[2px] text-midground/80"
+            className="dither inline-block size-3 rounded-xs text-midground/80"
             kind="opacity"
           />
           {hint ? (

@@ -120,14 +120,14 @@ export function DecodedLabel({ leaving, text }: { leaving?: boolean; text: strin
   return (
     <span
       className={cn(
-        'inline-flex items-center font-mono text-xs font-semibold uppercase tracking-[0.28em] tabular-nums text-primary transition duration-[360ms] ease-out',
+        'inline-flex items-center font-mono text-xs font-semibold uppercase tracking-caps tabular-nums text-primary transition slow ease-out',
         leaving ? 'translate-y-2 opacity-0 saturate-0' : 'translate-y-0 opacity-100 saturate-100'
       )}
     >
       <GlyphText text={decoded} />
       <span
         aria-hidden="true"
-        className="dither ml-1.5 -mr-[0.875rem] inline-block size-2 shrink-0 -translate-y-px rounded-[1px] text-primary decode-cursor-blink"
+        className="dither ml-1.5 -mr-[0.875rem] inline-block size-2 shrink-0 -translate-y-px rounded-xs text-primary decode-cursor-blink"
       />
     </span>
   )
@@ -152,7 +152,7 @@ export function HackeryButton({
       className={cn(
         'group inline-flex items-center gap-2 rounded-md border border-(--stroke-nous) px-6 py-2.5',
         'font-mono text-xs font-semibold uppercase text-primary',
-        'transition-all duration-150 hover:border-primary/60 hover:bg-primary/[0.06]',
+        'transition-all fast hover:border-primary/60 hover:bg-primary/[0.06]',
         'disabled:pointer-events-none disabled:opacity-50'
       )}
       disabled={disabled}
@@ -161,7 +161,7 @@ export function HackeryButton({
     >
       <span className="text-primary/40 transition-colors group-hover:text-primary">[</span>
       {loading ? <Loader2 className="size-3 animate-spin" /> : null}
-      <span className="-mr-[0.25em] pl-[0.25em] tracking-[0.25em]">{label}</span>
+      <span className="-mr-[0.25em] pl-[0.25em] tracking-caps">{label}</span>
       <span className="text-primary/40 transition-colors group-hover:text-primary">]</span>
     </button>
   )

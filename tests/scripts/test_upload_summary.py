@@ -7,7 +7,7 @@ from scripts.releases import r2, upload_summary
 from scripts.releases.r2_scope import R2Scope
 
 
-BASE = "https://kova-assets.nousresearch.com"
+BASE = "https://assets.neuralstudio.in"
 KEY = "releases/commit/" + "a" * 40 + "/KovaBundled-1.2.3-win-x64.msix"
 
 
@@ -46,7 +46,7 @@ def test_note_dedupes_and_flush_appends_once(tmp_path, monkeypatch):
     upload_summary.note(KEY)
     upload_summary.flush()
     upload_summary.flush()
-    text = summary.read_text(encoding="utf-8")
+    text = summary.read_text(encoding="utf-8-sig")
     assert text.count("### R2 uploads") == 1
     assert text.startswith("existing\n")
     assert f"{BASE}/{KEY}" in text

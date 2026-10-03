@@ -64,6 +64,18 @@ function completedInstallMatches({ source, receipt, hiddenLock, key, nativeKey }
 // cannot clear (ENOTEMPTY, #75584); only deleting node_modules recovers it. npm's
 // debug log names the code while stdio stays on the terminal, so give each run
 // its own logs dir and retry once only on that code. Other failures keep the tree.
+export function npmLogsMention(logsDir, needle) {
+  // Reading the logs must never be the thing that throws: this runs while
+  // handling an npm failure, and npm killed before writing anything leaves the
+  // directory absent, so a bare readdirSync here would replace the real error
+  // with ENOENT and hide the cause the caller needs.
+  try {
+    return readdirSync(logsDir).some(name => readFileSync(join(logsDir, name), 'utf8').includes(needle))
+  } catch {
+    return false
+  }
+}
+
 function runNpmCi(node, npm, args, { source, env }) {
   const logsDir = mkdtempSync(join(tmpdir(), 'kova-npm-logs-'))
   // Builders set CI=1, which turns npm's spinner off. Ask for it back: npm
@@ -73,14 +85,17 @@ function runNpmCi(node, npm, args, { source, env }) {
   try {
     run()
   } catch (error) {
-    const logged = readdirSync(logsDir).some(name => readFileSync(join(logsDir, name), 'utf8').includes('ENOTEMPTY'))
-    if (!logged) throw error
+    if (!npmLogsMention(logsDir, 'ENOTEMPTY')) throw error
     console.log('node-deps: npm ci hit ENOTEMPTY; removing node_modules and retrying once...')
     rmSync(join(source, 'node_modules'), { recursive: true, force: true, maxRetries: 3 })
     run()
-  } finally {
-    rmSync(logsDir, { recursive: true, force: true })
+    return
   }
+  // Only the success path discards the logs. On failure they are the only
+  // record of what npm was doing, and the E2E uploads whatever is left in the
+  // temp dir when the installer is killed -- which is how a stalled step
+  // becomes diagnosable instead of just "it timed out".
+  rmSync(logsDir, { recursive: true, force: true })
 }
 
 /** Install the full requested workspace union in one strict, locked operation. */

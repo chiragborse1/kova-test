@@ -554,12 +554,12 @@ export default function ConfigPage() {
               <div className="flex flex-col border border-border bg-muted/20">
                 <div className="hidden sm:flex items-center gap-2 px-3 py-2 border-b border-border">
                   <Filter className="h-3 w-3 text-text-tertiary" />
-                  <span className="font-mondwest text-display text-xs tracking-[0.12em] text-text-secondary">
+                  <span className="font-mondwest text-display text-xs tracking-caps text-text-secondary">
                     {t.config.filters}
                   </span>
                 </div>
 
-                <div className="hidden sm:block px-3 pt-2 pb-1 font-mondwest text-display text-xs tracking-[0.12em] text-text-tertiary">
+                <div className="hidden sm:block px-3 pt-2 pb-1 font-mondwest text-display text-xs tracking-caps text-text-tertiary">
                   {t.config.sections}
                 </div>
 

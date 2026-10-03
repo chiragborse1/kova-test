@@ -256,9 +256,34 @@ test('packaging isolates boot metadata and executable names without renaming rel
     assert.equal(artifact.identity.msixAppIdWithOrg, config.msix.identityName)
     assert.deepEqual(config.protocols[0].schemes, ['kova'])
 
+    // Publish targets depend on the environment, so this states the two cases
+    // instead of inheriting whichever one the runner happens to have. On CI,
+    // GITHUB_REPOSITORY is always set, so the old bare `assert.equal(config.publish, null)`
+    // only passed locally, where the variable is absent.
     if (build !== 'canary') {
-      assert.equal(config.publish, null)
-      assert.equal(config.mac.publish, null)
+      const saved = { repo: process.env.GITHUB_REPOSITORY, feed: process.env.CLOUDFLARE_R2_PUBLIC_URL }
+      try {
+        delete process.env.GITHUB_REPOSITORY
+        delete process.env.CLOUDFLARE_R2_PUBLIC_URL
+        const local: PackagingConfiguration = load()
+        assert.equal(local.publish, null, 'a build with no repository and no feed publishes nothing')
+        assert.equal(local.mac.publish, null)
+
+        process.env.GITHUB_REPOSITORY = 'chiragborse1/kova-test'
+        const released: PackagingConfiguration = load()
+        assert.deepEqual(released.publish, { provider: 'github', owner: 'chiragborse1', repo: 'kova-test', channel: identity.channel })
+      } finally {
+        if (saved.repo === undefined) {
+          delete process.env.GITHUB_REPOSITORY
+        } else {
+          process.env.GITHUB_REPOSITORY = saved.repo
+        }
+        if (saved.feed === undefined) {
+          delete process.env.CLOUDFLARE_R2_PUBLIC_URL
+        } else {
+          process.env.CLOUDFLARE_R2_PUBLIC_URL = saved.feed
+        }
+      }
     }
   }
 })

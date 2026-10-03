@@ -509,10 +509,10 @@ interface MarkdownTextSurfaceProps {
 // Headings shrink to chat scale rather than the prose default (h1≈xl). Kept
 // table-driven so adding/tweaking levels is one row.
 const HEADING_SIZES: Record<'h1' | 'h2' | 'h3' | 'h4', string> = {
-  h1: 'text-[1rem] tracking-tight',
-  h2: 'text-[0.9375rem] tracking-tight',
-  h3: 'text-[0.875rem]',
-  h4: 'text-[0.8125rem]'
+  h1: 'text-lg tracking-tight',
+  h2: 'text-lg tracking-tight',
+  h3: 'text-lg',
+  h4: 'text-md'
 }
 
 const MARKDOWN_CONTAINER_CLASS_NAME = cn(
@@ -527,7 +527,7 @@ const MARKDOWN_CONTAINER_CLASS_NAME = cn(
   'prose-pre:text-foreground',
   'prose-a:break-words prose-p:[overflow-wrap:anywhere]',
   'prose-li:marker:text-muted-foreground/70',
-  'prose-code:rounded-[0.25rem] prose-code:px-[0.1875rem] prose-code:py-px prose-code:font-mono prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none',
+  'prose-code:rounded-sm prose-code:px-[0.1875rem] prose-code:py-px prose-code:font-mono prose-code:text-[0.9em] prose-code:font-normal prose-code:before:content-none prose-code:after:content-none',
   '[&>*:first-child]:mt-0 [&>*:last-child]:mb-0 [&>*+*]:mt-(--paragraph-gap)'
 )
 
@@ -539,7 +539,7 @@ function HugeTextFallback({ containerClassName, text }: { containerClassName?: s
   return (
     <div
       className={cn(
-        'aui-md w-full max-w-none overflow-hidden rounded-[0.625rem] border border-(--ui-stroke-tertiary) font-mono text-[0.7rem] leading-relaxed text-foreground/90',
+        'aui-md w-full max-w-none overflow-hidden rounded-lg border border-(--ui-stroke-tertiary) font-mono text-sm leading-relaxed text-foreground/90',
         containerClassName
       )}
     >
@@ -727,7 +727,7 @@ function MarkdownTextSurface({
         ),
         th: ResizableMarkdownTh,
         td: ({ children, className, ...props }: ComponentProps<'td'>) => (
-          <td className={cn('px-2.5 py-1.5 align-top text-[0.8125rem] leading-snug', className)} {...props}>
+          <td className={cn('px-2.5 py-1.5 align-top text-md leading-snug', className)} {...props}>
             {decorateText ? decorateText(children) : children}
           </td>
         ),

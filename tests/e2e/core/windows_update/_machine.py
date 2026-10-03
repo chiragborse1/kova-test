@@ -67,7 +67,42 @@ from tests.fakes.fake_llm_provider import write_kova_home
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 OPT_IN_ENV = "KOVA_E2E_WINDOWS_INSTALL"
-INSTALL_TIMEOUT = 1500.0
+# One install.ps1 run is dominated by work unrelated to what these cells test.
+# Measured on the current runner (job 110749495428, machine host-1db4):
+#
+#   0 -> 1033s    PM managed tools, ~500 MB (ffmpeg 185 MiB, agent-browser
+#                  204 MiB, node, npm, python, ripgrep)
+#   1037 -> 1040s  isolated Kova runtime, Python dependencies
+#   1268s -> killed   npm ci for the node workspaces (ui-tui, web). Scripts are
+#                      enabled, so electron fetches a binary and node-pty builds.
+#
+# Both earlier caps produced 0 passed / 18 failed, each for its own reason and
+# each reported by every cell as a missing launcher rather than as itself:
+#
+#   1500s  died before publishing kova.exe -> 'journey step ... never ran'
+#   2100s  cleared the tool downloads, then died inside npm ci
+#
+# The 3600s cap then failed on main (job 110966197140) without the installer ever
+# being at fault: it was still working. Measured on that run, per machine:
+#
+#   0 -> 1409s   PM managed tools (~500 MB; ffmpeg alone took 480s to 185 MiB)
+#   1477 -> 1832s Python dependencies into the Kova runtime
+#   1834 -> 1898s agent-browser, then config prepared
+#   1899s        "Building the kova command and apps"
+#   1907 -> 2782s the isolated runtime's own Python dependencies
+#   2782s        "Preparing Node dependencies" - npm ci had not started
+#
+# So the run died 818s before even reaching the npm ci the old comment budgeted
+# for, having spent 2782s on tool and Python downloads. Those downloads are slow
+# because six machines pull the same ~500 MB concurrently on one runner.
+#
+# 5400s covers the observed 2782s of pre-npm work, the npm ci that had not begun,
+# and the build+publish after it, while staying inside the job's 120-minute cap
+# with room for the update and gateway legs. The six machines still run
+# concurrently, so this is a per-machine budget, not an additive one.
+#
+# UPDATE_TIMEOUT is untouched: the update path downloads no tools.
+INSTALL_TIMEOUT = 5400.0
 UPDATE_TIMEOUT = 1200.0
 CMD_TIMEOUT = 300.0
 GATEWAY_READY_TIMEOUT = 240.0
@@ -476,6 +511,15 @@ class Machine:
                 if src.is_dir():
                     shutil.copytree(src, dest / sub, dirs_exist_ok=True,
                                     ignore=shutil.ignore_patterns("*.db", "*.db-*"))
+            # npm's own debug log, when a `npm ci` inside the install did not
+            # finish. runNpmCi keeps its logs dir on failure (1afc13dac0), but
+            # that dir is under the fake profile's %TEMP%, and the workflow
+            # uploads only ${{ runner.temp }}/win-update-e2e -- so the log
+            # survives the kill and is never collected. Without this, a stalled
+            # `Preparing Node dependencies` reports nothing but its own label.
+            for logs_dir in Path(tempfile.gettempdir()).glob("kova-npm-logs-*"):
+                if logs_dir.is_dir():
+                    shutil.copytree(logs_dir, dest / logs_dir.name, dirs_exist_ok=True),
             (dest / "evidence.txt").write_text(self.evidence(), encoding="utf-8", errors="replace")
             (dest / "timings.json").write_text(json.dumps(self.timings, indent=1), encoding="utf-8")
 

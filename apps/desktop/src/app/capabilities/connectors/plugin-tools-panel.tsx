@@ -3,8 +3,8 @@ import { useMemo } from 'react'
 
 import { PanelEmpty } from '@/app/overlays/panel'
 import { Button } from '@/components/ui/button'
-import { type ProfileScope, testMcpServer } from '@/kova'
 import { useI18n } from '@/i18n'
+import { type ProfileScope, testMcpServer } from '@/kova'
 import { PROBE_TTL_MS } from '@/lib/mcp-probe-cache'
 
 import { CONNECTOR_GC_TIME, pluginProbeQueryKey } from './data/keys'
@@ -71,7 +71,7 @@ export function PluginToolsPanel({ card, onOpenPlugins, plugin, scope }: PluginT
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       <div className="flex shrink-0 items-center gap-2 border-b border-(--ui-stroke-tertiary) px-3.5 py-1.5">
-        <span className="min-w-0 flex-1 text-[0.7rem] text-(--ui-text-tertiary)">
+        <span className="min-w-0 flex-1 text-sm text-(--ui-text-tertiary)">
           {copy.dialog.providedByPlugin(plugin)}
         </span>
         <Button onClick={onOpenPlugins} size="inline" variant="textStrong">

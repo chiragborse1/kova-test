@@ -14,8 +14,8 @@
  * the other just learned.
  */
 
-import { getKovaConfigRecord, type McpTestResult, setMcpServerEnabled, testMcpServer } from '@/kova'
 import { translateNow } from '@/i18n'
+import { getKovaConfigRecord, type McpTestResult, setMcpServerEnabled, testMcpServer } from '@/kova'
 import { classifyProbe, freshProbe, probeCache, probeKey } from '@/lib/mcp-probe-cache'
 import { getServers, serverEnabled } from '@/lib/mcp-servers'
 import { persistString, storedString } from '@/lib/storage'

@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { afterEach, expect, test } from 'vitest'
-import { npmCommand } from '../scripts/build/node-deps.mjs'
+import { npmCommand, npmLogsMention } from '../scripts/build/node-deps.mjs'
 
 const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const roots = []
@@ -308,3 +308,34 @@ test('a receipt keyed by the probed version reuses under the manifest version, e
   json(join(npmRoot, 'package.json'), { name: 'npm', version: '10.8.3' })
   expect(() => prepareNodeDependencies({ ...options, install: false })).toThrow(/disabled/)
 }, 30000)
+
+
+// Regression: the ENOTEMPTY probe ran INSIDE runNpmCi's catch block and could
+// itself throw, replacing the npm failure the caller needs with ENOENT from a
+// logs directory npm creates lazily. A run killed or refused before writing a
+// log leaves nothing there to read, so the message that reached the operator
+// named neither npm nor ENOTEMPTY -- and the comment above the function
+// promised "Other failures keep the tree", which it did not honour.
+//
+// Asserted against the predicate itself. An earlier version of this test drove
+// the failure through prepareNodeDependencies with an impossible engines range,
+// which threw at the engine guard upstream of runNpmCi -- so it passed with the
+// guard removed and proved nothing.
+test('the ENOTEMPTY probe reports a missing or unreadable logs dir instead of throwing', () => {
+  const absent = join(mkdtempSync(join(tmpdir(), 'kova-npm-logs-')), 'never-created')
+  expect(() => npmLogsMention(absent, 'ENOTEMPTY')).not.toThrow()
+  expect(npmLogsMention(absent, 'ENOTEMPTY')).toBe(false)
+
+  // A logs dir that exists but holds a file the caller cannot read must also
+  // be answered, not raised: the caller is already handling a failure.
+  const unreadable = mkdtempSync(join(tmpdir(), 'kova-npm-logs-'))
+  roots.push(unreadable)
+  writeFileSync(join(unreadable, 'debug-0.log'), 'ENOTEMPTY: rmdir node_modules')
+  expect(npmLogsMention(unreadable, 'ENOTEMPTY')).toBe(true)
+  expect(npmLogsMention(unreadable, 'SOMETHING-ELSE')).toBe(false)
+
+  // A directory entry that is not a file at all (npm writes one, but a
+  // half-cleaned temp dir can hold a stray dir) must not crash the probe.
+  mkdirSync(join(unreadable, 'stray-dir'))
+  expect(npmLogsMention(unreadable, 'ENOTEMPTY')).toBe(true)
+})

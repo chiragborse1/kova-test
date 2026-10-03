@@ -1,8 +1,8 @@
 import { type ReactElement, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { pauseLocalDownload, resumeLocalDownload } from '@/kova'
 import { useI18n } from '@/i18n'
+import { pauseLocalDownload, resumeLocalDownload } from '@/kova'
 import { Loader2, Pause, Play } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 import {
@@ -39,7 +39,7 @@ export function ProgressBar({ percent, paused = false }: ProgressBarProps) {
       <div
         className={cn(
           'h-full rounded-full',
-          paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] duration-300'
+          paused ? 'bg-muted-foreground/60' : 'bg-primary transition-[width] slow'
         )}
         style={{ width: `${Math.max(0, Math.min(100, percent ?? 0))}%` }}
       />
@@ -171,7 +171,7 @@ export function LocalModelDownloadProgress({ job }: LocalModelDownloadProps) {
     <div className="grid gap-1">
       <ProgressBar paused={job.status === 'paused'} percent={job.percent} />
 
-      <p className="text-[0.68rem] text-muted-foreground">{downloadStatusText(job, copy)}</p>
+      <p className="text-sm text-muted-foreground">{downloadStatusText(job, copy)}</p>
     </div>
   )
 }

@@ -5,7 +5,7 @@
 for f in ["plugins/kanban/dashboard/dist/index.js",
           "plugins/kova-achievements/dashboard/dist/index.js"]:
     p = pathlib.Path(f)
-    s = p.read_text(encoding="utf-8")
+    s = p.read_text(encoding="utf-8-sig")
     n = s.count("openkova.com")
     s = s.replace("kova-agent.openkova.com", "hermes-agent.nousresearch.com")
     s = s.replace("openkova.com", "nousresearch.com")

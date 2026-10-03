@@ -847,7 +847,17 @@ export const deOverrides = {
       about: 'Über',
       billing: 'Abrechnung',
       notifications: 'Benachrichtigungen',
-      vault: 'Passwörter & Logins'
+      vault: 'Passwörter & Logins',
+    },
+    // Band headings for the Settings rail. The first band is unlabelled
+    // on purpose - see SETTINGS_BANDS in app/settings/index.tsx.
+    bands: {
+      bandDevice: 'Dieses Gerät',
+      bandSecurity: 'Sicherheit & Daten',
+      bandAgents: 'Agenten & Modelle',
+      bandConnections: 'Verbindungen',
+      bandAccount: 'Konto',
+      bandSystem: 'System',
     },
     plugins: {
       title: 'Desktop-Plugins',
@@ -3933,7 +3943,14 @@ export const deOverrides = {
       capabilities: 'Fähigkeiten',
       messaging: 'Messaging',
       artifacts: 'Artefakte',
-      cron: 'Geplante Jobs'
+      cron: 'Geplante Jobs',
+      webhooks: 'Webhooks',
+      profiles: 'Profile',
+      agents: 'Agenten',
+      starmap: 'Speicher-Graph',
+      'command-center': 'Zentrale',
+      'session-import': 'Session importieren',
+      more: 'Mehr',
     },
     searchAria: 'Sessions durchsuchen',
     searchPlaceholder: 'Sessions durchsuchen…',

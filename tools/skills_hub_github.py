@@ -476,8 +476,20 @@ class GitHubSource(SkillSource):
                     if not limited or last_attempt:
                         if limited:  # terminal exhaustion: flag the instance so callers fail loud
                             self._rate_limited = True
-                            logger.warning("GitHub API rate limit exhausted (unauthenticated: 60 req/hr). "
-                                           "Set GITHUB_TOKEN or install the gh CLI to raise the limit to 5,000/hr.")
+                            # Name the SCOPE, not a missing secret. This crawl reads
+                            # thousands of repositories; the Actions job token is
+                            # scoped to this one, so every cross-repo call is
+                            # rejected and counted against the anonymous 60/hr
+                            # budget. Saying "unauthenticated" here sent the last
+                            # investigation looking for a GITHUB_TOKEN that was
+                            # present the whole time.
+                            logger.warning(
+                                "GitHub API rate limit exhausted. This crawl reads many repositories, so the "
+                                "token must reach repos OTHER than this one: the Actions job token is scoped to "
+                                "this repository, and every cross-repo call then falls through to the anonymous "
+                                "60/hr budget. Provision the GitHub App (APP_CLIENT_ID + APP_PRIVATE_KEY) for "
+                                "5,000 req/hr, or run with a PAT."
+                            )
                         return resp
                     reset = resp.headers.get("X-RateLimit-Reset", "")
                     retry_after = parse_retry_after_seconds(resp.headers)

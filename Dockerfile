@@ -112,7 +112,9 @@ sys.exit(f'linked SQLite {sqlite3.sqlite_version} still has the WAL-reset bug') 
 db = sqlite3.connect(':memory:'); \
 db.execute(\"CREATE VIRTUAL TABLE docs USING fts5(content, tokenize='trigram')\"); \
 db.execute(\"INSERT INTO docs VALUES ('kova')\"); \
-sys.exit('SQLite FTS5 trigram self-test failed') if db.execute(\"SELECT count(*) FROM docs WHERE docs MATCH 'erm'\").fetchone()[0] != 1 else None; \
+hits = db.execute(\"SELECT count(*) FROM docs WHERE docs MATCH 'ova'\").fetchone()[0]; \
+misses = db.execute(\"SELECT count(*) FROM docs WHERE docs MATCH 'erm'\").fetchone()[0]; \
+sys.exit(f'SQLite FTS5 trigram self-test failed (hit={hits}, miss={misses})') if (hits, misses) != (1, 0) else None; \
 db.close()"
 
 # ---------- s6-overlay install ----------

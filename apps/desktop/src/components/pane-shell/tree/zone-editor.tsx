@@ -454,7 +454,7 @@ export function ZoneEditor() {
 
           return (
             <div
-              className="absolute flex items-center justify-center rounded-[3px] border transition-colors"
+              className="absolute flex items-center justify-center rounded-sm border transition-colors"
               key={zone.index}
               style={{
                 left: pct(zone.left),
@@ -469,7 +469,7 @@ export function ZoneEditor() {
             >
               {/* Quiet zone tag — the app's small-caps label voice, not a
                   billboard number. */}
-              <span className="select-none text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-(--ui-text-tertiary)">
+              <span className="select-none text-xs font-semibold uppercase tracking-caps text-(--ui-text-tertiary)">
                 {t.zones.zoneTag(zone.index + 1)}
               </span>
             </div>
@@ -550,7 +550,7 @@ export function ZoneEditor() {
         {mergeAt && selection.length > 1 && (
           <div className="absolute z-20 flex gap-1" style={{ left: mergeAt.x, top: mergeAt.y }}>
             <Button
-              className="shadow-lg"
+              className="shadow-popover"
               onClick={merge}
               onPointerDown={e => e.stopPropagation()}
               size="sm"

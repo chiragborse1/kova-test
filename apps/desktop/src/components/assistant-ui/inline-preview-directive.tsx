@@ -406,7 +406,7 @@ function InlineHtmlFrame({
         />
       ) : (
         <span
-          className="relative block max-w-full transition-[height] duration-200"
+          className="relative block max-w-full transition-[height] base"
           style={{ height, width: width ?? '100%' }}
         >
           <iframe

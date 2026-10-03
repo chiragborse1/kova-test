@@ -4,8 +4,8 @@ import type * as React from 'react'
 import { type NewSessionPlacement, type NewSessionSplitHandler, startNewSessionDrag } from '@/app/chat/new-session-drag'
 import { Codicon } from '@/components/ui/codicon'
 import { ProfileGlyph } from '@/components/ui/profile-glyph'
-import type { SessionInfo } from '@/kova'
 import { useI18n } from '@/i18n'
+import type { SessionInfo } from '@/kova'
 import { displayPath } from '@/lib/display-path'
 import { useStoreSelector } from '@/lib/use-session-slice'
 import { $sidebarShowAllSessions, setWorkspaceNodeOpen } from '@/store/layout'
@@ -230,7 +230,7 @@ export function SidebarWorkspaceGroup({
       {open && (
         <>
           {visibleSessions.length === 0 ? (
-            <div className="min-h-7 pl-2 text-[0.75rem] leading-7 text-(--ui-text-quaternary)">{s.noSessions}</div>
+            <div className="min-h-7 pl-2 text-base leading-7 text-(--ui-text-quaternary)">{s.noSessions}</div>
           ) : (
             renderRows(visibleSessions)
           )}

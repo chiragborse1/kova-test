@@ -1,7 +1,6 @@
 """install.sh child output: one status line on a terminal, the full stream in CI."""
 import os
 from pathlib import Path
-import pty
 import re
 import shlex
 import subprocess
@@ -9,6 +8,12 @@ import subprocess
 import pytest
 
 pytestmark = pytest.mark.platforms("posix")
+
+# pty (and the termios it pulls in) is Unix-only. Imported here rather than at
+# module scope because platforms("posix") is consulted after collection, so a
+# module-level `import pty` raised ModuleNotFoundError on Windows and stopped the
+# whole file from being collected at all.
+
 INSTALL_SH = Path(__file__).resolve().parents[3] / "scripts" / "install.sh"
 NOISY = "echo noisy-first; echo noisy-second >&2; exit {code}"
 
@@ -27,6 +32,8 @@ def _script(code: int) -> str:
 
 def _on_terminal(tmp_path: Path, code: int) -> tuple[str, str]:
     """Run under a pseudo-terminal; return the transcript as the screen shows it."""
+    import pty  # Unix-only; see the note beside pytestmark above.
+
     controller, terminal = pty.openpty()
     proc = subprocess.Popen(["bash", "-c", _script(code)], stdin=terminal, stdout=terminal, stderr=terminal,
                             env=_env(tmp_path), close_fds=True)

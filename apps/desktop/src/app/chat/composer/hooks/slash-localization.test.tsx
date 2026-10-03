@@ -3,11 +3,11 @@ import { act, cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { renderCommandsCatalog } from '@/app/session/hooks/use-prompt-actions/utils'
-import type { KovaGateway } from '@/kova'
 import { I18nProvider, useI18n } from '@/i18n'
 import { TRANSLATIONS } from '@/i18n/catalog'
 import { setRuntimeI18nLocale } from '@/i18n/runtime'
 import type { Locale } from '@/i18n/types'
+import type { KovaGateway } from '@/kova'
 import {
   type CommandsCatalogLike,
   desktopSlashDescription,

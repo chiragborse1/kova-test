@@ -305,7 +305,7 @@ export function FindBar() {
         // inside the titlebar strip, underneath the native min/max/close
         // window-controls overlay on Windows/Linux.
         'pointer-events-auto fixed right-4 top-[calc(var(--titlebar-height,34px)+0.5rem)] z-50',
-        'flex items-center gap-2 rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-surface-background) px-2 py-1.5 shadow-md'
+        'flex items-center gap-2 rounded-lg border border-(--ui-stroke-tertiary) bg-(--ui-surface-background) px-2 py-1.5 shadow-popover'
       )}
       role="search"
       style={barStyle}
@@ -323,7 +323,7 @@ export function FindBar() {
       />
 
       {matchLabel && (
-        <span aria-live="polite" className="min-w-[3rem] text-center text-[0.6875rem] text-(--ui-text-tertiary)">
+        <span aria-live="polite" className="min-w-[3rem] text-center text-sm text-(--ui-text-tertiary)">
           {matchLabel}
         </span>
       )}

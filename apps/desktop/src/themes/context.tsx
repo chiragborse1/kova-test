@@ -221,7 +221,12 @@ const mixesFor = (isDark: boolean): Record<string, string> => ({
   '--theme-mix-sidebar': '100%',
   '--theme-mix-card': isDark ? '38%' : '22%',
   '--theme-mix-elevated': isDark ? '46%' : '28%',
-  '--theme-mix-bubble': isDark ? '46%' : '0%'
+  // Light was 0%, which mixed the bubble's accent seed out entirely: the
+  // bubble rendered as bare card (rgb 252,252,252) on an rgb 250 page, so it
+  // had no surface of its own and read as a rectangle rather than a message.
+  // 100% paints the seed, so light and dark both give the bubble a real
+  // surface - dark at 46%, light at full strength against a near-white page.
+  '--theme-mix-bubble': isDark ? '46%' : '100%'
 })
 
 function applyTheme(theme: DesktopTheme, mode: 'light' | 'dark', chatFontFamily = $chatFontFamily.get()) {

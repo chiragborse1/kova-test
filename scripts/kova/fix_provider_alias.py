@@ -39,7 +39,7 @@ for f in SITES:
     p = pathlib.Path(f)
     if not p.exists():
         continue
-    s = p.read_text(encoding="utf-8")
+    s = p.read_text(encoding="utf-8-sig")
     orig = s
     s = s.replace(OLD, NEW).replace(OLD_TUPLE, NEW_TUPLE)
     if s != orig:

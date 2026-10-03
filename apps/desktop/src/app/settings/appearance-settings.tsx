@@ -8,8 +8,8 @@ import { SearchField } from '@/components/ui/search-field'
 import { SegmentedControl } from '@/components/ui/segmented-control'
 import { Slider } from '@/components/ui/slider'
 import type { DesktopMarketplaceSearchItem } from '@/global'
-import { saveKovaConfig } from '@/kova'
 import { useI18n } from '@/i18n'
+import { saveKovaConfig } from '@/kova'
 import { triggerHaptic } from '@/lib/haptics'
 import { Check, Download, Loader2, Palette, Trash2 } from '@/lib/icons'
 import { selectableCardClass } from '@/lib/selectable-card'
@@ -139,7 +139,7 @@ function ThemePreview({ name, mode }: { name: string; mode: 'light' | 'dark' }) 
 
   return (
     <div
-      className="h-20 overflow-hidden rounded-xl border shadow-xs"
+      className="h-20 overflow-hidden rounded-xl border shadow-popover"
       style={{ backgroundColor: c.background, borderColor: c.border }}
     >
       <div className="flex h-full">

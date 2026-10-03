@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { SegmentedControl } from '@/components/ui/segmented-control'
+import { useI18n } from '@/i18n'
 import {
   activateCustomEndpoint,
   deleteCustomEndpoint,
@@ -12,7 +13,6 @@ import {
   saveCustomEndpoint,
   validateCustomEndpoint
 } from '@/kova'
-import { useI18n } from '@/i18n'
 import { triggerHaptic } from '@/lib/haptics'
 import { Check, Globe, Loader2, Plus, Save, Trash2, Zap } from '@/lib/icons'
 import { cn } from '@/lib/utils'
@@ -370,7 +370,7 @@ export function CustomEndpointsSettings({ onConfigSaved, onMainModelChanged }: C
                       )}
                       {endpoint.source === 'direct-config' && <Pill>config.yaml</Pill>}
                     </div>
-                    <div className="mt-1 truncate font-mono text-[0.7rem] text-muted-foreground">
+                    <div className="mt-1 truncate font-mono text-sm text-muted-foreground">
                       {endpoint.base_url}
                     </div>
                     <div className="mt-1 flex flex-wrap gap-2 text-xs text-muted-foreground">

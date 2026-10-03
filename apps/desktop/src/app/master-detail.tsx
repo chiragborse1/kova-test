@@ -30,7 +30,7 @@ import {
 export function ToolChip({ children, title }: { children: ReactNode; title?: string }) {
   return (
     <span
-      className="rounded-md bg-(--ui-bg-quinary) px-1.5 py-0.5 font-mono text-[0.65rem] text-(--ui-text-tertiary)"
+      className="rounded-md bg-(--ui-bg-quinary) px-1.5 py-0.5 font-mono text-sm text-(--ui-text-tertiary)"
       title={title}
     >
       {children}
@@ -151,11 +151,18 @@ export function MasterDetail({
   )
 }
 
+/**
+ * The list half of a master-detail page. Carries `scrollbar-cue` because the
+ * app hides every scrollbar until hover: right for a surface you are already
+ * dragging, wrong for a list whose overflow is content. Messaging holds 19
+ * platforms in a 740px box - 14 below the fold - and with no persistent
+ * affordance it reads as a list of 5.
+ */
 export function ListColumn({ children, header }: { children: ReactNode; header?: ReactNode }) {
   return (
     <aside className="flex min-h-0 flex-col p-2">
       {header}
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">{children}</div>
+      <div className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">{children}</div>
     </aside>
   )
 }
@@ -174,11 +181,18 @@ export function DetailColumn({
 }) {
   return (
     <main className="flex min-h-0 flex-col overflow-hidden">
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
-        <div className="mx-auto max-w-2xl space-y-5 px-5 py-4">{children}</div>
+      <div className="scrollbar-cue min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
+        <div className="mx-auto max-w-2xl space-y-5 px-5 py-4">
+          {/* max-w-2xl is a LAYOUT cap - it stops the pane sprawling on an
+              ultrawide. It is not a reading cap: a 12px caption in 672px
+              measured 107 chars per line, where 68ch of that same font is
+              403px. Cap the PROSE, so controls, tables and rows keep the
+              width the layout wants and only the text is reined in. */}
+          <div className="max-w-[min(var(--conversation-measure),100%)]">{children}</div>
+        </div>
       </div>
       {footer && (
-        <div className="mx-auto w-full max-w-2xl shrink-0 px-5 pb-3 pt-1.5 text-right text-[0.65rem] text-muted-foreground/50">
+        <div className="mx-auto w-full max-w-2xl shrink-0 px-5 pb-3 pt-1.5 text-right text-sm text-muted-foreground/50">
           {footer}
         </div>
       )}
@@ -207,7 +221,7 @@ const DETAIL_PANE_COLLAPSED_PX = 4
 // isn't size-merge-aware, so Button's icon size would leak and blow it up.
 // Compose extra state (data-[state=open], hover:text-destructive) with cn().
 export const ICON_BUTTON =
-  'size-5 cursor-pointer rounded-[4px] text-muted-foreground/70 hover:bg-(--ui-control-active-background) hover:text-foreground'
+  'size-5 cursor-pointer rounded-sm text-muted-foreground/70 hover:bg-(--ui-control-active-background) hover:text-foreground'
 
 export function DetailPane({
   actions,
@@ -391,7 +405,7 @@ export function ListStripMenu({
   )
 }
 
-const LIST_STRIP_LABEL_CLASS = 'text-[0.68rem] font-medium text-muted-foreground/70'
+const LIST_STRIP_LABEL_CLASS = 'text-sm font-medium text-muted-foreground/70'
 
 export function ListStripLabel({ children }: { children: ReactNode }) {
   return (
@@ -481,20 +495,20 @@ export function CapRow({
         <span className="min-w-0 flex-1">
           <span
             className={cn(
-              'block truncate text-[0.78rem]',
+              'block truncate text-md',
               enabled ? 'font-medium text-foreground/85' : 'font-normal text-muted-foreground/60'
             )}
           >
             {title}
           </span>
           {subtitle != null && (
-            <span className="flex min-w-0 items-center gap-1 text-[0.62rem] text-muted-foreground/50">
+            <span className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground/50">
               {typeof subtitle === 'string' ? <span className="truncate">{subtitle}</span> : subtitle}
             </span>
           )}
         </span>
         {meta != null && (
-          <span className="shrink-0 rounded bg-(--ui-bg-quinary) px-1 py-px text-[0.6rem] tabular-nums leading-3.5 text-(--ui-text-tertiary)">
+          <span className="shrink-0 rounded bg-(--ui-bg-quinary) px-1 py-px text-2xs tabular-nums leading-3.5 text-(--ui-text-tertiary)">
             {meta}
           </span>
         )}

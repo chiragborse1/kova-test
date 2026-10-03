@@ -5,7 +5,7 @@ import { Codicon } from '@/components/ui/codicon'
 import { cn } from '@/lib/utils'
 
 const BOX =
-  'group peer size-4 shrink-0 rounded-sm border border-input shadow-xs outline-none transition-shadow data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground'
+  'group peer size-4 shrink-0 rounded-sm border border-input shadow-popover outline-none transition-shadow data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground'
 
 function Checkbox({ className, ...props }: React.ComponentProps<typeof CheckboxPrimitive.Root>) {
   return (

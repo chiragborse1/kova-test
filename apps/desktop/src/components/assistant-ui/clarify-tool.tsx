@@ -184,7 +184,7 @@ function ChoiceLabel({ choice }: { choice: string }) {
 }
 
 const OPTION_ROW_CLASS =
-  'flex w-full items-start gap-2 rounded-[0.25rem] px-1.5 py-1 text-left disabled:cursor-not-allowed disabled:opacity-50'
+  'flex w-full items-start gap-2 rounded-sm px-1.5 py-1 text-left disabled:cursor-not-allowed disabled:opacity-50'
 
 // field-sizing on top of Textarea's shared chrome; kill min-h-16 for one-liners.
 const CLARIFY_TEXTAREA_CLASS = 'field-sizing-content max-h-40 min-h-0 resize-none'
@@ -379,7 +379,7 @@ function ClarifyToolSingleSettled({ args, result }: ToolCallMessagePartProps) {
               title={copy.lateAnswerTip}
             />
           ))}
-          <p className="px-1.5 pt-0.5 text-[0.6875rem] leading-4 text-(--ui-text-tertiary)">{copy.lateAnswerHint}</p>
+          <p className="px-1.5 pt-0.5 text-sm leading-4 text-(--ui-text-tertiary)">{copy.lateAnswerHint}</p>
         </div>
       ) : null}
     </ClarifyShell>
@@ -938,7 +938,7 @@ function ClarifyToolSinglePending({
             ) : (
               <>
                 {copy.continueLabel}
-                <span aria-hidden className="ml-0.5 text-[0.625rem] opacity-70">
+                <span aria-hidden className="ml-0.5 text-xs opacity-70">
                   ⏎
                 </span>
               </>
@@ -1017,7 +1017,7 @@ function BatchQuestionBlock({
           {question.question}
         </span>
         {locked ? (
-          <span className="shrink-0 rounded-sm bg-(--chrome-action-hover) px-1 py-px text-[0.625rem] text-(--ui-text-tertiary)">
+          <span className="shrink-0 rounded-sm bg-(--chrome-action-hover) px-1 py-px text-xs text-(--ui-text-tertiary)">
             ✓ {copy.answeredBadge}
           </span>
         ) : null}
@@ -1307,7 +1307,7 @@ function ClarifyToolBatchPending({
       )}
       <ClarifyShell className="grid gap-3">
         <div className="flex items-start gap-2">
-          <span className="flex-1 text-[0.6875rem] leading-4 text-(--ui-text-tertiary)">
+          <span className="flex-1 text-sm leading-4 text-(--ui-text-tertiary)">
             {copy.questionProgress(answeredCount, questions.length)}
           </span>
           <MessageQuestion aria-hidden className={CLARIFY_ICON_CLASS} />
@@ -1337,7 +1337,7 @@ function ClarifyToolBatchPending({
             ) : (
               <>
                 {copy.confirmAndContinueLabel}
-                <span aria-hidden className="ml-0.5 text-[0.625rem] opacity-70">
+                <span aria-hidden className="ml-0.5 text-xs opacity-70">
                   ⏎
                 </span>
               </>

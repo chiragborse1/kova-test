@@ -148,6 +148,12 @@ _pf86="$(env | sed -n 's/^ProgramFiles(x86)=//p' | head -n1)"
 #     the real install.ps1 (it writes HKCU PATH); KOVA_E2E_MACHINE_ROOT,
 #     KOVA_E2E_PROFILES_ROOT and KOVA_E2E_ARTIFACTS place its fake machines,
 #     their user profiles and the transcripts CI uploads.
+#   * KOVA_DOCKER_READY_TIMEOUT is read by tests/docker/conftest.py at import
+#     to size the cont-init budget. docker.yml raises it to 300 for the arm64
+#     row (an emulated image runs cont-init ~8x slower than a native one), but
+#     the knob was missing from this allowlist, so `env -i` dropped it and every
+#     arm64 container was judged against the 30s native default: 24 tests failed
+#     on timeouts alone (run 37123258798).
 #
 # These are test-infrastructure knobs, not credentials — same class as the
 # KOVA_RUN_SLOW_PET_TESTS / KOVA_E2E_BROWSER / KOVA_RUN_E2E opt-ins
@@ -161,7 +167,8 @@ TEST_ENV=()
 for _test_var in KOVA_TEST_IMAGE KOVA_TEST_WORKERS KOVA_TEST_PATHS \
   KOVA_TEST_FILE_TIMEOUT KOVA_TEST_FILE_RETRIES KOVA_TEST_SLICE \
   SSL_CERT_FILE SSL_CERT_DIR KOVA_GATEWAY_LOCK_DIR KOVA_E2E_REQUIRE_TUI CI GITHUB_ACTIONS \
-  KOVA_E2E_WINDOWS_INSTALL KOVA_E2E_MACHINE_ROOT KOVA_E2E_PROFILES_ROOT KOVA_E2E_ARTIFACTS; do
+  KOVA_E2E_WINDOWS_INSTALL KOVA_E2E_MACHINE_ROOT KOVA_E2E_PROFILES_ROOT KOVA_E2E_ARTIFACTS \
+  KOVA_DOCKER_READY_TIMEOUT; do
   if [ -n "${!_test_var:-}" ]; then
     TEST_ENV+=("$_test_var=${!_test_var}")
   fi
