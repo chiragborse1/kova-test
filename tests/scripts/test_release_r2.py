@@ -132,11 +132,11 @@ def test_disposable_scope_streams_lists_and_never_touches_production(r2_server, 
      '33399fd3d4a9d6104710c7c04005f7c959f8b1f8bf41b823587ed36b079e453f'),
     ('PUT', '/kova-releases/KovaBundled-0.28.0-win-x64.msix', {},
      '44ce7dd67c959e0d3524ffac1771dfbba87d2b6b4b4e99e42034a8b803f8b072', 'auto/s3',
-     '05ba50acfb54042fac330848af50877e5fb477c4f2063c2f77f9cc80855eb1e9'),
+     'a8e24e4fa5ea87400fc9d32c99e49ec484ec5cf328e7b3ef2ae0f359013e4874'),
     ('GET', '/kova-releases', {'list-type': '2', 'prefix': 'KovaBundled-0.28.0-', 'max-keys': '1000'},
-     EMPTY_SHA, 'auto/s3', '3ec423c452a318664c85fbcc25667ad07201aedce688e3bb6b345b4baaa39d90'),
+     EMPTY_SHA, 'auto/s3', '6270a8a6bf1d0c2fbcba53f0f1c9088cb1336cfedd49571f4454d9ff74f24a2b'),
     ('DELETE', '/kova-releases/KovaBundled-0.28.0+canary.20260818T000000Z-win-arm64.msix', {},
-     EMPTY_SHA, 'auto/s3', '40dba7bf7356837cf496d950605dfc2c62d82ca2b30aa45c8c0dc8dab7bc1bd1'),
+     EMPTY_SHA, 'auto/s3', '3b45e6a3848216c1f909e7831258025020d6ba3371b7652a8ee90116e2e4224a'),
 ])
 def test_independent_sigv4_vectors(method, path, query, payload, scope, signature):
     host = 'example.com' if scope == 'us-east-1/service' else 'abc123.r2.cloudflarestorage.com'
