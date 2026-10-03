@@ -316,8 +316,8 @@ def test_running_revision_is_not_applied_to_an_explicit_target(installation, mon
     assert check_for_updates(install_root=linked, home=home)["currentSha"] == head
     # Default invocation retains the Nix revision probe even without a Git checkout.
     monkeypatch.setattr("kova_cli.config.get_project_root", lambda: home)
-    responses[MAIN_CHANNEL] = (200, source_channel("main", "kova-agent"))
-    responses["/repos/kova-agent/commits/main"] = (200, "e" * 40)
+    responses[MAIN_CHANNEL] = (200, source_channel("main", "chiragborse1/kova-test"))
+    responses["/repos/chiragborse1/kova-test/commits/main"] = (200, "e" * 40)
     assert check_for_updates(home=home)["behind"] == 0
 
 
@@ -372,7 +372,7 @@ def test_embedded_revision_keeps_https_ref_advertisement_recovery(installation, 
     monkeypatch.setenv("KOVA_REVISION", head)
     monkeypatch.setattr("kova_cli.config.get_project_root", lambda: home)
     monkeypatch.setattr("kova_cli.config.detect_install_method", lambda root: "nix")
-    responses[MAIN_CHANNEL] = (200, source_channel("main", "kova-agent"))
+    responses[MAIN_CHANNEL] = (200, source_channel("main", "chiragborse1/kova-test"))
     original = subprocess.run
     probes = []
 
@@ -409,7 +409,7 @@ def test_malformed_optional_changelog_and_cache_do_not_hide_the_update(installat
                         f"/repos/fixture/fork/compare/{head}...{'a' * 40}"] * 2
 
 
-@pytest.mark.parametrize("repository,heals", [("kova-agent", True), ("fixture/fork", False)])
+@pytest.mark.parametrize("repository,heals", [("chiragborse1/kova-test", True), ("fixture/fork", False)])
 def test_official_ssh_healing_uses_public_https_without_retargeting_forks(installation, monkeypatch, repository, heals):
     from kova_cli.source_check import check_for_updates
     root, linked, home, base, head, responses, requests, git = installation

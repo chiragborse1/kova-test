@@ -56,13 +56,20 @@ def source(tmp_path, monkeypatch):
     return SimpleNamespace(home=home, origin=origin, root=checkout, commits=commits, parser=parser)
 
 
-def record(name, *, repository="kova-agent", state="active", destination=None):
+# The install under test has no GitHub `origin`, so `source_repository` falls
+# back to OFFICIAL_REPOSITORY. These fixtures must name the same repository the
+# resolver reports, or `_resolve_channel` rejects the record with "Channel
+# repository does not match this source installation" - which is the guard
+# added when the bare "kova-agent" name (a GitHub *user*, not a repository) was
+# replaced by owner/repo in #6.
+OFFICIAL = "chiragborse1/kova-test"
+def record(name, *, repository=OFFICIAL, state="active", destination=None):
     return {"schema": 1, "name": name, "repository": repository, "policy": "preview",
             "state": state, "identity": {}, "nextSequence": 2, "head": None,
             **({"destination": destination} if destination else {})}
 
 
-def reader_result(source, name, destination=None, repository="kova-agent"):
+def reader_result(source, name, destination=None, repository=OFFICIAL):
     requested = record(name, repository=repository,
                        state="retired" if destination else "active", destination=destination)
     terminal = record(destination or name, repository=repository)
@@ -237,7 +244,7 @@ def publish_channel_build(channel_archive, name, build_id, commit, *, sequence=1
                 "windowsExecutableName": "Fixture"}
     version = f"1.2.{sequence}" if stable else f"0.0.{sequence}"
     request = {"schema": 1, "channel": name, "buildId": build_id, "sequence": sequence,
-               "repository": "kova-agent", "commit": commit,
+               "repository": OFFICIAL, "commit": commit,
                "sourceVersion": f"1.2.{sequence}", "version": version, "windowsVersion": version + ".0",
                "identity": identity, "bundleEnv": {}, "publicBase": base}
     if stable:
