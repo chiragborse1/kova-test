@@ -12,7 +12,7 @@ here is skipped at collection time.
 """
 from __future__ import annotations
 
-import subprocess
+from tests.docker.conftest import docker_run, docker_timeout
 
 
 def test_kova_help(built_image: str) -> None:
@@ -25,10 +25,7 @@ def test_kova_help(built_image: str) -> None:
     ``stage2-hook`` ignores CMD args passed after an overridden
     entrypoint, so the smoke test was a no-op.
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", built_image, "--help"],
-        capture_output=True, text=True, timeout=60,
-    )
+    r = docker_run(built_image, "--help")
     assert r.returncode == 0, (
         f"kova --help failed (exit {r.returncode}): "
         f"stdout={r.stdout[-2000:]!r} stderr={r.stderr[-2000:]!r}"
@@ -46,10 +43,7 @@ def test_dashboard_subcommand_present(built_image: str) -> None:
     something in the Dockerfile is excluding the dashboard subcommand
     from the installed package.
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", built_image, "dashboard", "--help"],
-        capture_output=True, text=True, timeout=60,
-    )
+    r = docker_run(built_image, "dashboard", "--help")
     assert r.returncode == 0, (
         f"kova dashboard --help failed (exit {r.returncode}): "
         f"stdout={r.stdout[-2000:]!r} stderr={r.stderr[-2000:]!r}"
@@ -70,10 +64,7 @@ def test_kova_help_under_wrapped_init(built_image: str) -> None:
     entrypoint dispatcher must detect the non-PID-1 case and fall back
     to the direct bootstrap path so the requested command still runs.
     """
-    r = subprocess.run(
-        ["docker", "run", "--init", "--rm", built_image, "--help"],
-        capture_output=True, text=True, timeout=120,
-    )
+    r = docker_run(built_image, "--help", timeout=docker_timeout(120), run_args=("--init",))
     assert "can only run as pid 1" not in (r.stdout + r.stderr), (
         f"s6-overlay-suexec aborted under a wrapped init (#38349): "
         f"stderr={r.stderr[-2000:]!r}"

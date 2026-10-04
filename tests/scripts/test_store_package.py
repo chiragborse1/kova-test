@@ -5,6 +5,8 @@ from pathlib import Path
 
 import pytest
 
+import kova_yaml
+
 from scripts.bundles.release_artifacts import (
     record_store,
     validate_store_bundle,
@@ -128,10 +130,8 @@ def test_validate_store_bundle_rejects_packages_that_disagree(tmp_path):
 
 
 def _workflow(name):
-    import yaml
-    from pathlib import Path
     path = Path(__file__).resolve().parents[2] / ".github" / "workflows" / name
-    return yaml.safe_load(path.read_text(encoding="utf-8-sig"))
+    return kova_yaml.safe_load(path.read_text(encoding="utf-8-sig"))
 
 
 def test_store_jobs_are_opt_in():

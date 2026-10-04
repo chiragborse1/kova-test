@@ -15,7 +15,13 @@ from __future__ import annotations
 import json
 import time
 
-from tests.docker.conftest import docker_exec, docker_exec_sh, start_container, poll_container
+from tests.docker.conftest import (
+    docker_exec,
+    docker_exec_sh,
+    docker_timeout,
+    poll_container,
+    start_container,
+)
 
 
 def test_dashboard_not_running_by_default(
@@ -54,7 +60,7 @@ def _http_probe(
     container: str,
     path: str,
     *,
-    deadline_s: float = 60.0,
+    deadline_s: float | None = None,
 ) -> tuple[int, str]:
     """Poll ``http://127.0.0.1:9119<path>`` from inside the container.
 
@@ -67,7 +73,7 @@ def _http_probe(
     gate-engaged test).
 
     Connection errors (uvicorn still starting, fail-closed exited) keep
-    the poll loop running until ``deadline_s`` elapses.
+    the poll loop running until the budget elapses.
 
     The probe Python program is fed over stdin (``python -``) rather
     than ``python -c`` so we can use proper multi-line syntax with
@@ -94,7 +100,11 @@ except urllib.error.HTTPError as h:
         f"{py_program}"
         "PY"
     )
-    end = time.monotonic() + deadline_s
+    # The dashboard takes the same time to answer under emulation as the
+    # container takes to become ready, so the poll window scales with the host
+    # rather than being a fixed native budget.
+    budget = docker_timeout(60) if deadline_s is None else deadline_s
+    end = time.monotonic() + budget
     last_err = ""
     while time.monotonic() < end:
         r = docker_exec_sh(container, probe, timeout=10)
@@ -110,7 +120,7 @@ except urllib.error.HTTPError as h:
             last_err = f"rc={r.returncode} stderr={r.stderr!r}"
         time.sleep(0.5)
     raise AssertionError(
-        f"Probe of {path} never returned HTTP within {deadline_s}s; "
+        f"Probe of {path} never returned HTTP within {budget}s; "
         f"last error: {last_err}"
     )
 

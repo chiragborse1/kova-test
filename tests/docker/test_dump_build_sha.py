@@ -24,7 +24,8 @@ import json
 import os
 from pathlib import Path
 import re
-import subprocess
+
+from tests.docker.conftest import docker_run, docker_timeout
 
 
 _VERSION_LINE = re.compile(r"^version:\s+(?P<rest>.+)$", re.MULTILINE)
@@ -42,10 +43,7 @@ def _run_dump(image: str) -> str:
     a host bind-mount we don't have to chown anything to UID 10000 (which
     would break cleanup on non-root hosts).
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", image, "dump"],
-        capture_output=True, text=True, timeout=120,
-    )
+    r = docker_run(image, "dump", timeout=docker_timeout(120))
     assert r.returncode == 0, (
         f"kova dump exited {r.returncode}: "
         f"stderr={r.stderr[-1000:]!r}\nstdout={r.stdout[-1000:]!r}"
@@ -55,13 +53,8 @@ def _run_dump(image: str) -> str:
 
 def _read_stamp_commit_from_image(image: str) -> str | None:
     """Return the stamp commit from the image, or None when absent/unusable."""
-    r = subprocess.run(
-        [
-            "docker", "run", "--rm", "--entrypoint", "cat", image,
-            "/opt/kova/install-stamp.json",
-        ],
-        capture_output=True, text=True, timeout=30,
-    )
+    r = docker_run(image, "/opt/kova/install-stamp.json",
+                   timeout=docker_timeout(30), run_args=("--entrypoint", "cat"))
     if r.returncode != 0:
         return None
     try:

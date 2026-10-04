@@ -9,18 +9,15 @@ Root start (the default) is covered by test_main_invocation.py.
 """
 from __future__ import annotations
 
-import subprocess
+from tests.docker.conftest import docker_run
 
 
 def test_arbitrary_user_uid_rejected(
     built_image: str,
 ) -> None:
     """docker run --user 1000 must be rejected with actionable guidance."""
-    r = subprocess.run(
-        ["docker", "run", "--rm", "--user", "1000:1000",
-         built_image, "echo", "should_not_reach"],
-        capture_output=True, text=True, timeout=60,
-    )
+    r = docker_run(built_image, "echo", "should_not_reach",
+                   run_args=("--user", "1000:1000"))
     assert r.returncode != 0, (
         f"container started with arbitrary --user UID unexpectedly: {r.stdout}"
     )
@@ -43,11 +40,8 @@ def test_user_pinned_to_kova_uid_works(
 
     This is the supported non-root start from #34648 / #34837.
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", "--user", "10000:10000",
-         built_image, "sh", "-c", "echo OK"],
-        capture_output=True, text=True, timeout=60,
-    )
+    r = docker_run(built_image, "sh", "-c", "echo OK",
+                   run_args=("--user", "10000:10000"))
     assert r.returncode == 0, (
         f"--user 10000:10000 (kova UID) was rejected: {r.stderr[-500:]}"
     )

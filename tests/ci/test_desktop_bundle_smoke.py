@@ -45,6 +45,32 @@ def selected_needs(jobs, name, selected):
     return needs
 
 
+# The two publish-phase jobs the stable phase result judges, named. These are
+# the roles themselves, not a shape to infer: stable-publish validates the R2
+# candidate manifest, stable-store submits the unsigned Store package to
+# Partner Center. They are deliberately not chained to each other.
+PUBLISH_JOBS = frozenset({'stable-publish'})
+STORE_JOBS = frozenset({'stable-store'})
+STORE_BUILD = 'build-store-package'
+
+
+def store_dependencies(jobs, store):
+    """Assert the Store submission chain, and only that chain.
+
+    The Store package is unsigned and Partner Center re-signs it, so its
+    submission is independent of the signed R2 publication: it consumes the
+    store-<arch> handoffs the Store build staged. It must therefore depend on
+    the Store build, and must not acquire a dependency on stable-publish --
+    that would gate an unsigned submission on a manifest that never carries a
+    Store artifact.
+    """
+    assert STORE_BUILD in needs_of(jobs[store]), \
+        f'{store} must consume the Store build, not a re-derived package'
+    for publish in sorted(PUBLISH_JOBS):
+        assert publish not in needs_of(jobs[store]), \
+            f'{store} must not depend on {publish}; the Store channel is independent'
+
+
 def native_consumers(jobs):
     """Jobs that act on a native build's result rather than observe it.
 
@@ -321,6 +347,34 @@ def test_download_faults_never_export_an_accepted_artifact(tmp_path, r2_server, 
     assert not (tmp_path / 'smoke/out/download.json').exists()
 
 
+def test_store_submission_chain_is_independent_of_the_signed_publication():
+    """candidate Store build -> stable-store -> verdict, never via stable-publish.
+
+    The Store package is unsigned and its submission is a Partner Center event,
+    not an R2 publication. It consumes the store-<arch> handoffs the Store build
+    staged, so its only ordering requirement is on that build. Binding it to
+    stable-publish would make an unsigned submission wait on the signed
+    candidate manifest, which never carries a Store artifact.
+    """
+    jobs = _workflow()['jobs']
+    verdict = phase_result(jobs)
+    # The Store submission is the job that consumes the Store build.
+    (store,) = [name for name, job in jobs.items() if STORE_BUILD in needs_of(job)]
+    assert store in STORE_JOBS, store
+    # The same invariant the publish-phase test enforces, from one definition.
+    store_dependencies(jobs, store)
+    # Both publications are judged by the verdict. Resolving `store` by its
+    # dependency does not prove that, so state it directly: dropping either
+    # role from the verdict must fail here rather than pass unnoticed.
+    assert set(PUBLISH_JOBS | {store}) <= set(needs_of(jobs[verdict])), (
+        f'the stable phase must judge {sorted(PUBLISH_JOBS)} and {store}')
+
+    # A channel build can never run the Store leg, so no job on the channel
+    # publication path may depend on it: that dependency could never be
+    # satisfied and would block every channel publish.
+    assert STORE_BUILD not in needs_of(jobs['publish-channel'])
+
+
 def test_stable_phase_and_canary_gates_require_smoke_but_preserve_other_phases(tmp_path, r2_server):
     jobs = _workflow()['jobs']
     gates, smokes = selection_gates(jobs), smoke_callers(jobs)
@@ -328,12 +382,14 @@ def test_stable_phase_and_canary_gates_require_smoke_but_preserve_other_phases(t
     group_jobs['win32-bundle'] = [universal_assembler(jobs)]
     group_jobs['termux'] = [termux_builder(jobs)]
     verdict = phase_result(jobs)
-    members = {member for group in group_jobs.values() for member in group}
-    # What the verdict needs beyond admission and the build groups is the
-    # publication itself; the Store submission follows the file publication.
-    (publish,) = [name for name in needs_of(jobs[verdict]) if name not in members | {'validate'}
-                  and not set(needs_of(jobs[name])) - {'validate'}]
-    (store,) = [name for name in needs_of(jobs[verdict]) if publish in needs_of(jobs[name])]
+    # The publish phase judges two independent publications, resolved by name
+    # from PUBLISH_JOBS and STORE_JOBS. The single-value unpack is the check
+    # that each role is judged by this phase: dropping one raises rather than
+    # silently passing. store_dependencies() then asserts the Store chain, so an
+    # unwanted coupling is reported as such instead of as an unpack failure.
+    (publish,) = [name for name in needs_of(jobs[verdict]) if name in PUBLISH_JOBS]
+    (store,) = [name for name in needs_of(jobs[verdict]) if name in STORE_JOBS]
+    store_dependencies(jobs, store)
 
     def run_phase(phase, selected, failed=None, skip_tests=False):
         needs = {name: {'result': 'success'} for name in needs_of(jobs[verdict])}

@@ -168,11 +168,35 @@ def _user_uv(env: dict[str, str], kova_home: Path) -> None:
     uv.chmod(0o755)
 
 
+def new_sandbox(root: Path, origin: Path) -> I.Sandbox:
+    """``I.new_sandbox`` with lazy installs enabled, as a real user's launch has them.
+
+    The shared sandbox env sets ``KOVA_DISABLE_LAZY_INSTALLS=1`` for the suites
+    that must not reach the network mid-test. This suite cannot: its very first
+    ``kova dashboard`` builds the web UI, exactly as it does for a user, and
+    that build needs node/npm (see ``pm.features``). With the knob set, every
+    column died on the premise instead of on what it tests::
+
+        premise: the dashboard never came up: timed out after 600s waiting
+        for the dashboard /api/health
+        x Web UI build failed: npm: not installed and lazy installs are
+        disabled: node, npm -- enable security.allow_lazy_installs or run
+        `kova pm install`
+
+    The ``pm`` and ``hosts`` suites already drop this knob for the same reason
+    (``lazy_env()`` / their own ``new_sandbox``); this is the third of the three
+    and was simply missed, so the asymmetry is what kept it red.
+    """
+    sb = I.new_sandbox(root, origin)
+    sb.env.pop("KOVA_DISABLE_LAZY_INSTALLS", None)
+    return sb
+
+
 def stage_n1(root: Path) -> Install:
     """A git install at release N-1 with its own venv, as the N-1 installer left it."""
     root.mkdir(parents=True, exist_ok=True)
     origin = I.make_origin(root, refs().base)
-    sb = I.new_sandbox(root / "sb", origin)
+    sb = new_sandbox(root / "sb", origin)
     env = sb.env
     kova_home = Path(env["KOVA_HOME"])
     kova_home.mkdir(parents=True, exist_ok=True)
@@ -217,7 +241,7 @@ def stage_head(root: Path) -> Install:
     # Serve partial clones as GitHub does: the installer asks for ``--filter=blob:none``.
     I.git("config", "uploadpack.allowFilter", "true", cwd=origin)
     I.git("config", "uploadpack.allowAnySHA1InWant", "true", cwd=origin)
-    sb = I.new_sandbox(root / "sb", origin)
+    sb = new_sandbox(root / "sb", origin)
     cp = I.run_installer(sb)
     assert cp.returncode == 0 and TRACEBACK not in cp.stdout + cp.stderr, "HEAD install failed:\n" + I.describe(cp)
     sb.env["PATH"] = os.pathsep.join([str(sb.home / ".local" / "bin"), sb.env["PATH"]])

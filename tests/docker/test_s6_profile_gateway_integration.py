@@ -19,7 +19,7 @@ operations work correctly under UID 10000.
 """
 from __future__ import annotations
 
-from tests.docker.conftest import docker_exec, start_container
+from tests.docker.conftest import docker_exec, docker_timeout, start_container
 
 
 _REGISTER_SCRIPT = """
@@ -43,7 +43,7 @@ def test_s6_register_creates_service_dir_in_live_container(
     against the real s6 supervision tree."""
     start_container(built_image, container_name, cmd="sleep 120")
 
-    r = docker_exec(container_name, "python3", "-c", _REGISTER_SCRIPT, timeout=30)
+    r = docker_exec(container_name, "python3", "-c", _REGISTER_SCRIPT, timeout=docker_timeout(30))
     assert "REGISTERED" in r.stdout, (
         f"register failed: stderr={r.stderr!r} stdout={r.stdout!r}"
     )

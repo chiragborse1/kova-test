@@ -18,6 +18,8 @@ import subprocess
 
 import pytest
 
+from tests.docker.conftest import docker_timeout
+
 pytestmark = pytest.mark.skipif(
     shutil.which("script") is None,
     reason="`script` command not available on this host",
@@ -43,7 +45,7 @@ def test_tty_passthrough_to_container(built_image: str) -> None:
     )
     r = subprocess.run(
         ["script", "-qc", cmd, "/dev/null"],
-        capture_output=True, text=True, timeout=120,
+        capture_output=True, text=True, timeout=docker_timeout(120),
     )
     output = r.stdout
     matches = re.findall(rf"{marker}=(\S+)", output)

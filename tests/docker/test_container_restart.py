@@ -20,13 +20,20 @@ import subprocess
 
 import pytest
 
-from tests.docker.conftest import docker_exec, docker_exec_sh, wait_for_path, wait_for_log
+from tests.docker.conftest import (
+    docker_exec,
+    docker_exec_sh,
+    docker_timeout,
+    wait_for_log,
+    wait_for_path,
+)
 
 
 def _docker(*args: str, **kw) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["docker", *args],
-        capture_output=True, text=True, timeout=kw.pop("timeout", 60),
+        capture_output=True, text=True,
+        timeout=docker_timeout(kw.pop("timeout", 60)),
         **kw,
     )
 
@@ -79,7 +86,7 @@ def restart_container(request, built_image: str):
 def test_stopped_gateway_stays_stopped_after_restart(restart_container: str) -> None:
     container = restart_container
 
-    docker_exec(container, "kova", "profile", "create", "writer").check_returncode()
+    docker_exec(container, "kova", "profile", "create", "writer", timeout=docker_timeout(30)).check_returncode()
 
     # Write 'stopped' directly so we don't have to race against the
     # gateway's own state writes.
@@ -90,7 +97,7 @@ def test_stopped_gateway_stays_stopped_after_restart(restart_container: str) -> 
     )
     docker_exec(container, "python3", "-c", write_state, timeout=10).check_returncode()
 
-    _docker("restart", container, timeout=60).check_returncode()
+    _docker("restart", container, timeout=docker_timeout(60)).check_returncode()
     _wait_for_reconcile_log_mention(container, "writer", deadline_s=30.0)
 
     # Slot exists.
@@ -110,7 +117,7 @@ def test_stale_gateway_pid_cleaned_up_on_restart(restart_container: str) -> None
     process-mismatch checks."""
     container = restart_container
 
-    docker_exec(container, "kova", "profile", "create", "ghost").check_returncode()
+    docker_exec(container, "kova", "profile", "create", "ghost", timeout=docker_timeout(30)).check_returncode()
 
     # Stamp stale runtime files alongside a 'running' state so the
     # reconciler walks this profile.
@@ -123,7 +130,7 @@ def test_stale_gateway_pid_cleaned_up_on_restart(restart_container: str) -> None
     )
     docker_exec(container, "python3", "-c", stamp, timeout=10).check_returncode()
 
-    _docker("restart", container, timeout=60).check_returncode()
+    _docker("restart", container, timeout=docker_timeout(60)).check_returncode()
     _wait_for_reconcile_log_mention(container, "ghost", deadline_s=30.0)
 
     # Stale runtime files swept.

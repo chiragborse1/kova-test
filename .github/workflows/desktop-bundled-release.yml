@@ -1716,7 +1716,6 @@ jobs:
         build-darwin-x64,
         build-win32-arm64,
         build-win32-x64,
-        build-store-package,
         assemble-win32-bundle,
         smoke-darwin-arm64,
         smoke-darwin-x64,
