@@ -16,6 +16,9 @@ Only external edges are replaced (tests/install/README.md, "The isolation trick"
   as it is against GitHub. Every ``git.exe`` directory is removed from PATH, so the
   installer stages its own pinned Git, as it does on a clean Windows box.
 * the model provider: the recording loopback server (tests/fakes/fake_llm_provider.py).
+* the release-channel archive: a loopback host that publishes nothing, so ``kova update``
+  reads a deterministic 404 and follows the branch instead of asking a live CDN (which
+  answers 403 from a runner and fails the update leg).
 
 Tool and dependency downloads (uv, the managed Python, wheels, Node) use the network,
 exactly like the real installer.
@@ -40,6 +43,7 @@ The suite mutates HKCU and downloads a toolchain per machine, so it only runs wh
 from __future__ import annotations
 
 import contextlib
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 import shutil
@@ -172,6 +176,73 @@ def _restore_hkcu_path(saved: tuple[str, int] | None) -> None:
             winreg.SetValueEx(key, "Path", 0, saved[1], saved[0])
 
 
+class _EmptyChannelArchive:
+    """A threaded loopback release-channel host that publishes nothing.
+
+    ``kova update`` resolves its channel origin from ``CLOUDFLARE_R2_PUBLIC_URL``
+    and reads ``releases/channels/<name>.json`` from it. For a source install a
+    MISSING ``main`` record is the normal case: ``release_channels`` turns a 404
+    into ``ChannelNotFound`` and ``resolve_source_target`` falls back to following
+    the branch, which is what this suite asserts. Any other status (a Cloudflare
+    challenge, or a 403 on the runner's datacenter egress) raises
+    ``ChannelError("Channel read unavailable: HTTP <code>")``, which has no
+    fallback and fails the update leg on every journey.
+
+    This harness replaces git and the model provider but not this host, so the
+    update leg reached the live CDN and inherited its availability. The other two
+    update suites already fake it (``tests/e2e/core/upgrade/network/_seed.py``,
+    ``apps/desktop/e2e/update/github-edge.ts``); this is the third instance of the
+    same edge. Nothing is published here and no record is ever created: the point
+    is the deterministic 404, not a ``main.json``.
+    """
+
+    def __init__(self) -> None:
+        self._server: ThreadingHTTPServer | None = None
+        self._thread: threading.Thread | None = None
+        self.reads: list[str] = []
+
+    def __enter__(self) -> "_EmptyChannelArchive":
+        self.start()
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.stop()
+
+    def start(self) -> None:
+        server = ThreadingHTTPServer(("127.0.0.1", 0), self._handler())
+        server.daemon_threads = True
+        self._server = server
+        self._thread = threading.Thread(target=server.serve_forever,
+                                        name="fake-channel-archive", daemon=True)
+        self._thread.start()
+
+    def stop(self) -> None:
+        if self._server is not None:
+            self._server.shutdown()
+            self._server.server_close()
+            self._server = None
+
+    @property
+    def base_url(self) -> str:
+        assert self._server is not None, "channel archive not started"
+        return f"http://127.0.0.1:{self._server.server_address[1]}"
+
+    def _handler(self):
+        reads = self.reads
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_GET(self) -> None:  # noqa: N802 - BaseHTTPRequestHandler's name
+                reads.append(self.path)
+                self.send_response(404)
+                self.send_header("content-length", "0")
+                self.end_headers()
+
+            def log_message(self, *_args: object) -> None:
+                pass
+
+        return Handler
+
+
 @dataclass
 class Machine:
     """One fresh Windows user with a local git origin and a loopback provider."""
@@ -191,6 +262,8 @@ class Machine:
     _seq: int = 0
     _spawned: list[subprocess.Popen] = field(default_factory=list)
     _lock_depth: int = 0
+    # The channel-archive host the updater reads; fake, and owned by this machine.
+    _channel: Any = None
     timings: list[tuple[str, float]] = field(default_factory=list)
 
     # -- layout ---------------------------------------------------------------
@@ -245,6 +318,10 @@ class Machine:
             "NO_COLOR": "1",
             # state.db lives under tmp; under a pytest ancestor the live-DB guard would refuse it.
             "KOVA_STATE_DB_GUARD_BYPASS": "1",
+            # The release-channel origin, read at call time by
+            # kova_cli.source_releases._public_base(). Loopback is an accepted
+            # public base; this keeps the update leg off the live CDN.
+            "CLOUDFLARE_R2_PUBLIC_URL": self._channel.base_url,
         })
         env.update(extra or {})
         return env
@@ -272,6 +349,8 @@ class Machine:
         # insteadOf rewrites `remote get-url origin` too, so the updater would see a fork and
         # ask to add the official upstream; this is the product's own headless opt-out.
         (self.kova_home / ".skip_upstream_prompt").write_text("", encoding="utf-8")
+        self._channel = _EmptyChannelArchive()
+        self._channel.start()
         self._hkcu = _hkcu_path()
 
     def _mint_next(self) -> str:
@@ -498,6 +577,8 @@ class Machine:
 
     def teardown(self) -> None:
         self.kill_owned()
+        if self._channel is not None:
+            self._channel.stop()
         try:
             _restore_hkcu_path(self._hkcu)
         except OSError:

@@ -8,6 +8,23 @@
  *   GET /repos/<owner>/<repo>/commits/<branch>   (Accept: application/vnd.github.sha)
  *   GET /repos/<owner>/<repo>/compare/<base>...<head>
  *
+ * The channel-archive host is faked too, and that is not optional. The product
+ * resolves its release-channel origin from `kova_cli.source_releases._PUBLIC_BASE`
+ * ("https://assets.neuralstudio.in") and reads `releases/channels/<name>.json`
+ * from it. A source install treats a MISSING `main` record as normal --
+ * `resolve_source_target` converts a 404 into `ChannelNotFound` and falls back
+ * to following the branch, which is the behaviour these specs assert. Any other
+ * status (a Cloudflare WAF challenge or 403 on a datacenter egress is the real
+ * one) becomes `ChannelError("Channel read unavailable: HTTP <code>")`, which has
+ * no fallback and fails the update offer.
+ *
+ * So this host must answer 404 deterministically. Tunnelling it to the live CDN
+ * made the suite depend on a third party being reachable AND not challenging AND
+ * on the runner's egress IP being trusted -- turning a CDN hiccup into red
+ * checks. `tests/e2e/core/upgrade/network/_seed.py` already faked this same host
+ * (and documents the identical fix for the pre-rebrand hostname); this suite
+ * was never migrated with it.
+ *
  * Every other CONNECT target is tunnelled through unchanged and recorded, so a
  * failing cell can list every host the product reached.
  */
@@ -19,6 +36,9 @@ import * as net from 'node:net'
 import * as path from 'node:path'
 import * as tls from 'node:tls'
 
+/** The channel-archive origin the product resolves; faked so its absence is deterministic. */
+const ASSETS_HOST = 'assets.neuralstudio.in'
+
 export interface GithubEdge {
   proxyUrl: string
   caBundle: string
@@ -26,6 +46,8 @@ export interface GithubEdge {
   connects: string[]
   /** method + path of every request the fake api.github.com answered. */
   apiHits: string[]
+  /** method + path of every request the fake channel archive answered. */
+  assetHits: string[]
   env: Record<string, string>
   close: () => Promise<void>
 }
@@ -69,7 +91,7 @@ function makeCerts(dir: string): { key: Buffer; cert: Buffer; caPem: string } {
   fs.writeFileSync(
     path.join(dir, 'leaf.ext'),
     'basicConstraints=CA:FALSE\nkeyUsage=critical,digitalSignature,keyEncipherment\nextendedKeyUsage=serverAuth\n' +
-      'subjectAltName=DNS:api.github.com\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n'
+      'subjectAltName=DNS:api.github.com,DNS:' + ASSETS_HOST + '\nsubjectKeyIdentifier=hash\nauthorityKeyIdentifier=keyid,issuer\n'
   )
   openssl(
     [
@@ -166,6 +188,19 @@ function apiHandler(origin: string, hits: string[]) {
   }
 }
 
+/**
+ * The channel archive, with nothing published in it. Every path 404s, which is
+ * the 'no record published' state the source-update fallback is built on.
+ */
+function assetsHandler(hits: string[]) {
+  return (req: http.IncomingMessage, res: http.ServerResponse) => {
+    const url = new URL(req.url ?? '/', 'https://' + ASSETS_HOST)
+    hits.push(req.method + ' ' + url.pathname)
+    res.writeHead(404, { 'content-type': 'application/json', 'content-length': '0' })
+    res.end()
+  }
+}
+
 export async function startGithubEdge(
   workDir: string,
   origin: string,
@@ -178,7 +213,9 @@ export async function startGithubEdge(
 
   const connects: string[] = []
   const apiHits: string[] = []
+  const assetHits: string[] = []
   const api = http.createServer(apiHandler(origin, apiHits))
+  const assets = http.createServer(assetsHandler(assetHits))
   const sockets = new Set<net.Socket>()
 
   const proxy = http.createServer((_req, res) => {
@@ -212,6 +249,23 @@ export async function startGithubEdge(
       return
     }
 
+    // The channel archive answers from here, never from the live CDN: the product
+    // needs a clean 404 to fall back to the branch, and a real CDN can answer 403
+    // (WAF, or datacenter egress) and hard-fail the update offer instead.
+    if (host === ASSETS_HOST) {
+      client.write('HTTP/1.1 200 Connection Established\r\n\r\n')
+
+      if (head.length) {
+        client.unshift(head)
+      }
+
+      const secure = new tls.TLSSocket(client, { isServer: true, key, cert })
+      secure.on('error', () => undefined)
+      assets.emit('connection', secure)
+
+      return
+    }
+
     const upstream = net.connect(port, host, () => {
       client.write('HTTP/1.1 200 Connection Established\r\n\r\n')
 
@@ -236,6 +290,7 @@ export async function startGithubEdge(
     caBundle,
     connects,
     apiHits,
+    assetHits,
     env: {
       HTTPS_PROXY: proxyUrl,
       https_proxy: proxyUrl,
@@ -250,6 +305,7 @@ export async function startGithubEdge(
 
       await new Promise<void>(resolve => proxy.close(() => resolve()))
       api.close()
+      assets.close()
     }
   }
 }
