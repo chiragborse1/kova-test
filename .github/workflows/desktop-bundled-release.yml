@@ -96,9 +96,13 @@ on:
       jobs:
         description: 'Comma-separated job groups. Default: every group.'
         type: string
-        default: 'darwin-arm64,darwin-x64,win32-arm64,win32-x64,win32-bundle,linux-x64,linux-arm64,termux'
+        default: 'darwin-arm64,darwin-x64,win32-arm64,win32-x64,win32-bundle,store,linux-x64,linux-arm64,termux'
       skip-tests:
         description: 'Stable candidates only: build and stage without native smokes or in-build test suites (the claim skipped tests).'
+        type: boolean
+        default: false
+      submit-store:
+        description: 'Build and submit the unsigned Windows Store package. Default false runs no Store job at all.'
         type: boolean
         default: false
     outputs:
@@ -158,7 +162,7 @@ on:
         description: 'Comma-separated job groups. Default: every group.'
         required: false
         type: string
-        default: 'darwin-arm64,darwin-x64,win32-arm64,win32-x64,win32-bundle,linux-x64,linux-arm64,termux'
+        default: 'darwin-arm64,darwin-x64,win32-arm64,win32-x64,win32-bundle,store,linux-x64,linux-arm64,termux'
       termux_upgrade_from_tag:
         description: 'Published release tag whose R2 Termux package must upgrade to this build'
         required: false
@@ -1424,6 +1428,97 @@ jobs:
       disposable-run: ${{ needs.validate.outputs.disposable-run }}
 
   # Assembly never writes a feed, including for canaries.
+  # The Store-submission build. It is deliberately NOT part of the
+  # signed pipeline: the Store package ships unsigned and Partner Center
+  # re-signs it on ingestion, so it needs neither Azure Artifact Signing nor
+  # Apple credentials. It still runs under an admitted release claim, so its
+  # provenance is the same immutable tag+commit binding every other leg uses.
+  build-store-package:
+    name: Store package (unsigned, both architectures)
+    needs: [validate]
+    if: >-
+      !cancelled() && needs.validate.result == 'success'
+      && needs.validate.outputs.sha != ''
+      && needs.validate.outputs.win32-x64 == 'true'
+      && needs.validate.outputs.win32-arm64 == 'true'
+      && inputs.release-phase == 'candidate'
+      && inputs.build_commit == '' && inputs.channel == ''
+      && inputs.submit-store
+    runs-on: ${{ vars.WIN_RUNNER || 'windows-latest-32-core' }}
+    environment: release-signing
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: ${{ vars.WIN_RUNNER || 'windows-latest-32-core' }}
+          - arch: arm64
+            runner: ${{ vars.WIN_ARM_RUNNER || 'windows-latest-32-arm-core' }}
+    env:
+      KOVA_PAYLOAD_TAG: ${{ inputs.tag }}
+      KOVA_ARCHIVE_TAG: ${{ needs.validate.outputs.archive-tag }}
+      KOVA_PAYLOAD_VERSION: ${{ needs.validate.outputs.payload-version }}
+      ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+    steps:
+      # Exclude the build tree from Defender exactly like the signed legs.
+      - name: Exclude build write paths from Defender scanning
+        shell: powershell
+        run: |
+          $paths = @($env:GITHUB_WORKSPACE, $env:RUNNER_TEMP, (npm config get cache))
+          foreach ($p in $paths) {
+            try { Add-MpPreference -ExclusionPath $p } catch { Write-Host "skip $p" }
+          }
+          try { Set-MpPreference -DisableRealtimeMonitoring $true } catch { Write-Host "no defender" }
+      # Pinned to the admitted commit, never the movable tag ref.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ needs.validate.outputs.sha }}
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: ./.github/actions/setup-pm
+        with:
+          toolchain: all
+          cache-python: false
+      - uses: ./.github/actions/desktop-build-cache
+        with:
+          phase: restore
+          source: ${{ github.workspace }}
+          work: ${{ runner.temp }}/desktop-job
+          cache: ${{ github.workspace }}/.cache/desktop-inputs
+          producer: desktop
+      # No Azure gate here on purpose: this leg is unsigned by design.
+      - name: Build the unsigned Store package
+        shell: bash
+        env:
+          RELEASE_CLAIM_TAG: ${{ inputs.claim-tag }}
+          RELEASE_CLAIM_OBJECT: ${{ inputs.claim-object }}
+        run: |
+          python scripts/bundles/desktop.py --tag "$KOVA_PAYLOAD_TAG" --variant store \
+            --work "$RUNNER_TEMP/desktop-job" --cache "$GITHUB_WORKSPACE/.cache/desktop-inputs"
+      - name: Record the Store package provenance
+        shell: bash
+        run: |
+          python -m scripts.bundles.release_artifacts record-store \
+            --arch-store "${{ matrix.arch }}" \
+            --root apps/desktop/release \
+            --tag "$KOVA_PAYLOAD_TAG" --commit "${{ needs.validate.outputs.sha }}" \
+            --out "apps/desktop/release/store-metadata-${{ matrix.arch }}.json"
+      - name: Stage the Store package to the attempt archive
+        shell: bash
+        env:
+          RELEASE_COMMIT: ${{ needs.validate.outputs.sha }}
+          CLOUDFLARE_R2_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+          CLOUDFLARE_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+          CLOUDFLARE_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_R2_BUCKET: ${{ vars.CLOUDFLARE_R2_BUCKET }}
+          CLOUDFLARE_R2_PUBLIC_URL: ${{ needs.validate.outputs.public-root }}
+        run: |
+          python -m scripts.releases.handoff stage --tag "${KOVA_ARCHIVE_TAG:-$KOVA_PAYLOAD_TAG}" \
+            --commit "$RELEASE_COMMIT" \
+            --name "store-${{ matrix.arch }}" --root apps/desktop/release \
+            --include 'Store-*.msix' --include 'store-metadata-*.json'
+
   assemble-win32-bundle:
     name: Assemble and stage the Windows universal bundle
     needs: [validate, build-win32-x64, build-win32-arm64]
@@ -1621,6 +1716,7 @@ jobs:
         build-darwin-x64,
         build-win32-arm64,
         build-win32-x64,
+        build-store-package,
         assemble-win32-bundle,
         smoke-darwin-arm64,
         smoke-darwin-x64,
@@ -2381,18 +2477,20 @@ jobs:
           cache-python: false
       - run: python -m scripts.bundles.release_artifacts publish --root verified
 
+  # Store submission is independent of the signed R2 pipeline by design:
+  # it consumes the Windows-only Store handoff (build-store-package), not the
+  # cross-platform candidate manifest, so it needs neither Azure nor Apple
+  # credentials to have run.
   stable-store:
     name: Submit the verified Store package
-    needs: [validate, stable-publish]
-    if: inputs.release-phase == 'publish'
+    needs: [validate, build-store-package]
+    if: inputs.release-phase == 'publish' && inputs.submit-store
     runs-on: ${{ vars.WIN_RUNNER || 'windows-latest-32-core' }}
     environment: release-signing
     timeout-minutes: 60
     env:
       RELEASE_TAG: ${{ inputs.tag }}
       KOVA_ARCHIVE_TAG: ${{ needs.validate.outputs.archive-tag }}
-      CANDIDATE_MANIFEST_SHA256: ${{ inputs.manifest-sha256 }}
-      CLOUDFLARE_R2_PUBLIC_URL: ${{ vars.CLOUDFLARE_R2_PUBLIC_URL }}
       MS_STORE_TENANT_ID: ${{ secrets.MS_STORE_TENANT_ID }}
       MS_STORE_SELLER_ID: ${{ secrets.MS_STORE_SELLER_ID }}
       MS_STORE_CLIENT_ID: ${{ secrets.MS_STORE_CLIENT_ID }}
@@ -2404,21 +2502,76 @@ jobs:
           ref: ${{ needs.validate.outputs.sha }}
       - uses: ./.github/actions/setup-pm
         with:
+          toolchain: all
           cache-python: false
-      - name: Retrieve the exact Store candidate
+          save-tools-cache: false
+          save-node-cache: false
+      - name: Install the locked Windows bundle tooling
+        uses: ./.github/actions/retry
+        with:
+          # The bundler resolves app-builder-lib for the pinned makeappx SDK.
+          # No Electron/native postinstalls: only the builder's downloader.
+          command: npm ci --workspace apps/desktop --include-workspace-root --include=dev --ignore-scripts --no-audit --no-fund
+      - name: Retrieve the exact Store package
         shell: bash
-        run: python -m scripts.bundles.release_artifacts materialize --root verified --store-only
+        run: |
+          python -m scripts.releases.handoff fetch --tag "${KOVA_ARCHIVE_TAG:-$RELEASE_TAG}" \
+            --commit "${{ needs.validate.outputs.sha }}" \
+            --name store-x64 --name store-arm64 --root verified \
+            --include 'Store-*.msix' --include 'store-metadata-*.json'
+      # bundle-store-msixbundle.mjs reads apps/desktop/release by contract, so
+      # stage the fetched packages there rather than duplicating its resolver.
+      - name: Stage the fetched packages for the bundler
+        shell: bash
+        run: |
+          mkdir -p apps/desktop/release
+          cp verified/Store-*.msix apps/desktop/release/
+          ls -l apps/desktop/release/
+      # makeappx needs both per-arch packages staged together. The bundle is
+      # left unsigned on purpose: Partner Center re-signs on ingestion.
+      - name: Bundle the universal Store package
+        id: store-bundle
+        shell: bash
+        run: |
+          node scripts/bundle-store-msixbundle.mjs --tag "$RELEASE_TAG" --output-file "$RUNNER_TEMP/store-bundle-path.txt"
+          bundle=$(cat "$RUNNER_TEMP/store-bundle-path.txt")
+          test -f "$bundle"
+          sha=$(sha256sum "$bundle" | cut -d" " -f1)
+          echo "sha256=$sha" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Microsoft Store package (unsigned; Partner Center re-signs)"
+            echo
+            echo "- Tag: \`$RELEASE_TAG\`"
+            echo "- Bundle: \`$(basename "$bundle")\`"
+            echo "- SHA-256: \`$sha\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Bind the Store bundle to its per-arch provenance
+        shell: bash
+        run: |
+          bundle=$(cat "$RUNNER_TEMP/store-bundle-path.txt")
+          publisher=$(node -e "const i=require('./apps/desktop/product-identity.cjs');process.stdout.write(i.storeMsix.publisher)")
+          python -m scripts.bundles.release_artifacts verify-store-bundle \
+            --root verified --tag "$RELEASE_TAG" --commit "${{ needs.validate.outputs.sha }}" \
+            --publisher "$publisher"
+          # verify-store-bundle reads verified/, so mirror the verified bundle
+          # next to its records under its real name (never a guessed one).
+          cp "$bundle" verified/
       - uses: microsoft/microsoft-store-apppublisher@cc9910a8d59f2eb55cbb83df0a3800cf3b5300e0 # v1.4
       - name: Submit without rebuilding
         shell: bash
+        env:
+          EXPECTED_SHA256: ${{ steps.store-bundle.outputs.sha256 }}
         run: |
           test -n "$MS_STORE_PRODUCT_ID"
-          msstore reconfigure --tenantId "$MS_STORE_TENANT_ID" --sellerId "$MS_STORE_SELLER_ID" --clientId "$MS_STORE_CLIENT_ID" --clientSecret "$MS_STORE_CLIENT_SECRET"
           files=(verified/Store-*.msixbundle)
           test "${#files[@]}" -eq 1
           test -f "${files[0]}"
+          # Re-check the bytes that survived staging, not the build-time value.
+          echo "$EXPECTED_SHA256"  "${files[0]}" | sha256sum -c -
+          msstore reconfigure --tenantId "$MS_STORE_TENANT_ID" --sellerId "$MS_STORE_SELLER_ID" --clientId "$MS_STORE_CLIENT_ID" --clientSecret "$MS_STORE_CLIENT_SECRET"
           # Auto-publish stays off: the submission is committed with
-          # targetPublishMode Manual and is released by the publication pass.
+          # targetPublishMode Manual and is released by a person clicking
+          # "Publish now" in Partner Center after certification passes.
           python -m scripts.releases.store submit "${files[0]}"
 
   stable-phase-result:
