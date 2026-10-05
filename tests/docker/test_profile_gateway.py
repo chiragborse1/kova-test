@@ -85,7 +85,7 @@ def _wait_for_want_state(container_name: str, want_up: bool,
 def test_named_profile_gateway_start_refuses_without_force(
     built_image: str, container_name: str,
 ) -> None:
-    start_container(built_image, container_name, cmd="sleep 120")
+    start_container(built_image, container_name, cmd=f"sleep {docker_timeout(120):.0f}")
 
     r = _sh(container_name, f"kova profile create {PROFILE}")
     assert r.returncode == 0, f"profile create failed: {r.stderr}"
@@ -103,7 +103,7 @@ def test_named_profile_gateway_start_refuses_without_force(
 def test_named_profile_gateway_force_start_then_stop(
     built_image: str, container_name: str,
 ) -> None:
-    start_container(built_image, container_name, cmd="sleep 120")
+    start_container(built_image, container_name, cmd=f"sleep {docker_timeout(120):.0f}")
     r = _sh(container_name, f"kova profile create {PROFILE}")
     assert r.returncode == 0, f"profile create failed: {r.stderr}"
 

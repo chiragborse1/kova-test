@@ -28,7 +28,7 @@ def test_dashboard_not_running_by_default(
     built_image: str, container_name: str,
 ) -> None:
     """Without KOVA_DASHBOARD, no dashboard process should be running."""
-    start_container(built_image, container_name, cmd="sleep 60")
+    start_container(built_image, container_name, cmd=f"sleep {docker_timeout(60):.0f}")
     r = docker_exec(container_name, "pgrep", "-f", "kova dashboard")
     # pgrep exits non-zero when no match found
     assert r.returncode != 0, (
@@ -161,7 +161,7 @@ def test_dashboard_oauth_gate_engages_on_non_loopback_bind(
         "KOVA_DASHBOARD=1",
         "KOVA_DASHBOARD_HOST=0.0.0.0",
         "KOVA_DASHBOARD_OAUTH_CLIENT_ID=agent:test-instance",
-        cmd="sleep 120",
+        cmd=f"sleep {docker_timeout(120):.0f}",
     )
 
     # (1) Provider registry visible via the public bootstrap endpoint.
@@ -220,7 +220,7 @@ def test_dashboard_insecure_env_var_no_longer_bypasses_gate(
         "KOVA_DASHBOARD=1",
         "KOVA_DASHBOARD_HOST=0.0.0.0",
         "KOVA_DASHBOARD_INSECURE=1",
-        cmd="sleep 120",
+        cmd=f"sleep {docker_timeout(120):.0f}",
     )
     # Fail-closed: the dashboard process must NOT successfully serve. Probe
     # for a few seconds; /api/status should never become reachable because
