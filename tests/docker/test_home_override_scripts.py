@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from tests.docker.conftest import (
     docker_exec,
+    docker_timeout,
     docker_exec_sh,
     poll_container,
     restart_container,

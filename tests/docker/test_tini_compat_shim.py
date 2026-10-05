@@ -5,7 +5,7 @@ entrypoints still boot the image (no ``rc.init: -g: not found`` boot loop).
 """
 from __future__ import annotations
 
-import subprocess
+from tests.docker.conftest import docker_run, docker_timeout
 
 
 def test_legacy_tini_entrypoint_boots(built_image: str) -> None:
@@ -19,11 +19,9 @@ def test_legacy_tini_entrypoint_boots(built_image: str) -> None:
     must strip the tini flags and hand the remaining args to /init +
     main-wrapper, so the requested command runs normally.
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", "--entrypoint", "/usr/bin/tini",
-         built_image, "-g", "--", "--help"],
-        capture_output=True, text=True, timeout=120,
-    )
+    r = docker_run(built_image, "-g", "--", "--help",
+                   timeout=docker_timeout(120),
+                   run_args=("--entrypoint", "/usr/bin/tini"))
     combined = r.stdout + r.stderr
     assert "-g: not found" not in combined, (
         f"tini flags leaked into s6 rc.init (#66679): {combined[-2000:]!r}"

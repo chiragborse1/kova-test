@@ -18,14 +18,17 @@ from __future__ import annotations
 import subprocess
 import time
 
-from tests.docker.conftest import docker_exec_sh, start_container
+from tests.docker.conftest import docker_exec_sh, docker_timeout, start_container
 
 PROFILE = "test-harness-profile"
 
 
 def _sh(
-    container: str, command: str, timeout: int = 30,
+    container: str, command: str, timeout: float | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    # None keeps docker_exec_sh's own default, which tracks the host's
+    # emulation factor. A hardcoded 30 here silently overrode it and the
+    # qemu arm64 row timed out on commands that finish natively.
     return docker_exec_sh(container, command, timeout=timeout)
 
 
@@ -59,20 +62,22 @@ def _svstat_wants_up(container: str) -> bool:
 
 
 
-def _wait_for_want_state(container_name: str, want_up: bool, timeout: float = 15.0) -> None:
+def _wait_for_want_state(container_name: str, want_up: bool,
+                          timeout: float | None = None) -> None:
     """Poll s6 want-state until it matches, instead of a fixed sleep.
 
     s6 state transitions are asynchronous; fixed two-second sleeps flaked
     on loaded CI hosts.
     """
-    deadline = time.monotonic() + timeout
+    budget = timeout if timeout is not None else docker_timeout(15)
+    deadline = time.monotonic() + budget
     while time.monotonic() < deadline:
         if _svstat_wants_up(container_name) == want_up:
             return
         time.sleep(0.5)
     state = "up" if want_up else "down"
     raise AssertionError(
-        f"slot want-state never became {state} within {timeout}s: "
+        f"slot want-state never became {state} within {budget}s: "
         f"{_svstat(container_name)!r}"
     )
 
@@ -80,7 +85,7 @@ def _wait_for_want_state(container_name: str, want_up: bool, timeout: float = 15
 def test_named_profile_gateway_start_refuses_without_force(
     built_image: str, container_name: str,
 ) -> None:
-    start_container(built_image, container_name, cmd="sleep 120")
+    start_container(built_image, container_name, cmd=f"sleep {docker_timeout(120):.0f}")
 
     r = _sh(container_name, f"kova profile create {PROFILE}")
     assert r.returncode == 0, f"profile create failed: {r.stderr}"
@@ -89,7 +94,7 @@ def test_named_profile_gateway_start_refuses_without_force(
     r = _sh(container_name, f"test -d /run/service/gateway-{PROFILE}")
     assert r.returncode == 0, "s6 service slot not created on profile create"
 
-    r = _sh(container_name, f"kova -p {PROFILE} gateway start", timeout=60)
+    r = _sh(container_name, f"kova -p {PROFILE} gateway start", timeout=docker_timeout(60))
     assert r.returncode != 0, f"a named profile started its own gateway: {r.stdout!r}"
     assert not _svstat_wants_up(container_name), (
         f"refused start still flipped the slot's want-state: {_svstat(container_name)!r}")
@@ -98,16 +103,16 @@ def test_named_profile_gateway_start_refuses_without_force(
 def test_named_profile_gateway_force_start_then_stop(
     built_image: str, container_name: str,
 ) -> None:
-    start_container(built_image, container_name, cmd="sleep 120")
+    start_container(built_image, container_name, cmd=f"sleep {docker_timeout(120):.0f}")
     r = _sh(container_name, f"kova profile create {PROFILE}")
     assert r.returncode == 0, f"profile create failed: {r.stderr}"
 
-    r = _sh(container_name, f"kova -p {PROFILE} gateway start --force", timeout=60)
+    r = _sh(container_name, f"kova -p {PROFILE} gateway start --force", timeout=docker_timeout(60))
     assert r.returncode == 0, (
         f"--force gateway start failed: stderr={r.stderr!r} stdout={r.stdout!r}"
     )
     _wait_for_want_state(container_name, want_up=True)
 
-    r = _sh(container_name, f"kova -p {PROFILE} gateway stop", timeout=30)
+    r = _sh(container_name, f"kova -p {PROFILE} gateway stop", timeout=docker_timeout(30))
     assert r.returncode == 0
     _wait_for_want_state(container_name, want_up=False)

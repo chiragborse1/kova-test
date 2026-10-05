@@ -289,6 +289,16 @@ jobs:
           # amd64 keeps the tight default so a genuinely wedged container
           # still fails fast there.
           KOVA_DOCKER_READY_TIMEOUT: ${{ matrix.arch == 'arm64' && '300' || '30' }}
+          # The per-FILE wall-clock cap has the same problem. Its flat
+          # default is 300s, which is deliberately generous for a native
+          # box but not for qemu: once the in-container budgets above are
+          # scaled, a docker-heavy file legitimately runs past it and the
+          # runner reports "N files where no tests ran (timeout before
+          # collection)" instead of the failure that actually matters.
+          # Every other slow lane overrides this for the same reason
+          # (tests.yml 600/900/3000, tests-os.yml 600/900). amd64 keeps the
+          # default so a wedged file still fails fast there.
+          KOVA_TEST_FILE_TIMEOUT: ${{ matrix.arch == 'arm64' && '1800' || '' }}
         run: |
           # Each of these tests drives a container, so the docker daemon sets
           # the limit and not the processor. This pins the runner's worker

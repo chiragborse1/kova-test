@@ -13,6 +13,10 @@ on:
         description: Optional HTTPS manifest of the previous published stable packages
         default: ''
         type: string
+      submit-store:
+        description: 'Submit the unsigned Windows Store package to Partner Center. Leave false to build and verify only. Publication stays manual in Partner Center.'
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -233,6 +237,33 @@ jobs:
       claim-object: ${{ needs.admit.outputs.claim-object }}
       release-phase: candidate
       jobs: win32-bundle
+      skip-tests: ${{ needs.admit.outputs.skip-tests == 'true' }}
+
+  # The Store leg is unsigned by design (Partner Center re-signs on
+  # ingestion), so it needs no Azure or Apple credentials -- but it still runs
+  # under the same admitted claim, and it is gated on an explicit opt-in so a
+  # default release never reaches Partner Center.
+  candidates-store:
+    name: Build the unsigned Store package
+    needs: [admit, acceptance]
+    if: >-
+      !cancelled() && needs.admit.result == 'success'
+      && needs.admit.outputs.skip-bundles != 'true'
+      && needs.acceptance.result == 'success'
+      && inputs.submit-store
+    permissions:
+      contents: write
+      actions: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/desktop-bundled-release.yml
+    with:
+      tag: ${{ needs.admit.outputs.tag }}
+      claim-tag: ${{ needs.admit.outputs.claim-tag }}
+      claim-object: ${{ needs.admit.outputs.claim-object }}
+      release-phase: candidate
+      jobs: store
+      submit-store: ${{ inputs.submit-store }}
       skip-tests: ${{ needs.admit.outputs.skip-tests == 'true' }}
 
   candidates-termux:
@@ -527,6 +558,26 @@ jobs:
       release-phase: publish
       tag: ${{ needs.admit.outputs.tag }}
       version: ${{ needs.admit.outputs.version }}
+
+  publish-store:
+    name: Submit the Store package
+    needs: [admit, candidates-store]
+    if: >-
+      !cancelled() && needs.candidates-store.result == 'success'
+      && needs.admit.outputs.skip-bundles != 'true'
+    permissions:
+      contents: write
+      actions: read
+      packages: write
+      id-token: write
+    uses: ./.github/workflows/desktop-bundled-release.yml
+    with:
+      tag: ${{ needs.admit.outputs.tag }}
+      claim-tag: ${{ needs.admit.outputs.claim-tag }}
+      claim-object: ${{ needs.admit.outputs.claim-object }}
+      release-phase: publish
+      jobs: store
+      submit-store: ${{ inputs.submit-store }}
 
   publish-bundles:
     name: Publish tested bundle artifacts

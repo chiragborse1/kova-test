@@ -9,7 +9,7 @@ here is skipped at collection time.
 """
 from __future__ import annotations
 
-import subprocess
+from tests.docker.conftest import docker_run, docker_timeout
 
 
 
@@ -19,10 +19,7 @@ def test_chat_subcommand_passthrough(built_image: str) -> None:
 
     Uses ``--help`` so the call doesn't need an upstream model configured.
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", built_image, "chat", "--help"],
-        capture_output=True, text=True, timeout=60,
-    )
+    r = docker_run(built_image, "chat", "--help")
     assert r.returncode == 0
     combined = (r.stdout + r.stderr).lower()
     assert "chat" in combined or "usage" in combined
@@ -32,10 +29,7 @@ def test_chat_subcommand_passthrough(built_image: str) -> None:
 
 def test_bash_pattern(built_image: str) -> None:
     """``docker run <image> bash -c 'echo ok'`` should exec bash directly."""
-    r = subprocess.run(
-        ["docker", "run", "--rm", built_image, "bash", "-c", "echo ok"],
-        capture_output=True, text=True, timeout=30,
-    )
+    r = docker_run(built_image, "bash", "-c", "echo ok", timeout=docker_timeout(30))
     assert r.returncode == 0
     assert "ok" in r.stdout
 
@@ -46,8 +40,5 @@ def test_container_exit_code_matches_inner_exit(built_image: str) -> None:
     Critical for CI: ``docker run <image> kova batch ...`` returns a
     non-zero status when batch fails. Phase 2 (s6) must preserve this.
     """
-    r = subprocess.run(
-        ["docker", "run", "--rm", built_image, "sh", "-c", "exit 42"],
-        capture_output=True, text=True, timeout=30,
-    )
+    r = docker_run(built_image, "sh", "-c", "exit 42", timeout=docker_timeout(30))
     assert r.returncode == 42

@@ -19,6 +19,7 @@ import subprocess
 from tests.docker.conftest import (
     docker_exec,
     docker_exec_sh,
+    docker_timeout,
     restart_container,
     start_container,
     wait_for_container_ready,
@@ -128,7 +129,7 @@ def test_symlinked_allowlisted_file_not_chowned(
              "-v", f"{host_data}:/opt/data",
              "--entrypoint", "sh", built_image,
              "-c", "touch /opt/data/.symlink-target && ln -s /opt/data/.symlink-target /opt/data/auth.json"],
-            check=True, capture_output=True, timeout=30,
+            check=True, capture_output=True, timeout=docker_timeout(30),
         )
 
         # Boot the container with the bind mount
@@ -136,7 +137,7 @@ def test_symlinked_allowlisted_file_not_chowned(
             ["docker", "run", "-d", "--name", container_name,
              "-v", f"{host_data}:/opt/data",
              built_image, "sleep", "infinity"],
-            check=True, capture_output=True, timeout=60,
+            check=True, capture_output=True, timeout=docker_timeout(60),
         )
         # Wait for cont-init to finish (first boot runs stage2)
         wait_for_container_ready(container_name)
@@ -173,7 +174,7 @@ def test_symlinked_allowlisted_file_not_chowned(
                  "-v", f"{host_data}:/clean",
                  "--entrypoint", "sh", built_image,
                  "-c", "chown -R 0:0 /clean 2>/dev/null; rm -rf /clean/* /clean/.* 2>/dev/null; chown 0:0 /clean; true"],
-                capture_output=True, timeout=15,
+                capture_output=True, timeout=docker_timeout(15),
             )
             try:
                 host_data.rmdir()

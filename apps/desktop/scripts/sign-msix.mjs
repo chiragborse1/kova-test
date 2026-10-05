@@ -15,7 +15,7 @@
 //
 // The Store-submission variant (artifactName "Store-" prefixed) is the one
 // exception: its manifest Publisher is the Partner Center publisher ID
-// (CN=EE6D86E4-...), which no signable cert subject can match — CA/B CSBR
+// (CN=2F021361-...), which no signable cert subject can match — CA/B CSBR
 // requires the legal entity's validated name and Artifact Signing cannot
 // customize CN — so SignerSign rejects the package with ERROR_BAD_FORMAT
 // (0x8007000B). Partner Center re-signs the package with the Microsoft

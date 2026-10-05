@@ -20,7 +20,7 @@ test('shouldSignFile admits only .msix and .msixbundle artifacts', () => {
 
 test('shouldSignFile rejects the Store-submission variant (Partner Center re-signs)', () => {
   // The Store- msix manifest Publisher is the Partner Center publisher ID
-  // (CN=EE6D86E4-...), which no signable cert subject can match — ATS
+  // (CN=2F021361-...), which no signable cert subject can match — ATS
   // cannot customize CN and CA/B requires the legal entity name — so
   // SignerSign would fail 0x8007000B. Partner Center signs on ingestion.
   assert.equal(

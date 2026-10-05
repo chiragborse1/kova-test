@@ -141,6 +141,78 @@ def record(platform: str, arch: str, root: Path, tag: str, commit: str, out: Pat
     out.write_text(json.dumps(row, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
+def record_store(arch: str, root: Path, tag: str, commit: str, out: Path) -> None:
+    """Read the Store-submission package's identity and provenance.
+
+    The Store variant deliberately has no out-of-store counterpart to diff
+    against, so this reads the same three things ``record`` reads for Windows --
+    the package manifest Identity, the desktop Application id, and the
+    install stamp -- and applies the same ``stamp_matches`` provenance rule.
+    The archive/tag pair stays the caller's: the claim ref is what proves this
+    package came from the admitted attempt, exactly as for every other leg.
+
+    The package is unsigned by design (Partner Center re-signs on ingestion),
+    so there is no signer field to compare here and none is invented.
+    """
+    if arch not in {"x64", "arm64"}:
+        raise ValueError(f"Unknown Store architecture: {arch}")
+    package = single(root.glob(f"Store-*-win-{arch}.msix"))
+    if not package.name.endswith(f"-{tag[1:]}-win-{arch}.msix"):
+        raise ValueError("Store artifact filename differs from release tag")
+    with zipfile.ZipFile(package) as archive:
+        manifest = ET.fromstring(archive.read("AppxManifest.xml"))
+        identity = manifest.find("{*}Identity")
+        application = desktop_application(manifest, None)
+        stamp_name = single(n for n in archive.namelist()
+                            if n.replace("\\", "/").endswith("/resources/install-stamp.json"))
+        stamp = json.loads(archive.read(stamp_name))
+    stamp_matches(stamp, tag, commit)
+    if identity is None or identity.attrib["ProcessorArchitecture"].lower() != arch:
+        raise ValueError("Store MSIX architecture differs from release target")
+    row = {"platform": "windows-store", "arch": arch, "tag": tag, "commit": commit,
+           "identity": identity.attrib["Name"], "publisher": identity.attrib["Publisher"],
+           "applicationId": application.attrib["Id"], "version": identity.attrib["Version"],
+           "filename": package.name}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(row, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+
+def validate_store_bundle(bundle: Path, store_rows: list[dict], *, tag: str, commit: str,
+                          publisher: str | None = None) -> dict:
+    """Bind one unsigned Store .msixbundle to its per-arch records.
+
+    This is the Store counterpart to ``validate_windows_bundle`` and enforces
+    the same three invariants: both architectures present, every package
+    agreeing on identity/publisher/version/applicationId, and the bundle's own
+    manifest matching those records. It additionally pins the Partner Center
+    publisher, because that CN is the Store identity Partner Center matches on
+    ingestion and a mismatched package is rejected at submission.
+    """
+    if sorted(row["arch"] for row in store_rows) != ["arm64", "x64"]:
+        raise ValueError("Store metadata must include both architectures")
+    for field in ("identity", "publisher", "version", "applicationId"):
+        if not store_rows[0].get(field) or store_rows[0][field] != store_rows[1].get(field):
+            raise ValueError(f"Store packages disagree on {field}")
+    if publisher and store_rows[0]["publisher"] != publisher:
+        raise ValueError("Store package publisher differs from the Partner Center identity")
+    with zipfile.ZipFile(bundle) as archive:
+        manifest = ET.fromstring(archive.read("AppxMetadata/AppxBundleManifest.xml"))
+    identity = manifest.find("{*}Identity")
+    if identity is None or any(identity.get(attr) != store_rows[0][field] for attr, field in
+                               (("Name", "identity"), ("Publisher", "publisher"), ("Version", "version"))):
+        raise ValueError("Store bundle identity does not match its packages")
+    if sorted(p.get("Architecture", "") for p in manifest.findall("{*}Packages/{*}Package")
+              if p.get("Type") == "application") != ["arm64", "x64"]:
+        raise ValueError("Store bundle must cover both architectures")
+    # The records already carry the tag/commit their package stamp proved at
+    # record time; re-checking them here would assert a metadata row against a
+    # stamp rule it never came from. Assert the binding itself instead.
+    for row in store_rows:
+        if row["tag"] != tag or row["commit"] != commit:
+            raise ValueError("Store package provenance differs from the release")
+    return {"path": bundle.name, "sha256": sha256_file(bundle), "size": bundle.stat().st_size}
+
+
 def validate_windows_bundle(bundle: Path, windows: list[dict]) -> None:
     if sorted(row["arch"] for row in windows) != ["arm64", "x64"]:
         raise ValueError("Windows metadata must include both architectures")
@@ -352,6 +424,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--public-base", default=os.environ.get("CLOUDFLARE_R2_PUBLIC_URL"))
     parser.add_argument("--release-epoch", type=int, default=os.environ.get("KOVA_RELEASE_EPOCH"))
     parser.add_argument("--store-only", action="store_true")
+    parser.add_argument("--arch-store", choices=["x64", "arm64"], dest="arch_store")
     for name in ("identity", "publisher", "version", "self-uri", "artifact-uri"):
         parser.add_argument(f"--{name}")
     parser.add_argument("--variant", choices=["bundled", "light"])
@@ -370,6 +443,18 @@ def main(argv: list[str] | None = None) -> None:
         write_appinstaller(args.out, identity=args.identity, publisher=args.publisher,
                            version=args.version, self_uri=args.self_uri, artifact_uri=args.artifact_uri,
                            update_policy=args.update_policy)
+        return
+    if args.command == "record-store":
+        if not args.arch_store:
+            parser.error("record-store requires --arch-store")
+        record_store(args.arch_store, args.root, args.tag, args.commit, args.out)
+        return
+    if args.command == "verify-store-bundle":
+        rows = [json.loads(p.read_text(encoding="utf-8-sig"))
+                for p in sorted(args.root.glob("store-metadata-*.json"))]
+        bundle = single(args.root.glob("Store-*.msixbundle"))
+        print(json.dumps(validate_store_bundle(bundle, rows, tag=args.tag, commit=args.commit,
+                                              publisher=args.publisher), sort_keys=True))
         return
     if args.command == "record":
         request = json.loads(args.channel_request.read_text(encoding="utf-8-sig")) if args.channel_request else None

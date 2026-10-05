@@ -420,6 +420,79 @@ Missing baseline
 artifacts are a blocker, not permission to fabricate or skip acceptance.
 See [the bundled update contract](https://github.com/chiragborse1/kova-test/blob/main/tests/install/BUNDLED_UPDATES.md).
 
+## Microsoft Store submission
+
+The Windows Store channel is a **parallel** distribution path. It never
+replaces the direct-download R2 pipeline, and it does not publish to customers
+on its own.
+
+### Why the Store package is unsigned
+
+The Store-submission `.msixbundle` ships **unsigned by design**. Its manifest
+`Publisher` is the Partner Center publisher ID (`CN=2F021361-...`), which no
+signable certificate subject can match -- CA/B requires the legal entity's
+validated name and signing providers cannot customize CN -- so an explicit
+sign attempt fails with `ERROR_BAD_FORMAT (0x8007000B)`. Partner Center
+re-signs the package with the Microsoft Store certificate on ingestion.
+
+Consequences: the Store leg needs **no Azure Artifact Signing account and no
+Apple credentials**, and it runs no native install smoke. It is not a signed
+baseline and must never be recorded as one.
+
+### Provenance is unchanged
+
+The Store leg runs under the same admitted release claim as every other
+matrix leg. `desktop_prepare.py` still refuses a commit or a canary tag for the
+`store` variant, and still requires `RELEASE_CLAIM_TAG` / `RELEASE_CLAIM_OBJECT`
+for a stable tag, so the package version is derived from the immutable tagger
+timestamp of the admitted claim exactly as the signed legs are.
+
+Each architecture is recorded by `release_artifacts record-store`, which reads
+the package manifest identity and the `install-stamp.json` inside the package
+and applies the same `stamp_matches` provenance rule used by the signed Windows
+legs. The records are staged to the attempt archive as the `store-x64` and
+`store-arm64` handoffs. At publish, `verify-store-bundle` re-binds the universal
+bundle to both per-arch records and pins the Partner Center publisher CN, then
+the submitted bytes are digest-checked before `msstore` ever sees them.
+
+### Running it
+
+Store packaging is part of a normal stable release, gated on an explicit
+opt-in that defaults to **false**:
+
+1. Cut a stable release as usual (see [Order](#order)), so a valid
+   `rc.<N>-vX.Y.Z` claim exists.
+2. Dispatch `Stable Release` on that claim ref with `submit-store: true`.
+   Leaving it false builds and verifies the package without contacting Partner
+   Center -- this is the dry run.
+3. The run stages the unsigned Store package, bundles both architectures, and
+   prints the bundle SHA-256 in the run summary.
+4. With `submit-store: true` the submission is committed to Partner Center with
+   `targetPublishMode: Manual`, so certification starts but nothing is
+   released.
+5. When certification passes, open the submission in Partner Center and click
+   **Publish now**. This is the only step that reaches customers, and it is
+   deliberately manual.
+
+`scripts.releases.store check` reports the held submission's state read-only
+and is safe to run at any time.
+
+### Required configuration
+
+On the `release-signing` environment:
+
+| Name | Kind | Value |
+| --- | --- | --- |
+| `MS_STORE_TENANT_ID` | secret | Entra tenant ID |
+| `MS_STORE_CLIENT_ID` | secret | App registration client ID |
+| `MS_STORE_CLIENT_SECRET` | secret | Client secret value |
+| `MS_STORE_SELLER_ID` | secret | Partner Center seller ID |
+| `MS_STORE_PRODUCT_ID` | variable | Partner Center product ID (e.g. `9NXFCDS4NW`) |
+
+The packaging identity (`identityName`, `publisher`, `publisherDisplayName`)
+lives in `apps/desktop/product-identity.cjs` under the `storeMsix` branch and
+must match the reservation in Partner Center.
+
 ## Explicit exclusions and policy
 
 - Desktop Playwright E2E (`e2e-desktop.yml`) is deferred at the owner's request

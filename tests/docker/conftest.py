@@ -33,6 +33,36 @@ IMAGE_TAG = os.environ.get("KOVA_TEST_IMAGE", "kova-agent-harness:latest")
 # can raise it for the emulated row only; amd64 keeps the tight default.
 CONTAINER_READY_TIMEOUT_S = float(os.environ.get("KOVA_DOCKER_READY_TIMEOUT", "30"))
 
+# Command deadlines scale with the same knob. Raising the readiness budget
+# alone is not enough: the failures on the emulated row are not the
+# `wait_for_container_ready` poll (which reads this constant) but the
+# `subprocess.run(..., timeout=N)` deadline on each `docker run` / `docker exec`
+# that boots or probes a container. Those literals are written for a native
+# runner -- `docker run --rm <image> --help` is a 60s deadline natively and
+# timed out on every arm64 leg of run 37201166208 (run 37123258798 had the same
+# shape). Nothing reads the environment there, so raising KOVA_DOCKER_READY_TIMEOUT
+# cannot reach them: amd64 stayed green purely because its native cost fits.
+#
+# So the ratio between the configured budget and the native default IS the
+# emulation factor this host needs. Derive command deadlines from it rather
+# than adding a second, independently-tunable knob that can drift from the
+# first: 1.0 on a native runner (unchanged behaviour, byte-for-byte), and the
+# qemu factor on the emulated row.
+_NATIVE_READY_TIMEOUT_S = 30.0
+EMULATION_FACTOR = CONTAINER_READY_TIMEOUT_S / _NATIVE_READY_TIMEOUT_S
+
+
+def docker_timeout(native_seconds: float) -> float:
+    """Deadline for one docker command, scaled by how slow this host is.
+
+    ``native_seconds`` is the value the test would use on a native runner. On
+    an emulated row the same command costs proportionally more wall clock, so
+    the deadline scales with the same factor that sized the readiness budget.
+    A caller that genuinely needs a different budget passes it explicitly and
+    this is not involved.
+    """
+    return native_seconds * EMULATION_FACTOR
+
 
 def _docker_available() -> bool:
     """Return True iff a docker CLI is on PATH and the daemon answers."""
@@ -117,12 +147,17 @@ def docker_exec(
     container: str,
     *args: str,
     user: str = "kova",
-    timeout: int = 30,
+    timeout: float | None = None,
     extra_docker_args: tuple[str, ...] = (),
 ) -> subprocess.CompletedProcess[str]:
     """Run a command inside ``container`` as ``user`` (default: kova).
 
     Returns the CompletedProcess with text=True, capture_output=True.
+
+    ``timeout`` defaults to the 30s native budget scaled by ``docker_timeout``
+    -- 30s on a native runner, longer on an emulated one. Pass a value only when
+    a specific probe needs a different budget; the default already tracks the
+    host.
 
     Pass ``user="root"`` only when the test specifically needs root
     capabilities (e.g. reading /proc/1/exe, manipulating ownership).
@@ -130,7 +165,8 @@ def docker_exec(
     """
     cmd = ["docker", "exec", "-u", user, *extra_docker_args, container, *args]
     return subprocess.run(
-        cmd, capture_output=True, text=True, timeout=timeout,
+        cmd, capture_output=True, text=True,
+        timeout=docker_timeout(30) if timeout is None else timeout,
     )
 
 
@@ -139,11 +175,37 @@ def docker_exec_sh(
     command: str,
     *,
     user: str = "kova",
-    timeout: int = 30,
+    timeout: float | None = None,
 ) -> subprocess.CompletedProcess[str]:
-    """Run ``sh -c <command>`` inside the container as ``user``."""
+    """Run ``sh -c <command>`` inside the container as ``user``.
+
+    ``timeout`` is optional so the default tracks the host's emulation factor;
+    an explicit value still wins.
+    """
     return docker_exec(
         container, "sh", "-c", command, user=user, timeout=timeout,
+    )
+
+
+def docker_run(
+    image: str,
+    *args: str,
+    timeout: float | None = None,
+    run_args: tuple[str, ...] = (),
+) -> subprocess.CompletedProcess[str]:
+    """``docker run --rm <image> ...`` with a host-scaled deadline.
+
+    Booting a container runs the whole cont-init chain before the command
+    executes, so every one of these deadlines has to fit the emulated row too.
+    The native value is what the test used to write literally; it is scaled by
+    ``docker_timeout`` so the emulated row gets proportionally longer without a
+    second knob to keep in sync. ``run_args`` carries flags that must precede
+    the image (``--init``, ``--user``, ``-e``, ``-t``).
+    """
+    return subprocess.run(
+        ["docker", "run", "--rm", *run_args, image, *args],
+        capture_output=True, text=True,
+        timeout=docker_timeout(60) if timeout is None else timeout,
     )
 
 
@@ -213,7 +275,7 @@ def start_container(
     name: str,
     *env: str,
     cmd: str = "sleep infinity",
-    timeout: int = 60,
+    timeout: float | None = None,
 ) -> str:
     """Start a detached container and wait for cont-init to finish.
 
@@ -236,7 +298,8 @@ def start_container(
     # Docker puts the reason on stderr - "no matching manifest", "exec format
     # error", "cannot connect to the daemon" - and losing it is what made the
     # arm64 rows report a bare `exit status 125` with nothing to act on.
-    result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+    result = subprocess.run(args, capture_output=True, text=True,
+                            timeout=docker_timeout(timeout or 30))
     if result.returncode:
         raise RuntimeError(
             f"docker run failed for {name} (exit {result.returncode}):\n"
@@ -246,7 +309,7 @@ def start_container(
     return name
 
 
-def restart_container(container: str, timeout: int = 60) -> None:
+def restart_container(container: str, timeout: float | None = None) -> None:
     """Restart a container and wait for cont-init to finish.
 
     Equivalent to ``docker restart <container>`` followed by
@@ -260,10 +323,10 @@ def restart_container(container: str, timeout: int = 60) -> None:
     """
     docker_exec(container, "sh", "-c",
                 "truncate -s 0 /opt/data/logs/container-boot.log 2>/dev/null || true",
-                user="root", timeout=5)
+                user="root", timeout=docker_timeout(5))
     subprocess.run(
         ["docker", "restart", container],
-        check=True, capture_output=True, timeout=timeout,
+        check=True, capture_output=True, timeout=docker_timeout(timeout or 60),
     )
     wait_for_container_ready(container)
 
@@ -287,7 +350,7 @@ def poll_container(
     end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
-        r = docker_exec_sh(container, probe, user=user, timeout=10)
+        r = docker_exec_sh(container, probe, user=user, timeout=docker_timeout(10))
         last = r.stdout
         if r.returncode == 0:
             return True, last
@@ -332,7 +395,7 @@ def wait_for_log(
     last = ""
     while time.monotonic() < end:
         r = docker_exec_sh(
-            container, f"cat {log_path} 2>/dev/null", timeout=5,
+            container, f"cat {log_path} 2>/dev/null", timeout=docker_timeout(5),
         )
         if r.returncode == 0:
             last = r.stdout
@@ -344,7 +407,7 @@ def wait_for_log(
 
 
 def wait_for_docker_logs(
-    container: str, needle: str, *, deadline_s: float = 30.0, interval_s: float = 0.5,
+    container: str, needle: str, *, deadline_s: float | None = None, interval_s: float = 0.5,
 ) -> str:
     """Poll ``docker logs`` until ``needle`` appears or deadline expires.
 
@@ -357,10 +420,11 @@ def wait_for_docker_logs(
     while time.monotonic() < end:
         r = subprocess.run(
             ["docker", "logs", container],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, timeout=docker_timeout(10),
         )
         last = r.stdout + r.stderr
         if needle in last:
             return last
         time.sleep(interval_s)
-    raise AssertionError(f"Didn't see `{needle}` in docker logs within {deadline_s} in container {container}")
+    budget = deadline_s if deadline_s is not None else CONTAINER_READY_TIMEOUT_S
+    raise AssertionError(f"Didn't see `{needle}` in docker logs within {budget} in container {container}")

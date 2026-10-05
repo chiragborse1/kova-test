@@ -49,7 +49,10 @@ def test_phase_jobs_judge_only_the_selected_groups():
                          "build-darwin-x64", "smoke-darwin-x64",
                          "build-win32-arm64", "smoke-win32-arm64",
                          "build-win32-x64", "smoke-win32-x64",
-                         "assemble-win32-bundle", "termux-deb"]
+                         "assemble-win32-bundle", "build-store-package",
+                         "termux-deb"]
+    store_only = {**{group: False for group in JOB_GROUPS}, "store": True}
+    assert phase_jobs(store_only, "candidate") == ["validate", "build-store-package"]
     termux_only = {**{group: False for group in JOB_GROUPS}, "termux": True}
     assert phase_jobs(termux_only, "candidate") == ["validate", "termux-deb"]
     # B4 moved candidate-manifest into stable-release.yml; the desktop phase

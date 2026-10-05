@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 
 JOB_GROUPS = ("darwin-arm64", "darwin-x64", "win32-arm64", "win32-x64",
-              "win32-bundle", "linux-x64", "linux-arm64", "termux")
+              "win32-bundle", "store", "linux-x64", "linux-arm64", "termux")
 ALL_JOBS = ",".join(JOB_GROUPS)
 
 # The workflow jobs each group runs, in the names desktop-bundled-release.yml
@@ -23,6 +23,9 @@ GROUP_JOBS = {
     "win32-arm64": ("build-win32-arm64",),
     "win32-x64": ("build-win32-x64",),
     "win32-bundle": ("assemble-win32-bundle",),
+    # The Store leg builds an unsigned package under the same claim. It runs no
+    # smoke and publishes no feed, so it contributes only its own build job.
+    "store": ("build-store-package",),
     "termux": ("termux-deb",),
 }
 # The native smoke each group runs after its build. A claim that skipped

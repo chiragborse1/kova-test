@@ -25,6 +25,7 @@ import time
 
 from tests.docker.conftest import (
     docker_exec_sh,
+    docker_timeout,
     start_container,
     wait_for_docker_logs,
 )
@@ -49,7 +50,7 @@ def _svstat_wants_up(container: str, slot: str = "gateway-default") -> bool:
 def _wait_for_gateway_or_exit(
     container: str,
     *,
-    deadline_s: float = 60.0,
+    deadline_s: float | None = None,
 ) -> str:
     """Poll until the container is either running a foreground gateway
     process or has exited.  Returns the final container status.
@@ -62,11 +63,11 @@ def _wait_for_gateway_or_exit(
     ``docker inspect`` returning ``exited`` is both faster on quick
     machines and flake-free on slow ones.
     """
-    end = time.monotonic() + deadline_s
+    end = time.monotonic() + (deadline_s if deadline_s is not None else docker_timeout(60))
     while time.monotonic() < end:
         r = subprocess.run(
             ["docker", "inspect", "-f", "{{.State.Status}}", container],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, timeout=docker_timeout(10),
         )
         status = r.stdout.strip()
         if status == "exited":
@@ -112,9 +113,12 @@ def test_gateway_run_redirects_to_supervised(
     # Under heavy parallel docker load (32-way fan-out), the CMD process
     # (main-wrapper.sh → python → kova gateway run) can take well over
     # 30s to import the codebase, load config, and reach the redirect
-    # logic. 60s matches the deadline other boot-readiness polls use.
+    # logic. 60s matches the deadline other boot-readiness polls use, and
+    # scales with the host like them: this call passed a bare 60.0, which
+    # overrode wait_for_docker_logs' own None default and left the emulated
+    # arm64 row polling a native budget.
     logs = wait_for_docker_logs(
-        container_name, "s6 supervision", deadline_s=60.0,
+        container_name, "s6 supervision", deadline_s=docker_timeout(60),
     )
     assert "s6 supervision" in logs, (
         f"expected loud breadcrumb in docker logs; got:\n{logs}"
@@ -125,7 +129,7 @@ def test_gateway_run_redirects_to_supervised(
     # would be in `Exited` state by now.
     r = subprocess.run(
         ["docker", "inspect", "-f", "{{.State.Status}}", container_name],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=docker_timeout(10),
     )
     assert r.returncode == 0 and r.stdout.strip() == "running", (
         f"container exited prematurely: {r.stdout!r}; "
@@ -260,7 +264,7 @@ def test_dashboard_supervised_when_env_set(
     # cont-init finishes, but the redirect (which creates the
     # gateway-default s6 slot) happens later in the CMD process.
     wait_for_docker_logs(
-        container_name, "s6 supervision", deadline_s=60.0,
+        container_name, "s6 supervision", deadline_s=docker_timeout(60.0),
     )
 
     # Poll for both slots to report want-up, using the same

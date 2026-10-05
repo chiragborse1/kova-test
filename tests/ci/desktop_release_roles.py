@@ -46,10 +46,21 @@ def _only(matches: list[str], role: str) -> str:
 
 
 def native_builds(jobs: dict) -> dict[tuple[str, str], str]:
-    """``(target, "release" | "commit")`` -> id of that native build leg."""
+    """``(target, "release" | "commit")`` -> id of that native build leg.
+
+    Identity is the matrix ``target`` label list, which is what makes a job one
+    of the per-platform native legs. Other jobs legitimately share the
+    dependency cache -- the Store leg stages an unsigned package, not a native
+    release -- and they carry ``matrix.include`` and no ``cache-mode`` because
+    they publish no feed and write no signature cache. Selecting on the native
+    shape rather than on cache use keeps that leg out of these assertions
+    instead of forcing it into the native matrix it deliberately does not use.
+    """
     legs: dict[tuple[str, str], str] = {}
     for name, job in jobs.items():
         if not any(step.get("uses") == BUILD_CACHE_ACTION for step in job.get("steps", [])):
+            continue
+        if "target" not in (job.get("strategy", {}).get("matrix", {})):
             continue
         (target,) = [row["label"] for row in job["strategy"]["matrix"]["target"]]
         key = (target, _MODE_BY_CACHE[job["cache-mode"]])

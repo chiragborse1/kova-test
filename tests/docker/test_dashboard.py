@@ -15,14 +15,20 @@ from __future__ import annotations
 import json
 import time
 
-from tests.docker.conftest import docker_exec, docker_exec_sh, start_container, poll_container
+from tests.docker.conftest import (
+    docker_exec,
+    docker_exec_sh,
+    docker_timeout,
+    poll_container,
+    start_container,
+)
 
 
 def test_dashboard_not_running_by_default(
     built_image: str, container_name: str,
 ) -> None:
     """Without KOVA_DASHBOARD, no dashboard process should be running."""
-    start_container(built_image, container_name, cmd="sleep 60")
+    start_container(built_image, container_name, cmd=f"sleep {docker_timeout(60):.0f}")
     r = docker_exec(container_name, "pgrep", "-f", "kova dashboard")
     # pgrep exits non-zero when no match found
     assert r.returncode != 0, (
@@ -54,7 +60,7 @@ def _http_probe(
     container: str,
     path: str,
     *,
-    deadline_s: float = 60.0,
+    deadline_s: float | None = None,
 ) -> tuple[int, str]:
     """Poll ``http://127.0.0.1:9119<path>`` from inside the container.
 
@@ -67,7 +73,7 @@ def _http_probe(
     gate-engaged test).
 
     Connection errors (uvicorn still starting, fail-closed exited) keep
-    the poll loop running until ``deadline_s`` elapses.
+    the poll loop running until the budget elapses.
 
     The probe Python program is fed over stdin (``python -``) rather
     than ``python -c`` so we can use proper multi-line syntax with
@@ -94,10 +100,14 @@ except urllib.error.HTTPError as h:
         f"{py_program}"
         "PY"
     )
-    end = time.monotonic() + deadline_s
+    # The dashboard takes the same time to answer under emulation as the
+    # container takes to become ready, so the poll window scales with the host
+    # rather than being a fixed native budget.
+    budget = docker_timeout(60) if deadline_s is None else deadline_s
+    end = time.monotonic() + budget
     last_err = ""
     while time.monotonic() < end:
-        r = docker_exec_sh(container, probe, timeout=10)
+        r = docker_exec_sh(container, probe, timeout=docker_timeout(10))
         if r.returncode == 0 and r.stdout.strip():
             lines = r.stdout.split("\n", 1)
             try:
@@ -110,7 +120,7 @@ except urllib.error.HTTPError as h:
             last_err = f"rc={r.returncode} stderr={r.stderr!r}"
         time.sleep(0.5)
     raise AssertionError(
-        f"Probe of {path} never returned HTTP within {deadline_s}s; "
+        f"Probe of {path} never returned HTTP within {budget}s; "
         f"last error: {last_err}"
     )
 
@@ -151,7 +161,7 @@ def test_dashboard_oauth_gate_engages_on_non_loopback_bind(
         "KOVA_DASHBOARD=1",
         "KOVA_DASHBOARD_HOST=0.0.0.0",
         "KOVA_DASHBOARD_OAUTH_CLIENT_ID=agent:test-instance",
-        cmd="sleep 120",
+        cmd=f"sleep {docker_timeout(120):.0f}",
     )
 
     # (1) Provider registry visible via the public bootstrap endpoint.
@@ -210,7 +220,7 @@ def test_dashboard_insecure_env_var_no_longer_bypasses_gate(
         "KOVA_DASHBOARD=1",
         "KOVA_DASHBOARD_HOST=0.0.0.0",
         "KOVA_DASHBOARD_INSECURE=1",
-        cmd="sleep 120",
+        cmd=f"sleep {docker_timeout(120):.0f}",
     )
     # Fail-closed: the dashboard process must NOT successfully serve. Probe
     # for a few seconds; /api/status should never become reachable because
@@ -218,7 +228,7 @@ def test_dashboard_insecure_env_var_no_longer_bypasses_gate(
     ok, _ = poll_container(
         container_name,
         "curl -fsS -m 2 http://127.0.0.1:9119/api/status >/dev/null 2>&1",
-        deadline_s=12.0,
+        deadline_s=docker_timeout(12.0),
     )
     assert not ok, (
         "Dashboard must NOT serve on a public bind with --insecure and no "

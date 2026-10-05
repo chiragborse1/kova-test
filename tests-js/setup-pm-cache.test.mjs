@@ -96,10 +96,19 @@ const payload = action('../.github/workflows/pm-bundle.yml')
 const BUILD_CACHE = './.github/actions/desktop-build-cache'
 // Jobs are found by the cache action they use, not by id: build legs get
 // split and renamed while this contract stays the same.
+//
+// Not every cache user is a native leg. The Store package build shares the
+// dependency cache but publishes no feed and writes no signature cache, so it
+// carries matrix.include and no cache-mode instead of a 	arget matrix.
+// Selecting on the native shape rather than on cache use keeps that leg out of
+// these assertions instead of forcing it into the matrix it deliberately does
+// not use -- the same rule desktop_release_roles.py applies on the Python side.
+const isNativeLeg = job => 'target' in (job.strategy?.matrix ?? {})
 const cacheUsers = workflow => Object.entries(workflow.jobs)
   .filter(([, job]) => (job.steps ?? []).some(step => step.uses === BUILD_CACHE))
+const nativeCacheUsers = workflow => cacheUsers(workflow).filter(([, job]) => isNativeLeg(job))
 const targetOf = job => job.strategy.matrix.target.map(row => row.label)
-const desktopLegs = cacheUsers(desktop)
+const desktopLegs = nativeCacheUsers(desktop)
 
 const SHA = 'a'.repeat(40)
 const dispatches = {

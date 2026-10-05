@@ -42,6 +42,17 @@
 #   updater run byte-for-byte as shipped; everything else (uv, PyPI, npm,
 #   the installer's raw.githubusercontent install.ps1 download) uses the
 #   real network, same as a user install.
+
+#   ONE EXCEPTION, the release-channel archive: it is a loopback host that
+#   publishes nothing. `kova update` reads releases/channels/<name>.json from
+#   the origin in kova_cli.source_releases._PUBLIC_BASE, and a MISSING `main`
+#   record is the normal case -- release_channels turns a 404 into
+#   ChannelNotFound and resolve_source_target falls back to following the
+#   branch. Any other status (a Cloudflare challenge, or a 403 on a runner's
+#   datacenter egress) raises ChannelError("Channel read unavailable: HTTP
+#   <code>"), which has no fallback and fails the update leg. Against the
+#   live CDN that is exactly what happened. Nothing is published and no
+#   main.json is created: the point is the deterministic 404.
 #
 # PROOF: screenshots at every renderer step (Playwright), full-desktop
 # screenshots around the installer/AHK phases, a rolling desktop capture
@@ -160,6 +171,7 @@ $env:KOVA_E2E_NODE = $DriverNode
 $env:KOVA_DESKTOP_USER_DATA_DIR = Join-Path $WorkRoot 'electron-user-data'
 $script:ChatMock = $null
 $script:ChatFailure = $false
+$script:ChannelArchive = $null
 . (Join-Path $AssetsDir 'desktop-smoke-windows.ps1')
 
 function Start-JourneyChat {
@@ -167,6 +179,33 @@ function Start-JourneyChat {
         $script:ChatFailure = $true
         $script:ChatMock = Start-DesktopJourneyMock $DriverNode $AssetsDir $WorkRoot $KovaHome $ProofRoot
         $script:ChatFailure = $false
+    }
+}
+
+function Start-ChannelArchive {
+    # Publishes nothing; exists so the update leg reads a deterministic 404
+    # instead of asking the live CDN (see the header note). Loopback is an
+    # accepted public base for kova_cli.source_releases._public_base(), which
+    # reads this at call time.
+    if ($script:ChannelArchive) { return }
+    $urlFile = Join-Path $WorkRoot 'channel-archive-url'
+    Remove-Item -LiteralPath $urlFile -Force -ErrorAction SilentlyContinue
+    $archive = Start-Process -FilePath $DriverNode `
+        -ArgumentList @(('"' + (Join-Path $AssetsDir 'empty-channel-archive.mjs') + '"'), ('"' + $urlFile + '"')) `
+        -PassThru -WindowStyle Hidden `
+        -RedirectStandardOutput (Join-Path $ProofRoot 'channel-archive.log') `
+        -RedirectStandardError (Join-Path $ProofRoot 'channel-archive-error.log')
+    try {
+        $deadline = (Get-Date).AddSeconds(30)
+        while (-not (Test-Path -LiteralPath $urlFile)) {
+            if ($archive.HasExited -or (Get-Date) -ge $deadline) { throw 'Channel archive did not become ready' }
+            Start-Sleep -Milliseconds 200
+        }
+        $env:CLOUDFLARE_R2_PUBLIC_URL = (Get-Content -LiteralPath $urlFile -Raw).Trim()
+        $script:ChannelArchive = $archive
+    } catch {
+        if (-not $archive.HasExited) { Stop-Process -Id $archive.Id -ErrorAction SilentlyContinue }
+        throw
     }
 }
 
@@ -559,6 +598,7 @@ function Start-HangWatchdog([int]$Minutes, [string]$EvidencePath) {
     if (Test-Path -LiteralPath $EvidencePath) { Remove-Item -LiteralPath $EvidencePath -Force }
     $exclude = @()
     if ($script:ChatMock) { $exclude += $script:ChatMock.Id }
+    if ($script:ChannelArchive) { $exclude += $script:ChannelArchive.Id }
     $homes = @($KovaHome, [System.IO.Path]::GetFullPath($KovaHome)) | Select-Object -Unique
     # py-spy is installed next to the driver's Python by the workflow.
     $pyspy = Join-Path (Split-Path $DriverPython) 'py-spy.exe'
@@ -1631,6 +1671,7 @@ function Invoke-PhaseUpdate {
 }
 
 function Invoke-CheckedPhaseUpdate {
+    Start-ChannelArchive
     Remove-Item -LiteralPath (Join-Path $WorkRoot "known-failure.json") -Force -ErrorAction SilentlyContinue
     # Only evidence produced by this update attempt can match an exception.
     foreach ($oldLog in @((Join-Path $WorkRoot "logs\update.log"), (Join-Path $KovaHome "logs\desktop.log"))) {
@@ -1740,6 +1781,9 @@ switch ($Phase) {
 } finally {
     if ($script:ChatMock -and -not $script:ChatMock.HasExited) {
         Stop-Process -Id $script:ChatMock.Id -ErrorAction SilentlyContinue
+    }
+    if ($script:ChannelArchive -and -not $script:ChannelArchive.HasExited) {
+        Stop-Process -Id $script:ChannelArchive.Id -ErrorAction SilentlyContinue
     }
 }
 Write-Host ""

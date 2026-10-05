@@ -79,9 +79,9 @@ const identity = {
         storeMsix: {
           // Partner Center publisher identity (the account's publisher ID) —
           // validated + re-signed by the Store on submission.
-          identityName: 'OpenKovaInc.KovaAgent',
-          publisher: 'CN=EE6D86E4-606F-4E38-B940-AD7248C9D519',
-          publisherDisplayName: 'Nous Research Inc.'
+          identityName: '5402NeuralStudio.KovaAgent',
+          publisher: 'CN=2F021361-3B6D-4856-9252-B417E78D18A',
+          publisherDisplayName: 'Neural Studio'
         }
       }
     : {})
