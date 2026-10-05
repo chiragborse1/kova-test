@@ -107,7 +107,7 @@ except urllib.error.HTTPError as h:
     end = time.monotonic() + budget
     last_err = ""
     while time.monotonic() < end:
-        r = docker_exec_sh(container, probe, timeout=10)
+        r = docker_exec_sh(container, probe, timeout=docker_timeout(10))
         if r.returncode == 0 and r.stdout.strip():
             lines = r.stdout.split("\n", 1)
             try:

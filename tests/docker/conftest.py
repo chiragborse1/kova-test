@@ -407,7 +407,7 @@ def wait_for_log(
 
 
 def wait_for_docker_logs(
-    container: str, needle: str, *, deadline_s: float = 30.0, interval_s: float = 0.5,
+    container: str, needle: str, *, deadline_s: float | None = None, interval_s: float = 0.5,
 ) -> str:
     """Poll ``docker logs`` until ``needle`` appears or deadline expires.
 
@@ -420,10 +420,11 @@ def wait_for_docker_logs(
     while time.monotonic() < end:
         r = subprocess.run(
             ["docker", "logs", container],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, timeout=docker_timeout(10),
         )
         last = r.stdout + r.stderr
         if needle in last:
             return last
         time.sleep(interval_s)
-    raise AssertionError(f"Didn't see `{needle}` in docker logs within {deadline_s} in container {container}")
+    budget = deadline_s if deadline_s is not None else CONTAINER_READY_TIMEOUT_S
+    raise AssertionError(f"Didn't see `{needle}` in docker logs within {budget} in container {container}")
