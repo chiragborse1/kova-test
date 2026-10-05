@@ -350,7 +350,7 @@ def poll_container(
     end = time.monotonic() + (CONTAINER_READY_TIMEOUT_S if deadline_s is None else deadline_s)
     last = ""
     while time.monotonic() < end:
-        r = docker_exec_sh(container, probe, user=user, timeout=10)
+        r = docker_exec_sh(container, probe, user=user, timeout=docker_timeout(10))
         last = r.stdout
         if r.returncode == 0:
             return True, last
@@ -395,7 +395,7 @@ def wait_for_log(
     last = ""
     while time.monotonic() < end:
         r = docker_exec_sh(
-            container, f"cat {log_path} 2>/dev/null", timeout=5,
+            container, f"cat {log_path} 2>/dev/null", timeout=docker_timeout(5),
         )
         if r.returncode == 0:
             last = r.stdout
