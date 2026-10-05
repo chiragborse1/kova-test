@@ -25,6 +25,7 @@ import time
 
 from tests.docker.conftest import (
     docker_exec_sh,
+    docker_timeout,
     start_container,
     wait_for_docker_logs,
 )
@@ -66,7 +67,7 @@ def _wait_for_gateway_or_exit(
     while time.monotonic() < end:
         r = subprocess.run(
             ["docker", "inspect", "-f", "{{.State.Status}}", container],
-            capture_output=True, text=True, timeout=10,
+            capture_output=True, text=True, timeout=docker_timeout(10),
         )
         status = r.stdout.strip()
         if status == "exited":
@@ -125,7 +126,7 @@ def test_gateway_run_redirects_to_supervised(
     # would be in `Exited` state by now.
     r = subprocess.run(
         ["docker", "inspect", "-f", "{{.State.Status}}", container_name],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=docker_timeout(10),
     )
     assert r.returncode == 0 and r.stdout.strip() == "running", (
         f"container exited prematurely: {r.stdout!r}; "

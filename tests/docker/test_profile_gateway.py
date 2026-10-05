@@ -18,7 +18,7 @@ from __future__ import annotations
 import subprocess
 import time
 
-from tests.docker.conftest import docker_exec_sh, start_container
+from tests.docker.conftest import docker_exec_sh, docker_timeout, start_container
 
 PROFILE = "test-harness-profile"
 
@@ -89,7 +89,7 @@ def test_named_profile_gateway_start_refuses_without_force(
     r = _sh(container_name, f"test -d /run/service/gateway-{PROFILE}")
     assert r.returncode == 0, "s6 service slot not created on profile create"
 
-    r = _sh(container_name, f"kova -p {PROFILE} gateway start", timeout=60)
+    r = _sh(container_name, f"kova -p {PROFILE} gateway start", timeout=docker_timeout(60))
     assert r.returncode != 0, f"a named profile started its own gateway: {r.stdout!r}"
     assert not _svstat_wants_up(container_name), (
         f"refused start still flipped the slot's want-state: {_svstat(container_name)!r}")
@@ -102,12 +102,12 @@ def test_named_profile_gateway_force_start_then_stop(
     r = _sh(container_name, f"kova profile create {PROFILE}")
     assert r.returncode == 0, f"profile create failed: {r.stderr}"
 
-    r = _sh(container_name, f"kova -p {PROFILE} gateway start --force", timeout=60)
+    r = _sh(container_name, f"kova -p {PROFILE} gateway start --force", timeout=docker_timeout(60))
     assert r.returncode == 0, (
         f"--force gateway start failed: stderr={r.stderr!r} stdout={r.stdout!r}"
     )
     _wait_for_want_state(container_name, want_up=True)
 
-    r = _sh(container_name, f"kova -p {PROFILE} gateway stop", timeout=30)
+    r = _sh(container_name, f"kova -p {PROFILE} gateway stop", timeout=docker_timeout(30))
     assert r.returncode == 0
     _wait_for_want_state(container_name, want_up=False)

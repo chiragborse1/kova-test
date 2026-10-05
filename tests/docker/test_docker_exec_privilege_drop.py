@@ -30,6 +30,7 @@ from collections.abc import Iterator
 
 import pytest
 
+from tests.docker.conftest import docker_timeout
 
 # How long to give a `docker run -d` container before declaring it not ready.
 # Generous because under arm64 QEMU emulation cont-init (a Python config
@@ -67,7 +68,7 @@ def _wait_for_cont_init(container: str) -> None:
         r = subprocess.run(
             ["docker", "exec", container,
              "cat", "/opt/data/logs/container-boot.log"],
-            capture_output=True, text=True, timeout=5,
+            capture_output=True, text=True, timeout=docker_timeout(5),
         )
         if r.returncode == 0:
             last = r.stdout
@@ -90,7 +91,7 @@ def sleep_container(built_image: str, container_name: str) -> Iterator[str]:
     r = subprocess.run(
         ["docker", "run", "-d", "--name", container_name, built_image,
          "sleep", "infinity"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=docker_timeout(30),
     )
     assert r.returncode == 0, f"docker run failed: {r.stderr}"
     try:
@@ -129,7 +130,7 @@ def test_shim_drops_root_to_kova_uid(sleep_container: str) -> None:
     r = subprocess.run(
         ["docker", "exec", sleep_container,
          "kova", "config", "set", "_test.shim_marker", "1"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=docker_timeout(30),
     )
     assert r.returncode == 0, f"config set failed: stdout={r.stdout!r} stderr={r.stderr!r}"
 
@@ -137,7 +138,7 @@ def test_shim_drops_root_to_kova_uid(sleep_container: str) -> None:
     r = subprocess.run(
         ["docker", "exec", sleep_container,
          "stat", "-c", "%U:%G", "/opt/data/config.yaml"],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=docker_timeout(10),
     )
     assert r.returncode == 0, f"stat failed: {r.stderr}"
     assert r.stdout.strip() == "kova:kova", (
@@ -185,7 +186,7 @@ def test_e2e_login_then_supervised_gateway_can_read_auth(
     r = subprocess.run(
         ["docker", "exec", sleep_container,
          "kova", "config", "set", "_test.e2e_marker", "1"],
-        capture_output=True, text=True, timeout=30,
+        capture_output=True, text=True, timeout=docker_timeout(30),
     )
     assert r.returncode == 0, f"config set failed: {r.stderr}"
 
@@ -195,7 +196,7 @@ def test_e2e_login_then_supervised_gateway_can_read_auth(
         ["docker", "exec", "--user", "kova", sleep_container,
          "find", "/opt/data", "-maxdepth", "2", "-type", "f",
          "!", "-readable", "-print"],
-        capture_output=True, text=True, timeout=15,
+        capture_output=True, text=True, timeout=docker_timeout(15),
     )
     assert r.returncode == 0, f"find failed: {r.stderr}"
     unreadable = [ln for ln in r.stdout.splitlines() if ln.strip()]
