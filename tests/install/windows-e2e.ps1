@@ -190,10 +190,10 @@ function Start-ChannelArchive {
     if ($script:ChannelArchive) { return }
     $urlFile = Join-Path $WorkRoot 'channel-archive-url'
     Remove-Item -LiteralPath $urlFile -Force -ErrorAction SilentlyContinue
-    $archive = Start-Process -FilePath $DriverNode
+    $archive = Start-Process -FilePath $DriverNode `
         -ArgumentList @(('"' + (Join-Path $AssetsDir 'empty-channel-archive.mjs') + '"'), ('"' + $urlFile + '"')) `
-        -PassThru -WindowStyle Hidden
-        -RedirectStandardOutput (Join-Path $ProofRoot 'channel-archive.log')
+        -PassThru -WindowStyle Hidden `
+        -RedirectStandardOutput (Join-Path $ProofRoot 'channel-archive.log') `
         -RedirectStandardError (Join-Path $ProofRoot 'channel-archive-error.log')
     try {
         $deadline = (Get-Date).AddSeconds(30)
