@@ -24,8 +24,11 @@ PROFILE = "test-harness-profile"
 
 
 def _sh(
-    container: str, command: str, timeout: int = 30,
+    container: str, command: str, timeout: float | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    # None keeps docker_exec_sh's own default, which tracks the host's
+    # emulation factor. A hardcoded 30 here silently overrode it and the
+    # qemu arm64 row timed out on commands that finish natively.
     return docker_exec_sh(container, command, timeout=timeout)
 
 
@@ -59,20 +62,22 @@ def _svstat_wants_up(container: str) -> bool:
 
 
 
-def _wait_for_want_state(container_name: str, want_up: bool, timeout: float = 15.0) -> None:
+def _wait_for_want_state(container_name: str, want_up: bool,
+                          timeout: float | None = None) -> None:
     """Poll s6 want-state until it matches, instead of a fixed sleep.
 
     s6 state transitions are asynchronous; fixed two-second sleeps flaked
     on loaded CI hosts.
     """
-    deadline = time.monotonic() + timeout
+    budget = timeout if timeout is not None else docker_timeout(15)
+    deadline = time.monotonic() + budget
     while time.monotonic() < deadline:
         if _svstat_wants_up(container_name) == want_up:
             return
         time.sleep(0.5)
     state = "up" if want_up else "down"
     raise AssertionError(
-        f"slot want-state never became {state} within {timeout}s: "
+        f"slot want-state never became {state} within {budget}s: "
         f"{_svstat(container_name)!r}"
     )
 

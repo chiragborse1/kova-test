@@ -275,7 +275,7 @@ def start_container(
     name: str,
     *env: str,
     cmd: str = "sleep infinity",
-    timeout: int = 60,
+    timeout: float | None = None,
 ) -> str:
     """Start a detached container and wait for cont-init to finish.
 
@@ -298,7 +298,8 @@ def start_container(
     # Docker puts the reason on stderr - "no matching manifest", "exec format
     # error", "cannot connect to the daemon" - and losing it is what made the
     # arm64 rows report a bare `exit status 125` with nothing to act on.
-    result = subprocess.run(args, capture_output=True, text=True, timeout=timeout)
+    result = subprocess.run(args, capture_output=True, text=True,
+                            timeout=docker_timeout(timeout or 30))
     if result.returncode:
         raise RuntimeError(
             f"docker run failed for {name} (exit {result.returncode}):\n"
@@ -308,7 +309,7 @@ def start_container(
     return name
 
 
-def restart_container(container: str, timeout: int = 60) -> None:
+def restart_container(container: str, timeout: float | None = None) -> None:
     """Restart a container and wait for cont-init to finish.
 
     Equivalent to ``docker restart <container>`` followed by
@@ -322,10 +323,10 @@ def restart_container(container: str, timeout: int = 60) -> None:
     """
     docker_exec(container, "sh", "-c",
                 "truncate -s 0 /opt/data/logs/container-boot.log 2>/dev/null || true",
-                user="root", timeout=5)
+                user="root", timeout=docker_timeout(5))
     subprocess.run(
         ["docker", "restart", container],
-        check=True, capture_output=True, timeout=timeout,
+        check=True, capture_output=True, timeout=docker_timeout(timeout or 60),
     )
     wait_for_container_ready(container)
 

@@ -50,7 +50,7 @@ def _svstat_wants_up(container: str, slot: str = "gateway-default") -> bool:
 def _wait_for_gateway_or_exit(
     container: str,
     *,
-    deadline_s: float = 60.0,
+    deadline_s: float | None = None,
 ) -> str:
     """Poll until the container is either running a foreground gateway
     process or has exited.  Returns the final container status.
@@ -63,7 +63,7 @@ def _wait_for_gateway_or_exit(
     ``docker inspect`` returning ``exited`` is both faster on quick
     machines and flake-free on slow ones.
     """
-    end = time.monotonic() + deadline_s
+    end = time.monotonic() + (deadline_s if deadline_s is not None else docker_timeout(60))
     while time.monotonic() < end:
         r = subprocess.run(
             ["docker", "inspect", "-f", "{{.State.Status}}", container],
