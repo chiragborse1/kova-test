@@ -33,9 +33,11 @@ import pytest
 from tests.docker.conftest import docker_timeout
 
 # How long to give a `docker run -d` container before declaring it not ready.
-# Generous because under arm64 QEMU emulation cont-init (a Python config
-# migration + chowns) runs several times slower than on native amd64.
-_RUN_READY_TIMEOUT_S = 60
+# Scaled by the host's emulation factor: under arm64 QEMU cont-init (a
+# Python config migration + chowns) runs several times slower than on native
+# amd64, and the fixed 60 this used to be never finished there --
+# "did not finish cont-init within 60s (container-boot.log so far: '')".
+_RUN_READY_TIMEOUT_S = docker_timeout(60)
 
 
 def _wait_for_cont_init(container: str) -> None:
