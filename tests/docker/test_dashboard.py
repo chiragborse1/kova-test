@@ -228,7 +228,7 @@ def test_dashboard_insecure_env_var_no_longer_bypasses_gate(
     ok, _ = poll_container(
         container_name,
         "curl -fsS -m 2 http://127.0.0.1:9119/api/status >/dev/null 2>&1",
-        deadline_s=12.0,
+        deadline_s=docker_timeout(12.0),
     )
     assert not ok, (
         "Dashboard must NOT serve on a public bind with --insecure and no "

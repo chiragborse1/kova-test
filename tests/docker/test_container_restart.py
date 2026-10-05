@@ -98,11 +98,11 @@ def test_stopped_gateway_stays_stopped_after_restart(restart_container: str) -> 
     docker_exec(container, "python3", "-c", write_state, timeout=10).check_returncode()
 
     _docker("restart", container, timeout=docker_timeout(60)).check_returncode()
-    _wait_for_reconcile_log_mention(container, "writer", deadline_s=30.0)
+    _wait_for_reconcile_log_mention(container, "writer", deadline_s=docker_timeout(30.0))
 
     # Slot exists.
     assert wait_for_path(
-        container, "/run/service/gateway-writer", kind="d", deadline_s=10.0,
+        container, "/run/service/gateway-writer", kind="d", deadline_s=docker_timeout(10.0),
     )
 
     # Down marker present.
@@ -131,7 +131,7 @@ def test_stale_gateway_pid_cleaned_up_on_restart(restart_container: str) -> None
     docker_exec(container, "python3", "-c", stamp, timeout=10).check_returncode()
 
     _docker("restart", container, timeout=docker_timeout(60)).check_returncode()
-    _wait_for_reconcile_log_mention(container, "ghost", deadline_s=30.0)
+    _wait_for_reconcile_log_mention(container, "ghost", deadline_s=docker_timeout(30.0))
 
     # Stale runtime files swept.
     r = docker_exec_sh(container, "test -f /opt/data/profiles/ghost/gateway.pid")

@@ -113,9 +113,12 @@ def test_gateway_run_redirects_to_supervised(
     # Under heavy parallel docker load (32-way fan-out), the CMD process
     # (main-wrapper.sh → python → kova gateway run) can take well over
     # 30s to import the codebase, load config, and reach the redirect
-    # logic. 60s matches the deadline other boot-readiness polls use.
+    # logic. 60s matches the deadline other boot-readiness polls use, and
+    # scales with the host like them: this call passed a bare 60.0, which
+    # overrode wait_for_docker_logs' own None default and left the emulated
+    # arm64 row polling a native budget.
     logs = wait_for_docker_logs(
-        container_name, "s6 supervision", deadline_s=60.0,
+        container_name, "s6 supervision", deadline_s=docker_timeout(60),
     )
     assert "s6 supervision" in logs, (
         f"expected loud breadcrumb in docker logs; got:\n{logs}"
@@ -261,7 +264,7 @@ def test_dashboard_supervised_when_env_set(
     # cont-init finishes, but the redirect (which creates the
     # gateway-default s6 slot) happens later in the CMD process.
     wait_for_docker_logs(
-        container_name, "s6 supervision", deadline_s=60.0,
+        container_name, "s6 supervision", deadline_s=docker_timeout(60.0),
     )
 
     # Poll for both slots to report want-up, using the same
